@@ -6,7 +6,7 @@ import com.ruoyi.agent.domain.AgentMessage;
 /**
  * Agent消息 Service接口
  *
- * @author ruoyi
+ * @author Dylan
  */
 public interface IAgentMessageService
 {

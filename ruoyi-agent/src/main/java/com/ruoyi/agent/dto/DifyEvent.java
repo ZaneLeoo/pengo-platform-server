@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Dify SSE 事件解析
  *
- * @author ruoyi
+ * @author Dylan
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DifyEvent

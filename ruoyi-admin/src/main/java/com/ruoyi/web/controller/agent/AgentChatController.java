@@ -34,7 +34,7 @@ import com.ruoyi.system.service.ISysConfigService;
 /**
  * Agent聊天 SSE流式端点
  *
- * @author ruoyi
+ * @author Dylan
  */
 @RestController
 @RequestMapping("/agent/chat")

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * 发送给 Dify /v1/chat-messages 的请求体
  *
- * @author ruoyi
+ * @author Dylan
  */
 public class DifyChatRequest
 {

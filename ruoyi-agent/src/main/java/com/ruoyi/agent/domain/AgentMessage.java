@@ -10,7 +10,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 /**
  * Agent对话消息表 agent_message
  *
- * @author ruoyi
+ * @author Dylan
  */
 public class AgentMessage extends BaseEntity
 {

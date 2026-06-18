@@ -4,13 +4,16 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.domain.BaseEntity;
 
+import java.io.Serial;
+
 /**
  * Agent对话会话表 agent_conversation
  *
- * @author ruoyi
+ * @author Dylan
  */
 public class AgentConversation extends BaseEntity
 {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /** 主键 */

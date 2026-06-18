@@ -3,7 +3,7 @@ package com.ruoyi.agent.dto;
 /**
  * 前端聊天请求
  *
- * @author ruoyi
+ * @author Dylan
  */
 public class ChatRequest
 {

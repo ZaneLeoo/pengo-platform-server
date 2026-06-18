@@ -6,7 +6,7 @@ import com.ruoyi.agent.domain.AgentMessage;
 /**
  * Agent对话消息 数据层
  *
- * @author ruoyi
+ * @author Dylan
  */
 public interface AgentMessageMapper
 {

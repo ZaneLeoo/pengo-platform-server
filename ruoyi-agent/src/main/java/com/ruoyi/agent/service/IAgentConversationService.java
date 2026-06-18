@@ -6,7 +6,7 @@ import com.ruoyi.agent.domain.AgentConversation;
 /**
  * Agent会话 Service接口
  *
- * @author ruoyi
+ * @author Dylan
  */
 public interface IAgentConversationService
 {

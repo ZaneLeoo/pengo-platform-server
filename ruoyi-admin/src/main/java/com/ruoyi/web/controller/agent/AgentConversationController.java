@@ -19,7 +19,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 /**
  * Agent会话管理
  *
- * @author ruoyi
+ * @author Dylan
  */
 @RestController
 @RequestMapping("/agent/conversations")
