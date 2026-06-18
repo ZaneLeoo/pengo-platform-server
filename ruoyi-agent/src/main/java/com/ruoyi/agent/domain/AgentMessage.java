@@ -1,17 +1,23 @@
 package com.ruoyi.agent.domain;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ruoyi.common.core.domain.BaseEntity;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Agent对话消息表 agent_message
  *
  * @author Dylan
  */
+@Getter
+@Setter
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class AgentMessage extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -45,65 +51,7 @@ public class AgentMessage extends BaseEntity
     /** 用户反馈（1赞 0无 -1踩） */
     private String feedback;
 
-    public Long getId()
-    {
-        return id;
-    }
-
-    public void setId(Long id)
-    {
-        this.id = id;
-    }
-
-    public Long getConversationId()
-    {
-        return conversationId;
-    }
-
-    public void setConversationId(Long conversationId)
-    {
-        this.conversationId = conversationId;
-    }
-
-    public String getDifyMessageId()
-    {
-        return difyMessageId;
-    }
-
-    public void setDifyMessageId(String difyMessageId)
-    {
-        this.difyMessageId = difyMessageId;
-    }
-
-    public String getRole()
-    {
-        return role;
-    }
-
-    public void setRole(String role)
-    {
-        this.role = role;
-    }
-
-    public String getContent()
-    {
-        return content;
-    }
-
-    public void setContent(String content)
-    {
-        this.content = content;
-    }
-
-    public String getThinking()
-    {
-        return thinking;
-    }
-
-    public void setThinking(String thinking)
-    {
-        this.thinking = thinking;
-    }
+    // ======== 自定义序列化方法（将JSON字符串解析为对象返回前端） ========
 
     /** 返回解析后的thinking对象给前端 */
     @JsonProperty("thinking")
@@ -113,58 +61,11 @@ public class AgentMessage extends BaseEntity
         try { return JSON.parse(thinking); } catch (Exception e) { return thinking; }
     }
 
-    public String getMessageMetadata()
-    {
-        return messageMetadata;
-    }
-
-    public void setMessageMetadata(String messageMetadata)
-    {
-        this.messageMetadata = messageMetadata;
-    }
-
     /** 返回解析后的messageMetadata对象给前端 */
     @JsonProperty("messageMetadata")
     public Object getMessageMetadataObject()
     {
         if (messageMetadata == null || messageMetadata.isEmpty()) return null;
         try { return JSON.parse(messageMetadata); } catch (Exception e) { return messageMetadata; }
-    }
-
-    public Integer getTokenCount()
-    {
-        return tokenCount;
-    }
-
-    public void setTokenCount(Integer tokenCount)
-    {
-        this.tokenCount = tokenCount;
-    }
-
-    public String getFeedback()
-    {
-        return feedback;
-    }
-
-    public void setFeedback(String feedback)
-    {
-        this.feedback = feedback;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("conversationId", getConversationId())
-            .append("difyMessageId", getDifyMessageId())
-            .append("role", getRole())
-            .append("content", getContent())
-            .append("thinking", getThinking())
-            .append("messageMetadata", getMessageMetadata())
-            .append("tokenCount", getTokenCount())
-            .append("feedback", getFeedback())
-            .append("createBy", getCreateBy())
-            .append("createTime", getCreateTime())
-            .toString();
     }
 }

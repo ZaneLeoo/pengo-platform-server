@@ -11,23 +11,22 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.agent.dto.DifyChatRequest;
 import com.ruoyi.agent.dto.DifyEvent;
 import com.ruoyi.agent.service.IDifyApiService;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Dify API 调用服务实现
  *
  * @author Dylan
  */
+@Slf4j
 @Service
 public class DifyApiServiceImpl implements IDifyApiService
 {
-    private static final Logger log = LoggerFactory.getLogger(DifyApiServiceImpl.class);
 
     private final HttpClient httpClient = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(30))

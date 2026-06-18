@@ -3,12 +3,14 @@ package com.ruoyi.agent.dto;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 /**
  * Dify SSE 事件解析
  *
  * @author Dylan
  */
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DifyEvent
 {
@@ -58,146 +60,4 @@ public class DifyEvent
 
     /** 错误消息（error事件） */
     private String message;
-
-    // ---- Getters & Setters ----
-
-    public String getEvent()
-    {
-        return event;
-    }
-
-    public void setEvent(String event)
-    {
-        this.event = event;
-    }
-
-    public String getConversationId()
-    {
-        return conversationId;
-    }
-
-    public void setConversationId(String conversationId)
-    {
-        this.conversationId = conversationId;
-    }
-
-    public String getMessageId()
-    {
-        return messageId;
-    }
-
-    public void setMessageId(String messageId)
-    {
-        this.messageId = messageId;
-    }
-
-    public String getAnswer()
-    {
-        return answer;
-    }
-
-    public void setAnswer(String answer)
-    {
-        this.answer = answer;
-    }
-
-    public String getThought()
-    {
-        return thought;
-    }
-
-    public void setThought(String thought)
-    {
-        this.thought = thought;
-    }
-
-    public String getObservation()
-    {
-        return observation;
-    }
-
-    public void setObservation(String observation)
-    {
-        this.observation = observation;
-    }
-
-    public String getTool()
-    {
-        return tool;
-    }
-
-    public void setTool(String tool)
-    {
-        this.tool = tool;
-    }
-
-    public String getToolInput()
-    {
-        return toolInput;
-    }
-
-    public void setToolInput(String toolInput)
-    {
-        this.toolInput = toolInput;
-    }
-
-    public String getToolLabel()
-    {
-        return toolLabel;
-    }
-
-    public void setToolLabel(String toolLabel)
-    {
-        this.toolLabel = toolLabel;
-    }
-
-    public Map<String, Object> getMetadata()
-    {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, Object> metadata)
-    {
-        this.metadata = metadata;
-    }
-
-    public Integer getTotalTokens()
-    {
-        return totalTokens;
-    }
-
-    public void setTotalTokens(Integer totalTokens)
-    {
-        this.totalTokens = totalTokens;
-    }
-
-    public String getStatus()
-    {
-        return status;
-    }
-
-    public void setStatus(String status)
-    {
-        this.status = status;
-    }
-
-    public String getCode()
-    {
-        return code;
-    }
-
-    public void setCode(String code)
-    {
-        this.code = code;
-    }
-
-    public String getMessage()
-    {
-        return message;
-    }
-
-    public void setMessage(String message)
-    {
-        this.message = message;
-    }
 }

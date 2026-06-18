@@ -17,6 +17,13 @@
 
     <dependencies>
 
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!-- 通用工具 -->
         <dependency>
             <groupId>com.ruoyi</groupId>
