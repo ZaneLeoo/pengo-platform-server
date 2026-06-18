@@ -1,0 +1,4453 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 22,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/ScheduleConstants.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 50,
+      "nonEmptyLines": 40,
+      "classes": [
+        {
+          "name": "ScheduleConstants",
+          "startLine": 8,
+          "endLine": 50,
+          "methods": [],
+          "properties": [
+            "TASK_CLASS_NAME",
+            "TASK_PROPERTIES",
+            "MISFIRE_DEFAULT",
+            "MISFIRE_IGNORE_MISFIRES",
+            "MISFIRE_FIRE_AND_PROCEED",
+            "MISFIRE_DO_NOTHING"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TASK_CLASS_NAME",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "TASK_PROPERTIES",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "MISFIRE_DEFAULT",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "MISFIRE_IGNORE_MISFIRES",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "MISFIRE_FIRE_AND_PROCEED",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "MISFIRE_DO_NOTHING",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "ScheduleConstants",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 7,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 85,
+      "nonEmptyLines": 69,
+      "functions": [
+        {
+          "name": "TableDataInfo",
+          "startLine": 30,
+          "endLine": 32,
+          "params": []
+        },
+        {
+          "name": "TableDataInfo",
+          "startLine": 40,
+          "endLine": 44,
+          "params": [
+            "list",
+            "total"
+          ]
+        },
+        {
+          "name": "getTotal",
+          "startLine": 46,
+          "endLine": 49,
+          "params": []
+        },
+        {
+          "name": "setTotal",
+          "startLine": 51,
+          "endLine": 54,
+          "params": [
+            "total"
+          ]
+        },
+        {
+          "name": "getRows",
+          "startLine": 56,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "setRows",
+          "startLine": 61,
+          "endLine": 64,
+          "params": [
+            "rows"
+          ]
+        },
+        {
+          "name": "getCode",
+          "startLine": 66,
+          "endLine": 69,
+          "params": []
+        },
+        {
+          "name": "setCode",
+          "startLine": 71,
+          "endLine": 74,
+          "params": [
+            "code"
+          ]
+        },
+        {
+          "name": "getMsg",
+          "startLine": 76,
+          "endLine": 79,
+          "params": []
+        },
+        {
+          "name": "setMsg",
+          "startLine": 81,
+          "endLine": 84,
+          "params": [
+            "msg"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "TableDataInfo",
+          "startLine": 11,
+          "endLine": 85,
+          "methods": [
+            "TableDataInfo",
+            "TableDataInfo",
+            "getTotal",
+            "setTotal",
+            "getRows",
+            "setRows",
+            "getCode",
+            "setCode",
+            "getMsg",
+            "setMsg"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "total",
+            "rows",
+            "code",
+            "msg"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TableDataInfo",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "TableDataInfo",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "getTotal",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "setTotal",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "getRows",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "setRows",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "getCode",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "setCode",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "getMsg",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "setMsg",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "TableDataInfo",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 11,
+        "functionCount": 10,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/job/TaskException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 28,
+      "functions": [
+        {
+          "name": "TaskException",
+          "startLine": 14,
+          "endLine": 17,
+          "params": [
+            "msg",
+            "code"
+          ]
+        },
+        {
+          "name": "TaskException",
+          "startLine": 19,
+          "endLine": 23,
+          "params": [
+            "msg",
+            "code",
+            "nestedEx"
+          ]
+        },
+        {
+          "name": "getCode",
+          "startLine": 25,
+          "endLine": 28,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "TaskException",
+          "startLine": 8,
+          "endLine": 34,
+          "methods": [
+            "TaskException",
+            "TaskException",
+            "getCode"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "code"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "TaskException",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "TaskException",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "getCode",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "TaskException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ExceptionUtil.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 36,
+      "functions": [
+        {
+          "name": "getExceptionMessage",
+          "startLine": 17,
+          "endLine": 22,
+          "params": [
+            "e"
+          ]
+        },
+        {
+          "name": "getRootErrorMessage",
+          "startLine": 24,
+          "endLine": 38,
+          "params": [
+            "e"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ExceptionUtil",
+          "startLine": 12,
+          "endLine": 39,
+          "methods": [
+            "getExceptionMessage",
+            "getRootErrorMessage"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "getExceptionMessage",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "getRootErrorMessage",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "ExceptionUtil",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getExceptionMessage",
+          "callee": "new StringWriter",
+          "lineNumber": 19
+        },
+        {
+          "caller": "getExceptionMessage",
+          "callee": "e.printStackTrace",
+          "lineNumber": 20
+        },
+        {
+          "caller": "getExceptionMessage",
+          "callee": "new PrintWriter",
+          "lineNumber": 20
+        },
+        {
+          "caller": "getExceptionMessage",
+          "callee": "sw.toString",
+          "lineNumber": 21
+        },
+        {
+          "caller": "getRootErrorMessage",
+          "callee": "ExceptionUtils.getRootCause",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getRootErrorMessage",
+          "callee": "root.getMessage",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getRootErrorMessage",
+          "callee": "StringUtils.defaultString",
+          "lineNumber": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/bean/BeanUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 110,
+      "nonEmptyLines": 97,
+      "functions": [
+        {
+          "name": "copyBeanProp",
+          "startLine": 31,
+          "endLine": 41,
+          "params": [
+            "dest",
+            "src"
+          ]
+        },
+        {
+          "name": "getSetterMethods",
+          "startLine": 49,
+          "endLine": 69,
+          "params": [
+            "obj"
+          ]
+        },
+        {
+          "name": "getGetterMethods",
+          "startLine": 78,
+          "endLine": 95,
+          "params": [
+            "obj"
+          ]
+        },
+        {
+          "name": "isMethodPropEquals",
+          "startLine": 106,
+          "endLine": 109,
+          "params": [
+            "m1",
+            "m2"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "BeanUtils",
+          "startLine": 14,
+          "endLine": 110,
+          "methods": [
+            "copyBeanProp",
+            "getSetterMethods",
+            "getGetterMethods",
+            "isMethodPropEquals"
+          ],
+          "properties": [
+            "BEAN_METHOD_PROP_INDEX",
+            "GET_PATTERN",
+            "SET_PATTERN"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "copyBeanProp",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "getSetterMethods",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "getGetterMethods",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "isMethodPropEquals",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "BeanUtils",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "copyBeanProp",
+          "callee": "copyProperties",
+          "lineNumber": 35
+        },
+        {
+          "caller": "copyBeanProp",
+          "callee": "e.printStackTrace",
+          "lineNumber": 39
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "new ArrayList<Method>",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "obj.getClass().getMethods",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "obj.getClass",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "SET_PATTERN.matcher",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "method.getName",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "m.matches",
+          "lineNumber": 62
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "method.getParameterTypes",
+          "lineNumber": 62
+        },
+        {
+          "caller": "getSetterMethods",
+          "callee": "setterMethods.add",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "new ArrayList<Method>",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "obj.getClass().getMethods",
+          "lineNumber": 83
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "obj.getClass",
+          "lineNumber": 83
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "GET_PATTERN.matcher",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "method.getName",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "m.matches",
+          "lineNumber": 88
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "method.getParameterTypes",
+          "lineNumber": 88
+        },
+        {
+          "caller": "getGetterMethods",
+          "callee": "getterMethods.add",
+          "lineNumber": 90
+        },
+        {
+          "caller": "isMethodPropEquals",
+          "callee": "m1.substring(BEAN_METHOD_PROP_INDEX).equals",
+          "lineNumber": 108
+        },
+        {
+          "caller": "isMethodPropEquals",
+          "callee": "m1.substring",
+          "lineNumber": 108
+        },
+        {
+          "caller": "isMethodPropEquals",
+          "callee": "m2.substring",
+          "lineNumber": 108
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 164,
+      "nonEmptyLines": 149,
+      "functions": [
+        {
+          "name": "postProcessBeanFactory",
+          "startLine": 27,
+          "endLine": 31,
+          "params": [
+            "beanFactory"
+          ]
+        },
+        {
+          "name": "setApplicationContext",
+          "startLine": 33,
+          "endLine": 37,
+          "params": [
+            "applicationContext"
+          ]
+        },
+        {
+          "name": "getBean",
+          "startLine": 47,
+          "endLine": 51,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getBean",
+          "startLine": 61,
+          "endLine": 65,
+          "params": [
+            "clz"
+          ]
+        },
+        {
+          "name": "containsBean",
+          "startLine": 73,
+          "endLine": 76,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "isSingleton",
+          "startLine": 86,
+          "endLine": 89,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getType",
+          "startLine": 97,
+          "endLine": 100,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getAliases",
+          "startLine": 110,
+          "endLine": 113,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getAopProxy",
+          "startLine": 121,
+          "endLine": 130,
+          "params": [
+            "invoker"
+          ]
+        },
+        {
+          "name": "getActiveProfiles",
+          "startLine": 137,
+          "endLine": 140,
+          "params": []
+        },
+        {
+          "name": "getActiveProfile",
+          "startLine": 147,
+          "endLine": 151,
+          "params": []
+        },
+        {
+          "name": "getRequiredProperty",
+          "startLine": 160,
+          "endLine": 163,
+          "params": [
+            "key"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SpringUtils",
+          "startLine": 19,
+          "endLine": 164,
+          "methods": [
+            "postProcessBeanFactory",
+            "setApplicationContext",
+            "getBean",
+            "getBean",
+            "containsBean",
+            "isSingleton",
+            "getType",
+            "getAliases",
+            "getAopProxy",
+            "getActiveProfiles",
+            "getActiveProfile",
+            "getRequiredProperty"
+          ],
+          "properties": [
+            "beanFactory",
+            "applicationContext"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "postProcessBeanFactory",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "setApplicationContext",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "getBean",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "getBean",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "containsBean",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "isSingleton",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "getType",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "getAliases",
+          "line": 110,
+          "isDefault": false
+        },
+        {
+          "name": "getAopProxy",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "getActiveProfiles",
+          "line": 137,
+          "isDefault": false
+        },
+        {
+          "name": "getActiveProfile",
+          "line": 147,
+          "isDefault": false
+        },
+        {
+          "name": "getRequiredProperty",
+          "line": 160,
+          "isDefault": false
+        },
+        {
+          "name": "SpringUtils",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getBean",
+          "callee": "beanFactory.getBean",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getBean",
+          "callee": "beanFactory.getBean",
+          "lineNumber": 63
+        },
+        {
+          "caller": "containsBean",
+          "callee": "beanFactory.containsBean",
+          "lineNumber": 75
+        },
+        {
+          "caller": "isSingleton",
+          "callee": "beanFactory.isSingleton",
+          "lineNumber": 88
+        },
+        {
+          "caller": "getType",
+          "callee": "beanFactory.getType",
+          "lineNumber": 99
+        },
+        {
+          "caller": "getAliases",
+          "callee": "beanFactory.getAliases",
+          "lineNumber": 112
+        },
+        {
+          "caller": "getAopProxy",
+          "callee": "AopContext.currentProxy",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getAopProxy",
+          "callee": "((Advised) proxy).getTargetSource().getTargetClass",
+          "lineNumber": 125
+        },
+        {
+          "caller": "getAopProxy",
+          "callee": "((Advised) proxy).getTargetSource",
+          "lineNumber": 125
+        },
+        {
+          "caller": "getAopProxy",
+          "callee": "invoker.getClass",
+          "lineNumber": 125
+        },
+        {
+          "caller": "getActiveProfiles",
+          "callee": "applicationContext.getEnvironment().getActiveProfiles",
+          "lineNumber": 139
+        },
+        {
+          "caller": "getActiveProfiles",
+          "callee": "applicationContext.getEnvironment",
+          "lineNumber": 139
+        },
+        {
+          "caller": "getActiveProfile",
+          "callee": "getActiveProfiles",
+          "lineNumber": 149
+        },
+        {
+          "caller": "getActiveProfile",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 150
+        },
+        {
+          "caller": "getRequiredProperty",
+          "callee": "applicationContext.getEnvironment().getRequiredProperty",
+          "lineNumber": 162
+        },
+        {
+          "caller": "getRequiredProperty",
+          "callee": "applicationContext.getEnvironment",
+          "lineNumber": 162
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 13,
+        "functionCount": 12,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/controller/SysJobController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 185,
+      "nonEmptyLines": 175,
+      "functions": [
+        {
+          "name": "list",
+          "startLine": 45,
+          "endLine": 52,
+          "params": [
+            "sysJob"
+          ]
+        },
+        {
+          "name": "export",
+          "startLine": 57,
+          "endLine": 65,
+          "params": [
+            "response",
+            "sysJob"
+          ]
+        },
+        {
+          "name": "getInfo",
+          "startLine": 70,
+          "endLine": 75,
+          "params": [
+            "jobId"
+          ]
+        },
+        {
+          "name": "add",
+          "startLine": 80,
+          "endLine": 111,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "edit",
+          "startLine": 116,
+          "endLine": 147,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "changeStatus",
+          "startLine": 152,
+          "endLine": 160,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 165,
+          "endLine": 172,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "remove",
+          "startLine": 177,
+          "endLine": 184,
+          "params": [
+            "jobIds"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysJobController",
+          "startLine": 35,
+          "endLine": 185,
+          "methods": [
+            "list",
+            "export",
+            "getInfo",
+            "add",
+            "edit",
+            "changeStatus",
+            "run",
+            "remove"
+          ],
+          "properties": [
+            "jobService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "list",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "export",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "getInfo",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "add",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "edit",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "changeStatus",
+          "line": 152,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 165,
+          "isDefault": false
+        },
+        {
+          "name": "remove",
+          "line": 177,
+          "isDefault": false
+        },
+        {
+          "name": "SysJobController",
+          "line": 35,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "list",
+          "callee": "startPage",
+          "lineNumber": 49
+        },
+        {
+          "caller": "list",
+          "callee": "jobService.selectJobList",
+          "lineNumber": 50
+        },
+        {
+          "caller": "list",
+          "callee": "getDataTable",
+          "lineNumber": 51
+        },
+        {
+          "caller": "export",
+          "callee": "jobService.selectJobList",
+          "lineNumber": 62
+        },
+        {
+          "caller": "export",
+          "callee": "new ExcelUtil<SysJob>",
+          "lineNumber": 63
+        },
+        {
+          "caller": "export",
+          "callee": "util.exportExcel",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getInfo",
+          "callee": "success",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getInfo",
+          "callee": "jobService.selectJobById",
+          "lineNumber": 74
+        },
+        {
+          "caller": "add",
+          "callee": "CronUtils.isValid",
+          "lineNumber": 85
+        },
+        {
+          "caller": "add",
+          "callee": "job.getCronExpression",
+          "lineNumber": 85
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 87
+        },
+        {
+          "caller": "add",
+          "callee": "job.getJobName",
+          "lineNumber": 87
+        },
+        {
+          "caller": "add",
+          "callee": "StringUtils.containsIgnoreCase",
+          "lineNumber": 89
+        },
+        {
+          "caller": "add",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 89
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 91
+        },
+        {
+          "caller": "add",
+          "callee": "job.getJobName",
+          "lineNumber": 91
+        },
+        {
+          "caller": "add",
+          "callee": "StringUtils.containsAnyIgnoreCase",
+          "lineNumber": 93
+        },
+        {
+          "caller": "add",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 93
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 95
+        },
+        {
+          "caller": "add",
+          "callee": "job.getJobName",
+          "lineNumber": 95
+        },
+        {
+          "caller": "add",
+          "callee": "StringUtils.containsAnyIgnoreCase",
+          "lineNumber": 97
+        },
+        {
+          "caller": "add",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 97
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 99
+        },
+        {
+          "caller": "add",
+          "callee": "job.getJobName",
+          "lineNumber": 99
+        },
+        {
+          "caller": "add",
+          "callee": "StringUtils.containsAnyIgnoreCase",
+          "lineNumber": 101
+        },
+        {
+          "caller": "add",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 101
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 103
+        },
+        {
+          "caller": "add",
+          "callee": "job.getJobName",
+          "lineNumber": 103
+        },
+        {
+          "caller": "add",
+          "callee": "ScheduleUtils.whiteList",
+          "lineNumber": 105
+        },
+        {
+          "caller": "add",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 105
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 107
+        },
+        {
+          "caller": "add",
+          "callee": "job.getJobName",
+          "lineNumber": 107
+        },
+        {
+          "caller": "add",
+          "callee": "job.setCreateBy",
+          "lineNumber": 109
+        },
+        {
+          "caller": "add",
+          "callee": "getUsername",
+          "lineNumber": 109
+        },
+        {
+          "caller": "add",
+          "callee": "toAjax",
+          "lineNumber": 110
+        },
+        {
+          "caller": "add",
+          "callee": "jobService.insertJob",
+          "lineNumber": 110
+        },
+        {
+          "caller": "edit",
+          "callee": "CronUtils.isValid",
+          "lineNumber": 121
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getCronExpression",
+          "lineNumber": 121
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 123
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getJobName",
+          "lineNumber": 123
+        },
+        {
+          "caller": "edit",
+          "callee": "StringUtils.containsIgnoreCase",
+          "lineNumber": 125
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 125
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 127
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getJobName",
+          "lineNumber": 127
+        },
+        {
+          "caller": "edit",
+          "callee": "StringUtils.containsAnyIgnoreCase",
+          "lineNumber": 129
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 129
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 131
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getJobName",
+          "lineNumber": 131
+        },
+        {
+          "caller": "edit",
+          "callee": "StringUtils.containsAnyIgnoreCase",
+          "lineNumber": 133
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 133
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 135
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getJobName",
+          "lineNumber": 135
+        },
+        {
+          "caller": "edit",
+          "callee": "StringUtils.containsAnyIgnoreCase",
+          "lineNumber": 137
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 137
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 139
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getJobName",
+          "lineNumber": 139
+        },
+        {
+          "caller": "edit",
+          "callee": "ScheduleUtils.whiteList",
+          "lineNumber": 141
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getInvokeTarget",
+          "lineNumber": 141
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 143
+        },
+        {
+          "caller": "edit",
+          "callee": "job.getJobName",
+          "lineNumber": 143
+        },
+        {
+          "caller": "edit",
+          "callee": "job.setUpdateBy",
+          "lineNumber": 145
+        },
+        {
+          "caller": "edit",
+          "callee": "getUsername",
+          "lineNumber": 145
+        },
+        {
+          "caller": "edit",
+          "callee": "toAjax",
+          "lineNumber": 146
+        },
+        {
+          "caller": "edit",
+          "callee": "jobService.updateJob",
+          "lineNumber": 146
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "jobService.selectJobById",
+          "lineNumber": 157
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "job.getJobId",
+          "lineNumber": 157
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "newJob.setStatus",
+          "lineNumber": 158
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "job.getStatus",
+          "lineNumber": 158
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "toAjax",
+          "lineNumber": 159
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "jobService.changeStatus",
+          "lineNumber": 159
+        },
+        {
+          "caller": "run",
+          "callee": "jobService.run",
+          "lineNumber": 170
+        },
+        {
+          "caller": "run",
+          "callee": "success",
+          "lineNumber": 171
+        },
+        {
+          "caller": "run",
+          "callee": "error",
+          "lineNumber": 171
+        },
+        {
+          "caller": "remove",
+          "callee": "jobService.deleteJobByIds",
+          "lineNumber": 182
+        },
+        {
+          "caller": "remove",
+          "callee": "success",
+          "lineNumber": 183
+        }
+      ],
+      "metrics": {
+        "importCount": 13,
+        "exportCount": 9,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/controller/SysJobLogController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 92,
+      "nonEmptyLines": 84,
+      "functions": [
+        {
+          "name": "list",
+          "startLine": 37,
+          "endLine": 44,
+          "params": [
+            "sysJobLog"
+          ]
+        },
+        {
+          "name": "export",
+          "startLine": 49,
+          "endLine": 57,
+          "params": [
+            "response",
+            "sysJobLog"
+          ]
+        },
+        {
+          "name": "getInfo",
+          "startLine": 62,
+          "endLine": 67,
+          "params": [
+            "jobLogId"
+          ]
+        },
+        {
+          "name": "remove",
+          "startLine": 73,
+          "endLine": 79,
+          "params": [
+            "jobLogIds"
+          ]
+        },
+        {
+          "name": "clean",
+          "startLine": 84,
+          "endLine": 91,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysJobLogController",
+          "startLine": 27,
+          "endLine": 92,
+          "methods": [
+            "list",
+            "export",
+            "getInfo",
+            "remove",
+            "clean"
+          ],
+          "properties": [
+            "jobLogService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "list",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "export",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "getInfo",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "remove",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "clean",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "SysJobLogController",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "list",
+          "callee": "startPage",
+          "lineNumber": 41
+        },
+        {
+          "caller": "list",
+          "callee": "jobLogService.selectJobLogList",
+          "lineNumber": 42
+        },
+        {
+          "caller": "list",
+          "callee": "getDataTable",
+          "lineNumber": 43
+        },
+        {
+          "caller": "export",
+          "callee": "jobLogService.selectJobLogList",
+          "lineNumber": 54
+        },
+        {
+          "caller": "export",
+          "callee": "new ExcelUtil<SysJobLog>",
+          "lineNumber": 55
+        },
+        {
+          "caller": "export",
+          "callee": "util.exportExcel",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getInfo",
+          "callee": "success",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getInfo",
+          "callee": "jobLogService.selectJobLogById",
+          "lineNumber": 66
+        },
+        {
+          "caller": "remove",
+          "callee": "toAjax",
+          "lineNumber": 78
+        },
+        {
+          "caller": "remove",
+          "callee": "jobLogService.deleteJobLogByIds",
+          "lineNumber": 78
+        },
+        {
+          "caller": "clean",
+          "callee": "jobLogService.cleanJobLog",
+          "lineNumber": 89
+        },
+        {
+          "caller": "clean",
+          "callee": "success",
+          "lineNumber": 90
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 6,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 171,
+      "nonEmptyLines": 143,
+      "functions": [
+        {
+          "name": "getJobId",
+          "startLine": 57,
+          "endLine": 60,
+          "params": []
+        },
+        {
+          "name": "setJobId",
+          "startLine": 62,
+          "endLine": 65,
+          "params": [
+            "jobId"
+          ]
+        },
+        {
+          "name": "getJobName",
+          "startLine": 67,
+          "endLine": 72,
+          "params": []
+        },
+        {
+          "name": "setJobName",
+          "startLine": 74,
+          "endLine": 77,
+          "params": [
+            "jobName"
+          ]
+        },
+        {
+          "name": "getJobGroup",
+          "startLine": 79,
+          "endLine": 82,
+          "params": []
+        },
+        {
+          "name": "setJobGroup",
+          "startLine": 84,
+          "endLine": 87,
+          "params": [
+            "jobGroup"
+          ]
+        },
+        {
+          "name": "getInvokeTarget",
+          "startLine": 89,
+          "endLine": 94,
+          "params": []
+        },
+        {
+          "name": "setInvokeTarget",
+          "startLine": 96,
+          "endLine": 99,
+          "params": [
+            "invokeTarget"
+          ]
+        },
+        {
+          "name": "getCronExpression",
+          "startLine": 101,
+          "endLine": 106,
+          "params": []
+        },
+        {
+          "name": "setCronExpression",
+          "startLine": 108,
+          "endLine": 111,
+          "params": [
+            "cronExpression"
+          ]
+        },
+        {
+          "name": "getNextValidTime",
+          "startLine": 113,
+          "endLine": 121,
+          "params": []
+        },
+        {
+          "name": "getMisfirePolicy",
+          "startLine": 123,
+          "endLine": 126,
+          "params": []
+        },
+        {
+          "name": "setMisfirePolicy",
+          "startLine": 128,
+          "endLine": 131,
+          "params": [
+            "misfirePolicy"
+          ]
+        },
+        {
+          "name": "getConcurrent",
+          "startLine": 133,
+          "endLine": 136,
+          "params": []
+        },
+        {
+          "name": "setConcurrent",
+          "startLine": 138,
+          "endLine": 141,
+          "params": [
+            "concurrent"
+          ]
+        },
+        {
+          "name": "getStatus",
+          "startLine": 143,
+          "endLine": 146,
+          "params": []
+        },
+        {
+          "name": "setStatus",
+          "startLine": 148,
+          "endLine": 151,
+          "params": [
+            "status"
+          ]
+        },
+        {
+          "name": "toString",
+          "startLine": 153,
+          "endLine": 170,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysJob",
+          "startLine": 21,
+          "endLine": 171,
+          "methods": [
+            "getJobId",
+            "setJobId",
+            "getJobName",
+            "setJobName",
+            "getJobGroup",
+            "setJobGroup",
+            "getInvokeTarget",
+            "setInvokeTarget",
+            "getCronExpression",
+            "setCronExpression",
+            "getNextValidTime",
+            "getMisfirePolicy",
+            "setMisfirePolicy",
+            "getConcurrent",
+            "setConcurrent",
+            "getStatus",
+            "setStatus",
+            "toString"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "jobId",
+            "jobName",
+            "jobGroup",
+            "invokeTarget",
+            "cronExpression",
+            "misfirePolicy",
+            "concurrent",
+            "status"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getJobId",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "setJobId",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "getJobName",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "setJobName",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "getJobGroup",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "setJobGroup",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "getInvokeTarget",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "setInvokeTarget",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "getCronExpression",
+          "line": 101,
+          "isDefault": false
+        },
+        {
+          "name": "setCronExpression",
+          "line": 108,
+          "isDefault": false
+        },
+        {
+          "name": "getNextValidTime",
+          "line": 113,
+          "isDefault": false
+        },
+        {
+          "name": "getMisfirePolicy",
+          "line": 123,
+          "isDefault": false
+        },
+        {
+          "name": "setMisfirePolicy",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "getConcurrent",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "setConcurrent",
+          "line": 138,
+          "isDefault": false
+        },
+        {
+          "name": "getStatus",
+          "line": 143,
+          "isDefault": false
+        },
+        {
+          "name": "setStatus",
+          "line": 148,
+          "isDefault": false
+        },
+        {
+          "name": "toString",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "SysJob",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getNextValidTime",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 116
+        },
+        {
+          "caller": "getNextValidTime",
+          "callee": "CronUtils.getNextExecution",
+          "lineNumber": 118
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy())\r\n            .append(\"concurrent\", getConcurrent())\r\n            .append(\"status\", getStatus())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime())\r\n            .append(\"updateBy\", getUpdateBy())\r\n            .append(\"updateTime\", getUpdateTime())\r\n            .append(\"remark\", getRemark()).toString",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy())\r\n            .append(\"concurrent\", getConcurrent())\r\n            .append(\"status\", getStatus())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime())\r\n            .append(\"updateBy\", getUpdateBy())\r\n            .append(\"updateTime\", getUpdateTime()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy())\r\n            .append(\"concurrent\", getConcurrent())\r\n            .append(\"status\", getStatus())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime())\r\n            .append(\"updateBy\", getUpdateBy()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy())\r\n            .append(\"concurrent\", getConcurrent())\r\n            .append(\"status\", getStatus())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy())\r\n            .append(\"concurrent\", getConcurrent())\r\n            .append(\"status\", getStatus())\r\n            .append(\"createBy\", getCreateBy()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy())\r\n            .append(\"concurrent\", getConcurrent())\r\n            .append(\"status\", getStatus()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy())\r\n            .append(\"concurrent\", getConcurrent()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime())\r\n            .append(\"misfirePolicy\", getMisfirePolicy()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression())\r\n            .append(\"nextValidTime\", getNextValidTime()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"cronExpression\", getCronExpression()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId())\r\n            .append(\"jobName\", getJobName()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobId\", getJobId()).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE).append",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder",
+          "lineNumber": 155
+        },
+        {
+          "caller": "toString",
+          "callee": "getJobId",
+          "lineNumber": 156
+        },
+        {
+          "caller": "toString",
+          "callee": "getJobName",
+          "lineNumber": 157
+        },
+        {
+          "caller": "toString",
+          "callee": "getJobGroup",
+          "lineNumber": 158
+        },
+        {
+          "caller": "toString",
+          "callee": "getCronExpression",
+          "lineNumber": 159
+        },
+        {
+          "caller": "toString",
+          "callee": "getNextValidTime",
+          "lineNumber": 160
+        },
+        {
+          "caller": "toString",
+          "callee": "getMisfirePolicy",
+          "lineNumber": 161
+        },
+        {
+          "caller": "toString",
+          "callee": "getConcurrent",
+          "lineNumber": 162
+        },
+        {
+          "caller": "toString",
+          "callee": "getStatus",
+          "lineNumber": 163
+        },
+        {
+          "caller": "toString",
+          "callee": "getCreateBy",
+          "lineNumber": 164
+        },
+        {
+          "caller": "toString",
+          "callee": "getCreateTime",
+          "lineNumber": 165
+        },
+        {
+          "caller": "toString",
+          "callee": "getUpdateBy",
+          "lineNumber": 166
+        },
+        {
+          "caller": "toString",
+          "callee": "getUpdateTime",
+          "lineNumber": 167
+        },
+        {
+          "caller": "toString",
+          "callee": "getRemark",
+          "lineNumber": 168
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 19,
+        "functionCount": 18,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 158,
+      "nonEmptyLines": 128,
+      "functions": [
+        {
+          "name": "getJobLogId",
+          "startLine": 55,
+          "endLine": 58,
+          "params": []
+        },
+        {
+          "name": "setJobLogId",
+          "startLine": 60,
+          "endLine": 63,
+          "params": [
+            "jobLogId"
+          ]
+        },
+        {
+          "name": "getJobName",
+          "startLine": 65,
+          "endLine": 68,
+          "params": []
+        },
+        {
+          "name": "setJobName",
+          "startLine": 70,
+          "endLine": 73,
+          "params": [
+            "jobName"
+          ]
+        },
+        {
+          "name": "getJobGroup",
+          "startLine": 75,
+          "endLine": 78,
+          "params": []
+        },
+        {
+          "name": "setJobGroup",
+          "startLine": 80,
+          "endLine": 83,
+          "params": [
+            "jobGroup"
+          ]
+        },
+        {
+          "name": "getInvokeTarget",
+          "startLine": 85,
+          "endLine": 88,
+          "params": []
+        },
+        {
+          "name": "setInvokeTarget",
+          "startLine": 90,
+          "endLine": 93,
+          "params": [
+            "invokeTarget"
+          ]
+        },
+        {
+          "name": "getJobMessage",
+          "startLine": 95,
+          "endLine": 98,
+          "params": []
+        },
+        {
+          "name": "setJobMessage",
+          "startLine": 100,
+          "endLine": 103,
+          "params": [
+            "jobMessage"
+          ]
+        },
+        {
+          "name": "getStatus",
+          "startLine": 105,
+          "endLine": 108,
+          "params": []
+        },
+        {
+          "name": "setStatus",
+          "startLine": 110,
+          "endLine": 113,
+          "params": [
+            "status"
+          ]
+        },
+        {
+          "name": "getExceptionInfo",
+          "startLine": 115,
+          "endLine": 118,
+          "params": []
+        },
+        {
+          "name": "setExceptionInfo",
+          "startLine": 120,
+          "endLine": 123,
+          "params": [
+            "exceptionInfo"
+          ]
+        },
+        {
+          "name": "getStartTime",
+          "startLine": 125,
+          "endLine": 128,
+          "params": []
+        },
+        {
+          "name": "setStartTime",
+          "startLine": 130,
+          "endLine": 133,
+          "params": [
+            "startTime"
+          ]
+        },
+        {
+          "name": "getEndTime",
+          "startLine": 135,
+          "endLine": 138,
+          "params": []
+        },
+        {
+          "name": "setEndTime",
+          "startLine": 140,
+          "endLine": 143,
+          "params": [
+            "endTime"
+          ]
+        },
+        {
+          "name": "toString",
+          "startLine": 145,
+          "endLine": 157,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysJobLog",
+          "startLine": 15,
+          "endLine": 158,
+          "methods": [
+            "getJobLogId",
+            "setJobLogId",
+            "getJobName",
+            "setJobName",
+            "getJobGroup",
+            "setJobGroup",
+            "getInvokeTarget",
+            "setInvokeTarget",
+            "getJobMessage",
+            "setJobMessage",
+            "getStatus",
+            "setStatus",
+            "getExceptionInfo",
+            "setExceptionInfo",
+            "getStartTime",
+            "setStartTime",
+            "getEndTime",
+            "setEndTime",
+            "toString"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "jobLogId",
+            "jobName",
+            "jobGroup",
+            "invokeTarget",
+            "jobMessage",
+            "status",
+            "exceptionInfo",
+            "startTime",
+            "endTime"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getJobLogId",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "setJobLogId",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "getJobName",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "setJobName",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "getJobGroup",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "setJobGroup",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "getInvokeTarget",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "setInvokeTarget",
+          "line": 90,
+          "isDefault": false
+        },
+        {
+          "name": "getJobMessage",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "setJobMessage",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "getStatus",
+          "line": 105,
+          "isDefault": false
+        },
+        {
+          "name": "setStatus",
+          "line": 110,
+          "isDefault": false
+        },
+        {
+          "name": "getExceptionInfo",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "setExceptionInfo",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "getStartTime",
+          "line": 125,
+          "isDefault": false
+        },
+        {
+          "name": "setStartTime",
+          "line": 130,
+          "isDefault": false
+        },
+        {
+          "name": "getEndTime",
+          "line": 135,
+          "isDefault": false
+        },
+        {
+          "name": "setEndTime",
+          "line": 140,
+          "isDefault": false
+        },
+        {
+          "name": "toString",
+          "line": 145,
+          "isDefault": false
+        },
+        {
+          "name": "SysJobLog",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"jobMessage\", getJobMessage())\r\n            .append(\"status\", getStatus())\r\n            .append(\"exceptionInfo\", getExceptionInfo())\r\n            .append(\"startTime\", getStartTime())\r\n            .append(\"stopTime\", getEndTime()).toString",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"jobMessage\", getJobMessage())\r\n            .append(\"status\", getStatus())\r\n            .append(\"exceptionInfo\", getExceptionInfo())\r\n            .append(\"startTime\", getStartTime()).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"jobMessage\", getJobMessage())\r\n            .append(\"status\", getStatus())\r\n            .append(\"exceptionInfo\", getExceptionInfo()).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"jobMessage\", getJobMessage())\r\n            .append(\"status\", getStatus()).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup())\r\n            .append(\"jobMessage\", getJobMessage()).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId())\r\n            .append(\"jobName\", getJobName())\r\n            .append(\"jobGroup\", getJobGroup()).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId())\r\n            .append(\"jobName\", getJobName()).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"jobLogId\", getJobLogId()).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE).append",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder",
+          "lineNumber": 147
+        },
+        {
+          "caller": "toString",
+          "callee": "getJobLogId",
+          "lineNumber": 148
+        },
+        {
+          "caller": "toString",
+          "callee": "getJobName",
+          "lineNumber": 149
+        },
+        {
+          "caller": "toString",
+          "callee": "getJobGroup",
+          "lineNumber": 150
+        },
+        {
+          "caller": "toString",
+          "callee": "getJobMessage",
+          "lineNumber": 151
+        },
+        {
+          "caller": "toString",
+          "callee": "getStatus",
+          "lineNumber": 152
+        },
+        {
+          "caller": "toString",
+          "callee": "getExceptionInfo",
+          "lineNumber": 153
+        },
+        {
+          "caller": "toString",
+          "callee": "getStartTime",
+          "lineNumber": 154
+        },
+        {
+          "caller": "toString",
+          "callee": "getEndTime",
+          "lineNumber": 155
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 20,
+        "functionCount": 19,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobLogMapper.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 56,
+      "classes": [
+        {
+          "name": "SysJobLogMapper",
+          "startLine": 11,
+          "endLine": 64,
+          "methods": [
+            "selectJobLogList",
+            "selectJobLogAll",
+            "selectJobLogById",
+            "insertJobLog",
+            "deleteJobLogByIds",
+            "deleteJobLogById",
+            "cleanJobLog"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SysJobLogMapper",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobMapper.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 67,
+      "nonEmptyLines": 59,
+      "classes": [
+        {
+          "name": "SysJobMapper",
+          "startLine": 11,
+          "endLine": 67,
+          "methods": [
+            "selectJobList",
+            "selectJobAll",
+            "selectJobById",
+            "deleteJobById",
+            "deleteJobByIds",
+            "updateJob",
+            "insertJob"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "SysJobMapper",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobLogService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 56,
+      "nonEmptyLines": 49,
+      "classes": [
+        {
+          "name": "ISysJobLogService",
+          "startLine": 11,
+          "endLine": 56,
+          "methods": [
+            "selectJobLogList",
+            "selectJobLogById",
+            "addJobLog",
+            "deleteJobLogByIds",
+            "deleteJobLogById",
+            "cleanJobLog"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ISysJobLogService",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 102,
+      "nonEmptyLines": 90,
+      "classes": [
+        {
+          "name": "ISysJobService",
+          "startLine": 13,
+          "endLine": 102,
+          "methods": [
+            "selectJobList",
+            "selectJobById",
+            "pauseJob",
+            "resumeJob",
+            "deleteJob",
+            "deleteJobByIds",
+            "changeStatus",
+            "run",
+            "insertJob",
+            "updateJob",
+            "checkCronExpressionIsValid"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ISysJobService",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/impl/SysJobLogServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 87,
+      "nonEmptyLines": 79,
+      "functions": [
+        {
+          "name": "selectJobLogList",
+          "startLine": 27,
+          "endLine": 31,
+          "params": [
+            "jobLog"
+          ]
+        },
+        {
+          "name": "selectJobLogById",
+          "startLine": 39,
+          "endLine": 43,
+          "params": [
+            "jobLogId"
+          ]
+        },
+        {
+          "name": "addJobLog",
+          "startLine": 50,
+          "endLine": 54,
+          "params": [
+            "jobLog"
+          ]
+        },
+        {
+          "name": "deleteJobLogByIds",
+          "startLine": 62,
+          "endLine": 66,
+          "params": [
+            "logIds"
+          ]
+        },
+        {
+          "name": "deleteJobLogById",
+          "startLine": 73,
+          "endLine": 77,
+          "params": [
+            "jobId"
+          ]
+        },
+        {
+          "name": "cleanJobLog",
+          "startLine": 82,
+          "endLine": 86,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysJobLogServiceImpl",
+          "startLine": 15,
+          "endLine": 87,
+          "methods": [
+            "selectJobLogList",
+            "selectJobLogById",
+            "addJobLog",
+            "deleteJobLogByIds",
+            "deleteJobLogById",
+            "cleanJobLog"
+          ],
+          "properties": [
+            "jobLogMapper"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "selectJobLogList",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "selectJobLogById",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "addJobLog",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "deleteJobLogByIds",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "deleteJobLogById",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "cleanJobLog",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "SysJobLogServiceImpl",
+          "line": 15,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "selectJobLogList",
+          "callee": "jobLogMapper.selectJobLogList",
+          "lineNumber": 30
+        },
+        {
+          "caller": "selectJobLogById",
+          "callee": "jobLogMapper.selectJobLogById",
+          "lineNumber": 42
+        },
+        {
+          "caller": "addJobLog",
+          "callee": "jobLogMapper.insertJobLog",
+          "lineNumber": 53
+        },
+        {
+          "caller": "deleteJobLogByIds",
+          "callee": "jobLogMapper.deleteJobLogByIds",
+          "lineNumber": 65
+        },
+        {
+          "caller": "deleteJobLogById",
+          "callee": "jobLogMapper.deleteJobLogById",
+          "lineNumber": 76
+        },
+        {
+          "caller": "cleanJobLog",
+          "callee": "jobLogMapper.cleanJobLog",
+          "lineNumber": 85
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 7,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/impl/SysJobServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 261,
+      "nonEmptyLines": 245,
+      "functions": [
+        {
+          "name": "init",
+          "startLine": 37,
+          "endLine": 46,
+          "params": []
+        },
+        {
+          "name": "selectJobList",
+          "startLine": 54,
+          "endLine": 58,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "selectJobById",
+          "startLine": 66,
+          "endLine": 70,
+          "params": [
+            "jobId"
+          ]
+        },
+        {
+          "name": "pauseJob",
+          "startLine": 77,
+          "endLine": 90,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "resumeJob",
+          "startLine": 97,
+          "endLine": 110,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "deleteJob",
+          "startLine": 117,
+          "endLine": 129,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "deleteJobByIds",
+          "startLine": 137,
+          "endLine": 146,
+          "params": [
+            "jobIds"
+          ]
+        },
+        {
+          "name": "changeStatus",
+          "startLine": 153,
+          "endLine": 168,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "run",
+          "startLine": 175,
+          "endLine": 193,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "insertJob",
+          "startLine": 200,
+          "endLine": 211,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "updateJob",
+          "startLine": 218,
+          "endLine": 229,
+          "params": [
+            "job"
+          ]
+        },
+        {
+          "name": "updateSchedulerJob",
+          "startLine": 237,
+          "endLine": 248,
+          "params": [
+            "job",
+            "jobGroup"
+          ]
+        },
+        {
+          "name": "checkCronExpressionIsValid",
+          "startLine": 256,
+          "endLine": 260,
+          "params": [
+            "cronExpression"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysJobServiceImpl",
+          "startLine": 25,
+          "endLine": 261,
+          "methods": [
+            "init",
+            "selectJobList",
+            "selectJobById",
+            "pauseJob",
+            "resumeJob",
+            "deleteJob",
+            "deleteJobByIds",
+            "changeStatus",
+            "run",
+            "insertJob",
+            "updateJob",
+            "updateSchedulerJob",
+            "checkCronExpressionIsValid"
+          ],
+          "properties": [
+            "scheduler",
+            "jobMapper"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "init",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "selectJobList",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "selectJobById",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "pauseJob",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "resumeJob",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "deleteJob",
+          "line": 117,
+          "isDefault": false
+        },
+        {
+          "name": "deleteJobByIds",
+          "line": 137,
+          "isDefault": false
+        },
+        {
+          "name": "changeStatus",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "run",
+          "line": 175,
+          "isDefault": false
+        },
+        {
+          "name": "insertJob",
+          "line": 200,
+          "isDefault": false
+        },
+        {
+          "name": "updateJob",
+          "line": 218,
+          "isDefault": false
+        },
+        {
+          "name": "updateSchedulerJob",
+          "line": 237,
+          "isDefault": false
+        },
+        {
+          "name": "checkCronExpressionIsValid",
+          "line": 256,
+          "isDefault": false
+        },
+        {
+          "name": "SysJobServiceImpl",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "init",
+          "callee": "scheduler.clear",
+          "lineNumber": 40
+        },
+        {
+          "caller": "init",
+          "callee": "jobMapper.selectJobAll",
+          "lineNumber": 41
+        },
+        {
+          "caller": "init",
+          "callee": "ScheduleUtils.createScheduleJob",
+          "lineNumber": 44
+        },
+        {
+          "caller": "selectJobList",
+          "callee": "jobMapper.selectJobList",
+          "lineNumber": 57
+        },
+        {
+          "caller": "selectJobById",
+          "callee": "jobMapper.selectJobById",
+          "lineNumber": 69
+        },
+        {
+          "caller": "pauseJob",
+          "callee": "job.getJobId",
+          "lineNumber": 81
+        },
+        {
+          "caller": "pauseJob",
+          "callee": "job.getJobGroup",
+          "lineNumber": 82
+        },
+        {
+          "caller": "pauseJob",
+          "callee": "job.setStatus",
+          "lineNumber": 83
+        },
+        {
+          "caller": "pauseJob",
+          "callee": "ScheduleConstants.Status.PAUSE.getValue",
+          "lineNumber": 83
+        },
+        {
+          "caller": "pauseJob",
+          "callee": "jobMapper.updateJob",
+          "lineNumber": 84
+        },
+        {
+          "caller": "pauseJob",
+          "callee": "scheduler.pauseJob",
+          "lineNumber": 87
+        },
+        {
+          "caller": "pauseJob",
+          "callee": "ScheduleUtils.getJobKey",
+          "lineNumber": 87
+        },
+        {
+          "caller": "resumeJob",
+          "callee": "job.getJobId",
+          "lineNumber": 101
+        },
+        {
+          "caller": "resumeJob",
+          "callee": "job.getJobGroup",
+          "lineNumber": 102
+        },
+        {
+          "caller": "resumeJob",
+          "callee": "job.setStatus",
+          "lineNumber": 103
+        },
+        {
+          "caller": "resumeJob",
+          "callee": "ScheduleConstants.Status.NORMAL.getValue",
+          "lineNumber": 103
+        },
+        {
+          "caller": "resumeJob",
+          "callee": "jobMapper.updateJob",
+          "lineNumber": 104
+        },
+        {
+          "caller": "resumeJob",
+          "callee": "scheduler.resumeJob",
+          "lineNumber": 107
+        },
+        {
+          "caller": "resumeJob",
+          "callee": "ScheduleUtils.getJobKey",
+          "lineNumber": 107
+        },
+        {
+          "caller": "deleteJob",
+          "callee": "job.getJobId",
+          "lineNumber": 121
+        },
+        {
+          "caller": "deleteJob",
+          "callee": "job.getJobGroup",
+          "lineNumber": 122
+        },
+        {
+          "caller": "deleteJob",
+          "callee": "jobMapper.deleteJobById",
+          "lineNumber": 123
+        },
+        {
+          "caller": "deleteJob",
+          "callee": "scheduler.deleteJob",
+          "lineNumber": 126
+        },
+        {
+          "caller": "deleteJob",
+          "callee": "ScheduleUtils.getJobKey",
+          "lineNumber": 126
+        },
+        {
+          "caller": "deleteJobByIds",
+          "callee": "jobMapper.selectJobById",
+          "lineNumber": 143
+        },
+        {
+          "caller": "deleteJobByIds",
+          "callee": "deleteJob",
+          "lineNumber": 144
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "job.getStatus",
+          "lineNumber": 158
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "ScheduleConstants.Status.NORMAL.getValue().equals",
+          "lineNumber": 159
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "ScheduleConstants.Status.NORMAL.getValue",
+          "lineNumber": 159
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "resumeJob",
+          "lineNumber": 161
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "ScheduleConstants.Status.PAUSE.getValue().equals",
+          "lineNumber": 163
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "ScheduleConstants.Status.PAUSE.getValue",
+          "lineNumber": 163
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "pauseJob",
+          "lineNumber": 165
+        },
+        {
+          "caller": "run",
+          "callee": "job.getJobId",
+          "lineNumber": 180
+        },
+        {
+          "caller": "run",
+          "callee": "job.getJobGroup",
+          "lineNumber": 181
+        },
+        {
+          "caller": "run",
+          "callee": "selectJobById",
+          "lineNumber": 182
+        },
+        {
+          "caller": "run",
+          "callee": "job.getJobId",
+          "lineNumber": 182
+        },
+        {
+          "caller": "run",
+          "callee": "new JobDataMap",
+          "lineNumber": 184
+        },
+        {
+          "caller": "run",
+          "callee": "dataMap.put",
+          "lineNumber": 185
+        },
+        {
+          "caller": "run",
+          "callee": "ScheduleUtils.getJobKey",
+          "lineNumber": 186
+        },
+        {
+          "caller": "run",
+          "callee": "scheduler.checkExists",
+          "lineNumber": 187
+        },
+        {
+          "caller": "run",
+          "callee": "scheduler.triggerJob",
+          "lineNumber": 190
+        },
+        {
+          "caller": "insertJob",
+          "callee": "job.setStatus",
+          "lineNumber": 204
+        },
+        {
+          "caller": "insertJob",
+          "callee": "ScheduleConstants.Status.PAUSE.getValue",
+          "lineNumber": 204
+        },
+        {
+          "caller": "insertJob",
+          "callee": "jobMapper.insertJob",
+          "lineNumber": 205
+        },
+        {
+          "caller": "insertJob",
+          "callee": "ScheduleUtils.createScheduleJob",
+          "lineNumber": 208
+        },
+        {
+          "caller": "updateJob",
+          "callee": "selectJobById",
+          "lineNumber": 222
+        },
+        {
+          "caller": "updateJob",
+          "callee": "job.getJobId",
+          "lineNumber": 222
+        },
+        {
+          "caller": "updateJob",
+          "callee": "jobMapper.updateJob",
+          "lineNumber": 223
+        },
+        {
+          "caller": "updateJob",
+          "callee": "updateSchedulerJob",
+          "lineNumber": 226
+        },
+        {
+          "caller": "updateJob",
+          "callee": "properties.getJobGroup",
+          "lineNumber": 226
+        },
+        {
+          "caller": "updateSchedulerJob",
+          "callee": "job.getJobId",
+          "lineNumber": 239
+        },
+        {
+          "caller": "updateSchedulerJob",
+          "callee": "ScheduleUtils.getJobKey",
+          "lineNumber": 241
+        },
+        {
+          "caller": "updateSchedulerJob",
+          "callee": "scheduler.checkExists",
+          "lineNumber": 242
+        },
+        {
+          "caller": "updateSchedulerJob",
+          "callee": "scheduler.deleteJob",
+          "lineNumber": 245
+        },
+        {
+          "caller": "updateSchedulerJob",
+          "callee": "ScheduleUtils.createScheduleJob",
+          "lineNumber": 247
+        },
+        {
+          "caller": "checkCronExpressionIsValid",
+          "callee": "CronUtils.isValid",
+          "lineNumber": 259
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 14,
+        "functionCount": 13,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/AbstractQuartzJob.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 106,
+      "nonEmptyLines": 97,
+      "functions": [
+        {
+          "name": "execute",
+          "startLine": 32,
+          "endLine": 51,
+          "params": [
+            "context"
+          ]
+        },
+        {
+          "name": "before",
+          "startLine": 59,
+          "endLine": 62,
+          "params": [
+            "context",
+            "sysJob"
+          ]
+        },
+        {
+          "name": "after",
+          "startLine": 70,
+          "endLine": 96,
+          "params": [
+            "context",
+            "sysJob",
+            "e"
+          ]
+        },
+        {
+          "name": "doExecute",
+          "startLine": 105,
+          "endLine": 105,
+          "params": [
+            "context",
+            "sysJob"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AbstractQuartzJob",
+          "startLine": 23,
+          "endLine": 106,
+          "methods": [
+            "execute",
+            "before",
+            "after",
+            "doExecute"
+          ],
+          "properties": [
+            "log",
+            "threadLocal"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "execute",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "AbstractQuartzJob",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "execute",
+          "callee": "new SysJob",
+          "lineNumber": 35
+        },
+        {
+          "caller": "execute",
+          "callee": "BeanUtils.copyBeanProp",
+          "lineNumber": 36
+        },
+        {
+          "caller": "execute",
+          "callee": "context.getMergedJobDataMap().get",
+          "lineNumber": 36
+        },
+        {
+          "caller": "execute",
+          "callee": "context.getMergedJobDataMap",
+          "lineNumber": 36
+        },
+        {
+          "caller": "execute",
+          "callee": "before",
+          "lineNumber": 39
+        },
+        {
+          "caller": "execute",
+          "callee": "doExecute",
+          "lineNumber": 42
+        },
+        {
+          "caller": "execute",
+          "callee": "after",
+          "lineNumber": 44
+        },
+        {
+          "caller": "execute",
+          "callee": "log.error",
+          "lineNumber": 48
+        },
+        {
+          "caller": "execute",
+          "callee": "after",
+          "lineNumber": 49
+        },
+        {
+          "caller": "before",
+          "callee": "threadLocal.set",
+          "lineNumber": 61
+        },
+        {
+          "caller": "before",
+          "callee": "new Date",
+          "lineNumber": 61
+        },
+        {
+          "caller": "after",
+          "callee": "threadLocal.get",
+          "lineNumber": 72
+        },
+        {
+          "caller": "after",
+          "callee": "threadLocal.remove",
+          "lineNumber": 73
+        },
+        {
+          "caller": "after",
+          "callee": "new SysJobLog",
+          "lineNumber": 75
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setJobName",
+          "lineNumber": 76
+        },
+        {
+          "caller": "after",
+          "callee": "sysJob.getJobName",
+          "lineNumber": 76
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setJobGroup",
+          "lineNumber": 77
+        },
+        {
+          "caller": "after",
+          "callee": "sysJob.getJobGroup",
+          "lineNumber": 77
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setInvokeTarget",
+          "lineNumber": 78
+        },
+        {
+          "caller": "after",
+          "callee": "sysJob.getInvokeTarget",
+          "lineNumber": 78
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setStartTime",
+          "lineNumber": 79
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setEndTime",
+          "lineNumber": 80
+        },
+        {
+          "caller": "after",
+          "callee": "new Date",
+          "lineNumber": 80
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.getEndTime().getTime",
+          "lineNumber": 81
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.getEndTime",
+          "lineNumber": 81
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.getStartTime().getTime",
+          "lineNumber": 81
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.getStartTime",
+          "lineNumber": 81
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setJobMessage",
+          "lineNumber": 82
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.getJobName",
+          "lineNumber": 82
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setStatus",
+          "lineNumber": 85
+        },
+        {
+          "caller": "after",
+          "callee": "StringUtils.substring",
+          "lineNumber": 86
+        },
+        {
+          "caller": "after",
+          "callee": "ExceptionUtil.getExceptionMessage",
+          "lineNumber": 86
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setExceptionInfo",
+          "lineNumber": 87
+        },
+        {
+          "caller": "after",
+          "callee": "sysJobLog.setStatus",
+          "lineNumber": 91
+        },
+        {
+          "caller": "after",
+          "callee": "SpringUtils.getBean(ISysJobLogService.class).addJobLog",
+          "lineNumber": 95
+        },
+        {
+          "caller": "after",
+          "callee": "SpringUtils.getBean",
+          "lineNumber": 95
+        }
+      ],
+      "metrics": {
+        "importCount": 9,
+        "exportCount": 2,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/CronUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 63,
+      "nonEmptyLines": 59,
+      "functions": [
+        {
+          "name": "isValid",
+          "startLine": 21,
+          "endLine": 24,
+          "params": [
+            "cronExpression"
+          ]
+        },
+        {
+          "name": "getInvalidMessage",
+          "startLine": 32,
+          "endLine": 43,
+          "params": [
+            "cronExpression"
+          ]
+        },
+        {
+          "name": "getNextExecution",
+          "startLine": 51,
+          "endLine": 62,
+          "params": [
+            "cronExpression"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CronUtils",
+          "startLine": 13,
+          "endLine": 63,
+          "methods": [
+            "isValid",
+            "getInvalidMessage",
+            "getNextExecution"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "isValid",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "getInvalidMessage",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "getNextExecution",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "CronUtils",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "isValid",
+          "callee": "CronExpression.isValidExpression",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getInvalidMessage",
+          "callee": "new CronExpression",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getInvalidMessage",
+          "callee": "pe.getMessage",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getNextExecution",
+          "callee": "new CronExpression",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getNextExecution",
+          "callee": "cron.getNextValidTimeAfter",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getNextExecution",
+          "callee": "new Date",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getNextExecution",
+          "callee": "System.currentTimeMillis",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getNextExecution",
+          "callee": "new IllegalArgumentException",
+          "lineNumber": 60
+        },
+        {
+          "caller": "getNextExecution",
+          "callee": "e.getMessage",
+          "lineNumber": 60
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/JobInvokeUtil.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 182,
+      "nonEmptyLines": 172,
+      "functions": [
+        {
+          "name": "invokeMethod",
+          "startLine": 23,
+          "endLine": 40,
+          "params": [
+            "sysJob"
+          ]
+        },
+        {
+          "name": "invokeMethod",
+          "startLine": 49,
+          "endLine": 63,
+          "params": [
+            "bean",
+            "methodName",
+            "methodParams"
+          ]
+        },
+        {
+          "name": "isValidClassName",
+          "startLine": 71,
+          "endLine": 74,
+          "params": [
+            "invokeTarget"
+          ]
+        },
+        {
+          "name": "getBeanName",
+          "startLine": 82,
+          "endLine": 86,
+          "params": [
+            "invokeTarget"
+          ]
+        },
+        {
+          "name": "getMethodName",
+          "startLine": 94,
+          "endLine": 98,
+          "params": [
+            "invokeTarget"
+          ]
+        },
+        {
+          "name": "getMethodParams",
+          "startLine": 106,
+          "endLine": 145,
+          "params": [
+            "invokeTarget"
+          ]
+        },
+        {
+          "name": "getMethodParamsType",
+          "startLine": 153,
+          "endLine": 163,
+          "params": [
+            "methodParams"
+          ]
+        },
+        {
+          "name": "getMethodParamsValue",
+          "startLine": 171,
+          "endLine": 181,
+          "params": [
+            "methodParams"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "JobInvokeUtil",
+          "startLine": 16,
+          "endLine": 182,
+          "methods": [
+            "invokeMethod",
+            "invokeMethod",
+            "isValidClassName",
+            "getBeanName",
+            "getMethodName",
+            "getMethodParams",
+            "getMethodParamsType",
+            "getMethodParamsValue"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "invokeMethod",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "isValidClassName",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "getBeanName",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "getMethodName",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "getMethodParams",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "getMethodParamsType",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "getMethodParamsValue",
+          "line": 171,
+          "isDefault": false
+        },
+        {
+          "name": "JobInvokeUtil",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "invokeMethod",
+          "callee": "sysJob.getInvokeTarget",
+          "lineNumber": 25
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "getBeanName",
+          "lineNumber": 26
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "getMethodName",
+          "lineNumber": 27
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "getMethodParams",
+          "lineNumber": 28
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "isValidClassName",
+          "lineNumber": 30
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "SpringUtils.getBean",
+          "lineNumber": 32
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "invokeMethod",
+          "lineNumber": 33
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "Class.forName(beanName).getDeclaredConstructor().newInstance",
+          "lineNumber": 37
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "Class.forName(beanName).getDeclaredConstructor",
+          "lineNumber": 37
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "Class.forName",
+          "lineNumber": 37
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "invokeMethod",
+          "lineNumber": 38
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 53
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "methodParams.size",
+          "lineNumber": 53
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "bean.getClass().getMethod",
+          "lineNumber": 55
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "bean.getClass",
+          "lineNumber": 55
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "getMethodParamsType",
+          "lineNumber": 55
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "method.invoke",
+          "lineNumber": 56
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "getMethodParamsValue",
+          "lineNumber": 56
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "bean.getClass().getMethod",
+          "lineNumber": 60
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "bean.getClass",
+          "lineNumber": 60
+        },
+        {
+          "caller": "invokeMethod",
+          "callee": "method.invoke",
+          "lineNumber": 61
+        },
+        {
+          "caller": "isValidClassName",
+          "callee": "StringUtils.countMatches",
+          "lineNumber": 73
+        },
+        {
+          "caller": "getBeanName",
+          "callee": "StringUtils.substringBefore",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getBeanName",
+          "callee": "StringUtils.substringBeforeLast",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getMethodName",
+          "callee": "StringUtils.substringBefore",
+          "lineNumber": 96
+        },
+        {
+          "caller": "getMethodName",
+          "callee": "StringUtils.substringAfterLast",
+          "lineNumber": 97
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.substringBetweenLast",
+          "lineNumber": 108
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 109
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "methodStr.split",
+          "lineNumber": 113
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "new LinkedList<>",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.trimToEmpty",
+          "lineNumber": 117
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.startsWithAny",
+          "lineNumber": 119
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "classs.add",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.substring",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "str.length",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "\"true\".equalsIgnoreCase",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "\"false\".equalsIgnoreCase",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "classs.add",
+          "lineNumber": 126
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "Boolean.valueOf",
+          "lineNumber": 126
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.endsWith",
+          "lineNumber": 129
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "classs.add",
+          "lineNumber": 131
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "Long.valueOf",
+          "lineNumber": 131
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.substring",
+          "lineNumber": 131
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "str.length",
+          "lineNumber": 131
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.endsWith",
+          "lineNumber": 134
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "classs.add",
+          "lineNumber": 136
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "Double.valueOf",
+          "lineNumber": 136
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "StringUtils.substring",
+          "lineNumber": 136
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "str.length",
+          "lineNumber": 136
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "classs.add",
+          "lineNumber": 141
+        },
+        {
+          "caller": "getMethodParams",
+          "callee": "Integer.valueOf",
+          "lineNumber": 141
+        },
+        {
+          "caller": "getMethodParamsType",
+          "callee": "methodParams.size",
+          "lineNumber": 155
+        },
+        {
+          "caller": "getMethodParamsValue",
+          "callee": "methodParams.size",
+          "lineNumber": 173
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 8,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/QuartzDisallowConcurrentExecution.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 19,
+      "functions": [
+        {
+          "name": "doExecute",
+          "startLine": 16,
+          "endLine": 20,
+          "params": [
+            "context",
+            "sysJob"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "QuartzDisallowConcurrentExecution",
+          "startLine": 13,
+          "endLine": 21,
+          "methods": [
+            "doExecute"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "QuartzDisallowConcurrentExecution",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "doExecute",
+          "callee": "JobInvokeUtil.invokeMethod",
+          "lineNumber": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/QuartzJobExecution.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "doExecute",
+          "startLine": 14,
+          "endLine": 18,
+          "params": [
+            "context",
+            "sysJob"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "QuartzJobExecution",
+          "startLine": 12,
+          "endLine": 19,
+          "methods": [
+            "doExecute"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "QuartzJobExecution",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "doExecute",
+          "callee": "JobInvokeUtil.invokeMethod",
+          "lineNumber": 17
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/ScheduleUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 141,
+      "nonEmptyLines": 128,
+      "functions": [
+        {
+          "name": "getQuartzJobClass",
+          "startLine": 35,
+          "endLine": 39,
+          "params": [
+            "sysJob"
+          ]
+        },
+        {
+          "name": "getTriggerKey",
+          "startLine": 44,
+          "endLine": 47,
+          "params": [
+            "jobId",
+            "jobGroup"
+          ]
+        },
+        {
+          "name": "getJobKey",
+          "startLine": 52,
+          "endLine": 55,
+          "params": [
+            "jobId",
+            "jobGroup"
+          ]
+        },
+        {
+          "name": "createScheduleJob",
+          "startLine": 60,
+          "endLine": 98,
+          "params": [
+            "scheduler",
+            "job"
+          ]
+        },
+        {
+          "name": "handleCronScheduleMisfirePolicy",
+          "startLine": 103,
+          "endLine": 120,
+          "params": [
+            "job",
+            "cb"
+          ]
+        },
+        {
+          "name": "whiteList",
+          "startLine": 128,
+          "endLine": 140,
+          "params": [
+            "invokeTarget"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ScheduleUtils",
+          "startLine": 27,
+          "endLine": 141,
+          "methods": [
+            "getQuartzJobClass",
+            "getTriggerKey",
+            "getJobKey",
+            "createScheduleJob",
+            "handleCronScheduleMisfirePolicy",
+            "whiteList"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "getTriggerKey",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "getJobKey",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "createScheduleJob",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "handleCronScheduleMisfirePolicy",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "whiteList",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "ScheduleUtils",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getQuartzJobClass",
+          "callee": "\"0\".equals",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getQuartzJobClass",
+          "callee": "sysJob.getConcurrent",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getTriggerKey",
+          "callee": "TriggerKey.triggerKey",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getJobKey",
+          "callee": "JobKey.jobKey",
+          "lineNumber": 54
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "getQuartzJobClass",
+          "lineNumber": 62
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "job.getJobId",
+          "lineNumber": 64
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "job.getJobGroup",
+          "lineNumber": 65
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "JobBuilder.newJob(jobClass).withIdentity(getJobKey(jobId, jobGroup)).build",
+          "lineNumber": 66
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "JobBuilder.newJob(jobClass).withIdentity",
+          "lineNumber": 66
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "JobBuilder.newJob",
+          "lineNumber": 66
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "getJobKey",
+          "lineNumber": 66
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "CronScheduleBuilder.cronSchedule",
+          "lineNumber": 69
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "job.getCronExpression",
+          "lineNumber": 69
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "handleCronScheduleMisfirePolicy",
+          "lineNumber": 70
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "TriggerBuilder.newTrigger().withIdentity(getTriggerKey(jobId, jobGroup))\r\n                .withSchedule(cronScheduleBuilder).build",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "TriggerBuilder.newTrigger().withIdentity(getTriggerKey(jobId, jobGroup)).withSchedule",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "TriggerBuilder.newTrigger().withIdentity",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "TriggerBuilder.newTrigger",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "getTriggerKey",
+          "lineNumber": 73
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "jobDetail.getJobDataMap().put",
+          "lineNumber": 77
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "jobDetail.getJobDataMap",
+          "lineNumber": 77
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "scheduler.checkExists",
+          "lineNumber": 80
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "getJobKey",
+          "lineNumber": 80
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "scheduler.deleteJob",
+          "lineNumber": 83
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "getJobKey",
+          "lineNumber": 83
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 87
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "CronUtils.getNextExecution",
+          "lineNumber": 87
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "job.getCronExpression",
+          "lineNumber": 87
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "scheduler.scheduleJob",
+          "lineNumber": 90
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "job.getStatus().equals",
+          "lineNumber": 94
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "job.getStatus",
+          "lineNumber": 94
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "ScheduleConstants.Status.PAUSE.getValue",
+          "lineNumber": 94
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "scheduler.pauseJob",
+          "lineNumber": 96
+        },
+        {
+          "caller": "createScheduleJob",
+          "callee": "ScheduleUtils.getJobKey",
+          "lineNumber": 96
+        },
+        {
+          "caller": "handleCronScheduleMisfirePolicy",
+          "callee": "job.getMisfirePolicy",
+          "lineNumber": 106
+        },
+        {
+          "caller": "handleCronScheduleMisfirePolicy",
+          "callee": "cb.withMisfireHandlingInstructionIgnoreMisfires",
+          "lineNumber": 111
+        },
+        {
+          "caller": "handleCronScheduleMisfirePolicy",
+          "callee": "cb.withMisfireHandlingInstructionFireAndProceed",
+          "lineNumber": 113
+        },
+        {
+          "caller": "handleCronScheduleMisfirePolicy",
+          "callee": "cb.withMisfireHandlingInstructionDoNothing",
+          "lineNumber": 115
+        },
+        {
+          "caller": "handleCronScheduleMisfirePolicy",
+          "callee": "new TaskException",
+          "lineNumber": 117
+        },
+        {
+          "caller": "handleCronScheduleMisfirePolicy",
+          "callee": "job.getMisfirePolicy",
+          "lineNumber": 117
+        },
+        {
+          "caller": "whiteList",
+          "callee": "StringUtils.substringBefore",
+          "lineNumber": 130
+        },
+        {
+          "caller": "whiteList",
+          "callee": "StringUtils.countMatches",
+          "lineNumber": 131
+        },
+        {
+          "caller": "whiteList",
+          "callee": "StringUtils.startsWithAny",
+          "lineNumber": 134
+        },
+        {
+          "caller": "whiteList",
+          "callee": "SpringUtils.getBean",
+          "lineNumber": 136
+        },
+        {
+          "caller": "whiteList",
+          "callee": "StringUtils.split",
+          "lineNumber": 136
+        },
+        {
+          "caller": "whiteList",
+          "callee": "obj.getClass().getPackage().getName",
+          "lineNumber": 137
+        },
+        {
+          "caller": "whiteList",
+          "callee": "obj.getClass().getPackage",
+          "lineNumber": 137
+        },
+        {
+          "caller": "whiteList",
+          "callee": "obj.getClass",
+          "lineNumber": 137
+        },
+        {
+          "caller": "whiteList",
+          "callee": "StringUtils.startsWithAny",
+          "lineNumber": 138
+        },
+        {
+          "caller": "whiteList",
+          "callee": "StringUtils.startsWithAny",
+          "lineNumber": 139
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 6,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    }
+  ]
+}

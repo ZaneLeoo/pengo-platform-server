@@ -1,0 +1,2037 @@
+{
+  "scriptCompleted": true,
+  "files": [
+    {
+      "path": ".github/FUNDING.yml",
+      "language": "yaml",
+      "sizeLines": 1,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".understand-anything/.understandignore",
+      "language": "unknown",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": ".understand-anything/config.json",
+      "language": "json",
+      "sizeLines": 1,
+      "fileCategory": "config"
+    },
+    {
+      "path": "bin/clean.bat",
+      "language": "batch",
+      "sizeLines": 11,
+      "fileCategory": "script"
+    },
+    {
+      "path": "bin/package.bat",
+      "language": "batch",
+      "sizeLines": 11,
+      "fileCategory": "script"
+    },
+    {
+      "path": "bin/run.bat",
+      "language": "batch",
+      "sizeLines": 13,
+      "fileCategory": "script"
+    },
+    {
+      "path": "doc/若依环境使用手册.docx",
+      "language": "docx",
+      "sizeLines": 1620,
+      "fileCategory": "code"
+    },
+    {
+      "path": "pom.xml",
+      "language": "xml",
+      "sizeLines": 231,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 114,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "ruoyi-admin/pom.xml",
+      "language": "xml",
+      "sizeLines": 87,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/RuoYiApplication.java",
+      "language": "java",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/RuoYiServletInitializer.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/common/CaptchaController.java",
+      "language": "java",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/common/CommonController.java",
+      "language": "java",
+      "sizeLines": 162,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/CacheController.java",
+      "language": "java",
+      "sizeLines": 122,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/ServerController.java",
+      "language": "java",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysLogininforController.java",
+      "language": "java",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysOperlogController.java",
+      "language": "java",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "language": "java",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysConfigController.java",
+      "language": "java",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysDeptController.java",
+      "language": "java",
+      "sizeLines": 147,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysDictDataController.java",
+      "language": "java",
+      "sizeLines": 121,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysDictTypeController.java",
+      "language": "java",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysIndexController.java",
+      "language": "java",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysLoginController.java",
+      "language": "java",
+      "sizeLines": 138,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysMenuController.java",
+      "language": "java",
+      "sizeLines": 164,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysNoticeController.java",
+      "language": "java",
+      "sizeLines": 150,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysPostController.java",
+      "language": "java",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysProfileController.java",
+      "language": "java",
+      "sizeLines": 149,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "language": "java",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRoleController.java",
+      "language": "java",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysUserController.java",
+      "language": "java",
+      "sizeLines": 256,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "language": "java",
+      "sizeLines": 175,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/core/config/SwaggerConfig.java",
+      "language": "java",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/application-druid.yml",
+      "language": "yaml",
+      "sizeLines": 60,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/application.yml",
+      "language": "yaml",
+      "sizeLines": 147,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/banner.txt",
+      "language": "txt",
+      "sizeLines": 23,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/i18n/messages.properties",
+      "language": "properties",
+      "sizeLines": 38,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/logback.xml",
+      "language": "xml",
+      "sizeLines": 92,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/META-INF/spring-devtools.properties",
+      "language": "properties",
+      "sizeLines": 0,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-admin/src/main/resources/mybatis/mybatis-config.xml",
+      "language": "xml",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-common/pom.xml",
+      "language": "xml",
+      "sizeLines": 122,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Anonymous.java",
+      "language": "java",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataScope.java",
+      "language": "java",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataSource.java",
+      "language": "java",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "language": "java",
+      "sizeLines": 197,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excels.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "language": "java",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RateLimiter.java",
+      "language": "java",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RepeatSubmit.java",
+      "language": "java",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Sensitive.java",
+      "language": "java",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "language": "java",
+      "sizeLines": 122,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/config/serializer/SensitiveJsonSerializer.java",
+      "language": "java",
+      "sizeLines": 77,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "language": "java",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "language": "java",
+      "sizeLines": 204,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/GenConstants.java",
+      "language": "java",
+      "sizeLines": 120,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "language": "java",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/ScheduleConstants.java",
+      "language": "java",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "language": "java",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "language": "java",
+      "sizeLines": 202,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "language": "java",
+      "sizeLines": 216,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java",
+      "language": "java",
+      "sizeLines": 118,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java",
+      "language": "java",
+      "sizeLines": 203,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java",
+      "language": "java",
+      "sizeLines": 176,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictType.java",
+      "language": "java",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java",
+      "language": "java",
+      "sizeLines": 274,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "language": "java",
+      "sizeLines": 241,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "language": "java",
+      "sizeLines": 338,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginBody.java",
+      "language": "java",
+      "sizeLines": 69,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "language": "java",
+      "sizeLines": 278,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java",
+      "language": "java",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "language": "java",
+      "sizeLines": 115,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeEntity.java",
+      "language": "java",
+      "sizeLines": 79,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeSelect.java",
+      "language": "java",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "language": "java",
+      "sizeLines": 101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "language": "java",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "language": "java",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "language": "java",
+      "sizeLines": 268,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/text/CharsetKit.java",
+      "language": "java",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "language": "java",
+      "sizeLines": 1018,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java",
+      "language": "java",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessStatus.java",
+      "language": "java",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "language": "java",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/DataSourceType.java",
+      "language": "java",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/DesensitizedType.java",
+      "language": "java",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java",
+      "language": "java",
+      "sizeLines": 36,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/LimitType.java",
+      "language": "java",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/OperatorType.java",
+      "language": "java",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/UserStatus.java",
+      "language": "java",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/base/BaseException.java",
+      "language": "java",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/DemoModeException.java",
+      "language": "java",
+      "sizeLines": 15,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileException.java",
+      "language": "java",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileNameLengthLimitExceededException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileSizeLimitExceededException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileUploadException.java",
+      "language": "java",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/InvalidExtensionException.java",
+      "language": "java",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/GlobalException.java",
+      "language": "java",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/job/TaskException.java",
+      "language": "java",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "language": "java",
+      "sizeLines": 73,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/BlackListException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaExpireException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserException.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserNotExistsException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordNotMatchException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordRetryLimitExceedException.java",
+      "language": "java",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/UtilException.java",
+      "language": "java",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/PropertyPreExcludeFilter.java",
+      "language": "java",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java",
+      "language": "java",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "language": "java",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatedlyRequestWrapper.java",
+      "language": "java",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/XssFilter.java",
+      "language": "java",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/XssHttpServletRequestWrapper.java",
+      "language": "java",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/Arith.java",
+      "language": "java",
+      "sizeLines": 113,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/bean/BeanUtils.java",
+      "language": "java",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/bean/BeanValidators.java",
+      "language": "java",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "language": "java",
+      "sizeLines": 192,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/DesensitizedUtil.java",
+      "language": "java",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/DictUtils.java",
+      "language": "java",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ExceptionUtil.java",
+      "language": "java",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileTypeUtils.java",
+      "language": "java",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUploadUtils.java",
+      "language": "java",
+      "sizeLines": 260,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUtils.java",
+      "language": "java",
+      "sizeLines": 303,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/ImageUtils.java",
+      "language": "java",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/MimeTypeUtils.java",
+      "language": "java",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/html/EscapeUtil.java",
+      "language": "java",
+      "sizeLines": 167,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/html/HTMLFilter.java",
+      "language": "java",
+      "sizeLines": 569,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpHelper.java",
+      "language": "java",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpUtils.java",
+      "language": "java",
+      "sizeLines": 292,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/UserAgentUtils.java",
+      "language": "java",
+      "sizeLines": 254,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/AddressUtils.java",
+      "language": "java",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "language": "java",
+      "sizeLines": 381,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/LogUtils.java",
+      "language": "java",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java",
+      "language": "java",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/PageUtils.java",
+      "language": "java",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelHandlerAdapter.java",
+      "language": "java",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelSheet.java",
+      "language": "java",
+      "sizeLines": 85,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "language": "java",
+      "sizeLines": 2067,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/reflect/ReflectUtils.java",
+      "language": "java",
+      "sizeLines": 412,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "language": "java",
+      "sizeLines": 188,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "language": "java",
+      "sizeLines": 218,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/sign/Base64.java",
+      "language": "java",
+      "sizeLines": 291,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/sign/Md5Utils.java",
+      "language": "java",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "language": "java",
+      "sizeLines": 164,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/sql/SqlUtil.java",
+      "language": "java",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "language": "java",
+      "sizeLines": 920,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/Threads.java",
+      "language": "java",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/IdUtils.java",
+      "language": "java",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/Seq.java",
+      "language": "java",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/UUID.java",
+      "language": "java",
+      "sizeLines": 484,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/xss/Xss.java",
+      "language": "java",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/xss/XssValidator.java",
+      "language": "java",
+      "sizeLines": 38,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/pom.xml",
+      "language": "xml",
+      "sizeLines": 63,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/DataScopeAspect.java",
+      "language": "java",
+      "sizeLines": 160,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/DataSourceAspect.java",
+      "language": "java",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/LogAspect.java",
+      "language": "java",
+      "sizeLines": 264,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/RateLimiterAspect.java",
+      "language": "java",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ApplicationConfig.java",
+      "language": "java",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/CaptchaConfig.java",
+      "language": "java",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/DruidConfig.java",
+      "language": "java",
+      "sizeLines": 126,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/FastJson2JsonRedisSerializer.java",
+      "language": "java",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/FilterConfig.java",
+      "language": "java",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/I18nConfig.java",
+      "language": "java",
+      "sizeLines": 43,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/KaptchaTextCreator.java",
+      "language": "java",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/MyBatisConfig.java",
+      "language": "java",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/properties/DruidProperties.java",
+      "language": "java",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/properties/PermitAllUrlProperties.java",
+      "language": "java",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/RedisConfig.java",
+      "language": "java",
+      "sizeLines": 70,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ResourcesConfig.java",
+      "language": "java",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/SecurityConfig.java",
+      "language": "java",
+      "sizeLines": 128,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ServerConfig.java",
+      "language": "java",
+      "sizeLines": 32,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ThreadPoolConfig.java",
+      "language": "java",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/datasource/DynamicDataSource.java",
+      "language": "java",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/datasource/DynamicDataSourceContextHolder.java",
+      "language": "java",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/impl/SameUrlDataInterceptor.java",
+      "language": "java",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/RepeatSubmitInterceptor.java",
+      "language": "java",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/AsyncManager.java",
+      "language": "java",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/factory/AsyncFactory.java",
+      "language": "java",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/ShutdownManager.java",
+      "language": "java",
+      "sizeLines": 39,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/AuthenticationContextHolder.java",
+      "language": "java",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/PermissionContextHolder.java",
+      "language": "java",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/filter/JwtAuthenticationTokenFilter.java",
+      "language": "java",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/AuthenticationEntryPointImpl.java",
+      "language": "java",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/LogoutSuccessHandlerImpl.java",
+      "language": "java",
+      "sizeLines": 53,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/Server.java",
+      "language": "java",
+      "sizeLines": 240,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Cpu.java",
+      "language": "java",
+      "sizeLines": 101,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Jvm.java",
+      "language": "java",
+      "sizeLines": 130,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Mem.java",
+      "language": "java",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Sys.java",
+      "language": "java",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/SysFile.java",
+      "language": "java",
+      "sizeLines": 114,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/exception/GlobalExceptionHandler.java",
+      "language": "java",
+      "sizeLines": 145,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/PermissionService.java",
+      "language": "java",
+      "sizeLines": 159,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysLoginService.java",
+      "language": "java",
+      "sizeLines": 176,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPasswordService.java",
+      "language": "java",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPermissionService.java",
+      "language": "java",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysRegisterService.java",
+      "language": "java",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java",
+      "language": "java",
+      "sizeLines": 270,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/UserDetailsServiceImpl.java",
+      "language": "java",
+      "sizeLines": 66,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/pom.xml",
+      "language": "xml",
+      "sizeLines": 39,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/config/GenConfig.java",
+      "language": "java",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/controller/GenController.java",
+      "language": "java",
+      "sizeLines": 263,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java",
+      "language": "java",
+      "sizeLines": 410,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java",
+      "language": "java",
+      "sizeLines": 373,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/mapper/GenTableColumnMapper.java",
+      "language": "java",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/mapper/GenTableMapper.java",
+      "language": "java",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/service/GenTableColumnServiceImpl.java",
+      "language": "java",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/service/GenTableServiceImpl.java",
+      "language": "java",
+      "sizeLines": 563,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/service/IGenTableColumnService.java",
+      "language": "java",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/service/IGenTableService.java",
+      "language": "java",
+      "sizeLines": 131,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/util/GenUtils.java",
+      "language": "java",
+      "sizeLines": 257,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/util/VelocityInitializer.java",
+      "language": "java",
+      "sizeLines": 34,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/util/VelocityUtils.java",
+      "language": "java",
+      "sizeLines": 492,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/generator.yml",
+      "language": "yaml",
+      "sizeLines": 11,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/mapper/generator/GenTableColumnMapper.xml",
+      "language": "xml",
+      "sizeLines": 127,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/mapper/generator/GenTableMapper.xml",
+      "language": "xml",
+      "sizeLines": 213,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/java/controller.java.vm",
+      "language": "vm",
+      "sizeLines": 115,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/java/domain.java.vm",
+      "language": "vm",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/java/mapper.java.vm",
+      "language": "vm",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/java/service.java.vm",
+      "language": "vm",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/java/serviceImpl.java.vm",
+      "language": "vm",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/java/sub-domain.java.vm",
+      "language": "vm",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/js/api.js.vm",
+      "language": "vm",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/sql/sql.vm",
+      "language": "vm",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/ts/api.ts.vm",
+      "language": "vm",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/ts/index.ts.vm",
+      "language": "vm",
+      "sizeLines": 8,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/ts/type.ts.vm",
+      "language": "vm",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/index-tree.vue.vm",
+      "language": "vm",
+      "sizeLines": 565,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/index.vue.vm",
+      "language": "vm",
+      "sizeLines": 660,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/v3/index-tree.vue.vm",
+      "language": "vm",
+      "sizeLines": 526,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/v3/index.vue.vm",
+      "language": "vm",
+      "sizeLines": 639,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/v3/view.vue.vm",
+      "language": "vm",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/v3ts/index-tree.vue.vm",
+      "language": "vm",
+      "sizeLines": 528,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/v3ts/index.vue.vm",
+      "language": "vm",
+      "sizeLines": 644,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/v3ts/view.vue.vm",
+      "language": "vm",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/vue/view.vue.vm",
+      "language": "vm",
+      "sizeLines": 86,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-generator/src/main/resources/vm/xml/mapper.xml.vm",
+      "language": "vm",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/pom.xml",
+      "language": "xml",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/config/ScheduleConfig.java",
+      "language": "java",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/controller/SysJobController.java",
+      "language": "java",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/controller/SysJobLogController.java",
+      "language": "java",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java",
+      "language": "java",
+      "sizeLines": 171,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java",
+      "language": "java",
+      "sizeLines": 158,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobLogMapper.java",
+      "language": "java",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobMapper.java",
+      "language": "java",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/impl/SysJobLogServiceImpl.java",
+      "language": "java",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/impl/SysJobServiceImpl.java",
+      "language": "java",
+      "sizeLines": 261,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobLogService.java",
+      "language": "java",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobService.java",
+      "language": "java",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/task/RyTask.java",
+      "language": "java",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/AbstractQuartzJob.java",
+      "language": "java",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/CronUtils.java",
+      "language": "java",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/JobInvokeUtil.java",
+      "language": "java",
+      "sizeLines": 182,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/QuartzDisallowConcurrentExecution.java",
+      "language": "java",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/QuartzJobExecution.java",
+      "language": "java",
+      "sizeLines": 19,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/ScheduleUtils.java",
+      "language": "java",
+      "sizeLines": 141,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/resources/mapper/quartz/SysJobLogMapper.xml",
+      "language": "xml",
+      "sizeLines": 99,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-quartz/src/main/resources/mapper/quartz/SysJobMapper.xml",
+      "language": "xml",
+      "sizeLines": 110,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/pom.xml",
+      "language": "xml",
+      "sizeLines": 27,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysCache.java",
+      "language": "java",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysConfig.java",
+      "language": "java",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysLogininfor.java",
+      "language": "java",
+      "sizeLines": 144,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java",
+      "language": "java",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNoticeRead.java",
+      "language": "java",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java",
+      "language": "java",
+      "sizeLines": 269,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysPost.java",
+      "language": "java",
+      "sizeLines": 124,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleDept.java",
+      "language": "java",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleMenu.java",
+      "language": "java",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserOnline.java",
+      "language": "java",
+      "sizeLines": 113,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserPost.java",
+      "language": "java",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserRole.java",
+      "language": "java",
+      "sizeLines": 46,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/vo/MetaVo.java",
+      "language": "java",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/vo/RouterVo.java",
+      "language": "java",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysConfigMapper.java",
+      "language": "java",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDeptMapper.java",
+      "language": "java",
+      "sizeLines": 125,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDictDataMapper.java",
+      "language": "java",
+      "sizeLines": 95,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDictTypeMapper.java",
+      "language": "java",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysLogininforMapper.java",
+      "language": "java",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysMenuMapper.java",
+      "language": "java",
+      "sizeLines": 141,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysNoticeMapper.java",
+      "language": "java",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysNoticeReadMapper.java",
+      "language": "java",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysOperLogMapper.java",
+      "language": "java",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysPostMapper.java",
+      "language": "java",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleDeptMapper.java",
+      "language": "java",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMapper.java",
+      "language": "java",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMenuMapper.java",
+      "language": "java",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserMapper.java",
+      "language": "java",
+      "sizeLines": 147,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserPostMapper.java",
+      "language": "java",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserRoleMapper.java",
+      "language": "java",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysConfigServiceImpl.java",
+      "language": "java",
+      "sizeLines": 229,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysDeptServiceImpl.java",
+      "language": "java",
+      "sizeLines": 364,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysDictDataServiceImpl.java",
+      "language": "java",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysDictTypeServiceImpl.java",
+      "language": "java",
+      "sizeLines": 223,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysLogininforServiceImpl.java",
+      "language": "java",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysMenuServiceImpl.java",
+      "language": "java",
+      "sizeLines": 618,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysNoticeReadServiceImpl.java",
+      "language": "java",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysNoticeServiceImpl.java",
+      "language": "java",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysOperLogServiceImpl.java",
+      "language": "java",
+      "sizeLines": 76,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysPostServiceImpl.java",
+      "language": "java",
+      "sizeLines": 178,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysRoleServiceImpl.java",
+      "language": "java",
+      "sizeLines": 426,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysUserOnlineServiceImpl.java",
+      "language": "java",
+      "sizeLines": 96,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysUserServiceImpl.java",
+      "language": "java",
+      "sizeLines": 565,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java",
+      "language": "java",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDeptService.java",
+      "language": "java",
+      "sizeLines": 132,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictDataService.java",
+      "language": "java",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictTypeService.java",
+      "language": "java",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysLogininforService.java",
+      "language": "java",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysMenuService.java",
+      "language": "java",
+      "sizeLines": 160,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeReadService.java",
+      "language": "java",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeService.java",
+      "language": "java",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysOperLogService.java",
+      "language": "java",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysPostService.java",
+      "language": "java",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysRoleService.java",
+      "language": "java",
+      "sizeLines": 173,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserOnlineService.java",
+      "language": "java",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java",
+      "language": "java",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysConfigMapper.xml",
+      "language": "xml",
+      "sizeLines": 116,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysDeptMapper.xml",
+      "language": "xml",
+      "sizeLines": 162,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysDictDataMapper.xml",
+      "language": "xml",
+      "sizeLines": 123,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysDictTypeMapper.xml",
+      "language": "xml",
+      "sizeLines": 104,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysLogininforMapper.xml",
+      "language": "xml",
+      "sizeLines": 56,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysMenuMapper.xml",
+      "language": "xml",
+      "sizeLines": 214,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysNoticeMapper.xml",
+      "language": "xml",
+      "sizeLines": 89,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysNoticeReadMapper.xml",
+      "language": "xml",
+      "sizeLines": 88,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysOperLogMapper.xml",
+      "language": "xml",
+      "sizeLines": 86,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysPostMapper.xml",
+      "language": "xml",
+      "sizeLines": 121,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysRoleDeptMapper.xml",
+      "language": "xml",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysRoleMapper.xml",
+      "language": "xml",
+      "sizeLines": 151,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysRoleMenuMapper.xml",
+      "language": "xml",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysUserMapper.xml",
+      "language": "xml",
+      "sizeLines": 226,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysUserPostMapper.xml",
+      "language": "xml",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ruoyi-system/src/main/resources/mapper/system/SysUserRoleMapper.xml",
+      "language": "xml",
+      "sizeLines": 43,
+      "fileCategory": "config"
+    },
+    {
+      "path": "ry.bat",
+      "language": "batch",
+      "sizeLines": 67,
+      "fileCategory": "script"
+    },
+    {
+      "path": "ry.sh",
+      "language": "shell",
+      "sizeLines": 86,
+      "fileCategory": "script"
+    },
+    {
+      "path": "sql/quartz.sql",
+      "language": "sql",
+      "sizeLines": 173,
+      "fileCategory": "data"
+    },
+    {
+      "path": "sql/ry_20260417.sql",
+      "language": "sql",
+      "sizeLines": 722,
+      "fileCategory": "data"
+    }
+  ],
+  "totalFiles": 334,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "large",
+  "stats": {
+    "filesScanned": 334,
+    "byCategory": {
+      "config": 36,
+      "code": 289,
+      "script": 5,
+      "docs": 2,
+      "data": 2
+    },
+    "byLanguage": {
+      "yaml": 4,
+      "unknown": 1,
+      "json": 1,
+      "batch": 4,
+      "docx": 1,
+      "xml": 29,
+      "markdown": 1,
+      "java": 266,
+      "txt": 1,
+      "properties": 2,
+      "vm": 21,
+      "shell": 1,
+      "sql": 2
+    }
+  }
+}

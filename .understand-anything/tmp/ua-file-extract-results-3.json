@@ -1,0 +1,6602 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 33,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysIndexController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 58,
+      "functions": [
+        {
+          "name": "index",
+          "startLine": 34,
+          "endLine": 38,
+          "params": []
+        },
+        {
+          "name": "unlockScreen",
+          "startLine": 43,
+          "endLine": 63,
+          "params": [
+            "body"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysIndexController",
+          "startLine": 21,
+          "endLine": 64,
+          "methods": [
+            "index",
+            "unlockScreen"
+          ],
+          "properties": [
+            "ruoyiConfig",
+            "userService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "index",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "unlockScreen",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "SysIndexController",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "index",
+          "callee": "StringUtils.format",
+          "lineNumber": 37
+        },
+        {
+          "caller": "index",
+          "callee": "ruoyiConfig.getName",
+          "lineNumber": 37
+        },
+        {
+          "caller": "index",
+          "callee": "ruoyiConfig.getVersion",
+          "lineNumber": 37
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "body.get",
+          "lineNumber": 46
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 47
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "AjaxResult.error",
+          "lineNumber": 49
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "SecurityUtils.getUsername",
+          "lineNumber": 51
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "userService.selectUserByUserName",
+          "lineNumber": 52
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "AjaxResult.error",
+          "lineNumber": 55
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "SecurityUtils.matchesPassword",
+          "lineNumber": 57
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "user.getPassword",
+          "lineNumber": 57
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "AjaxResult.error",
+          "lineNumber": 59
+        },
+        {
+          "caller": "unlockScreen",
+          "callee": "AjaxResult.success",
+          "lineNumber": 62
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysProfileController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 149,
+      "nonEmptyLines": 142,
+      "functions": [
+        {
+          "name": "profile",
+          "startLine": 47,
+          "endLine": 56,
+          "params": []
+        },
+        {
+          "name": "updateProfile",
+          "startLine": 61,
+          "endLine": 86,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "updatePwd",
+          "startLine": 91,
+          "endLine": 119,
+          "params": [
+            "params"
+          ]
+        },
+        {
+          "name": "avatar",
+          "startLine": 124,
+          "endLine": 148,
+          "params": [
+            "file"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysProfileController",
+          "startLine": 34,
+          "endLine": 149,
+          "methods": [
+            "profile",
+            "updateProfile",
+            "updatePwd",
+            "avatar"
+          ],
+          "properties": [
+            "userService",
+            "tokenService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "profile",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "updateProfile",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "updatePwd",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "avatar",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "SysProfileController",
+          "line": 34,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "profile",
+          "callee": "getLoginUser",
+          "lineNumber": 50
+        },
+        {
+          "caller": "profile",
+          "callee": "loginUser.getUser",
+          "lineNumber": 51
+        },
+        {
+          "caller": "profile",
+          "callee": "AjaxResult.success",
+          "lineNumber": 52
+        },
+        {
+          "caller": "profile",
+          "callee": "ajax.put",
+          "lineNumber": 53
+        },
+        {
+          "caller": "profile",
+          "callee": "userService.selectUserRoleGroup",
+          "lineNumber": 53
+        },
+        {
+          "caller": "profile",
+          "callee": "loginUser.getUsername",
+          "lineNumber": 53
+        },
+        {
+          "caller": "profile",
+          "callee": "ajax.put",
+          "lineNumber": 54
+        },
+        {
+          "caller": "profile",
+          "callee": "userService.selectUserPostGroup",
+          "lineNumber": 54
+        },
+        {
+          "caller": "profile",
+          "callee": "loginUser.getUsername",
+          "lineNumber": 54
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "getLoginUser",
+          "lineNumber": 65
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "loginUser.getUser",
+          "lineNumber": 66
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "currentUser.setNickName",
+          "lineNumber": 67
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.getNickName",
+          "lineNumber": 67
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "currentUser.setEmail",
+          "lineNumber": 68
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.getEmail",
+          "lineNumber": 68
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "currentUser.setPhonenumber",
+          "lineNumber": 69
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.getPhonenumber",
+          "lineNumber": 69
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "currentUser.setSex",
+          "lineNumber": 70
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.getSex",
+          "lineNumber": 70
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 71
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.getPhonenumber",
+          "lineNumber": 71
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "userService.checkPhoneUnique",
+          "lineNumber": 71
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "error",
+          "lineNumber": 73
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "loginUser.getUsername",
+          "lineNumber": 73
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 75
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "user.getEmail",
+          "lineNumber": 75
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "userService.checkEmailUnique",
+          "lineNumber": 75
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "error",
+          "lineNumber": 77
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "loginUser.getUsername",
+          "lineNumber": 77
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "userService.updateUserProfile",
+          "lineNumber": 79
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "tokenService.setLoginUser",
+          "lineNumber": 82
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "success",
+          "lineNumber": 83
+        },
+        {
+          "caller": "updateProfile",
+          "callee": "error",
+          "lineNumber": 85
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "params.get",
+          "lineNumber": 95
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "params.get",
+          "lineNumber": 96
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "getLoginUser",
+          "lineNumber": 97
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "loginUser.getUserId",
+          "lineNumber": 98
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "userService.selectUserById",
+          "lineNumber": 99
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "user.getPassword",
+          "lineNumber": 100
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "SecurityUtils.matchesPassword",
+          "lineNumber": 101
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "error",
+          "lineNumber": 103
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "SecurityUtils.matchesPassword",
+          "lineNumber": 105
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "error",
+          "lineNumber": 107
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "SecurityUtils.encryptPassword",
+          "lineNumber": 109
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "userService.resetUserPwd",
+          "lineNumber": 110
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "loginUser.getUser().setPwdUpdateDate",
+          "lineNumber": 113
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "loginUser.getUser",
+          "lineNumber": 113
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "DateUtils.getNowDate",
+          "lineNumber": 113
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "loginUser.getUser().setPassword",
+          "lineNumber": 114
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "loginUser.getUser",
+          "lineNumber": 114
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "tokenService.setLoginUser",
+          "lineNumber": 115
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "success",
+          "lineNumber": 116
+        },
+        {
+          "caller": "updatePwd",
+          "callee": "error",
+          "lineNumber": 118
+        },
+        {
+          "caller": "avatar",
+          "callee": "file.isEmpty",
+          "lineNumber": 128
+        },
+        {
+          "caller": "avatar",
+          "callee": "getLoginUser",
+          "lineNumber": 130
+        },
+        {
+          "caller": "avatar",
+          "callee": "FileUploadUtils.upload",
+          "lineNumber": 131
+        },
+        {
+          "caller": "avatar",
+          "callee": "RuoYiConfig.getAvatarPath",
+          "lineNumber": 131
+        },
+        {
+          "caller": "avatar",
+          "callee": "userService.updateUserAvatar",
+          "lineNumber": 132
+        },
+        {
+          "caller": "avatar",
+          "callee": "loginUser.getUserId",
+          "lineNumber": 132
+        },
+        {
+          "caller": "avatar",
+          "callee": "loginUser.getUser().getAvatar",
+          "lineNumber": 134
+        },
+        {
+          "caller": "avatar",
+          "callee": "loginUser.getUser",
+          "lineNumber": 134
+        },
+        {
+          "caller": "avatar",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 135
+        },
+        {
+          "caller": "avatar",
+          "callee": "FileUtils.deleteFile",
+          "lineNumber": 137
+        },
+        {
+          "caller": "avatar",
+          "callee": "RuoYiConfig.getProfile",
+          "lineNumber": 137
+        },
+        {
+          "caller": "avatar",
+          "callee": "FileUtils.stripPrefix",
+          "lineNumber": 137
+        },
+        {
+          "caller": "avatar",
+          "callee": "AjaxResult.success",
+          "lineNumber": 139
+        },
+        {
+          "caller": "avatar",
+          "callee": "ajax.put",
+          "lineNumber": 140
+        },
+        {
+          "caller": "avatar",
+          "callee": "loginUser.getUser().setAvatar",
+          "lineNumber": 142
+        },
+        {
+          "caller": "avatar",
+          "callee": "loginUser.getUser",
+          "lineNumber": 142
+        },
+        {
+          "caller": "avatar",
+          "callee": "tokenService.setLoginUser",
+          "lineNumber": 143
+        },
+        {
+          "caller": "avatar",
+          "callee": "error",
+          "lineNumber": 147
+        }
+      ],
+      "metrics": {
+        "importCount": 15,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysUserController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 256,
+      "nonEmptyLines": 238,
+      "functions": [
+        {
+          "name": "list",
+          "startLine": 59,
+          "endLine": 66,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "export",
+          "startLine": 68,
+          "endLine": 76,
+          "params": [
+            "response",
+            "user"
+          ]
+        },
+        {
+          "name": "importData",
+          "startLine": 78,
+          "endLine": 88,
+          "params": [
+            "file",
+            "updateSupport"
+          ]
+        },
+        {
+          "name": "importTemplate",
+          "startLine": 90,
+          "endLine": 95,
+          "params": [
+            "response"
+          ]
+        },
+        {
+          "name": "getInfo",
+          "startLine": 100,
+          "endLine": 117,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "add",
+          "startLine": 122,
+          "endLine": 144,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "edit",
+          "startLine": 149,
+          "endLine": 172,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "remove",
+          "startLine": 177,
+          "endLine": 187,
+          "params": [
+            "userIds"
+          ]
+        },
+        {
+          "name": "resetPwd",
+          "startLine": 192,
+          "endLine": 202,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "changeStatus",
+          "startLine": 207,
+          "endLine": 216,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "authRole",
+          "startLine": 221,
+          "endLine": 231,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "insertAuthRole",
+          "startLine": 236,
+          "endLine": 245,
+          "params": [
+            "userId",
+            "roleIds"
+          ]
+        },
+        {
+          "name": "deptTree",
+          "startLine": 250,
+          "endLine": 255,
+          "params": [
+            "dept"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysUserController",
+          "startLine": 40,
+          "endLine": 256,
+          "methods": [
+            "list",
+            "export",
+            "importData",
+            "importTemplate",
+            "getInfo",
+            "add",
+            "edit",
+            "remove",
+            "resetPwd",
+            "changeStatus",
+            "authRole",
+            "insertAuthRole",
+            "deptTree"
+          ],
+          "properties": [
+            "userService",
+            "roleService",
+            "deptService",
+            "postService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "list",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "export",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "importData",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "importTemplate",
+          "line": 90,
+          "isDefault": false
+        },
+        {
+          "name": "getInfo",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "add",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "edit",
+          "line": 149,
+          "isDefault": false
+        },
+        {
+          "name": "remove",
+          "line": 177,
+          "isDefault": false
+        },
+        {
+          "name": "resetPwd",
+          "line": 192,
+          "isDefault": false
+        },
+        {
+          "name": "changeStatus",
+          "line": 207,
+          "isDefault": false
+        },
+        {
+          "name": "authRole",
+          "line": 221,
+          "isDefault": false
+        },
+        {
+          "name": "insertAuthRole",
+          "line": 236,
+          "isDefault": false
+        },
+        {
+          "name": "deptTree",
+          "line": 250,
+          "isDefault": false
+        },
+        {
+          "name": "SysUserController",
+          "line": 40,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "list",
+          "callee": "startPage",
+          "lineNumber": 63
+        },
+        {
+          "caller": "list",
+          "callee": "userService.selectUserList",
+          "lineNumber": 64
+        },
+        {
+          "caller": "list",
+          "callee": "getDataTable",
+          "lineNumber": 65
+        },
+        {
+          "caller": "export",
+          "callee": "userService.selectUserList",
+          "lineNumber": 73
+        },
+        {
+          "caller": "export",
+          "callee": "new ExcelUtil<SysUser>",
+          "lineNumber": 74
+        },
+        {
+          "caller": "export",
+          "callee": "util.exportExcel",
+          "lineNumber": 75
+        },
+        {
+          "caller": "importData",
+          "callee": "new ExcelUtil<SysUser>",
+          "lineNumber": 83
+        },
+        {
+          "caller": "importData",
+          "callee": "util.importExcel",
+          "lineNumber": 84
+        },
+        {
+          "caller": "importData",
+          "callee": "file.getInputStream",
+          "lineNumber": 84
+        },
+        {
+          "caller": "importData",
+          "callee": "getUsername",
+          "lineNumber": 85
+        },
+        {
+          "caller": "importData",
+          "callee": "userService.importUser",
+          "lineNumber": 86
+        },
+        {
+          "caller": "importData",
+          "callee": "success",
+          "lineNumber": 87
+        },
+        {
+          "caller": "importTemplate",
+          "callee": "new ExcelUtil<SysUser>",
+          "lineNumber": 93
+        },
+        {
+          "caller": "importTemplate",
+          "callee": "util.importTemplateExcel",
+          "lineNumber": 94
+        },
+        {
+          "caller": "getInfo",
+          "callee": "AjaxResult.success",
+          "lineNumber": 104
+        },
+        {
+          "caller": "getInfo",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 105
+        },
+        {
+          "caller": "getInfo",
+          "callee": "userService.checkUserDataScope",
+          "lineNumber": 107
+        },
+        {
+          "caller": "getInfo",
+          "callee": "userService.selectUserById",
+          "lineNumber": 108
+        },
+        {
+          "caller": "getInfo",
+          "callee": "ajax.put",
+          "lineNumber": 109
+        },
+        {
+          "caller": "getInfo",
+          "callee": "ajax.put",
+          "lineNumber": 110
+        },
+        {
+          "caller": "getInfo",
+          "callee": "postService.selectPostListByUserId",
+          "lineNumber": 110
+        },
+        {
+          "caller": "getInfo",
+          "callee": "ajax.put",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getInfo",
+          "callee": "sysUser.getRoles().stream().map(SysRole::getRoleId).collect",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getInfo",
+          "callee": "sysUser.getRoles().stream().map",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getInfo",
+          "callee": "sysUser.getRoles().stream",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getInfo",
+          "callee": "sysUser.getRoles",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getInfo",
+          "callee": "Collectors.toList",
+          "lineNumber": 111
+        },
+        {
+          "caller": "getInfo",
+          "callee": "roleService.selectRoleAll",
+          "lineNumber": 113
+        },
+        {
+          "caller": "getInfo",
+          "callee": "ajax.put",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getInfo",
+          "callee": "SecurityUtils.isAdmin",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getInfo",
+          "callee": "roles.stream().filter(r -> !r.isAdmin()).collect",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getInfo",
+          "callee": "roles.stream().filter",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getInfo",
+          "callee": "roles.stream",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getInfo",
+          "callee": "r.isAdmin",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getInfo",
+          "callee": "Collectors.toList",
+          "lineNumber": 114
+        },
+        {
+          "caller": "getInfo",
+          "callee": "ajax.put",
+          "lineNumber": 115
+        },
+        {
+          "caller": "getInfo",
+          "callee": "postService.selectPostAll",
+          "lineNumber": 115
+        },
+        {
+          "caller": "add",
+          "callee": "deptService.checkDeptDataScope",
+          "lineNumber": 127
+        },
+        {
+          "caller": "add",
+          "callee": "user.getDeptId",
+          "lineNumber": 127
+        },
+        {
+          "caller": "add",
+          "callee": "roleService.checkRoleDataScope",
+          "lineNumber": 128
+        },
+        {
+          "caller": "add",
+          "callee": "user.getRoleIds",
+          "lineNumber": 128
+        },
+        {
+          "caller": "add",
+          "callee": "userService.checkUserNameUnique",
+          "lineNumber": 129
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 131
+        },
+        {
+          "caller": "add",
+          "callee": "user.getUserName",
+          "lineNumber": 131
+        },
+        {
+          "caller": "add",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 133
+        },
+        {
+          "caller": "add",
+          "callee": "user.getPhonenumber",
+          "lineNumber": 133
+        },
+        {
+          "caller": "add",
+          "callee": "userService.checkPhoneUnique",
+          "lineNumber": 133
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 135
+        },
+        {
+          "caller": "add",
+          "callee": "user.getUserName",
+          "lineNumber": 135
+        },
+        {
+          "caller": "add",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 137
+        },
+        {
+          "caller": "add",
+          "callee": "user.getEmail",
+          "lineNumber": 137
+        },
+        {
+          "caller": "add",
+          "callee": "userService.checkEmailUnique",
+          "lineNumber": 137
+        },
+        {
+          "caller": "add",
+          "callee": "error",
+          "lineNumber": 139
+        },
+        {
+          "caller": "add",
+          "callee": "user.getUserName",
+          "lineNumber": 139
+        },
+        {
+          "caller": "add",
+          "callee": "user.setCreateBy",
+          "lineNumber": 141
+        },
+        {
+          "caller": "add",
+          "callee": "getUsername",
+          "lineNumber": 141
+        },
+        {
+          "caller": "add",
+          "callee": "user.setPassword",
+          "lineNumber": 142
+        },
+        {
+          "caller": "add",
+          "callee": "SecurityUtils.encryptPassword",
+          "lineNumber": 142
+        },
+        {
+          "caller": "add",
+          "callee": "user.getPassword",
+          "lineNumber": 142
+        },
+        {
+          "caller": "add",
+          "callee": "toAjax",
+          "lineNumber": 143
+        },
+        {
+          "caller": "add",
+          "callee": "userService.insertUser",
+          "lineNumber": 143
+        },
+        {
+          "caller": "edit",
+          "callee": "userService.checkUserAllowed",
+          "lineNumber": 154
+        },
+        {
+          "caller": "edit",
+          "callee": "userService.checkUserDataScope",
+          "lineNumber": 155
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getUserId",
+          "lineNumber": 155
+        },
+        {
+          "caller": "edit",
+          "callee": "deptService.checkDeptDataScope",
+          "lineNumber": 156
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getDeptId",
+          "lineNumber": 156
+        },
+        {
+          "caller": "edit",
+          "callee": "roleService.checkRoleDataScope",
+          "lineNumber": 157
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getRoleIds",
+          "lineNumber": 157
+        },
+        {
+          "caller": "edit",
+          "callee": "userService.checkUserNameUnique",
+          "lineNumber": 158
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 160
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getUserName",
+          "lineNumber": 160
+        },
+        {
+          "caller": "edit",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 162
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getPhonenumber",
+          "lineNumber": 162
+        },
+        {
+          "caller": "edit",
+          "callee": "userService.checkPhoneUnique",
+          "lineNumber": 162
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 164
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getUserName",
+          "lineNumber": 164
+        },
+        {
+          "caller": "edit",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 166
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getEmail",
+          "lineNumber": 166
+        },
+        {
+          "caller": "edit",
+          "callee": "userService.checkEmailUnique",
+          "lineNumber": 166
+        },
+        {
+          "caller": "edit",
+          "callee": "error",
+          "lineNumber": 168
+        },
+        {
+          "caller": "edit",
+          "callee": "user.getUserName",
+          "lineNumber": 168
+        },
+        {
+          "caller": "edit",
+          "callee": "user.setUpdateBy",
+          "lineNumber": 170
+        },
+        {
+          "caller": "edit",
+          "callee": "getUsername",
+          "lineNumber": 170
+        },
+        {
+          "caller": "edit",
+          "callee": "toAjax",
+          "lineNumber": 171
+        },
+        {
+          "caller": "edit",
+          "callee": "userService.updateUser",
+          "lineNumber": 171
+        },
+        {
+          "caller": "remove",
+          "callee": "ArrayUtils.contains",
+          "lineNumber": 182
+        },
+        {
+          "caller": "remove",
+          "callee": "getUserId",
+          "lineNumber": 182
+        },
+        {
+          "caller": "remove",
+          "callee": "error",
+          "lineNumber": 184
+        },
+        {
+          "caller": "remove",
+          "callee": "toAjax",
+          "lineNumber": 186
+        },
+        {
+          "caller": "remove",
+          "callee": "userService.deleteUserByIds",
+          "lineNumber": 186
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "userService.checkUserAllowed",
+          "lineNumber": 197
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "userService.checkUserDataScope",
+          "lineNumber": 198
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "user.getUserId",
+          "lineNumber": 198
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "user.setPassword",
+          "lineNumber": 199
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "SecurityUtils.encryptPassword",
+          "lineNumber": 199
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "user.getPassword",
+          "lineNumber": 199
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "user.setUpdateBy",
+          "lineNumber": 200
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "getUsername",
+          "lineNumber": 200
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "toAjax",
+          "lineNumber": 201
+        },
+        {
+          "caller": "resetPwd",
+          "callee": "userService.resetPwd",
+          "lineNumber": 201
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "userService.checkUserAllowed",
+          "lineNumber": 212
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "userService.checkUserDataScope",
+          "lineNumber": 213
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "user.getUserId",
+          "lineNumber": 213
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "user.setUpdateBy",
+          "lineNumber": 214
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "getUsername",
+          "lineNumber": 214
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "toAjax",
+          "lineNumber": 215
+        },
+        {
+          "caller": "changeStatus",
+          "callee": "userService.updateUserStatus",
+          "lineNumber": 215
+        },
+        {
+          "caller": "authRole",
+          "callee": "AjaxResult.success",
+          "lineNumber": 225
+        },
+        {
+          "caller": "authRole",
+          "callee": "userService.selectUserById",
+          "lineNumber": 226
+        },
+        {
+          "caller": "authRole",
+          "callee": "roleService.selectRolesByUserId",
+          "lineNumber": 227
+        },
+        {
+          "caller": "authRole",
+          "callee": "ajax.put",
+          "lineNumber": 228
+        },
+        {
+          "caller": "authRole",
+          "callee": "ajax.put",
+          "lineNumber": 229
+        },
+        {
+          "caller": "authRole",
+          "callee": "SecurityUtils.isAdmin",
+          "lineNumber": 229
+        },
+        {
+          "caller": "authRole",
+          "callee": "roles.stream().filter(r -> !r.isAdmin()).collect",
+          "lineNumber": 229
+        },
+        {
+          "caller": "authRole",
+          "callee": "roles.stream().filter",
+          "lineNumber": 229
+        },
+        {
+          "caller": "authRole",
+          "callee": "roles.stream",
+          "lineNumber": 229
+        },
+        {
+          "caller": "authRole",
+          "callee": "r.isAdmin",
+          "lineNumber": 229
+        },
+        {
+          "caller": "authRole",
+          "callee": "Collectors.toList",
+          "lineNumber": 229
+        },
+        {
+          "caller": "insertAuthRole",
+          "callee": "userService.checkUserDataScope",
+          "lineNumber": 241
+        },
+        {
+          "caller": "insertAuthRole",
+          "callee": "roleService.checkRoleDataScope",
+          "lineNumber": 242
+        },
+        {
+          "caller": "insertAuthRole",
+          "callee": "userService.insertUserAuth",
+          "lineNumber": 243
+        },
+        {
+          "caller": "insertAuthRole",
+          "callee": "success",
+          "lineNumber": 244
+        },
+        {
+          "caller": "deptTree",
+          "callee": "success",
+          "lineNumber": 254
+        },
+        {
+          "caller": "deptTree",
+          "callee": "deptService.selectDeptTreeList",
+          "lineNumber": 254
+        }
+      ],
+      "metrics": {
+        "importCount": 15,
+        "exportCount": 14,
+        "functionCount": 13,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Sensitive.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 24,
+      "nonEmptyLines": 22,
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/config/serializer/SensitiveJsonSerializer.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 70,
+      "functions": [
+        {
+          "name": "SensitiveJsonSerializer",
+          "startLine": 25,
+          "endLine": 29,
+          "params": []
+        },
+        {
+          "name": "SensitiveJsonSerializer",
+          "startLine": 31,
+          "endLine": 35,
+          "params": [
+            "desensitizedType"
+          ]
+        },
+        {
+          "name": "serialize",
+          "startLine": 37,
+          "endLine": 48,
+          "params": [
+            "value",
+            "gen",
+            "ctxt"
+          ]
+        },
+        {
+          "name": "createContextual",
+          "startLine": 50,
+          "endLine": 59,
+          "params": [
+            "ctxt",
+            "property"
+          ]
+        },
+        {
+          "name": "desensitization",
+          "startLine": 64,
+          "endLine": 76,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SensitiveJsonSerializer",
+          "startLine": 21,
+          "endLine": 77,
+          "methods": [
+            "SensitiveJsonSerializer",
+            "SensitiveJsonSerializer",
+            "serialize",
+            "createContextual",
+            "desensitization"
+          ],
+          "properties": [
+            "desensitizedType"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SensitiveJsonSerializer",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "SensitiveJsonSerializer",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "serialize",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "createContextual",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "SensitiveJsonSerializer",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "serialize",
+          "callee": "desensitization",
+          "lineNumber": 40
+        },
+        {
+          "caller": "serialize",
+          "callee": "gen.writeString",
+          "lineNumber": 42
+        },
+        {
+          "caller": "serialize",
+          "callee": "desensitizedType.desensitizer().apply",
+          "lineNumber": 42
+        },
+        {
+          "caller": "serialize",
+          "callee": "desensitizedType.desensitizer",
+          "lineNumber": 42
+        },
+        {
+          "caller": "serialize",
+          "callee": "gen.writeString",
+          "lineNumber": 46
+        },
+        {
+          "caller": "createContextual",
+          "callee": "property.getAnnotation",
+          "lineNumber": 53
+        },
+        {
+          "caller": "createContextual",
+          "callee": "Objects.nonNull",
+          "lineNumber": 54
+        },
+        {
+          "caller": "createContextual",
+          "callee": "Objects.equals",
+          "lineNumber": 54
+        },
+        {
+          "caller": "createContextual",
+          "callee": "property.getType().getRawClass",
+          "lineNumber": 54
+        },
+        {
+          "caller": "createContextual",
+          "callee": "property.getType",
+          "lineNumber": 54
+        },
+        {
+          "caller": "createContextual",
+          "callee": "new SensitiveJsonSerializer",
+          "lineNumber": 56
+        },
+        {
+          "caller": "createContextual",
+          "callee": "annotation.desensitizedType",
+          "lineNumber": 56
+        },
+        {
+          "caller": "createContextual",
+          "callee": "ctxt.findValueSerializer",
+          "lineNumber": 58
+        },
+        {
+          "caller": "createContextual",
+          "callee": "property.getType",
+          "lineNumber": 58
+        },
+        {
+          "caller": "desensitization",
+          "callee": "SecurityUtils.getLoginUser",
+          "lineNumber": 68
+        },
+        {
+          "caller": "desensitization",
+          "callee": "securityUser.getUser().isAdmin",
+          "lineNumber": 70
+        },
+        {
+          "caller": "desensitization",
+          "callee": "securityUser.getUser",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 338,
+      "nonEmptyLines": 274,
+      "functions": [
+        {
+          "name": "SysUser",
+          "startLine": 99,
+          "endLine": 102,
+          "params": []
+        },
+        {
+          "name": "SysUser",
+          "startLine": 104,
+          "endLine": 107,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "getUserId",
+          "startLine": 109,
+          "endLine": 112,
+          "params": []
+        },
+        {
+          "name": "setUserId",
+          "startLine": 114,
+          "endLine": 117,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "isAdmin",
+          "startLine": 119,
+          "endLine": 122,
+          "params": []
+        },
+        {
+          "name": "getDeptId",
+          "startLine": 124,
+          "endLine": 127,
+          "params": []
+        },
+        {
+          "name": "setDeptId",
+          "startLine": 129,
+          "endLine": 132,
+          "params": [
+            "deptId"
+          ]
+        },
+        {
+          "name": "getNickName",
+          "startLine": 134,
+          "endLine": 139,
+          "params": []
+        },
+        {
+          "name": "setNickName",
+          "startLine": 141,
+          "endLine": 144,
+          "params": [
+            "nickName"
+          ]
+        },
+        {
+          "name": "getUserName",
+          "startLine": 146,
+          "endLine": 152,
+          "params": []
+        },
+        {
+          "name": "setUserName",
+          "startLine": 154,
+          "endLine": 157,
+          "params": [
+            "userName"
+          ]
+        },
+        {
+          "name": "getEmail",
+          "startLine": 159,
+          "endLine": 164,
+          "params": []
+        },
+        {
+          "name": "setEmail",
+          "startLine": 166,
+          "endLine": 169,
+          "params": [
+            "email"
+          ]
+        },
+        {
+          "name": "getPhonenumber",
+          "startLine": 171,
+          "endLine": 175,
+          "params": []
+        },
+        {
+          "name": "setPhonenumber",
+          "startLine": 177,
+          "endLine": 180,
+          "params": [
+            "phonenumber"
+          ]
+        },
+        {
+          "name": "getSex",
+          "startLine": 182,
+          "endLine": 185,
+          "params": []
+        },
+        {
+          "name": "setSex",
+          "startLine": 187,
+          "endLine": 190,
+          "params": [
+            "sex"
+          ]
+        },
+        {
+          "name": "getAvatar",
+          "startLine": 192,
+          "endLine": 195,
+          "params": []
+        },
+        {
+          "name": "setAvatar",
+          "startLine": 197,
+          "endLine": 200,
+          "params": [
+            "avatar"
+          ]
+        },
+        {
+          "name": "getPassword",
+          "startLine": 202,
+          "endLine": 206,
+          "params": []
+        },
+        {
+          "name": "setPassword",
+          "startLine": 208,
+          "endLine": 211,
+          "params": [
+            "password"
+          ]
+        },
+        {
+          "name": "getStatus",
+          "startLine": 213,
+          "endLine": 216,
+          "params": []
+        },
+        {
+          "name": "setStatus",
+          "startLine": 218,
+          "endLine": 221,
+          "params": [
+            "status"
+          ]
+        },
+        {
+          "name": "getDelFlag",
+          "startLine": 223,
+          "endLine": 226,
+          "params": []
+        },
+        {
+          "name": "setDelFlag",
+          "startLine": 228,
+          "endLine": 231,
+          "params": [
+            "delFlag"
+          ]
+        },
+        {
+          "name": "getLoginIp",
+          "startLine": 233,
+          "endLine": 236,
+          "params": []
+        },
+        {
+          "name": "setLoginIp",
+          "startLine": 238,
+          "endLine": 241,
+          "params": [
+            "loginIp"
+          ]
+        },
+        {
+          "name": "getLoginDate",
+          "startLine": 243,
+          "endLine": 246,
+          "params": []
+        },
+        {
+          "name": "setLoginDate",
+          "startLine": 248,
+          "endLine": 251,
+          "params": [
+            "loginDate"
+          ]
+        },
+        {
+          "name": "getPwdUpdateDate",
+          "startLine": 253,
+          "endLine": 256,
+          "params": []
+        },
+        {
+          "name": "setPwdUpdateDate",
+          "startLine": 258,
+          "endLine": 261,
+          "params": [
+            "pwdUpdateDate"
+          ]
+        },
+        {
+          "name": "getDept",
+          "startLine": 263,
+          "endLine": 266,
+          "params": []
+        },
+        {
+          "name": "setDept",
+          "startLine": 268,
+          "endLine": 271,
+          "params": [
+            "dept"
+          ]
+        },
+        {
+          "name": "getRoles",
+          "startLine": 273,
+          "endLine": 276,
+          "params": []
+        },
+        {
+          "name": "setRoles",
+          "startLine": 278,
+          "endLine": 281,
+          "params": [
+            "roles"
+          ]
+        },
+        {
+          "name": "getRoleIds",
+          "startLine": 283,
+          "endLine": 286,
+          "params": []
+        },
+        {
+          "name": "setRoleIds",
+          "startLine": 288,
+          "endLine": 291,
+          "params": [
+            "roleIds"
+          ]
+        },
+        {
+          "name": "getPostIds",
+          "startLine": 293,
+          "endLine": 296,
+          "params": []
+        },
+        {
+          "name": "setPostIds",
+          "startLine": 298,
+          "endLine": 301,
+          "params": [
+            "postIds"
+          ]
+        },
+        {
+          "name": "getRoleId",
+          "startLine": 303,
+          "endLine": 306,
+          "params": []
+        },
+        {
+          "name": "setRoleId",
+          "startLine": 308,
+          "endLine": 311,
+          "params": [
+            "roleId"
+          ]
+        },
+        {
+          "name": "toString",
+          "startLine": 313,
+          "endLine": 337,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysUser",
+          "startLine": 23,
+          "endLine": 338,
+          "methods": [
+            "SysUser",
+            "SysUser",
+            "getUserId",
+            "setUserId",
+            "isAdmin",
+            "getDeptId",
+            "setDeptId",
+            "getNickName",
+            "setNickName",
+            "getUserName",
+            "setUserName",
+            "getEmail",
+            "setEmail",
+            "getPhonenumber",
+            "setPhonenumber",
+            "getSex",
+            "setSex",
+            "getAvatar",
+            "setAvatar",
+            "getPassword",
+            "setPassword",
+            "getStatus",
+            "setStatus",
+            "getDelFlag",
+            "setDelFlag",
+            "getLoginIp",
+            "setLoginIp",
+            "getLoginDate",
+            "setLoginDate",
+            "getPwdUpdateDate",
+            "setPwdUpdateDate",
+            "getDept",
+            "setDept",
+            "getRoles",
+            "setRoles",
+            "getRoleIds",
+            "setRoleIds",
+            "getPostIds",
+            "setPostIds",
+            "getRoleId",
+            "setRoleId",
+            "toString"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "userId",
+            "deptId",
+            "userName",
+            "nickName",
+            "email",
+            "phonenumber",
+            "sex",
+            "avatar",
+            "password",
+            "status",
+            "delFlag",
+            "loginIp",
+            "loginDate",
+            "pwdUpdateDate",
+            "dept",
+            "roles",
+            "roleIds",
+            "postIds",
+            "roleId"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SysUser",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "SysUser",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "getUserId",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "setUserId",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "isAdmin",
+          "line": 119,
+          "isDefault": false
+        },
+        {
+          "name": "getDeptId",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "setDeptId",
+          "line": 129,
+          "isDefault": false
+        },
+        {
+          "name": "getNickName",
+          "line": 134,
+          "isDefault": false
+        },
+        {
+          "name": "setNickName",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "getUserName",
+          "line": 146,
+          "isDefault": false
+        },
+        {
+          "name": "setUserName",
+          "line": 154,
+          "isDefault": false
+        },
+        {
+          "name": "getEmail",
+          "line": 159,
+          "isDefault": false
+        },
+        {
+          "name": "setEmail",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "getPhonenumber",
+          "line": 171,
+          "isDefault": false
+        },
+        {
+          "name": "setPhonenumber",
+          "line": 177,
+          "isDefault": false
+        },
+        {
+          "name": "getSex",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "setSex",
+          "line": 187,
+          "isDefault": false
+        },
+        {
+          "name": "getAvatar",
+          "line": 192,
+          "isDefault": false
+        },
+        {
+          "name": "setAvatar",
+          "line": 197,
+          "isDefault": false
+        },
+        {
+          "name": "getPassword",
+          "line": 202,
+          "isDefault": false
+        },
+        {
+          "name": "setPassword",
+          "line": 208,
+          "isDefault": false
+        },
+        {
+          "name": "getStatus",
+          "line": 213,
+          "isDefault": false
+        },
+        {
+          "name": "setStatus",
+          "line": 218,
+          "isDefault": false
+        },
+        {
+          "name": "getDelFlag",
+          "line": 223,
+          "isDefault": false
+        },
+        {
+          "name": "setDelFlag",
+          "line": 228,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginIp",
+          "line": 233,
+          "isDefault": false
+        },
+        {
+          "name": "setLoginIp",
+          "line": 238,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginDate",
+          "line": 243,
+          "isDefault": false
+        },
+        {
+          "name": "setLoginDate",
+          "line": 248,
+          "isDefault": false
+        },
+        {
+          "name": "getPwdUpdateDate",
+          "line": 253,
+          "isDefault": false
+        },
+        {
+          "name": "setPwdUpdateDate",
+          "line": 258,
+          "isDefault": false
+        },
+        {
+          "name": "getDept",
+          "line": 263,
+          "isDefault": false
+        },
+        {
+          "name": "setDept",
+          "line": 268,
+          "isDefault": false
+        },
+        {
+          "name": "getRoles",
+          "line": 273,
+          "isDefault": false
+        },
+        {
+          "name": "setRoles",
+          "line": 278,
+          "isDefault": false
+        },
+        {
+          "name": "getRoleIds",
+          "line": 283,
+          "isDefault": false
+        },
+        {
+          "name": "setRoleIds",
+          "line": 288,
+          "isDefault": false
+        },
+        {
+          "name": "getPostIds",
+          "line": 293,
+          "isDefault": false
+        },
+        {
+          "name": "setPostIds",
+          "line": 298,
+          "isDefault": false
+        },
+        {
+          "name": "getRoleId",
+          "line": 303,
+          "isDefault": false
+        },
+        {
+          "name": "setRoleId",
+          "line": 308,
+          "isDefault": false
+        },
+        {
+          "name": "toString",
+          "line": 313,
+          "isDefault": false
+        },
+        {
+          "name": "SysUser",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "isAdmin",
+          "callee": "SecurityUtils.isAdmin",
+          "lineNumber": 121
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate())\r\n            .append(\"pwdUpdateDate\", getPwdUpdateDate())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime())\r\n            .append(\"updateBy\", getUpdateBy())\r\n            .append(\"updateTime\", getUpdateTime())\r\n            .append(\"remark\", getRemark())\r\n            .append(\"dept\", getDept()).toString",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate())\r\n            .append(\"pwdUpdateDate\", getPwdUpdateDate())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime())\r\n            .append(\"updateBy\", getUpdateBy())\r\n            .append(\"updateTime\", getUpdateTime())\r\n            .append(\"remark\", getRemark()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate())\r\n            .append(\"pwdUpdateDate\", getPwdUpdateDate())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime())\r\n            .append(\"updateBy\", getUpdateBy())\r\n            .append(\"updateTime\", getUpdateTime()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate())\r\n            .append(\"pwdUpdateDate\", getPwdUpdateDate())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime())\r\n            .append(\"updateBy\", getUpdateBy()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate())\r\n            .append(\"pwdUpdateDate\", getPwdUpdateDate())\r\n            .append(\"createBy\", getCreateBy())\r\n            .append(\"createTime\", getCreateTime()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate())\r\n            .append(\"pwdUpdateDate\", getPwdUpdateDate())\r\n            .append(\"createBy\", getCreateBy()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate())\r\n            .append(\"pwdUpdateDate\", getPwdUpdateDate()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp())\r\n            .append(\"loginDate\", getLoginDate()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag())\r\n            .append(\"loginIp\", getLoginIp()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus())\r\n            .append(\"delFlag\", getDelFlag()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword())\r\n            .append(\"status\", getStatus()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar())\r\n            .append(\"password\", getPassword()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex())\r\n            .append(\"avatar\", getAvatar()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber())\r\n            .append(\"sex\", getSex()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail())\r\n            .append(\"phonenumber\", getPhonenumber()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName())\r\n            .append(\"email\", getEmail()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName())\r\n            .append(\"nickName\", getNickName()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId())\r\n            .append(\"userName\", getUserName()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId())\r\n            .append(\"deptId\", getDeptId()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)\r\n            .append(\"userId\", getUserId()).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE).append",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "new ToStringBuilder",
+          "lineNumber": 315
+        },
+        {
+          "caller": "toString",
+          "callee": "getUserId",
+          "lineNumber": 316
+        },
+        {
+          "caller": "toString",
+          "callee": "getDeptId",
+          "lineNumber": 317
+        },
+        {
+          "caller": "toString",
+          "callee": "getUserName",
+          "lineNumber": 318
+        },
+        {
+          "caller": "toString",
+          "callee": "getNickName",
+          "lineNumber": 319
+        },
+        {
+          "caller": "toString",
+          "callee": "getEmail",
+          "lineNumber": 320
+        },
+        {
+          "caller": "toString",
+          "callee": "getPhonenumber",
+          "lineNumber": 321
+        },
+        {
+          "caller": "toString",
+          "callee": "getSex",
+          "lineNumber": 322
+        },
+        {
+          "caller": "toString",
+          "callee": "getAvatar",
+          "lineNumber": 323
+        },
+        {
+          "caller": "toString",
+          "callee": "getPassword",
+          "lineNumber": 324
+        },
+        {
+          "caller": "toString",
+          "callee": "getStatus",
+          "lineNumber": 325
+        },
+        {
+          "caller": "toString",
+          "callee": "getDelFlag",
+          "lineNumber": 326
+        },
+        {
+          "caller": "toString",
+          "callee": "getLoginIp",
+          "lineNumber": 327
+        },
+        {
+          "caller": "toString",
+          "callee": "getLoginDate",
+          "lineNumber": 328
+        },
+        {
+          "caller": "toString",
+          "callee": "getPwdUpdateDate",
+          "lineNumber": 329
+        },
+        {
+          "caller": "toString",
+          "callee": "getCreateBy",
+          "lineNumber": 330
+        },
+        {
+          "caller": "toString",
+          "callee": "getCreateTime",
+          "lineNumber": 331
+        },
+        {
+          "caller": "toString",
+          "callee": "getUpdateBy",
+          "lineNumber": 332
+        },
+        {
+          "caller": "toString",
+          "callee": "getUpdateTime",
+          "lineNumber": 333
+        },
+        {
+          "caller": "toString",
+          "callee": "getRemark",
+          "lineNumber": 334
+        },
+        {
+          "caller": "toString",
+          "callee": "getDept",
+          "lineNumber": 335
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 43,
+        "functionCount": 42,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 278,
+      "nonEmptyLines": 233,
+      "functions": [
+        {
+          "name": "LoginUser",
+          "startLine": 78,
+          "endLine": 80,
+          "params": []
+        },
+        {
+          "name": "LoginUser",
+          "startLine": 82,
+          "endLine": 86,
+          "params": [
+            "user",
+            "permissions"
+          ]
+        },
+        {
+          "name": "LoginUser",
+          "startLine": 88,
+          "endLine": 94,
+          "params": [
+            "userId",
+            "deptId",
+            "user",
+            "permissions"
+          ]
+        },
+        {
+          "name": "getUserId",
+          "startLine": 96,
+          "endLine": 99,
+          "params": []
+        },
+        {
+          "name": "setUserId",
+          "startLine": 101,
+          "endLine": 104,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "getDeptId",
+          "startLine": 106,
+          "endLine": 109,
+          "params": []
+        },
+        {
+          "name": "setDeptId",
+          "startLine": 111,
+          "endLine": 114,
+          "params": [
+            "deptId"
+          ]
+        },
+        {
+          "name": "getToken",
+          "startLine": 116,
+          "endLine": 119,
+          "params": []
+        },
+        {
+          "name": "setToken",
+          "startLine": 121,
+          "endLine": 124,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "getPassword",
+          "startLine": 126,
+          "endLine": 131,
+          "params": []
+        },
+        {
+          "name": "getUsername",
+          "startLine": 133,
+          "endLine": 137,
+          "params": []
+        },
+        {
+          "name": "isAccountNonExpired",
+          "startLine": 142,
+          "endLine": 147,
+          "params": []
+        },
+        {
+          "name": "isAccountNonLocked",
+          "startLine": 154,
+          "endLine": 159,
+          "params": []
+        },
+        {
+          "name": "isCredentialsNonExpired",
+          "startLine": 166,
+          "endLine": 171,
+          "params": []
+        },
+        {
+          "name": "isEnabled",
+          "startLine": 178,
+          "endLine": 183,
+          "params": []
+        },
+        {
+          "name": "getLoginTime",
+          "startLine": 185,
+          "endLine": 188,
+          "params": []
+        },
+        {
+          "name": "setLoginTime",
+          "startLine": 190,
+          "endLine": 193,
+          "params": [
+            "loginTime"
+          ]
+        },
+        {
+          "name": "getIpaddr",
+          "startLine": 195,
+          "endLine": 198,
+          "params": []
+        },
+        {
+          "name": "setIpaddr",
+          "startLine": 200,
+          "endLine": 203,
+          "params": [
+            "ipaddr"
+          ]
+        },
+        {
+          "name": "getLoginLocation",
+          "startLine": 205,
+          "endLine": 208,
+          "params": []
+        },
+        {
+          "name": "setLoginLocation",
+          "startLine": 210,
+          "endLine": 213,
+          "params": [
+            "loginLocation"
+          ]
+        },
+        {
+          "name": "getBrowser",
+          "startLine": 215,
+          "endLine": 218,
+          "params": []
+        },
+        {
+          "name": "setBrowser",
+          "startLine": 220,
+          "endLine": 223,
+          "params": [
+            "browser"
+          ]
+        },
+        {
+          "name": "getOs",
+          "startLine": 225,
+          "endLine": 228,
+          "params": []
+        },
+        {
+          "name": "setOs",
+          "startLine": 230,
+          "endLine": 233,
+          "params": [
+            "os"
+          ]
+        },
+        {
+          "name": "getExpireTime",
+          "startLine": 235,
+          "endLine": 238,
+          "params": []
+        },
+        {
+          "name": "setExpireTime",
+          "startLine": 240,
+          "endLine": 243,
+          "params": [
+            "expireTime"
+          ]
+        },
+        {
+          "name": "getPermissions",
+          "startLine": 245,
+          "endLine": 248,
+          "params": []
+        },
+        {
+          "name": "setPermissions",
+          "startLine": 250,
+          "endLine": 253,
+          "params": [
+            "permissions"
+          ]
+        },
+        {
+          "name": "getUser",
+          "startLine": 255,
+          "endLine": 258,
+          "params": []
+        },
+        {
+          "name": "setUser",
+          "startLine": 260,
+          "endLine": 263,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "getAuthorities",
+          "startLine": 265,
+          "endLine": 277,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "LoginUser",
+          "startLine": 19,
+          "endLine": 278,
+          "methods": [
+            "LoginUser",
+            "LoginUser",
+            "LoginUser",
+            "getUserId",
+            "setUserId",
+            "getDeptId",
+            "setDeptId",
+            "getToken",
+            "setToken",
+            "getPassword",
+            "getUsername",
+            "isAccountNonExpired",
+            "isAccountNonLocked",
+            "isCredentialsNonExpired",
+            "isEnabled",
+            "getLoginTime",
+            "setLoginTime",
+            "getIpaddr",
+            "setIpaddr",
+            "getLoginLocation",
+            "setLoginLocation",
+            "getBrowser",
+            "setBrowser",
+            "getOs",
+            "setOs",
+            "getExpireTime",
+            "setExpireTime",
+            "getPermissions",
+            "setPermissions",
+            "getUser",
+            "setUser",
+            "getAuthorities"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "userId",
+            "deptId",
+            "token",
+            "loginTime",
+            "expireTime",
+            "ipaddr",
+            "loginLocation",
+            "browser",
+            "os",
+            "permissions",
+            "user"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LoginUser",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "LoginUser",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "LoginUser",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "getUserId",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "setUserId",
+          "line": 101,
+          "isDefault": false
+        },
+        {
+          "name": "getDeptId",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "setDeptId",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "getToken",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "setToken",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "getPassword",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "getUsername",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "isAccountNonExpired",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "isAccountNonLocked",
+          "line": 154,
+          "isDefault": false
+        },
+        {
+          "name": "isCredentialsNonExpired",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "isEnabled",
+          "line": 178,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginTime",
+          "line": 185,
+          "isDefault": false
+        },
+        {
+          "name": "setLoginTime",
+          "line": 190,
+          "isDefault": false
+        },
+        {
+          "name": "getIpaddr",
+          "line": 195,
+          "isDefault": false
+        },
+        {
+          "name": "setIpaddr",
+          "line": 200,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginLocation",
+          "line": 205,
+          "isDefault": false
+        },
+        {
+          "name": "setLoginLocation",
+          "line": 210,
+          "isDefault": false
+        },
+        {
+          "name": "getBrowser",
+          "line": 215,
+          "isDefault": false
+        },
+        {
+          "name": "setBrowser",
+          "line": 220,
+          "isDefault": false
+        },
+        {
+          "name": "getOs",
+          "line": 225,
+          "isDefault": false
+        },
+        {
+          "name": "setOs",
+          "line": 230,
+          "isDefault": false
+        },
+        {
+          "name": "getExpireTime",
+          "line": 235,
+          "isDefault": false
+        },
+        {
+          "name": "setExpireTime",
+          "line": 240,
+          "isDefault": false
+        },
+        {
+          "name": "getPermissions",
+          "line": 245,
+          "isDefault": false
+        },
+        {
+          "name": "setPermissions",
+          "line": 250,
+          "isDefault": false
+        },
+        {
+          "name": "getUser",
+          "line": 255,
+          "isDefault": false
+        },
+        {
+          "name": "setUser",
+          "line": 260,
+          "isDefault": false
+        },
+        {
+          "name": "getAuthorities",
+          "line": 265,
+          "isDefault": false
+        },
+        {
+          "name": "LoginUser",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getPassword",
+          "callee": "user.getPassword",
+          "lineNumber": 130
+        },
+        {
+          "caller": "getUsername",
+          "callee": "user.getUserName",
+          "lineNumber": 136
+        },
+        {
+          "caller": "getAuthorities",
+          "callee": "permissions.isEmpty",
+          "lineNumber": 269
+        },
+        {
+          "caller": "getAuthorities",
+          "callee": "Collections.emptyList",
+          "lineNumber": 271
+        },
+        {
+          "caller": "getAuthorities",
+          "callee": "permissions.stream()\r\n            .filter(Objects::nonNull)\r\n            .map(SimpleGrantedAuthority::new).collect",
+          "lineNumber": 273
+        },
+        {
+          "caller": "getAuthorities",
+          "callee": "permissions.stream()\r\n            .filter(Objects::nonNull).map",
+          "lineNumber": 273
+        },
+        {
+          "caller": "getAuthorities",
+          "callee": "permissions.stream().filter",
+          "lineNumber": 273
+        },
+        {
+          "caller": "getAuthorities",
+          "callee": "permissions.stream",
+          "lineNumber": 273
+        },
+        {
+          "caller": "getAuthorities",
+          "callee": "Collectors.toList",
+          "lineNumber": 276
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 33,
+        "functionCount": 32,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/DesensitizedType.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 48,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/UserStatus.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 25,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 74,
+      "nonEmptyLines": 62,
+      "functions": [
+        {
+          "name": "ServiceException",
+          "startLine": 32,
+          "endLine": 34,
+          "params": []
+        },
+        {
+          "name": "ServiceException",
+          "startLine": 36,
+          "endLine": 39,
+          "params": [
+            "message"
+          ]
+        },
+        {
+          "name": "ServiceException",
+          "startLine": 41,
+          "endLine": 45,
+          "params": [
+            "message",
+            "code"
+          ]
+        },
+        {
+          "name": "getDetailMessage",
+          "startLine": 47,
+          "endLine": 50,
+          "params": []
+        },
+        {
+          "name": "getMessage",
+          "startLine": 52,
+          "endLine": 56,
+          "params": []
+        },
+        {
+          "name": "getCode",
+          "startLine": 58,
+          "endLine": 61,
+          "params": []
+        },
+        {
+          "name": "setMessage",
+          "startLine": 63,
+          "endLine": 67,
+          "params": [
+            "message"
+          ]
+        },
+        {
+          "name": "setDetailMessage",
+          "startLine": 69,
+          "endLine": 73,
+          "params": [
+            "detailMessage"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ServiceException",
+          "startLine": 8,
+          "endLine": 74,
+          "methods": [
+            "ServiceException",
+            "ServiceException",
+            "ServiceException",
+            "getDetailMessage",
+            "getMessage",
+            "getCode",
+            "setMessage",
+            "setDetailMessage"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "code",
+            "message",
+            "detailMessage"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ServiceException",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "ServiceException",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "ServiceException",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "getDetailMessage",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "getMessage",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "getCode",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "setMessage",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "setDetailMessage",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "ServiceException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 9,
+        "functionCount": 8,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/base/BaseException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 97,
+      "nonEmptyLines": 81,
+      "functions": [
+        {
+          "name": "BaseException",
+          "startLine": 35,
+          "endLine": 41,
+          "params": [
+            "module",
+            "code",
+            "args",
+            "defaultMessage"
+          ]
+        },
+        {
+          "name": "BaseException",
+          "startLine": 43,
+          "endLine": 46,
+          "params": [
+            "module",
+            "code",
+            "args"
+          ]
+        },
+        {
+          "name": "BaseException",
+          "startLine": 48,
+          "endLine": 51,
+          "params": [
+            "module",
+            "defaultMessage"
+          ]
+        },
+        {
+          "name": "BaseException",
+          "startLine": 53,
+          "endLine": 56,
+          "params": [
+            "code",
+            "args"
+          ]
+        },
+        {
+          "name": "BaseException",
+          "startLine": 58,
+          "endLine": 61,
+          "params": [
+            "defaultMessage"
+          ]
+        },
+        {
+          "name": "getMessage",
+          "startLine": 63,
+          "endLine": 76,
+          "params": []
+        },
+        {
+          "name": "getModule",
+          "startLine": 78,
+          "endLine": 81,
+          "params": []
+        },
+        {
+          "name": "getCode",
+          "startLine": 83,
+          "endLine": 86,
+          "params": []
+        },
+        {
+          "name": "getArgs",
+          "startLine": 88,
+          "endLine": 91,
+          "params": []
+        },
+        {
+          "name": "getDefaultMessage",
+          "startLine": 93,
+          "endLine": 96,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "BaseException",
+          "startLine": 11,
+          "endLine": 97,
+          "methods": [
+            "BaseException",
+            "BaseException",
+            "BaseException",
+            "BaseException",
+            "BaseException",
+            "getMessage",
+            "getModule",
+            "getCode",
+            "getArgs",
+            "getDefaultMessage"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "module",
+            "code",
+            "args",
+            "defaultMessage"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "BaseException",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "BaseException",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "BaseException",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "BaseException",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "BaseException",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "getMessage",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "getModule",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "getCode",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "getArgs",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "getDefaultMessage",
+          "line": 93,
+          "isDefault": false
+        },
+        {
+          "name": "BaseException",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getMessage",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getMessage",
+          "callee": "MessageUtils.message",
+          "lineNumber": 69
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 11,
+        "functionCount": 10,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "nonEmptyLines": 15,
+      "functions": [
+        {
+          "name": "FileException",
+          "startLine": 14,
+          "endLine": 17,
+          "params": [
+            "code",
+            "args"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "FileException",
+          "startLine": 10,
+          "endLine": 19,
+          "methods": [
+            "FileException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "FileException",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "FileException",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/BlackListException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "BlackListException",
+          "startLine": 12,
+          "endLine": 15,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "BlackListException",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [
+            "BlackListException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "BlackListException",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "BlackListException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "CaptchaException",
+          "startLine": 12,
+          "endLine": 15,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "CaptchaException",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [
+            "CaptchaException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CaptchaException",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "CaptchaException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaExpireException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "CaptchaExpireException",
+          "startLine": 12,
+          "endLine": 15,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "CaptchaExpireException",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [
+            "CaptchaExpireException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CaptchaExpireException",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "CaptchaExpireException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 18,
+      "nonEmptyLines": 15,
+      "functions": [
+        {
+          "name": "UserException",
+          "startLine": 14,
+          "endLine": 17,
+          "params": [
+            "code",
+            "args"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UserException",
+          "startLine": 10,
+          "endLine": 18,
+          "methods": [
+            "UserException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UserException",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "UserException",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserNotExistsException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "UserNotExistsException",
+          "startLine": 12,
+          "endLine": 15,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "UserNotExistsException",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [
+            "UserNotExistsException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UserNotExistsException",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "UserNotExistsException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordNotMatchException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "UserPasswordNotMatchException",
+          "startLine": 12,
+          "endLine": 15,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "UserPasswordNotMatchException",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [
+            "UserPasswordNotMatchException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UserPasswordNotMatchException",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "UserPasswordNotMatchException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordRetryLimitExceedException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 14,
+      "functions": [
+        {
+          "name": "UserPasswordRetryLimitExceedException",
+          "startLine": 12,
+          "endLine": 15,
+          "params": [
+            "retryLimitCount",
+            "lockTime"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UserPasswordRetryLimitExceedException",
+          "startLine": 8,
+          "endLine": 16,
+          "methods": [
+            "UserPasswordRetryLimitExceedException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UserPasswordRetryLimitExceedException",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "UserPasswordRetryLimitExceedException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/DesensitizedUtil.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 47,
+      "functions": [
+        {
+          "name": "password",
+          "startLine": 16,
+          "endLine": 23,
+          "params": [
+            "password"
+          ]
+        },
+        {
+          "name": "carLicense",
+          "startLine": 31,
+          "endLine": 48,
+          "params": [
+            "carLicense"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DesensitizedUtil",
+          "startLine": 8,
+          "endLine": 49,
+          "methods": [
+            "password",
+            "carLicense"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "password",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "carLicense",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "DesensitizedUtil",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "password",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 18
+        },
+        {
+          "caller": "password",
+          "callee": "StringUtils.repeat",
+          "lineNumber": 22
+        },
+        {
+          "caller": "password",
+          "callee": "password.length",
+          "lineNumber": 22
+        },
+        {
+          "caller": "carLicense",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 33
+        },
+        {
+          "caller": "carLicense",
+          "callee": "carLicense.length",
+          "lineNumber": 38
+        },
+        {
+          "caller": "carLicense",
+          "callee": "StringUtils.hide",
+          "lineNumber": 40
+        },
+        {
+          "caller": "carLicense",
+          "callee": "carLicense.length",
+          "lineNumber": 42
+        },
+        {
+          "caller": "carLicense",
+          "callee": "StringUtils.hide",
+          "lineNumber": 45
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 24,
+      "functions": [
+        {
+          "name": "message",
+          "startLine": 21,
+          "endLine": 25,
+          "params": [
+            "code"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "MessageUtils",
+          "startLine": 12,
+          "endLine": 26,
+          "methods": [
+            "message"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "message",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "MessageUtils",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "message",
+          "callee": "SpringUtils.getBean",
+          "lineNumber": 23
+        },
+        {
+          "caller": "message",
+          "callee": "messageSource.getMessage",
+          "lineNumber": 24
+        },
+        {
+          "caller": "message",
+          "callee": "LocaleContextHolder.getLocale",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 188,
+      "nonEmptyLines": 172,
+      "functions": [
+        {
+          "name": "getUserId",
+          "startLine": 27,
+          "endLine": 37,
+          "params": []
+        },
+        {
+          "name": "getDeptId",
+          "startLine": 42,
+          "endLine": 52,
+          "params": []
+        },
+        {
+          "name": "getUsername",
+          "startLine": 57,
+          "endLine": 67,
+          "params": []
+        },
+        {
+          "name": "getLoginUser",
+          "startLine": 72,
+          "endLine": 82,
+          "params": []
+        },
+        {
+          "name": "getAuthentication",
+          "startLine": 87,
+          "endLine": 90,
+          "params": []
+        },
+        {
+          "name": "encryptPassword",
+          "startLine": 98,
+          "endLine": 102,
+          "params": [
+            "password"
+          ]
+        },
+        {
+          "name": "matchesPassword",
+          "startLine": 111,
+          "endLine": 115,
+          "params": [
+            "rawPassword",
+            "encodedPassword"
+          ]
+        },
+        {
+          "name": "isAdmin",
+          "startLine": 122,
+          "endLine": 125,
+          "params": []
+        },
+        {
+          "name": "isAdmin",
+          "startLine": 133,
+          "endLine": 136,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "hasPermi",
+          "startLine": 144,
+          "endLine": 147,
+          "params": [
+            "permission"
+          ]
+        },
+        {
+          "name": "hasPermi",
+          "startLine": 156,
+          "endLine": 160,
+          "params": [
+            "authorities",
+            "permission"
+          ]
+        },
+        {
+          "name": "hasRole",
+          "startLine": 168,
+          "endLine": 173,
+          "params": [
+            "role"
+          ]
+        },
+        {
+          "name": "hasRole",
+          "startLine": 182,
+          "endLine": 186,
+          "params": [
+            "roles",
+            "role"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SecurityUtils",
+          "startLine": 21,
+          "endLine": 188,
+          "methods": [
+            "getUserId",
+            "getDeptId",
+            "getUsername",
+            "getLoginUser",
+            "getAuthentication",
+            "encryptPassword",
+            "matchesPassword",
+            "isAdmin",
+            "isAdmin",
+            "hasPermi",
+            "hasPermi",
+            "hasRole",
+            "hasRole"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "getUserId",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "getDeptId",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "getUsername",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginUser",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "getAuthentication",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "encryptPassword",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "matchesPassword",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "isAdmin",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "isAdmin",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "hasPermi",
+          "line": 144,
+          "isDefault": false
+        },
+        {
+          "name": "hasPermi",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "hasRole",
+          "line": 168,
+          "isDefault": false
+        },
+        {
+          "name": "hasRole",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "SecurityUtils",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getUserId",
+          "callee": "getLoginUser().getUserId",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getUserId",
+          "callee": "getLoginUser",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getUserId",
+          "callee": "new ServiceException",
+          "lineNumber": 35
+        },
+        {
+          "caller": "getDeptId",
+          "callee": "getLoginUser().getDeptId",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getDeptId",
+          "callee": "getLoginUser",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getDeptId",
+          "callee": "new ServiceException",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getUsername",
+          "callee": "getLoginUser().getUsername",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getUsername",
+          "callee": "getLoginUser",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getUsername",
+          "callee": "new ServiceException",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "getAuthentication().getPrincipal",
+          "lineNumber": 76
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "getAuthentication",
+          "lineNumber": 76
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "new ServiceException",
+          "lineNumber": 80
+        },
+        {
+          "caller": "getAuthentication",
+          "callee": "SecurityContextHolder.getContext().getAuthentication",
+          "lineNumber": 89
+        },
+        {
+          "caller": "getAuthentication",
+          "callee": "SecurityContextHolder.getContext",
+          "lineNumber": 89
+        },
+        {
+          "caller": "encryptPassword",
+          "callee": "new BCryptPasswordEncoder",
+          "lineNumber": 100
+        },
+        {
+          "caller": "encryptPassword",
+          "callee": "passwordEncoder.encode",
+          "lineNumber": 101
+        },
+        {
+          "caller": "matchesPassword",
+          "callee": "new BCryptPasswordEncoder",
+          "lineNumber": 113
+        },
+        {
+          "caller": "matchesPassword",
+          "callee": "passwordEncoder.matches",
+          "lineNumber": 114
+        },
+        {
+          "caller": "isAdmin",
+          "callee": "isAdmin",
+          "lineNumber": 124
+        },
+        {
+          "caller": "isAdmin",
+          "callee": "getUserId",
+          "lineNumber": 124
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "hasPermi",
+          "lineNumber": 146
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "getLoginUser().getPermissions",
+          "lineNumber": 146
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "getLoginUser",
+          "lineNumber": 146
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "authorities.stream().filter(StringUtils::hasText).anyMatch",
+          "lineNumber": 158
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "authorities.stream().filter",
+          "lineNumber": 158
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "authorities.stream",
+          "lineNumber": 158
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "Constants.ALL_PERMISSION.equals",
+          "lineNumber": 159
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "PatternMatchUtils.simpleMatch",
+          "lineNumber": 159
+        },
+        {
+          "caller": "hasRole",
+          "callee": "getLoginUser().getUser().getRoles",
+          "lineNumber": 170
+        },
+        {
+          "caller": "hasRole",
+          "callee": "getLoginUser().getUser",
+          "lineNumber": 170
+        },
+        {
+          "caller": "hasRole",
+          "callee": "getLoginUser",
+          "lineNumber": 170
+        },
+        {
+          "caller": "hasRole",
+          "callee": "roleList.stream().map(SysRole::getRoleKey).collect",
+          "lineNumber": 171
+        },
+        {
+          "caller": "hasRole",
+          "callee": "roleList.stream().map",
+          "lineNumber": 171
+        },
+        {
+          "caller": "hasRole",
+          "callee": "roleList.stream",
+          "lineNumber": 171
+        },
+        {
+          "caller": "hasRole",
+          "callee": "Collectors.toSet",
+          "lineNumber": 171
+        },
+        {
+          "caller": "hasRole",
+          "callee": "hasRole",
+          "lineNumber": 172
+        },
+        {
+          "caller": "hasRole",
+          "callee": "roles.stream().filter(StringUtils::hasText).anyMatch",
+          "lineNumber": 184
+        },
+        {
+          "caller": "hasRole",
+          "callee": "roles.stream().filter",
+          "lineNumber": 184
+        },
+        {
+          "caller": "hasRole",
+          "callee": "roles.stream",
+          "lineNumber": 184
+        },
+        {
+          "caller": "hasRole",
+          "callee": "Constants.SUPER_ADMIN.equals",
+          "lineNumber": 185
+        },
+        {
+          "caller": "hasRole",
+          "callee": "PatternMatchUtils.simpleMatch",
+          "lineNumber": 185
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 14,
+        "functionCount": 13,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/MimeTypeUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 48,
+      "functions": [
+        {
+          "name": "getExtension",
+          "startLine": 41,
+          "endLine": 58,
+          "params": [
+            "prefix"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "MimeTypeUtils",
+          "startLine": 8,
+          "endLine": 59,
+          "methods": [
+            "getExtension"
+          ],
+          "properties": [
+            "IMAGE_PNG",
+            "IMAGE_JPG",
+            "IMAGE_JPEG",
+            "IMAGE_BMP",
+            "IMAGE_GIF",
+            "IMAGE_EXTENSION",
+            "FLASH_EXTENSION",
+            "MEDIA_EXTENSION",
+            "VIDEO_EXTENSION",
+            "DEFAULT_ALLOWED_EXTENSION"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "IMAGE_PNG",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "IMAGE_JPG",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "IMAGE_JPEG",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "IMAGE_BMP",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "IMAGE_GIF",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "IMAGE_EXTENSION",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "FLASH_EXTENSION",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "MEDIA_EXTENSION",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "VIDEO_EXTENSION",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "DEFAULT_ALLOWED_EXTENSION",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "getExtension",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "MimeTypeUtils",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 12,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/DataScopeAspect.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 160,
+      "nonEmptyLines": 151,
+      "functions": [
+        {
+          "name": "doBefore",
+          "startLine": 35,
+          "endLine": 40,
+          "params": [
+            "point",
+            "controllerDataScope"
+          ]
+        },
+        {
+          "name": "handleDataScope",
+          "startLine": 42,
+          "endLine": 56,
+          "params": [
+            "joinPoint",
+            "controllerDataScope"
+          ]
+        },
+        {
+          "name": "dataScopeFilter",
+          "startLine": 67,
+          "endLine": 146,
+          "params": [
+            "joinPoint",
+            "user",
+            "userAlias",
+            "deptAlias",
+            "userField",
+            "deptField",
+            "permission"
+          ]
+        },
+        {
+          "name": "clearDataScope",
+          "startLine": 151,
+          "endLine": 159,
+          "params": [
+            "joinPoint"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "DataScopeAspect",
+          "startLine": 26,
+          "endLine": 160,
+          "methods": [
+            "doBefore",
+            "handleDataScope",
+            "dataScopeFilter",
+            "clearDataScope"
+          ],
+          "properties": [
+            "DATA_SCOPE"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DATA_SCOPE",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "doBefore",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "dataScopeFilter",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "DataScopeAspect",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "doBefore",
+          "callee": "clearDataScope",
+          "lineNumber": 38
+        },
+        {
+          "caller": "doBefore",
+          "callee": "handleDataScope",
+          "lineNumber": 39
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "SecurityUtils.getLoginUser",
+          "lineNumber": 45
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 46
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "loginUser.getUser",
+          "lineNumber": 48
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 50
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "currentUser.isAdmin",
+          "lineNumber": 50
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "StringUtils.defaultIfEmpty",
+          "lineNumber": 52
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "controllerDataScope.permission",
+          "lineNumber": 52
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "PermissionContextHolder.getContext",
+          "lineNumber": 52
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "dataScopeFilter",
+          "lineNumber": 53
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "controllerDataScope.userAlias",
+          "lineNumber": 53
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "controllerDataScope.deptAlias",
+          "lineNumber": 53
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "controllerDataScope.userField",
+          "lineNumber": 53
+        },
+        {
+          "caller": "handleDataScope",
+          "callee": "controllerDataScope.deptField",
+          "lineNumber": 53
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "new StringBuilder",
+          "lineNumber": 69
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "new ArrayList<String>",
+          "lineNumber": 70
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "new ArrayList<String>",
+          "lineNumber": 71
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "user.getRoles().forEach",
+          "lineNumber": 72
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "user.getRoles",
+          "lineNumber": 72
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Constants.Dept.DATA_SCOPE_CUSTOM.equals",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getDataScope",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.equals",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getStatus",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.containsAny",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getPermissions",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Convert.toStrArray",
+          "lineNumber": 73
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "scopeCustomIds.add",
+          "lineNumber": 75
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Convert.toStr",
+          "lineNumber": 75
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getRoleId",
+          "lineNumber": 75
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "user.getRoles",
+          "lineNumber": 79
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getDataScope",
+          "lineNumber": 81
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "conditions.contains",
+          "lineNumber": 82
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.equals",
+          "lineNumber": 82
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getStatus",
+          "lineNumber": 82
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 86
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.containsAny",
+          "lineNumber": 86
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getPermissions",
+          "lineNumber": 86
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Convert.toStrArray",
+          "lineNumber": 86
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Constants.Dept.DATA_SCOPE_ALL.equals",
+          "lineNumber": 90
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "new StringBuilder",
+          "lineNumber": 92
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "conditions.add",
+          "lineNumber": 93
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Constants.Dept.DATA_SCOPE_CUSTOM.equals",
+          "lineNumber": 96
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "scopeCustomIds.size",
+          "lineNumber": 98
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.append",
+          "lineNumber": 101
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.format",
+          "lineNumber": 101
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "String.join",
+          "lineNumber": 101
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.append",
+          "lineNumber": 105
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.format",
+          "lineNumber": 105
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "role.getRoleId",
+          "lineNumber": 105
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Constants.Dept.DATA_SCOPE_DEPT.equals",
+          "lineNumber": 108
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.append",
+          "lineNumber": 110
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.format",
+          "lineNumber": 110
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "user.getDeptId",
+          "lineNumber": 110
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Constants.Dept.DATA_SCOPE_DEPT_AND_CHILD.equals",
+          "lineNumber": 112
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.append",
+          "lineNumber": 114
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.format",
+          "lineNumber": 114
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "user.getDeptId",
+          "lineNumber": 114
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "user.getDeptId",
+          "lineNumber": 114
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "Constants.Dept.DATA_SCOPE_SELF.equals",
+          "lineNumber": 116
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.isNotBlank",
+          "lineNumber": 118
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.append",
+          "lineNumber": 120
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.format",
+          "lineNumber": 120
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "user.getUserId",
+          "lineNumber": 120
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.append",
+          "lineNumber": 125
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.format",
+          "lineNumber": 125
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "conditions.add",
+          "lineNumber": 128
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 132
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.append",
+          "lineNumber": 134
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.format",
+          "lineNumber": 134
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.isNotBlank",
+          "lineNumber": 137
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.toString",
+          "lineNumber": 137
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "joinPoint.getArgs",
+          "lineNumber": 139
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 140
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "baseEntity.getParams().put",
+          "lineNumber": 143
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "baseEntity.getParams",
+          "lineNumber": 143
+        },
+        {
+          "caller": "dataScopeFilter",
+          "callee": "sqlString.substring",
+          "lineNumber": 143
+        },
+        {
+          "caller": "clearDataScope",
+          "callee": "joinPoint.getArgs",
+          "lineNumber": 153
+        },
+        {
+          "caller": "clearDataScope",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 154
+        },
+        {
+          "caller": "clearDataScope",
+          "callee": "baseEntity.getParams().put",
+          "lineNumber": 157
+        },
+        {
+          "caller": "clearDataScope",
+          "callee": "baseEntity.getParams",
+          "lineNumber": 157
+        }
+      ],
+      "metrics": {
+        "importCount": 11,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/AuthenticationContextHolder.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 23,
+      "functions": [
+        {
+          "name": "getContext",
+          "startLine": 14,
+          "endLine": 17,
+          "params": []
+        },
+        {
+          "name": "setContext",
+          "startLine": 19,
+          "endLine": 22,
+          "params": [
+            "context"
+          ]
+        },
+        {
+          "name": "clearContext",
+          "startLine": 24,
+          "endLine": 27,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "AuthenticationContextHolder",
+          "startLine": 10,
+          "endLine": 28,
+          "methods": [
+            "getContext",
+            "setContext",
+            "clearContext"
+          ],
+          "properties": [
+            "contextHolder"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getContext",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "setContext",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "clearContext",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "AuthenticationContextHolder",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getContext",
+          "callee": "contextHolder.get",
+          "lineNumber": 16
+        },
+        {
+          "caller": "setContext",
+          "callee": "contextHolder.set",
+          "lineNumber": 21
+        },
+        {
+          "caller": "clearContext",
+          "callee": "contextHolder.remove",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/PermissionContextHolder.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 23,
+      "functions": [
+        {
+          "name": "setContext",
+          "startLine": 16,
+          "endLine": 20,
+          "params": [
+            "permission"
+          ]
+        },
+        {
+          "name": "getContext",
+          "startLine": 22,
+          "endLine": 26,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "PermissionContextHolder",
+          "startLine": 12,
+          "endLine": 27,
+          "methods": [
+            "setContext",
+            "getContext"
+          ],
+          "properties": [
+            "PERMISSION_CONTEXT_ATTRIBUTES"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "setContext",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "getContext",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "PermissionContextHolder",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setContext",
+          "callee": "RequestContextHolder.currentRequestAttributes().setAttribute",
+          "lineNumber": 18
+        },
+        {
+          "caller": "setContext",
+          "callee": "RequestContextHolder.currentRequestAttributes",
+          "lineNumber": 18
+        },
+        {
+          "caller": "getContext",
+          "callee": "Convert.toStr",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getContext",
+          "callee": "RequestContextHolder.currentRequestAttributes().getAttribute",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getContext",
+          "callee": "RequestContextHolder.currentRequestAttributes",
+          "lineNumber": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/filter/JwtAuthenticationTokenFilter.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 41,
+      "functions": [
+        {
+          "name": "doFilterInternal",
+          "startLine": 30,
+          "endLine": 43,
+          "params": [
+            "request",
+            "response",
+            "chain"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "JwtAuthenticationTokenFilter",
+          "startLine": 24,
+          "endLine": 44,
+          "methods": [
+            "doFilterInternal"
+          ],
+          "properties": [
+            "tokenService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "JwtAuthenticationTokenFilter",
+          "line": 24,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "doFilterInternal",
+          "callee": "tokenService.getLoginUser",
+          "lineNumber": 34
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 35
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 35
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "SecurityUtils.getAuthentication",
+          "lineNumber": 35
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "tokenService.verifyToken",
+          "lineNumber": 37
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "new UsernamePasswordAuthenticationToken",
+          "lineNumber": 38
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "loginUser.getAuthorities",
+          "lineNumber": 38
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "authenticationToken.setDetails",
+          "lineNumber": 39
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "new WebAuthenticationDetailsSource().buildDetails",
+          "lineNumber": 39
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "new WebAuthenticationDetailsSource",
+          "lineNumber": 39
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "SecurityContextHolder.getContext().setAuthentication",
+          "lineNumber": 40
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "SecurityContextHolder.getContext",
+          "lineNumber": 40
+        },
+        {
+          "caller": "doFilterInternal",
+          "callee": "chain.doFilter",
+          "lineNumber": 42
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/PermissionService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 159,
+      "nonEmptyLines": 151,
+      "functions": [
+        {
+          "name": "hasPermi",
+          "startLine": 27,
+          "endLine": 40,
+          "params": [
+            "permission"
+          ]
+        },
+        {
+          "name": "lacksPermi",
+          "startLine": 48,
+          "endLine": 51,
+          "params": [
+            "permission"
+          ]
+        },
+        {
+          "name": "hasAnyPermi",
+          "startLine": 59,
+          "endLine": 80,
+          "params": [
+            "permissions"
+          ]
+        },
+        {
+          "name": "hasRole",
+          "startLine": 88,
+          "endLine": 108,
+          "params": [
+            "role"
+          ]
+        },
+        {
+          "name": "lacksRole",
+          "startLine": 116,
+          "endLine": 119,
+          "params": [
+            "role"
+          ]
+        },
+        {
+          "name": "hasAnyRoles",
+          "startLine": 127,
+          "endLine": 146,
+          "params": [
+            "roles"
+          ]
+        },
+        {
+          "name": "hasPermissions",
+          "startLine": 155,
+          "endLine": 158,
+          "params": [
+            "permissions",
+            "permission"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "PermissionService",
+          "startLine": 18,
+          "endLine": 159,
+          "methods": [
+            "hasPermi",
+            "lacksPermi",
+            "hasAnyPermi",
+            "hasRole",
+            "lacksRole",
+            "hasAnyRoles",
+            "hasPermissions"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "hasPermi",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "lacksPermi",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "hasAnyPermi",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "hasRole",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "lacksRole",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "hasAnyRoles",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "PermissionService",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "hasPermi",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 29
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "SecurityUtils.getLoginUser",
+          "lineNumber": 33
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 34
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "CollectionUtils.isEmpty",
+          "lineNumber": 34
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "loginUser.getPermissions",
+          "lineNumber": 34
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "PermissionContextHolder.setContext",
+          "lineNumber": 38
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "hasPermissions",
+          "lineNumber": 39
+        },
+        {
+          "caller": "hasPermi",
+          "callee": "loginUser.getPermissions",
+          "lineNumber": 39
+        },
+        {
+          "caller": "lacksPermi",
+          "callee": "hasPermi",
+          "lineNumber": 50
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 61
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "SecurityUtils.getLoginUser",
+          "lineNumber": 65
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 66
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "CollectionUtils.isEmpty",
+          "lineNumber": 66
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "loginUser.getPermissions",
+          "lineNumber": 66
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "PermissionContextHolder.setContext",
+          "lineNumber": 70
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "loginUser.getPermissions",
+          "lineNumber": 71
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "permissions.split",
+          "lineNumber": 72
+        },
+        {
+          "caller": "hasAnyPermi",
+          "callee": "hasPermissions",
+          "lineNumber": 74
+        },
+        {
+          "caller": "hasRole",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 90
+        },
+        {
+          "caller": "hasRole",
+          "callee": "SecurityUtils.getLoginUser",
+          "lineNumber": 94
+        },
+        {
+          "caller": "hasRole",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 95
+        },
+        {
+          "caller": "hasRole",
+          "callee": "CollectionUtils.isEmpty",
+          "lineNumber": 95
+        },
+        {
+          "caller": "hasRole",
+          "callee": "loginUser.getUser().getRoles",
+          "lineNumber": 95
+        },
+        {
+          "caller": "hasRole",
+          "callee": "loginUser.getUser",
+          "lineNumber": 95
+        },
+        {
+          "caller": "hasRole",
+          "callee": "loginUser.getUser().getRoles",
+          "lineNumber": 99
+        },
+        {
+          "caller": "hasRole",
+          "callee": "loginUser.getUser",
+          "lineNumber": 99
+        },
+        {
+          "caller": "hasRole",
+          "callee": "sysRole.getRoleKey",
+          "lineNumber": 101
+        },
+        {
+          "caller": "hasRole",
+          "callee": "Constants.SUPER_ADMIN.equals",
+          "lineNumber": 102
+        },
+        {
+          "caller": "hasRole",
+          "callee": "roleKey.equals",
+          "lineNumber": 102
+        },
+        {
+          "caller": "hasRole",
+          "callee": "StringUtils.trim",
+          "lineNumber": 102
+        },
+        {
+          "caller": "lacksRole",
+          "callee": "hasRole",
+          "lineNumber": 118
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 129
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "SecurityUtils.getLoginUser",
+          "lineNumber": 133
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 134
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "CollectionUtils.isEmpty",
+          "lineNumber": 134
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "loginUser.getUser().getRoles",
+          "lineNumber": 134
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "loginUser.getUser",
+          "lineNumber": 134
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "roles.split",
+          "lineNumber": 138
+        },
+        {
+          "caller": "hasAnyRoles",
+          "callee": "hasRole",
+          "lineNumber": 140
+        },
+        {
+          "caller": "hasPermissions",
+          "callee": "permissions.contains",
+          "lineNumber": 157
+        },
+        {
+          "caller": "hasPermissions",
+          "callee": "permissions.contains",
+          "lineNumber": 157
+        },
+        {
+          "caller": "hasPermissions",
+          "callee": "StringUtils.trim",
+          "lineNumber": 157
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 7,
+        "functionCount": 7,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysLoginService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 176,
+      "nonEmptyLines": 166,
+      "functions": [
+        {
+          "name": "login",
+          "startLine": 63,
+          "endLine": 100,
+          "params": [
+            "username",
+            "password",
+            "code",
+            "uuid"
+          ]
+        },
+        {
+          "name": "validateCaptcha",
+          "startLine": 110,
+          "endLine": 129,
+          "params": [
+            "username",
+            "code",
+            "uuid"
+          ]
+        },
+        {
+          "name": "loginPreCheck",
+          "startLine": 136,
+          "endLine": 165,
+          "params": [
+            "username",
+            "password"
+          ]
+        },
+        {
+          "name": "recordLoginInfo",
+          "startLine": 172,
+          "endLine": 175,
+          "params": [
+            "userId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysLoginService",
+          "startLine": 36,
+          "endLine": 176,
+          "methods": [
+            "login",
+            "validateCaptcha",
+            "loginPreCheck",
+            "recordLoginInfo"
+          ],
+          "properties": [
+            "tokenService",
+            "authenticationManager",
+            "redisCache",
+            "userService",
+            "configService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "login",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "validateCaptcha",
+          "line": 110,
+          "isDefault": false
+        },
+        {
+          "name": "loginPreCheck",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "recordLoginInfo",
+          "line": 172,
+          "isDefault": false
+        },
+        {
+          "name": "SysLoginService",
+          "line": 36,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "login",
+          "callee": "validateCaptcha",
+          "lineNumber": 66
+        },
+        {
+          "caller": "login",
+          "callee": "loginPreCheck",
+          "lineNumber": 68
+        },
+        {
+          "caller": "login",
+          "callee": "new UsernamePasswordAuthenticationToken",
+          "lineNumber": 73
+        },
+        {
+          "caller": "login",
+          "callee": "AuthenticationContextHolder.setContext",
+          "lineNumber": 74
+        },
+        {
+          "caller": "login",
+          "callee": "authenticationManager.authenticate",
+          "lineNumber": 76
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 82
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncManager.me",
+          "lineNumber": 82
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 82
+        },
+        {
+          "caller": "login",
+          "callee": "MessageUtils.message",
+          "lineNumber": 82
+        },
+        {
+          "caller": "login",
+          "callee": "new UserPasswordNotMatchException",
+          "lineNumber": 83
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 87
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncManager.me",
+          "lineNumber": 87
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 87
+        },
+        {
+          "caller": "login",
+          "callee": "e.getMessage",
+          "lineNumber": 87
+        },
+        {
+          "caller": "login",
+          "callee": "new ServiceException",
+          "lineNumber": 88
+        },
+        {
+          "caller": "login",
+          "callee": "e.getMessage",
+          "lineNumber": 88
+        },
+        {
+          "caller": "login",
+          "callee": "AuthenticationContextHolder.clearContext",
+          "lineNumber": 93
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 95
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncManager.me",
+          "lineNumber": 95
+        },
+        {
+          "caller": "login",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 95
+        },
+        {
+          "caller": "login",
+          "callee": "MessageUtils.message",
+          "lineNumber": 95
+        },
+        {
+          "caller": "login",
+          "callee": "authentication.getPrincipal",
+          "lineNumber": 96
+        },
+        {
+          "caller": "login",
+          "callee": "recordLoginInfo",
+          "lineNumber": 97
+        },
+        {
+          "caller": "login",
+          "callee": "loginUser.getUserId",
+          "lineNumber": 97
+        },
+        {
+          "caller": "login",
+          "callee": "tokenService.createToken",
+          "lineNumber": 99
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "configService.selectCaptchaEnabled",
+          "lineNumber": 112
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "StringUtils.nvl",
+          "lineNumber": 115
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "redisCache.getCacheObject",
+          "lineNumber": 116
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 119
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "AsyncManager.me",
+          "lineNumber": 119
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 119
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "MessageUtils.message",
+          "lineNumber": 119
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "new CaptchaExpireException",
+          "lineNumber": 120
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "redisCache.deleteObject",
+          "lineNumber": 122
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "code.equalsIgnoreCase",
+          "lineNumber": 123
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 125
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "AsyncManager.me",
+          "lineNumber": 125
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 125
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "MessageUtils.message",
+          "lineNumber": 125
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "new CaptchaException",
+          "lineNumber": 126
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 139
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 139
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 141
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me",
+          "lineNumber": 141
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 141
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "MessageUtils.message",
+          "lineNumber": 141
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "new UserNotExistsException",
+          "lineNumber": 142
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "password.length",
+          "lineNumber": 145
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "password.length",
+          "lineNumber": 146
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 148
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me",
+          "lineNumber": 148
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 148
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "MessageUtils.message",
+          "lineNumber": 148
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "new UserPasswordNotMatchException",
+          "lineNumber": 149
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "username.length",
+          "lineNumber": 152
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "username.length",
+          "lineNumber": 153
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 155
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me",
+          "lineNumber": 155
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 155
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "MessageUtils.message",
+          "lineNumber": 155
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "new UserPasswordNotMatchException",
+          "lineNumber": 156
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "configService.selectConfigByKey",
+          "lineNumber": 159
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "IpUtils.isMatchedIp",
+          "lineNumber": 160
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "IpUtils.getIpAddr",
+          "lineNumber": 160
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 162
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncManager.me",
+          "lineNumber": 162
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 162
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "MessageUtils.message",
+          "lineNumber": 162
+        },
+        {
+          "caller": "loginPreCheck",
+          "callee": "new BlackListException",
+          "lineNumber": 163
+        },
+        {
+          "caller": "recordLoginInfo",
+          "callee": "userService.updateLoginInfo",
+          "lineNumber": 174
+        },
+        {
+          "caller": "recordLoginInfo",
+          "callee": "IpUtils.getIpAddr",
+          "lineNumber": 174
+        },
+        {
+          "caller": "recordLoginInfo",
+          "callee": "DateUtils.getNowDate",
+          "lineNumber": 174
+        }
+      ],
+      "metrics": {
+        "importCount": 20,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPasswordService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 86,
+      "nonEmptyLines": 74,
+      "functions": [
+        {
+          "name": "getCacheKey",
+          "startLine": 39,
+          "endLine": 42,
+          "params": [
+            "username"
+          ]
+        },
+        {
+          "name": "validate",
+          "startLine": 44,
+          "endLine": 72,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "matches",
+          "startLine": 74,
+          "endLine": 77,
+          "params": [
+            "user",
+            "rawPassword"
+          ]
+        },
+        {
+          "name": "clearLoginRecordCache",
+          "startLine": 79,
+          "endLine": 85,
+          "params": [
+            "loginName"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysPasswordService",
+          "startLine": 21,
+          "endLine": 86,
+          "methods": [
+            "getCacheKey",
+            "validate",
+            "matches",
+            "clearLoginRecordCache"
+          ],
+          "properties": [
+            "redisCache",
+            "maxRetryCount",
+            "lockTime"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "validate",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "matches",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "clearLoginRecordCache",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "SysPasswordService",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "validate",
+          "callee": "AuthenticationContextHolder.getContext",
+          "lineNumber": 46
+        },
+        {
+          "caller": "validate",
+          "callee": "usernamePasswordAuthenticationToken.getName",
+          "lineNumber": 47
+        },
+        {
+          "caller": "validate",
+          "callee": "usernamePasswordAuthenticationToken.getCredentials().toString",
+          "lineNumber": 48
+        },
+        {
+          "caller": "validate",
+          "callee": "usernamePasswordAuthenticationToken.getCredentials",
+          "lineNumber": 48
+        },
+        {
+          "caller": "validate",
+          "callee": "redisCache.getCacheObject",
+          "lineNumber": 50
+        },
+        {
+          "caller": "validate",
+          "callee": "getCacheKey",
+          "lineNumber": 50
+        },
+        {
+          "caller": "validate",
+          "callee": "Integer.valueOf(maxRetryCount).intValue",
+          "lineNumber": 57
+        },
+        {
+          "caller": "validate",
+          "callee": "Integer.valueOf",
+          "lineNumber": 57
+        },
+        {
+          "caller": "validate",
+          "callee": "new UserPasswordRetryLimitExceedException",
+          "lineNumber": 59
+        },
+        {
+          "caller": "validate",
+          "callee": "matches",
+          "lineNumber": 62
+        },
+        {
+          "caller": "validate",
+          "callee": "redisCache.setCacheObject",
+          "lineNumber": 65
+        },
+        {
+          "caller": "validate",
+          "callee": "getCacheKey",
+          "lineNumber": 65
+        },
+        {
+          "caller": "validate",
+          "callee": "new UserPasswordNotMatchException",
+          "lineNumber": 66
+        },
+        {
+          "caller": "validate",
+          "callee": "clearLoginRecordCache",
+          "lineNumber": 70
+        },
+        {
+          "caller": "matches",
+          "callee": "SecurityUtils.matchesPassword",
+          "lineNumber": 76
+        },
+        {
+          "caller": "matches",
+          "callee": "user.getPassword",
+          "lineNumber": 76
+        },
+        {
+          "caller": "clearLoginRecordCache",
+          "callee": "redisCache.hasKey",
+          "lineNumber": 81
+        },
+        {
+          "caller": "clearLoginRecordCache",
+          "callee": "getCacheKey",
+          "lineNumber": 81
+        },
+        {
+          "caller": "clearLoginRecordCache",
+          "callee": "redisCache.deleteObject",
+          "lineNumber": 83
+        },
+        {
+          "caller": "clearLoginRecordCache",
+          "callee": "getCacheKey",
+          "lineNumber": 83
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysRegisterService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 117,
+      "nonEmptyLines": 109,
+      "functions": [
+        {
+          "name": "register",
+          "startLine": 42,
+          "endLine": 93,
+          "params": [
+            "registerBody"
+          ]
+        },
+        {
+          "name": "validateCaptcha",
+          "startLine": 103,
+          "endLine": 116,
+          "params": [
+            "username",
+            "code",
+            "uuid"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysRegisterService",
+          "startLine": 27,
+          "endLine": 117,
+          "methods": [
+            "register",
+            "validateCaptcha"
+          ],
+          "properties": [
+            "userService",
+            "configService",
+            "redisCache"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "register",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "validateCaptcha",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "SysRegisterService",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "register",
+          "callee": "registerBody.getUsername",
+          "lineNumber": 44
+        },
+        {
+          "caller": "register",
+          "callee": "registerBody.getPassword",
+          "lineNumber": 44
+        },
+        {
+          "caller": "register",
+          "callee": "new SysUser",
+          "lineNumber": 45
+        },
+        {
+          "caller": "register",
+          "callee": "sysUser.setUserName",
+          "lineNumber": 46
+        },
+        {
+          "caller": "register",
+          "callee": "configService.selectCaptchaEnabled",
+          "lineNumber": 49
+        },
+        {
+          "caller": "register",
+          "callee": "validateCaptcha",
+          "lineNumber": 52
+        },
+        {
+          "caller": "register",
+          "callee": "registerBody.getCode",
+          "lineNumber": 52
+        },
+        {
+          "caller": "register",
+          "callee": "registerBody.getUuid",
+          "lineNumber": 52
+        },
+        {
+          "caller": "register",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 55
+        },
+        {
+          "caller": "register",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 59
+        },
+        {
+          "caller": "register",
+          "callee": "username.length",
+          "lineNumber": 63
+        },
+        {
+          "caller": "register",
+          "callee": "username.length",
+          "lineNumber": 64
+        },
+        {
+          "caller": "register",
+          "callee": "password.length",
+          "lineNumber": 68
+        },
+        {
+          "caller": "register",
+          "callee": "password.length",
+          "lineNumber": 69
+        },
+        {
+          "caller": "register",
+          "callee": "userService.checkUserNameUnique",
+          "lineNumber": 73
+        },
+        {
+          "caller": "register",
+          "callee": "sysUser.setNickName",
+          "lineNumber": 79
+        },
+        {
+          "caller": "register",
+          "callee": "sysUser.setPwdUpdateDate",
+          "lineNumber": 80
+        },
+        {
+          "caller": "register",
+          "callee": "DateUtils.getNowDate",
+          "lineNumber": 80
+        },
+        {
+          "caller": "register",
+          "callee": "sysUser.setPassword",
+          "lineNumber": 81
+        },
+        {
+          "caller": "register",
+          "callee": "SecurityUtils.encryptPassword",
+          "lineNumber": 81
+        },
+        {
+          "caller": "register",
+          "callee": "userService.registerUser",
+          "lineNumber": 82
+        },
+        {
+          "caller": "register",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 89
+        },
+        {
+          "caller": "register",
+          "callee": "AsyncManager.me",
+          "lineNumber": 89
+        },
+        {
+          "caller": "register",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 89
+        },
+        {
+          "caller": "register",
+          "callee": "MessageUtils.message",
+          "lineNumber": 89
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "StringUtils.nvl",
+          "lineNumber": 105
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "redisCache.getCacheObject",
+          "lineNumber": 106
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "redisCache.deleteObject",
+          "lineNumber": 107
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "new CaptchaExpireException",
+          "lineNumber": 110
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "code.equalsIgnoreCase",
+          "lineNumber": 112
+        },
+        {
+          "caller": "validateCaptcha",
+          "callee": "new CaptchaException",
+          "lineNumber": 114
+        }
+      ],
+      "metrics": {
+        "importCount": 16,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/UserDetailsServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 66,
+      "nonEmptyLines": 57,
+      "functions": [
+        {
+          "name": "loadUserByUsername",
+          "startLine": 37,
+          "endLine": 60,
+          "params": [
+            "username"
+          ]
+        },
+        {
+          "name": "createLoginUser",
+          "startLine": 62,
+          "endLine": 65,
+          "params": [
+            "user"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UserDetailsServiceImpl",
+          "startLine": 23,
+          "endLine": 66,
+          "methods": [
+            "loadUserByUsername",
+            "createLoginUser"
+          ],
+          "properties": [
+            "log",
+            "userService",
+            "passwordService",
+            "permissionService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "loadUserByUsername",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "createLoginUser",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "UserDetailsServiceImpl",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "loadUserByUsername",
+          "callee": "userService.selectUserByUserName",
+          "lineNumber": 40
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 41
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "log.info",
+          "lineNumber": 43
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "new ServiceException",
+          "lineNumber": 44
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "MessageUtils.message",
+          "lineNumber": 44
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "UserStatus.DELETED.getCode().equals",
+          "lineNumber": 46
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "UserStatus.DELETED.getCode",
+          "lineNumber": 46
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "user.getDelFlag",
+          "lineNumber": 46
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "log.info",
+          "lineNumber": 48
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "new ServiceException",
+          "lineNumber": 49
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "MessageUtils.message",
+          "lineNumber": 49
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "UserStatus.DISABLE.getCode().equals",
+          "lineNumber": 51
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "UserStatus.DISABLE.getCode",
+          "lineNumber": 51
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "user.getStatus",
+          "lineNumber": 51
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "log.info",
+          "lineNumber": 53
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "new ServiceException",
+          "lineNumber": 54
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "MessageUtils.message",
+          "lineNumber": 54
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "passwordService.validate",
+          "lineNumber": 57
+        },
+        {
+          "caller": "loadUserByUsername",
+          "callee": "createLoginUser",
+          "lineNumber": 59
+        },
+        {
+          "caller": "createLoginUser",
+          "callee": "new LoginUser",
+          "lineNumber": 64
+        },
+        {
+          "caller": "createLoginUser",
+          "callee": "user.getUserId",
+          "lineNumber": 64
+        },
+        {
+          "caller": "createLoginUser",
+          "callee": "user.getDeptId",
+          "lineNumber": 64
+        },
+        {
+          "caller": "createLoginUser",
+          "callee": "permissionService.getMenuPermission",
+          "lineNumber": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 217,
+      "nonEmptyLines": 191,
+      "classes": [
+        {
+          "name": "ISysUserService",
+          "startLine": 12,
+          "endLine": 217,
+          "methods": [
+            "selectUserList",
+            "selectAllocatedList",
+            "selectUnallocatedList",
+            "selectUserByUserName",
+            "selectUserById",
+            "selectUserRoleGroup",
+            "selectUserPostGroup",
+            "checkUserNameUnique",
+            "checkPhoneUnique",
+            "checkEmailUnique",
+            "checkUserAllowed",
+            "checkUserDataScope",
+            "insertUser",
+            "registerUser",
+            "updateUser",
+            "insertUserAuth",
+            "updateUserStatus",
+            "updateUserProfile",
+            "updateUserAvatar",
+            "updateLoginInfo",
+            "resetPwd",
+            "resetUserPwd",
+            "deleteUserById",
+            "deleteUserByIds",
+            "importUser"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ISysUserService",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    }
+  ]
+}

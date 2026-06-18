@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.AgentMessageMapper">
+
+    <resultMap type="com.ruoyi.agent.domain.AgentMessage" id="AgentMessageResult">
+        <result property="id"               column="id"                />
+        <result property="conversationId"   column="conversation_id"   />
+        <result property="difyMessageId"    column="dify_message_id"   />
+        <result property="role"             column="role"              />
+        <result property="content"          column="content"           />
+        <result property="thinking"         column="thinking"          />
+        <result property="messageMetadata"  column="message_metadata"  />
+        <result property="tokenCount"       column="token_count"       />
+        <result property="feedback"         column="feedback"          />
+        <result property="createBy"         column="create_by"         />
+        <result property="createTime"       column="create_time"       />
+        <result property="updateBy"         column="update_by"         />
+        <result property="updateTime"       column="update_time"       />
+        <result property="remark"           column="remark"            />
+    </resultMap>
+
+    <sql id="selectAgentMessageVo">
+        select id, conversation_id, dify_message_id, role, content, thinking,
+               message_metadata, token_count, feedback,
+               create_by, create_time, update_by, update_time, remark
+        from agent_message
+    </sql>
+
+    <select id="selectMessagesByConversationId" parameterType="Long" resultMap="AgentMessageResult">
+        <include refid="selectAgentMessageVo"/>
+        where conversation_id = #{conversationId}
+        order by create_time asc
+    </select>
+
+    <insert id="insertMessage" parameterType="com.ruoyi.agent.domain.AgentMessage" useGeneratedKeys="true" keyProperty="id">
+        insert into agent_message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="conversationId != null">conversation_id,</if>
+            <if test="difyMessageId != null">dify_message_id,</if>
+            <if test="role != null">role,</if>
+            <if test="content != null">content,</if>
+            <if test="thinking != null">thinking,</if>
+            <if test="messageMetadata != null">message_metadata,</if>
+            <if test="tokenCount != null">token_count,</if>
+            <if test="feedback != null">feedback,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="conversationId != null">#{conversationId},</if>
+            <if test="difyMessageId != null">#{difyMessageId},</if>
+            <if test="role != null">#{role},</if>
+            <if test="content != null">#{content},</if>
+            <if test="thinking != null">#{thinking},</if>
+            <if test="messageMetadata != null">#{messageMetadata},</if>
+            <if test="tokenCount != null">#{tokenCount},</if>
+            <if test="feedback != null">#{feedback},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFeedback" parameterType="map">
+        update agent_message
+        set feedback = #{feedback}, update_time = sysdate()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMessagesByConversationId" parameterType="Long">
+        delete from agent_message where conversation_id = #{conversationId}
+    </delete>
+
+</mapper>

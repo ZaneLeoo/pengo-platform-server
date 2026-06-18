@@ -1,0 +1,7121 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 34,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/common/CaptchaController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 94,
+      "nonEmptyLines": 84,
+      "functions": [
+        {
+          "name": "getCode",
+          "startLine": 45,
+          "endLine": 93,
+          "params": [
+            "response"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "CaptchaController",
+          "startLine": 28,
+          "endLine": 94,
+          "methods": [
+            "getCode"
+          ],
+          "properties": [
+            "captchaProducer",
+            "captchaProducerMath",
+            "redisCache",
+            "configService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getCode",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "CaptchaController",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getCode",
+          "callee": "AjaxResult.success",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getCode",
+          "callee": "configService.selectCaptchaEnabled",
+          "lineNumber": 49
+        },
+        {
+          "caller": "getCode",
+          "callee": "ajax.put",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getCode",
+          "callee": "IdUtils.simpleUUID",
+          "lineNumber": 57
+        },
+        {
+          "caller": "getCode",
+          "callee": "RuoYiConfig.getCaptchaType",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getCode",
+          "callee": "\"math\".equals",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getCode",
+          "callee": "captchaProducerMath.createText",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getCode",
+          "callee": "capText.substring",
+          "lineNumber": 68
+        },
+        {
+          "caller": "getCode",
+          "callee": "capText.lastIndexOf",
+          "lineNumber": 68
+        },
+        {
+          "caller": "getCode",
+          "callee": "capText.substring",
+          "lineNumber": 69
+        },
+        {
+          "caller": "getCode",
+          "callee": "capText.lastIndexOf",
+          "lineNumber": 69
+        },
+        {
+          "caller": "getCode",
+          "callee": "captchaProducerMath.createImage",
+          "lineNumber": 70
+        },
+        {
+          "caller": "getCode",
+          "callee": "\"char\".equals",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getCode",
+          "callee": "captchaProducer.createText",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getCode",
+          "callee": "captchaProducer.createImage",
+          "lineNumber": 75
+        },
+        {
+          "caller": "getCode",
+          "callee": "redisCache.setCacheObject",
+          "lineNumber": 78
+        },
+        {
+          "caller": "getCode",
+          "callee": "new FastByteArrayOutputStream",
+          "lineNumber": 80
+        },
+        {
+          "caller": "getCode",
+          "callee": "ImageIO.write",
+          "lineNumber": 83
+        },
+        {
+          "caller": "getCode",
+          "callee": "AjaxResult.error",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getCode",
+          "callee": "e.getMessage",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getCode",
+          "callee": "ajax.put",
+          "lineNumber": 90
+        },
+        {
+          "caller": "getCode",
+          "callee": "ajax.put",
+          "lineNumber": 91
+        },
+        {
+          "caller": "getCode",
+          "callee": "Base64.encode",
+          "lineNumber": 91
+        },
+        {
+          "caller": "getCode",
+          "callee": "os.toByteArray",
+          "lineNumber": 91
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/CacheController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 122,
+      "nonEmptyLines": 110,
+      "functions": [
+        {
+          "name": "getInfo",
+          "startLine": 48,
+          "endLine": 71,
+          "params": []
+        },
+        {
+          "name": "cache",
+          "startLine": 73,
+          "endLine": 78,
+          "params": []
+        },
+        {
+          "name": "getCacheKeys",
+          "startLine": 80,
+          "endLine": 86,
+          "params": [
+            "cacheName"
+          ]
+        },
+        {
+          "name": "getCacheValue",
+          "startLine": 88,
+          "endLine": 95,
+          "params": [
+            "cacheName",
+            "cacheKey"
+          ]
+        },
+        {
+          "name": "clearCacheName",
+          "startLine": 97,
+          "endLine": 104,
+          "params": [
+            "cacheName"
+          ]
+        },
+        {
+          "name": "clearCacheKey",
+          "startLine": 106,
+          "endLine": 112,
+          "params": [
+            "cacheKey"
+          ]
+        },
+        {
+          "name": "clearCacheAll",
+          "startLine": 114,
+          "endLine": 121,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "CacheController",
+          "startLine": 30,
+          "endLine": 122,
+          "methods": [
+            "getInfo",
+            "cache",
+            "getCacheKeys",
+            "getCacheValue",
+            "clearCacheName",
+            "clearCacheKey",
+            "clearCacheAll"
+          ],
+          "properties": [
+            "redisTemplate",
+            "caches"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getInfo",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "cache",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheKeys",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheValue",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "clearCacheName",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "clearCacheKey",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "clearCacheAll",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "CacheController",
+          "line": 30,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getInfo",
+          "callee": "redisTemplate.execute",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getInfo",
+          "callee": "connection.info",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getInfo",
+          "callee": "redisTemplate.execute",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getInfo",
+          "callee": "connection.info",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getInfo",
+          "callee": "redisTemplate.execute",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getInfo",
+          "callee": "connection.dbSize",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getInfo",
+          "callee": "new HashMap<>",
+          "lineNumber": 57
+        },
+        {
+          "caller": "getInfo",
+          "callee": "result.put",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getInfo",
+          "callee": "result.put",
+          "lineNumber": 59
+        },
+        {
+          "caller": "getInfo",
+          "callee": "new ArrayList<>",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getInfo",
+          "callee": "commandStats.stringPropertyNames().forEach",
+          "lineNumber": 62
+        },
+        {
+          "caller": "getInfo",
+          "callee": "commandStats.stringPropertyNames",
+          "lineNumber": 62
+        },
+        {
+          "caller": "getInfo",
+          "callee": "new HashMap<>",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getInfo",
+          "callee": "commandStats.getProperty",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getInfo",
+          "callee": "data.put",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getInfo",
+          "callee": "StringUtils.removeStart",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getInfo",
+          "callee": "data.put",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getInfo",
+          "callee": "StringUtils.substringBetween",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getInfo",
+          "callee": "pieList.add",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getInfo",
+          "callee": "result.put",
+          "lineNumber": 69
+        },
+        {
+          "caller": "getInfo",
+          "callee": "AjaxResult.success",
+          "lineNumber": 70
+        },
+        {
+          "caller": "cache",
+          "callee": "AjaxResult.success",
+          "lineNumber": 77
+        },
+        {
+          "caller": "getCacheKeys",
+          "callee": "redisTemplate.keys",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getCacheKeys",
+          "callee": "AjaxResult.success",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getCacheKeys",
+          "callee": "new TreeSet<>",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getCacheValue",
+          "callee": "redisTemplate.opsForValue().get",
+          "lineNumber": 92
+        },
+        {
+          "caller": "getCacheValue",
+          "callee": "redisTemplate.opsForValue",
+          "lineNumber": 92
+        },
+        {
+          "caller": "getCacheValue",
+          "callee": "new SysCache",
+          "lineNumber": 93
+        },
+        {
+          "caller": "getCacheValue",
+          "callee": "AjaxResult.success",
+          "lineNumber": 94
+        },
+        {
+          "caller": "clearCacheName",
+          "callee": "redisTemplate.keys",
+          "lineNumber": 101
+        },
+        {
+          "caller": "clearCacheName",
+          "callee": "redisTemplate.delete",
+          "lineNumber": 102
+        },
+        {
+          "caller": "clearCacheName",
+          "callee": "AjaxResult.success",
+          "lineNumber": 103
+        },
+        {
+          "caller": "clearCacheKey",
+          "callee": "redisTemplate.delete",
+          "lineNumber": 110
+        },
+        {
+          "caller": "clearCacheKey",
+          "callee": "AjaxResult.success",
+          "lineNumber": 111
+        },
+        {
+          "caller": "clearCacheAll",
+          "callee": "redisTemplate.keys",
+          "lineNumber": 118
+        },
+        {
+          "caller": "clearCacheAll",
+          "callee": "redisTemplate.delete",
+          "lineNumber": 119
+        },
+        {
+          "caller": "clearCacheAll",
+          "callee": "AjaxResult.success",
+          "lineNumber": 120
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 8,
+        "functionCount": 7,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Anonymous.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 19,
+      "nonEmptyLines": 17,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RateLimiter.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 40,
+      "nonEmptyLines": 35,
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RepeatSubmit.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 31,
+      "nonEmptyLines": 28,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 44,
+      "nonEmptyLines": 37,
+      "classes": [
+        {
+          "name": "CacheConstants",
+          "startLine": 8,
+          "endLine": 44,
+          "methods": [],
+          "properties": [
+            "LOGIN_TOKEN_KEY",
+            "CAPTCHA_CODE_KEY",
+            "SYS_CONFIG_KEY",
+            "SYS_DICT_KEY",
+            "REPEAT_SUBMIT_KEY",
+            "RATE_LIMIT_KEY",
+            "PWD_ERR_CNT_KEY"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "LOGIN_TOKEN_KEY",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "CAPTCHA_CODE_KEY",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "SYS_CONFIG_KEY",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "SYS_DICT_KEY",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "REPEAT_SUBMIT_KEY",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "RATE_LIMIT_KEY",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "PWD_ERR_CNT_KEY",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "CacheConstants",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 8,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 204,
+      "nonEmptyLines": 166,
+      "classes": [
+        {
+          "name": "Constants",
+          "startLine": 11,
+          "endLine": 204,
+          "methods": [],
+          "properties": [
+            "UTF8",
+            "GBK",
+            "DEFAULT_LOCALE",
+            "WWW",
+            "HTTP",
+            "HTTPS",
+            "SUCCESS",
+            "FAIL",
+            "LOGIN_SUCCESS",
+            "LOGOUT",
+            "REGISTER",
+            "LOGIN_FAIL",
+            "ALL_PERMISSION",
+            "SUPER_ADMIN",
+            "ROLE_DELIMITER",
+            "PERMISSION_DELIMITER",
+            "CAPTCHA_EXPIRATION",
+            "TOKEN",
+            "TOKEN_PREFIX",
+            "LOGIN_USER_KEY",
+            "JWT_USERID",
+            "JWT_USERNAME",
+            "JWT_AVATAR",
+            "JWT_CREATED",
+            "JWT_AUTHORITIES",
+            "RESOURCE_PREFIX",
+            "LOOKUP_RMI",
+            "LOOKUP_LDAP",
+            "LOOKUP_LDAPS",
+            "JSON_WHITELIST_STR",
+            "JOB_WHITELIST_STR",
+            "JOB_ERROR_STR"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UTF8",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "GBK",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "DEFAULT_LOCALE",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "WWW",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "HTTP",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "HTTPS",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "SUCCESS",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "FAIL",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "LOGIN_SUCCESS",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "LOGOUT",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "REGISTER",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "LOGIN_FAIL",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "ALL_PERMISSION",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "SUPER_ADMIN",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "ROLE_DELIMITER",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "PERMISSION_DELIMITER",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "CAPTCHA_EXPIRATION",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "TOKEN",
+          "line": 101,
+          "isDefault": false
+        },
+        {
+          "name": "TOKEN_PREFIX",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "LOGIN_USER_KEY",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "JWT_USERID",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "JWT_USERNAME",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "JWT_AVATAR",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "JWT_CREATED",
+          "line": 131,
+          "isDefault": false
+        },
+        {
+          "name": "JWT_AUTHORITIES",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "RESOURCE_PREFIX",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "LOOKUP_RMI",
+          "line": 146,
+          "isDefault": false
+        },
+        {
+          "name": "LOOKUP_LDAP",
+          "line": 151,
+          "isDefault": false
+        },
+        {
+          "name": "LOOKUP_LDAPS",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "JSON_WHITELIST_STR",
+          "line": 161,
+          "isDefault": false
+        },
+        {
+          "name": "JOB_WHITELIST_STR",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "JOB_ERROR_STR",
+          "line": 171,
+          "isDefault": false
+        },
+        {
+          "name": "Constants",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 33,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 268,
+      "nonEmptyLines": 246,
+      "functions": [
+        {
+          "name": "setCacheObject",
+          "startLine": 34,
+          "endLine": 37,
+          "params": [
+            "key",
+            "value"
+          ]
+        },
+        {
+          "name": "setCacheObject",
+          "startLine": 47,
+          "endLine": 50,
+          "params": [
+            "key",
+            "value",
+            "timeout",
+            "timeUnit"
+          ]
+        },
+        {
+          "name": "expire",
+          "startLine": 59,
+          "endLine": 62,
+          "params": [
+            "key",
+            "timeout"
+          ]
+        },
+        {
+          "name": "expire",
+          "startLine": 72,
+          "endLine": 75,
+          "params": [
+            "key",
+            "timeout",
+            "unit"
+          ]
+        },
+        {
+          "name": "getExpire",
+          "startLine": 83,
+          "endLine": 86,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "hasKey",
+          "startLine": 94,
+          "endLine": 97,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "getCacheObject",
+          "startLine": 105,
+          "endLine": 109,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "deleteObject",
+          "startLine": 116,
+          "endLine": 119,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "deleteObject",
+          "startLine": 127,
+          "endLine": 130,
+          "params": [
+            "collection"
+          ]
+        },
+        {
+          "name": "setCacheList",
+          "startLine": 139,
+          "endLine": 143,
+          "params": [
+            "key",
+            "dataList"
+          ]
+        },
+        {
+          "name": "getCacheList",
+          "startLine": 151,
+          "endLine": 154,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "setCacheSet",
+          "startLine": 163,
+          "endLine": 172,
+          "params": [
+            "key",
+            "dataSet"
+          ]
+        },
+        {
+          "name": "getCacheSet",
+          "startLine": 180,
+          "endLine": 183,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "setCacheMap",
+          "startLine": 191,
+          "endLine": 196,
+          "params": [
+            "key",
+            "dataMap"
+          ]
+        },
+        {
+          "name": "getCacheMap",
+          "startLine": 204,
+          "endLine": 207,
+          "params": [
+            "key"
+          ]
+        },
+        {
+          "name": "setCacheMapValue",
+          "startLine": 216,
+          "endLine": 219,
+          "params": [
+            "key",
+            "hKey",
+            "value"
+          ]
+        },
+        {
+          "name": "getCacheMapValue",
+          "startLine": 228,
+          "endLine": 232,
+          "params": [
+            "key",
+            "hKey"
+          ]
+        },
+        {
+          "name": "getMultiCacheMapValue",
+          "startLine": 241,
+          "endLine": 244,
+          "params": [
+            "key",
+            "hKeys"
+          ]
+        },
+        {
+          "name": "deleteCacheMapValue",
+          "startLine": 253,
+          "endLine": 256,
+          "params": [
+            "key",
+            "hKey"
+          ]
+        },
+        {
+          "name": "keys",
+          "startLine": 264,
+          "endLine": 267,
+          "params": [
+            "pattern"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "RedisCache",
+          "startLine": 21,
+          "endLine": 268,
+          "methods": [
+            "setCacheObject",
+            "setCacheObject",
+            "expire",
+            "expire",
+            "getExpire",
+            "hasKey",
+            "getCacheObject",
+            "deleteObject",
+            "deleteObject",
+            "setCacheList",
+            "getCacheList",
+            "setCacheSet",
+            "getCacheSet",
+            "setCacheMap",
+            "getCacheMap",
+            "setCacheMapValue",
+            "getCacheMapValue",
+            "getMultiCacheMapValue",
+            "deleteCacheMapValue",
+            "keys"
+          ],
+          "properties": [
+            "redisTemplate"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "redisTemplate",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheObject",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheObject",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "expire",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "expire",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "getExpire",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "hasKey",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheObject",
+          "line": 105,
+          "isDefault": false
+        },
+        {
+          "name": "deleteObject",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "deleteObject",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheList",
+          "line": 139,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheList",
+          "line": 151,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheSet",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheSet",
+          "line": 180,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheMap",
+          "line": 191,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheMap",
+          "line": 204,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheMapValue",
+          "line": 216,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheMapValue",
+          "line": 228,
+          "isDefault": false
+        },
+        {
+          "name": "getMultiCacheMapValue",
+          "line": 241,
+          "isDefault": false
+        },
+        {
+          "name": "deleteCacheMapValue",
+          "line": 253,
+          "isDefault": false
+        },
+        {
+          "name": "keys",
+          "line": 264,
+          "isDefault": false
+        },
+        {
+          "name": "RedisCache",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setCacheObject",
+          "callee": "redisTemplate.opsForValue().set",
+          "lineNumber": 36
+        },
+        {
+          "caller": "setCacheObject",
+          "callee": "redisTemplate.opsForValue",
+          "lineNumber": 36
+        },
+        {
+          "caller": "setCacheObject",
+          "callee": "redisTemplate.opsForValue().set",
+          "lineNumber": 49
+        },
+        {
+          "caller": "setCacheObject",
+          "callee": "redisTemplate.opsForValue",
+          "lineNumber": 49
+        },
+        {
+          "caller": "expire",
+          "callee": "expire",
+          "lineNumber": 61
+        },
+        {
+          "caller": "expire",
+          "callee": "redisTemplate.expire",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getExpire",
+          "callee": "redisTemplate.getExpire",
+          "lineNumber": 85
+        },
+        {
+          "caller": "hasKey",
+          "callee": "redisTemplate.hasKey",
+          "lineNumber": 96
+        },
+        {
+          "caller": "getCacheObject",
+          "callee": "redisTemplate.opsForValue",
+          "lineNumber": 107
+        },
+        {
+          "caller": "getCacheObject",
+          "callee": "operation.get",
+          "lineNumber": 108
+        },
+        {
+          "caller": "deleteObject",
+          "callee": "redisTemplate.delete",
+          "lineNumber": 118
+        },
+        {
+          "caller": "deleteObject",
+          "callee": "redisTemplate.delete",
+          "lineNumber": 129
+        },
+        {
+          "caller": "setCacheList",
+          "callee": "redisTemplate.opsForList().rightPushAll",
+          "lineNumber": 141
+        },
+        {
+          "caller": "setCacheList",
+          "callee": "redisTemplate.opsForList",
+          "lineNumber": 141
+        },
+        {
+          "caller": "getCacheList",
+          "callee": "redisTemplate.opsForList().range",
+          "lineNumber": 153
+        },
+        {
+          "caller": "getCacheList",
+          "callee": "redisTemplate.opsForList",
+          "lineNumber": 153
+        },
+        {
+          "caller": "setCacheSet",
+          "callee": "redisTemplate.boundSetOps",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setCacheSet",
+          "callee": "dataSet.iterator",
+          "lineNumber": 166
+        },
+        {
+          "caller": "setCacheSet",
+          "callee": "it.hasNext",
+          "lineNumber": 167
+        },
+        {
+          "caller": "setCacheSet",
+          "callee": "setOperation.add",
+          "lineNumber": 169
+        },
+        {
+          "caller": "setCacheSet",
+          "callee": "it.next",
+          "lineNumber": 169
+        },
+        {
+          "caller": "getCacheSet",
+          "callee": "redisTemplate.opsForSet().members",
+          "lineNumber": 182
+        },
+        {
+          "caller": "getCacheSet",
+          "callee": "redisTemplate.opsForSet",
+          "lineNumber": 182
+        },
+        {
+          "caller": "setCacheMap",
+          "callee": "redisTemplate.opsForHash().putAll",
+          "lineNumber": 194
+        },
+        {
+          "caller": "setCacheMap",
+          "callee": "redisTemplate.opsForHash",
+          "lineNumber": 194
+        },
+        {
+          "caller": "getCacheMap",
+          "callee": "redisTemplate.opsForHash().entries",
+          "lineNumber": 206
+        },
+        {
+          "caller": "getCacheMap",
+          "callee": "redisTemplate.opsForHash",
+          "lineNumber": 206
+        },
+        {
+          "caller": "setCacheMapValue",
+          "callee": "redisTemplate.opsForHash().put",
+          "lineNumber": 218
+        },
+        {
+          "caller": "setCacheMapValue",
+          "callee": "redisTemplate.opsForHash",
+          "lineNumber": 218
+        },
+        {
+          "caller": "getCacheMapValue",
+          "callee": "redisTemplate.opsForHash",
+          "lineNumber": 230
+        },
+        {
+          "caller": "getCacheMapValue",
+          "callee": "opsForHash.get",
+          "lineNumber": 231
+        },
+        {
+          "caller": "getMultiCacheMapValue",
+          "callee": "redisTemplate.opsForHash().multiGet",
+          "lineNumber": 243
+        },
+        {
+          "caller": "getMultiCacheMapValue",
+          "callee": "redisTemplate.opsForHash",
+          "lineNumber": 243
+        },
+        {
+          "caller": "deleteCacheMapValue",
+          "callee": "redisTemplate.opsForHash().delete",
+          "lineNumber": 255
+        },
+        {
+          "caller": "deleteCacheMapValue",
+          "callee": "redisTemplate.opsForHash",
+          "lineNumber": 255
+        },
+        {
+          "caller": "keys",
+          "callee": "redisTemplate.keys",
+          "lineNumber": 266
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 22,
+        "functionCount": 20,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/LimitType.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 20,
+      "nonEmptyLines": 17,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatedlyRequestWrapper.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 76,
+      "nonEmptyLines": 65,
+      "functions": [
+        {
+          "name": "RepeatedlyRequestWrapper",
+          "startLine": 24,
+          "endLine": 31,
+          "params": [
+            "request",
+            "response"
+          ]
+        },
+        {
+          "name": "getReader",
+          "startLine": 33,
+          "endLine": 37,
+          "params": []
+        },
+        {
+          "name": "getInputStream",
+          "startLine": 39,
+          "endLine": 75,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "RepeatedlyRequestWrapper",
+          "startLine": 20,
+          "endLine": 76,
+          "methods": [
+            "RepeatedlyRequestWrapper",
+            "getReader",
+            "getInputStream"
+          ],
+          "properties": [
+            "body"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "RepeatedlyRequestWrapper",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "getReader",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "getInputStream",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "RepeatedlyRequestWrapper",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "RepeatedlyRequestWrapper",
+          "callee": "request.setCharacterEncoding",
+          "lineNumber": 27
+        },
+        {
+          "caller": "RepeatedlyRequestWrapper",
+          "callee": "response.setCharacterEncoding",
+          "lineNumber": 28
+        },
+        {
+          "caller": "RepeatedlyRequestWrapper",
+          "callee": "HttpHelper.getBodyString(request).getBytes",
+          "lineNumber": 30
+        },
+        {
+          "caller": "RepeatedlyRequestWrapper",
+          "callee": "HttpHelper.getBodyString",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getReader",
+          "callee": "new BufferedReader",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getReader",
+          "callee": "new InputStreamReader",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getReader",
+          "callee": "getInputStream",
+          "lineNumber": 36
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "new ByteArrayInputStream",
+          "lineNumber": 42
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "new ServletInputStream",
+          "lineNumber": 43
+        },
+        {
+          "caller": "read",
+          "callee": "bais.read",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 218,
+      "nonEmptyLines": 198,
+      "functions": [
+        {
+          "name": "getParameter",
+          "startLine": 30,
+          "endLine": 33,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getParameter",
+          "startLine": 38,
+          "endLine": 41,
+          "params": [
+            "name",
+            "defaultValue"
+          ]
+        },
+        {
+          "name": "getParameterToInt",
+          "startLine": 46,
+          "endLine": 49,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getParameterToInt",
+          "startLine": 54,
+          "endLine": 57,
+          "params": [
+            "name",
+            "defaultValue"
+          ]
+        },
+        {
+          "name": "getParameterToBool",
+          "startLine": 62,
+          "endLine": 65,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getParameterToBool",
+          "startLine": 70,
+          "endLine": 73,
+          "params": [
+            "name",
+            "defaultValue"
+          ]
+        },
+        {
+          "name": "getParams",
+          "startLine": 81,
+          "endLine": 85,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "getParamMap",
+          "startLine": 93,
+          "endLine": 101,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "getRequest",
+          "startLine": 106,
+          "endLine": 109,
+          "params": []
+        },
+        {
+          "name": "getResponse",
+          "startLine": 114,
+          "endLine": 117,
+          "params": []
+        },
+        {
+          "name": "getSession",
+          "startLine": 122,
+          "endLine": 125,
+          "params": []
+        },
+        {
+          "name": "getRequestAttributes",
+          "startLine": 127,
+          "endLine": 131,
+          "params": []
+        },
+        {
+          "name": "renderString",
+          "startLine": 139,
+          "endLine": 152,
+          "params": [
+            "response",
+            "string"
+          ]
+        },
+        {
+          "name": "isAjaxRequest",
+          "startLine": 159,
+          "endLine": 181,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "urlEncode",
+          "startLine": 189,
+          "endLine": 199,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "urlDecode",
+          "startLine": 207,
+          "endLine": 217,
+          "params": [
+            "str"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ServletUtils",
+          "startLine": 25,
+          "endLine": 218,
+          "methods": [
+            "getParameter",
+            "getParameter",
+            "getParameterToInt",
+            "getParameterToInt",
+            "getParameterToBool",
+            "getParameterToBool",
+            "getParams",
+            "getParamMap",
+            "getRequest",
+            "getResponse",
+            "getSession",
+            "getRequestAttributes",
+            "renderString",
+            "isAjaxRequest",
+            "urlEncode",
+            "urlDecode"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "getParameter",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "getParameter",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "getParameterToInt",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "getParameterToInt",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "getParameterToBool",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "getParameterToBool",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "getParams",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "getParamMap",
+          "line": 93,
+          "isDefault": false
+        },
+        {
+          "name": "getRequest",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "getResponse",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "getSession",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "getRequestAttributes",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "renderString",
+          "line": 139,
+          "isDefault": false
+        },
+        {
+          "name": "isAjaxRequest",
+          "line": 159,
+          "isDefault": false
+        },
+        {
+          "name": "urlEncode",
+          "line": 189,
+          "isDefault": false
+        },
+        {
+          "name": "urlDecode",
+          "line": 207,
+          "isDefault": false
+        },
+        {
+          "name": "ServletUtils",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getParameter",
+          "callee": "getRequest().getParameter",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getParameter",
+          "callee": "getRequest",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getParameter",
+          "callee": "Convert.toStr",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getParameter",
+          "callee": "getRequest().getParameter",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getParameter",
+          "callee": "getRequest",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getParameterToInt",
+          "callee": "Convert.toInt",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getParameterToInt",
+          "callee": "getRequest().getParameter",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getParameterToInt",
+          "callee": "getRequest",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getParameterToInt",
+          "callee": "Convert.toInt",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getParameterToInt",
+          "callee": "getRequest().getParameter",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getParameterToInt",
+          "callee": "getRequest",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getParameterToBool",
+          "callee": "Convert.toBool",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getParameterToBool",
+          "callee": "getRequest().getParameter",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getParameterToBool",
+          "callee": "getRequest",
+          "lineNumber": 64
+        },
+        {
+          "caller": "getParameterToBool",
+          "callee": "Convert.toBool",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getParameterToBool",
+          "callee": "getRequest().getParameter",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getParameterToBool",
+          "callee": "getRequest",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getParams",
+          "callee": "request.getParameterMap",
+          "lineNumber": 83
+        },
+        {
+          "caller": "getParams",
+          "callee": "Collections.unmodifiableMap",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getParamMap",
+          "callee": "new HashMap<>",
+          "lineNumber": 95
+        },
+        {
+          "caller": "getParamMap",
+          "callee": "getParams(request).entrySet",
+          "lineNumber": 96
+        },
+        {
+          "caller": "getParamMap",
+          "callee": "getParams",
+          "lineNumber": 96
+        },
+        {
+          "caller": "getParamMap",
+          "callee": "params.put",
+          "lineNumber": 98
+        },
+        {
+          "caller": "getParamMap",
+          "callee": "entry.getKey",
+          "lineNumber": 98
+        },
+        {
+          "caller": "getParamMap",
+          "callee": "StringUtils.join",
+          "lineNumber": 98
+        },
+        {
+          "caller": "getParamMap",
+          "callee": "entry.getValue",
+          "lineNumber": 98
+        },
+        {
+          "caller": "getRequest",
+          "callee": "getRequestAttributes().getRequest",
+          "lineNumber": 108
+        },
+        {
+          "caller": "getRequest",
+          "callee": "getRequestAttributes",
+          "lineNumber": 108
+        },
+        {
+          "caller": "getResponse",
+          "callee": "getRequestAttributes().getResponse",
+          "lineNumber": 116
+        },
+        {
+          "caller": "getResponse",
+          "callee": "getRequestAttributes",
+          "lineNumber": 116
+        },
+        {
+          "caller": "getSession",
+          "callee": "getRequest().getSession",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getSession",
+          "callee": "getRequest",
+          "lineNumber": 124
+        },
+        {
+          "caller": "getRequestAttributes",
+          "callee": "RequestContextHolder.getRequestAttributes",
+          "lineNumber": 129
+        },
+        {
+          "caller": "renderString",
+          "callee": "response.setStatus",
+          "lineNumber": 143
+        },
+        {
+          "caller": "renderString",
+          "callee": "response.setContentType",
+          "lineNumber": 144
+        },
+        {
+          "caller": "renderString",
+          "callee": "response.setCharacterEncoding",
+          "lineNumber": 145
+        },
+        {
+          "caller": "renderString",
+          "callee": "response.getWriter().print",
+          "lineNumber": 146
+        },
+        {
+          "caller": "renderString",
+          "callee": "response.getWriter",
+          "lineNumber": 146
+        },
+        {
+          "caller": "renderString",
+          "callee": "e.printStackTrace",
+          "lineNumber": 150
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "request.getHeader",
+          "lineNumber": 161
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "accept.contains",
+          "lineNumber": 162
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "request.getHeader",
+          "lineNumber": 167
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "xRequestedWith.contains",
+          "lineNumber": 168
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "request.getRequestURI",
+          "lineNumber": 173
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "StringUtils.inStringIgnoreCase",
+          "lineNumber": 174
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "request.getParameter",
+          "lineNumber": 179
+        },
+        {
+          "caller": "isAjaxRequest",
+          "callee": "StringUtils.inStringIgnoreCase",
+          "lineNumber": 180
+        },
+        {
+          "caller": "urlEncode",
+          "callee": "URLEncoder.encode",
+          "lineNumber": 193
+        },
+        {
+          "caller": "urlDecode",
+          "callee": "URLDecoder.decode",
+          "lineNumber": 211
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 17,
+        "functionCount": 16,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/Threads.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 99,
+      "nonEmptyLines": 94,
+      "functions": [
+        {
+          "name": "sleep",
+          "startLine": 23,
+          "endLine": 33,
+          "params": [
+            "milliseconds"
+          ]
+        },
+        {
+          "name": "shutdownAndAwaitTermination",
+          "startLine": 42,
+          "endLine": 64,
+          "params": [
+            "pool"
+          ]
+        },
+        {
+          "name": "printException",
+          "startLine": 69,
+          "endLine": 98,
+          "params": [
+            "r",
+            "t"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Threads",
+          "startLine": 16,
+          "endLine": 99,
+          "methods": [
+            "sleep",
+            "shutdownAndAwaitTermination",
+            "printException"
+          ],
+          "properties": [
+            "logger"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "sleep",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "shutdownAndAwaitTermination",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "printException",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "Threads",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "sleep",
+          "callee": "Thread.sleep",
+          "lineNumber": 27
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "pool.isShutdown",
+          "lineNumber": 44
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "pool.shutdown",
+          "lineNumber": 46
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "pool.awaitTermination",
+          "lineNumber": 49
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "pool.shutdownNow",
+          "lineNumber": 51
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "pool.awaitTermination",
+          "lineNumber": 52
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "logger.info",
+          "lineNumber": 54
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "pool.shutdownNow",
+          "lineNumber": 60
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "Thread.currentThread().interrupt",
+          "lineNumber": 61
+        },
+        {
+          "caller": "shutdownAndAwaitTermination",
+          "callee": "Thread.currentThread",
+          "lineNumber": 61
+        },
+        {
+          "caller": "printException",
+          "callee": "future.isDone",
+          "lineNumber": 76
+        },
+        {
+          "caller": "printException",
+          "callee": "future.get",
+          "lineNumber": 78
+        },
+        {
+          "caller": "printException",
+          "callee": "ee.getCause",
+          "lineNumber": 87
+        },
+        {
+          "caller": "printException",
+          "callee": "Thread.currentThread().interrupt",
+          "lineNumber": 91
+        },
+        {
+          "caller": "printException",
+          "callee": "Thread.currentThread",
+          "lineNumber": 91
+        },
+        {
+          "caller": "printException",
+          "callee": "logger.error",
+          "lineNumber": 96
+        },
+        {
+          "caller": "printException",
+          "callee": "t.getMessage",
+          "lineNumber": 96
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpHelper.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 55,
+      "nonEmptyLines": 52,
+      "functions": [
+        {
+          "name": "getBodyString",
+          "startLine": 22,
+          "endLine": 54,
+          "params": [
+            "request"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "HttpHelper",
+          "startLine": 18,
+          "endLine": 55,
+          "methods": [
+            "getBodyString"
+          ],
+          "properties": [
+            "LOGGER"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getBodyString",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "HttpHelper",
+          "line": 18,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getBodyString",
+          "callee": "new StringBuilder",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "request.getInputStream",
+          "lineNumber": 26
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "new BufferedReader",
+          "lineNumber": 28
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "new InputStreamReader",
+          "lineNumber": 28
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "reader.readLine",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "sb.append",
+          "lineNumber": 32
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "LOGGER.warn",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "reader.close",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "LOGGER.error",
+          "lineNumber": 49
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "ExceptionUtils.getMessage",
+          "lineNumber": 49
+        },
+        {
+          "caller": "getBodyString",
+          "callee": "sb.toString",
+          "lineNumber": 53
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 293,
+      "nonEmptyLines": 279,
+      "functions": [
+        {
+          "name": "sendGet",
+          "startLine": 41,
+          "endLine": 44,
+          "params": [
+            "url"
+          ]
+        },
+        {
+          "name": "sendGet",
+          "startLine": 53,
+          "endLine": 56,
+          "params": [
+            "url",
+            "param"
+          ]
+        },
+        {
+          "name": "sendGet",
+          "startLine": 66,
+          "endLine": 119,
+          "params": [
+            "url",
+            "param",
+            "contentType"
+          ]
+        },
+        {
+          "name": "sendPost",
+          "startLine": 128,
+          "endLine": 131,
+          "params": [
+            "url",
+            "param"
+          ]
+        },
+        {
+          "name": "sendPost",
+          "startLine": 141,
+          "endLine": 204,
+          "params": [
+            "url",
+            "param",
+            "contentType"
+          ]
+        },
+        {
+          "name": "sendSSLPost",
+          "startLine": 206,
+          "endLine": 209,
+          "params": [
+            "url",
+            "param"
+          ]
+        },
+        {
+          "name": "sendSSLPost",
+          "startLine": 211,
+          "endLine": 264,
+          "params": [
+            "url",
+            "param",
+            "contentType"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "HttpUtils",
+          "startLine": 31,
+          "endLine": 293,
+          "methods": [
+            "sendGet",
+            "sendGet",
+            "sendGet",
+            "sendPost",
+            "sendPost",
+            "sendSSLPost",
+            "sendSSLPost"
+          ],
+          "properties": [
+            "log"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "sendGet",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "sendGet",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "sendGet",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "sendPost",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "sendPost",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "sendSSLPost",
+          "line": 206,
+          "isDefault": false
+        },
+        {
+          "name": "sendSSLPost",
+          "line": 211,
+          "isDefault": false
+        },
+        {
+          "name": "HttpUtils",
+          "line": 31,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "sendGet",
+          "callee": "sendGet",
+          "lineNumber": 43
+        },
+        {
+          "caller": "sendGet",
+          "callee": "sendGet",
+          "lineNumber": 55
+        },
+        {
+          "caller": "sendGet",
+          "callee": "new StringBuilder",
+          "lineNumber": 68
+        },
+        {
+          "caller": "sendGet",
+          "callee": "StringUtils.isNotBlank",
+          "lineNumber": 72
+        },
+        {
+          "caller": "sendGet",
+          "callee": "log.info",
+          "lineNumber": 73
+        },
+        {
+          "caller": "sendGet",
+          "callee": "new URL",
+          "lineNumber": 74
+        },
+        {
+          "caller": "sendGet",
+          "callee": "realUrl.openConnection",
+          "lineNumber": 75
+        },
+        {
+          "caller": "sendGet",
+          "callee": "connection.setRequestProperty",
+          "lineNumber": 76
+        },
+        {
+          "caller": "sendGet",
+          "callee": "connection.setRequestProperty",
+          "lineNumber": 77
+        },
+        {
+          "caller": "sendGet",
+          "callee": "connection.setRequestProperty",
+          "lineNumber": 78
+        },
+        {
+          "caller": "sendGet",
+          "callee": "connection.connect",
+          "lineNumber": 79
+        },
+        {
+          "caller": "sendGet",
+          "callee": "new BufferedReader",
+          "lineNumber": 80
+        },
+        {
+          "caller": "sendGet",
+          "callee": "new InputStreamReader",
+          "lineNumber": 80
+        },
+        {
+          "caller": "sendGet",
+          "callee": "connection.getInputStream",
+          "lineNumber": 80
+        },
+        {
+          "caller": "sendGet",
+          "callee": "in.readLine",
+          "lineNumber": 82
+        },
+        {
+          "caller": "sendGet",
+          "callee": "result.append",
+          "lineNumber": 84
+        },
+        {
+          "caller": "sendGet",
+          "callee": "log.info",
+          "lineNumber": 86
+        },
+        {
+          "caller": "sendGet",
+          "callee": "log.error",
+          "lineNumber": 90
+        },
+        {
+          "caller": "sendGet",
+          "callee": "log.error",
+          "lineNumber": 94
+        },
+        {
+          "caller": "sendGet",
+          "callee": "log.error",
+          "lineNumber": 98
+        },
+        {
+          "caller": "sendGet",
+          "callee": "log.error",
+          "lineNumber": 102
+        },
+        {
+          "caller": "sendGet",
+          "callee": "in.close",
+          "lineNumber": 110
+        },
+        {
+          "caller": "sendGet",
+          "callee": "log.error",
+          "lineNumber": 115
+        },
+        {
+          "caller": "sendGet",
+          "callee": "result.toString",
+          "lineNumber": 118
+        },
+        {
+          "caller": "sendPost",
+          "callee": "sendPost",
+          "lineNumber": 130
+        },
+        {
+          "caller": "sendPost",
+          "callee": "new StringBuilder",
+          "lineNumber": 145
+        },
+        {
+          "caller": "sendPost",
+          "callee": "log.info",
+          "lineNumber": 148
+        },
+        {
+          "caller": "sendPost",
+          "callee": "new URL",
+          "lineNumber": 149
+        },
+        {
+          "caller": "sendPost",
+          "callee": "realUrl.openConnection",
+          "lineNumber": 150
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 151
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 152
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 153
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 154
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 155
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.setDoOutput",
+          "lineNumber": 156
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.setDoInput",
+          "lineNumber": 157
+        },
+        {
+          "caller": "sendPost",
+          "callee": "new PrintWriter",
+          "lineNumber": 158
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.getOutputStream",
+          "lineNumber": 158
+        },
+        {
+          "caller": "sendPost",
+          "callee": "out.print",
+          "lineNumber": 159
+        },
+        {
+          "caller": "sendPost",
+          "callee": "out.flush",
+          "lineNumber": 160
+        },
+        {
+          "caller": "sendPost",
+          "callee": "new BufferedReader",
+          "lineNumber": 161
+        },
+        {
+          "caller": "sendPost",
+          "callee": "new InputStreamReader",
+          "lineNumber": 161
+        },
+        {
+          "caller": "sendPost",
+          "callee": "conn.getInputStream",
+          "lineNumber": 161
+        },
+        {
+          "caller": "sendPost",
+          "callee": "in.readLine",
+          "lineNumber": 163
+        },
+        {
+          "caller": "sendPost",
+          "callee": "result.append",
+          "lineNumber": 165
+        },
+        {
+          "caller": "sendPost",
+          "callee": "log.info",
+          "lineNumber": 167
+        },
+        {
+          "caller": "sendPost",
+          "callee": "log.error",
+          "lineNumber": 171
+        },
+        {
+          "caller": "sendPost",
+          "callee": "log.error",
+          "lineNumber": 175
+        },
+        {
+          "caller": "sendPost",
+          "callee": "log.error",
+          "lineNumber": 179
+        },
+        {
+          "caller": "sendPost",
+          "callee": "log.error",
+          "lineNumber": 183
+        },
+        {
+          "caller": "sendPost",
+          "callee": "out.close",
+          "lineNumber": 191
+        },
+        {
+          "caller": "sendPost",
+          "callee": "in.close",
+          "lineNumber": 195
+        },
+        {
+          "caller": "sendPost",
+          "callee": "log.error",
+          "lineNumber": 200
+        },
+        {
+          "caller": "sendPost",
+          "callee": "result.toString",
+          "lineNumber": 203
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "sendSSLPost",
+          "lineNumber": 208
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new StringBuilder",
+          "lineNumber": 213
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "log.info",
+          "lineNumber": 217
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "SSLContext.getInstance",
+          "lineNumber": 218
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "sc.init",
+          "lineNumber": 219
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new TrustAnyTrustManager",
+          "lineNumber": 219
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new java.security.SecureRandom",
+          "lineNumber": 219
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new URL",
+          "lineNumber": 220
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "console.openConnection",
+          "lineNumber": 221
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 222
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 223
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 224
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 225
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setRequestProperty",
+          "lineNumber": 226
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setDoOutput",
+          "lineNumber": 227
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setDoInput",
+          "lineNumber": 228
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setSSLSocketFactory",
+          "lineNumber": 230
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "sc.getSocketFactory",
+          "lineNumber": 230
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.setHostnameVerifier",
+          "lineNumber": 231
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new TrustAnyHostnameVerifier",
+          "lineNumber": 231
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.connect",
+          "lineNumber": 232
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.getInputStream",
+          "lineNumber": 233
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new BufferedReader",
+          "lineNumber": 234
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new InputStreamReader",
+          "lineNumber": 234
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "br.readLine",
+          "lineNumber": 236
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "\"\".equals",
+          "lineNumber": 238
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "ret.trim",
+          "lineNumber": 238
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "result.append",
+          "lineNumber": 240
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "new String",
+          "lineNumber": 240
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "ret.getBytes",
+          "lineNumber": 240
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "log.info",
+          "lineNumber": 243
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "conn.disconnect",
+          "lineNumber": 244
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "br.close",
+          "lineNumber": 245
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "log.error",
+          "lineNumber": 249
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "log.error",
+          "lineNumber": 253
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "log.error",
+          "lineNumber": 257
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "log.error",
+          "lineNumber": 261
+        },
+        {
+          "caller": "sendSSLPost",
+          "callee": "result.toString",
+          "lineNumber": 263
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 8,
+        "functionCount": 7,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/UserAgentUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 254,
+      "nonEmptyLines": 242,
+      "functions": [
+        {
+          "name": "getBrowser",
+          "startLine": 50,
+          "endLine": 59,
+          "params": [
+            "userAgent"
+          ]
+        },
+        {
+          "name": "getOperatingSystem",
+          "startLine": 64,
+          "endLine": 73,
+          "params": [
+            "userAgent"
+          ]
+        },
+        {
+          "name": "formatBrowser",
+          "startLine": 78,
+          "endLine": 147,
+          "params": [
+            "browser"
+          ]
+        },
+        {
+          "name": "formatOperatingSystem",
+          "startLine": 152,
+          "endLine": 190,
+          "params": [
+            "operatingSystem"
+          ]
+        },
+        {
+          "name": "extractMajorVersion",
+          "startLine": 195,
+          "endLine": 227,
+          "params": [
+            "fullVersion"
+          ]
+        },
+        {
+          "name": "getWindowsVersionDisplay",
+          "startLine": 232,
+          "endLine": 253,
+          "params": [
+            "version"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "UserAgentUtils",
+          "startLine": 14,
+          "endLine": 254,
+          "methods": [
+            "getBrowser",
+            "getOperatingSystem",
+            "formatBrowser",
+            "formatOperatingSystem",
+            "extractMajorVersion",
+            "getWindowsVersionDisplay"
+          ],
+          "properties": [
+            "UNKNOWN",
+            "CHROME_PATTERN",
+            "FIREFOX_PATTERN",
+            "EDGE_PATTERN",
+            "SAFARI_PATTERN",
+            "OPERA_PATTERN",
+            "IE_PATTERN",
+            "SAMSUNG_PATTERN",
+            "UC_PATTERN",
+            "QQ_PATTERN",
+            "WECHAT_PATTERN",
+            "BAIDU_PATTERN",
+            "WINDOWS_PATTERN",
+            "MACOS_PATTERN",
+            "ANDROID_PATTERN",
+            "IOS_PATTERN",
+            "LINUX_PATTERN",
+            "CHROMEOS_PATTERN",
+            "userAgentAnalyzer"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "UNKNOWN",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "getBrowser",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "getOperatingSystem",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "UserAgentUtils",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getBrowser",
+          "callee": "userAgentAnalyzer.parse",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getBrowser",
+          "callee": "iua.get(UserAgent.AGENT_NAME_VERSION).getValue",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getBrowser",
+          "callee": "iua.get",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getBrowser",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getBrowser",
+          "callee": "agentNameVersion.contains",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getBrowser",
+          "callee": "formatBrowser",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getOperatingSystem",
+          "callee": "userAgentAnalyzer.parse",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getOperatingSystem",
+          "callee": "iua.get(UserAgent.OPERATING_SYSTEM_NAME_VERSION).getValue",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getOperatingSystem",
+          "callee": "iua.get",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getOperatingSystem",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 68
+        },
+        {
+          "caller": "getOperatingSystem",
+          "callee": "operatingSystemNameVersion.contains",
+          "lineNumber": 68
+        },
+        {
+          "caller": "getOperatingSystem",
+          "callee": "formatOperatingSystem",
+          "lineNumber": 70
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "CHROME_PATTERN.matcher",
+          "lineNumber": 81
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "chromeMatcher.find",
+          "lineNumber": 82
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "browser.contains",
+          "lineNumber": 82
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "browser.contains",
+          "lineNumber": 82
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "chromeMatcher.group",
+          "lineNumber": 84
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "FIREFOX_PATTERN.matcher",
+          "lineNumber": 87
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "firefoxMatcher.find",
+          "lineNumber": 88
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "firefoxMatcher.group",
+          "lineNumber": 90
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "EDGE_PATTERN.matcher",
+          "lineNumber": 93
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "edgeMatcher.find",
+          "lineNumber": 94
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "edgeMatcher.group",
+          "lineNumber": 96
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "SAFARI_PATTERN.matcher",
+          "lineNumber": 99
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "safariMatcher.find",
+          "lineNumber": 100
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "browser.contains",
+          "lineNumber": 100
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "safariMatcher.group",
+          "lineNumber": 102
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "WECHAT_PATTERN.matcher",
+          "lineNumber": 105
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "wechatMatcher.find",
+          "lineNumber": 106
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "wechatMatcher.group",
+          "lineNumber": 108
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "UC_PATTERN.matcher",
+          "lineNumber": 111
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "ucMatcher.find",
+          "lineNumber": 112
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "ucMatcher.group",
+          "lineNumber": 114
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "QQ_PATTERN.matcher",
+          "lineNumber": 117
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "qqMatcher.find",
+          "lineNumber": 118
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "qqMatcher.group",
+          "lineNumber": 120
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "BAIDU_PATTERN.matcher",
+          "lineNumber": 123
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "baiduMatcher.find",
+          "lineNumber": 124
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "baiduMatcher.group",
+          "lineNumber": 126
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "SAMSUNG_PATTERN.matcher",
+          "lineNumber": 129
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "samsungMatcher.find",
+          "lineNumber": 130
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "samsungMatcher.group",
+          "lineNumber": 132
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "OPERA_PATTERN.matcher",
+          "lineNumber": 135
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "operaMatcher.find",
+          "lineNumber": 136
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "operaMatcher.group",
+          "lineNumber": 138
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "IE_PATTERN.matcher",
+          "lineNumber": 141
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "ieMatcher.find",
+          "lineNumber": 142
+        },
+        {
+          "caller": "formatBrowser",
+          "callee": "ieMatcher.group",
+          "lineNumber": 144
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "WINDOWS_PATTERN.matcher",
+          "lineNumber": 155
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "windowsMatcher.find",
+          "lineNumber": 156
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "getWindowsVersionDisplay",
+          "lineNumber": 158
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "windowsMatcher.group",
+          "lineNumber": 158
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "MACOS_PATTERN.matcher",
+          "lineNumber": 161
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "macMatcher.find",
+          "lineNumber": 162
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "macMatcher.group(1).replace",
+          "lineNumber": 164
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "macMatcher.group",
+          "lineNumber": 164
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "extractMajorVersion",
+          "lineNumber": 165
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "ANDROID_PATTERN.matcher",
+          "lineNumber": 168
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "androidMatcher.find",
+          "lineNumber": 169
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "extractMajorVersion",
+          "lineNumber": 171
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "androidMatcher.group",
+          "lineNumber": 171
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "IOS_PATTERN.matcher",
+          "lineNumber": 174
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "iosMatcher.find",
+          "lineNumber": 175
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "operatingSystem.contains",
+          "lineNumber": 175
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "operatingSystem.contains",
+          "lineNumber": 175
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "extractMajorVersion",
+          "lineNumber": 177
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "iosMatcher.group",
+          "lineNumber": 177
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "LINUX_PATTERN.matcher(operatingSystem).find",
+          "lineNumber": 180
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "LINUX_PATTERN.matcher",
+          "lineNumber": 180
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "operatingSystem.contains",
+          "lineNumber": 180
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "CHROMEOS_PATTERN.matcher(operatingSystem).find",
+          "lineNumber": 185
+        },
+        {
+          "caller": "formatOperatingSystem",
+          "callee": "CHROMEOS_PATTERN.matcher",
+          "lineNumber": 185
+        },
+        {
+          "caller": "extractMajorVersion",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 197
+        },
+        {
+          "caller": "extractMajorVersion",
+          "callee": "fullVersion.replaceAll",
+          "lineNumber": 204
+        },
+        {
+          "caller": "extractMajorVersion",
+          "callee": "cleanVersion.split",
+          "lineNumber": 205
+        },
+        {
+          "caller": "extractMajorVersion",
+          "callee": "firstPart.matches",
+          "lineNumber": 209
+        },
+        {
+          "caller": "extractMajorVersion",
+          "callee": "Integer.parseInt",
+          "lineNumber": 211
+        },
+        {
+          "caller": "extractMajorVersion",
+          "callee": "String.valueOf",
+          "lineNumber": 216
+        },
+        {
+          "caller": "getWindowsVersionDisplay",
+          "callee": "extractMajorVersion",
+          "lineNumber": 251
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/AddressUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 56,
+      "nonEmptyLines": 51,
+      "functions": [
+        {
+          "name": "getRealAddressByIP",
+          "startLine": 27,
+          "endLine": 55,
+          "params": [
+            "ip"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AddressUtils",
+          "startLine": 17,
+          "endLine": 56,
+          "methods": [
+            "getRealAddressByIP"
+          ],
+          "properties": [
+            "log",
+            "IP_URL",
+            "UNKNOWN"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "IP_URL",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "UNKNOWN",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "getRealAddressByIP",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "AddressUtils",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "IpUtils.internalIp",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "RuoYiConfig.isAddressEnabled",
+          "lineNumber": 34
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "HttpUtils.sendGet",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 39
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "log.error",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "JSON.parseObject",
+          "lineNumber": 44
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "obj.getString",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "obj.getString",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "String.format",
+          "lineNumber": 47
+        },
+        {
+          "caller": "getRealAddressByIP",
+          "callee": "log.error",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 4,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 382,
+      "nonEmptyLines": 362,
+      "functions": [
+        {
+          "name": "getIpAddr",
+          "startLine": 28,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "getIpAddr",
+          "startLine": 39,
+          "endLine": 69,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "internalIp",
+          "startLine": 77,
+          "endLine": 81,
+          "params": [
+            "ip"
+          ]
+        },
+        {
+          "name": "internalIp",
+          "startLine": 89,
+          "endLine": 124,
+          "params": [
+            "addr"
+          ]
+        },
+        {
+          "name": "textToNumericFormatV4",
+          "startLine": 132,
+          "endLine": 212,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "getHostIp",
+          "startLine": 219,
+          "endLine": 229,
+          "params": []
+        },
+        {
+          "name": "getHostName",
+          "startLine": 236,
+          "endLine": 246,
+          "params": []
+        },
+        {
+          "name": "getMultistageReverseProxyIp",
+          "startLine": 254,
+          "endLine": 270,
+          "params": [
+            "ip"
+          ]
+        },
+        {
+          "name": "isUnknown",
+          "startLine": 278,
+          "endLine": 281,
+          "params": [
+            "checkString"
+          ]
+        },
+        {
+          "name": "isIP",
+          "startLine": 286,
+          "endLine": 289,
+          "params": [
+            "ip"
+          ]
+        },
+        {
+          "name": "isIpWildCard",
+          "startLine": 294,
+          "endLine": 297,
+          "params": [
+            "ip"
+          ]
+        },
+        {
+          "name": "ipIsInWildCardNoCheck",
+          "startLine": 302,
+          "endLine": 316,
+          "params": [
+            "ipWildCard",
+            "ip"
+          ]
+        },
+        {
+          "name": "isIPSegment",
+          "startLine": 321,
+          "endLine": 324,
+          "params": [
+            "ipSeg"
+          ]
+        },
+        {
+          "name": "ipIsInNetNoCheck",
+          "startLine": 329,
+          "endLine": 349,
+          "params": [
+            "iparea",
+            "ip"
+          ]
+        },
+        {
+          "name": "isMatchedIp",
+          "startLine": 358,
+          "endLine": 381,
+          "params": [
+            "filter",
+            "ip"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "IpUtils",
+          "startLine": 14,
+          "endLine": 382,
+          "methods": [
+            "getIpAddr",
+            "getIpAddr",
+            "internalIp",
+            "internalIp",
+            "textToNumericFormatV4",
+            "getHostIp",
+            "getHostName",
+            "getMultistageReverseProxyIp",
+            "isUnknown",
+            "isIP",
+            "isIpWildCard",
+            "ipIsInWildCardNoCheck",
+            "isIPSegment",
+            "ipIsInNetNoCheck",
+            "isMatchedIp"
+          ],
+          "properties": [
+            "REGX_0_255",
+            "REGX_IP",
+            "REGX_IP_WILDCARD",
+            "REGX_IP_SEG"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "REGX_0_255",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "REGX_IP",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "REGX_IP_WILDCARD",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "REGX_IP_SEG",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "getIpAddr",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "getIpAddr",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "internalIp",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "textToNumericFormatV4",
+          "line": 132,
+          "isDefault": false
+        },
+        {
+          "name": "getHostIp",
+          "line": 219,
+          "isDefault": false
+        },
+        {
+          "name": "getHostName",
+          "line": 236,
+          "isDefault": false
+        },
+        {
+          "name": "getMultistageReverseProxyIp",
+          "line": 254,
+          "isDefault": false
+        },
+        {
+          "name": "isUnknown",
+          "line": 278,
+          "isDefault": false
+        },
+        {
+          "name": "isIP",
+          "line": 286,
+          "isDefault": false
+        },
+        {
+          "name": "isIpWildCard",
+          "line": 294,
+          "isDefault": false
+        },
+        {
+          "name": "ipIsInWildCardNoCheck",
+          "line": 302,
+          "isDefault": false
+        },
+        {
+          "name": "isIPSegment",
+          "line": 321,
+          "isDefault": false
+        },
+        {
+          "name": "ipIsInNetNoCheck",
+          "line": 329,
+          "isDefault": false
+        },
+        {
+          "name": "isMatchedIp",
+          "line": 358,
+          "isDefault": false
+        },
+        {
+          "name": "IpUtils",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getIpAddr",
+          "callee": "getIpAddr",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "ServletUtils.getRequest",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "request.getHeader",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "ip.length",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "\"unknown\".equalsIgnoreCase",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "request.getHeader",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "ip.length",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "\"unknown\".equalsIgnoreCase",
+          "lineNumber": 50
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "request.getHeader",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "ip.length",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "\"unknown\".equalsIgnoreCase",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "request.getHeader",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "ip.length",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "\"unknown\".equalsIgnoreCase",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "request.getHeader",
+          "lineNumber": 60
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "ip.length",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "\"unknown\".equalsIgnoreCase",
+          "lineNumber": 63
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "request.getRemoteAddr",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "\"0:0:0:0:0:0:0:1\".equals",
+          "lineNumber": 68
+        },
+        {
+          "caller": "getIpAddr",
+          "callee": "getMultistageReverseProxyIp",
+          "lineNumber": 68
+        },
+        {
+          "caller": "internalIp",
+          "callee": "textToNumericFormatV4",
+          "lineNumber": 79
+        },
+        {
+          "caller": "internalIp",
+          "callee": "internalIp",
+          "lineNumber": 80
+        },
+        {
+          "caller": "internalIp",
+          "callee": "\"127.0.0.1\".equals",
+          "lineNumber": 80
+        },
+        {
+          "caller": "internalIp",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 91
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "text.length",
+          "lineNumber": 134
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "text.split",
+          "lineNumber": 140
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "Long.parseLong",
+          "lineNumber": 148
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "Integer.parseInt",
+          "lineNumber": 159
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "Integer.parseInt",
+          "lineNumber": 165
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "Integer.parseInt",
+          "lineNumber": 177
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "Integer.parseInt",
+          "lineNumber": 184
+        },
+        {
+          "caller": "textToNumericFormatV4",
+          "callee": "Integer.parseInt",
+          "lineNumber": 195
+        },
+        {
+          "caller": "getHostIp",
+          "callee": "InetAddress.getLocalHost().getHostAddress",
+          "lineNumber": 223
+        },
+        {
+          "caller": "getHostIp",
+          "callee": "InetAddress.getLocalHost",
+          "lineNumber": 223
+        },
+        {
+          "caller": "getHostName",
+          "callee": "InetAddress.getLocalHost().getHostName",
+          "lineNumber": 240
+        },
+        {
+          "caller": "getHostName",
+          "callee": "InetAddress.getLocalHost",
+          "lineNumber": 240
+        },
+        {
+          "caller": "getMultistageReverseProxyIp",
+          "callee": "ip.indexOf",
+          "lineNumber": 257
+        },
+        {
+          "caller": "getMultistageReverseProxyIp",
+          "callee": "ip.trim().split",
+          "lineNumber": 259
+        },
+        {
+          "caller": "getMultistageReverseProxyIp",
+          "callee": "ip.trim",
+          "lineNumber": 259
+        },
+        {
+          "caller": "getMultistageReverseProxyIp",
+          "callee": "isUnknown",
+          "lineNumber": 262
+        },
+        {
+          "caller": "getMultistageReverseProxyIp",
+          "callee": "StringUtils.substring",
+          "lineNumber": 269
+        },
+        {
+          "caller": "isUnknown",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 280
+        },
+        {
+          "caller": "isUnknown",
+          "callee": "\"unknown\".equalsIgnoreCase",
+          "lineNumber": 280
+        },
+        {
+          "caller": "isIP",
+          "callee": "StringUtils.isNotBlank",
+          "lineNumber": 288
+        },
+        {
+          "caller": "isIP",
+          "callee": "ip.matches",
+          "lineNumber": 288
+        },
+        {
+          "caller": "isIpWildCard",
+          "callee": "StringUtils.isNotBlank",
+          "lineNumber": 296
+        },
+        {
+          "caller": "isIpWildCard",
+          "callee": "ip.matches",
+          "lineNumber": 296
+        },
+        {
+          "caller": "ipIsInWildCardNoCheck",
+          "callee": "ipWildCard.split",
+          "lineNumber": 304
+        },
+        {
+          "caller": "ipIsInWildCardNoCheck",
+          "callee": "ip.split",
+          "lineNumber": 305
+        },
+        {
+          "caller": "ipIsInWildCardNoCheck",
+          "callee": "s1[i].equals",
+          "lineNumber": 307
+        },
+        {
+          "caller": "ipIsInWildCardNoCheck",
+          "callee": "s1[i].equals",
+          "lineNumber": 309
+        },
+        {
+          "caller": "isIPSegment",
+          "callee": "StringUtils.isNotBlank",
+          "lineNumber": 323
+        },
+        {
+          "caller": "isIPSegment",
+          "callee": "ipSeg.matches",
+          "lineNumber": 323
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "iparea.indexOf",
+          "lineNumber": 331
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "iparea.substring(0, idx).split",
+          "lineNumber": 332
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "iparea.substring",
+          "lineNumber": 332
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "iparea.substring(idx + 1).split",
+          "lineNumber": 333
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "iparea.substring",
+          "lineNumber": 333
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "ip.split",
+          "lineNumber": 334
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "Integer.parseInt",
+          "lineNumber": 338
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "Integer.parseInt",
+          "lineNumber": 339
+        },
+        {
+          "caller": "ipIsInNetNoCheck",
+          "callee": "Integer.parseInt",
+          "lineNumber": 340
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 360
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 360
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "filter.split",
+          "lineNumber": 364
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "isIP",
+          "lineNumber": 367
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "iStr.equals",
+          "lineNumber": 367
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "isIpWildCard",
+          "lineNumber": 371
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "ipIsInWildCardNoCheck",
+          "lineNumber": 371
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "isIPSegment",
+          "lineNumber": 375
+        },
+        {
+          "caller": "isMatchedIp",
+          "callee": "ipIsInNetNoCheck",
+          "lineNumber": 375
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 19,
+        "functionCount": 15,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/sign/Base64.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 291,
+      "nonEmptyLines": 251,
+      "functions": [
+        {
+          "name": "isWhiteSpace",
+          "startLine": 62,
+          "endLine": 65,
+          "params": [
+            "octect"
+          ]
+        },
+        {
+          "name": "isPad",
+          "startLine": 67,
+          "endLine": 70,
+          "params": [
+            "octect"
+          ]
+        },
+        {
+          "name": "isData",
+          "startLine": 72,
+          "endLine": 75,
+          "params": [
+            "octect"
+          ]
+        },
+        {
+          "name": "encode",
+          "startLine": 83,
+          "endLine": 154,
+          "params": [
+            "binaryData"
+          ]
+        },
+        {
+          "name": "decode",
+          "startLine": 162,
+          "endLine": 264,
+          "params": [
+            "encoded"
+          ]
+        },
+        {
+          "name": "removeWhiteSpace",
+          "startLine": 272,
+          "endLine": 290,
+          "params": [
+            "data"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "Base64",
+          "startLine": 8,
+          "endLine": 291,
+          "methods": [
+            "isWhiteSpace",
+            "isPad",
+            "isData",
+            "encode",
+            "decode",
+            "removeWhiteSpace"
+          ],
+          "properties": [
+            "BASELENGTH",
+            "LOOKUPLENGTH",
+            "TWENTYFOURBITGROUP",
+            "EIGHTBIT",
+            "SIXTEENBIT",
+            "FOURBYTE",
+            "SIGN",
+            "PAD",
+            "base64Alphabet",
+            "lookUpBase64Alphabet"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "encode",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "decode",
+          "line": 162,
+          "isDefault": false
+        },
+        {
+          "name": "Base64",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "encode",
+          "callee": "new String",
+          "lineNumber": 153
+        },
+        {
+          "caller": "decode",
+          "callee": "encoded.toCharArray",
+          "lineNumber": 169
+        },
+        {
+          "caller": "decode",
+          "callee": "removeWhiteSpace",
+          "lineNumber": 171
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 197
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 197
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 198
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 198
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 213
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 213
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 223
+        },
+        {
+          "caller": "decode",
+          "callee": "isData",
+          "lineNumber": 223
+        },
+        {
+          "caller": "decode",
+          "callee": "isPad",
+          "lineNumber": 225
+        },
+        {
+          "caller": "decode",
+          "callee": "isPad",
+          "lineNumber": 225
+        },
+        {
+          "caller": "decode",
+          "callee": "System.arraycopy",
+          "lineNumber": 232
+        },
+        {
+          "caller": "decode",
+          "callee": "isPad",
+          "lineNumber": 236
+        },
+        {
+          "caller": "decode",
+          "callee": "isPad",
+          "lineNumber": 236
+        },
+        {
+          "caller": "decode",
+          "callee": "System.arraycopy",
+          "lineNumber": 244
+        },
+        {
+          "caller": "removeWhiteSpace",
+          "callee": "isWhiteSpace",
+          "lineNumber": 284
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 3,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/IdUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "randomUUID",
+          "startLine": 15,
+          "endLine": 18,
+          "params": []
+        },
+        {
+          "name": "simpleUUID",
+          "startLine": 25,
+          "endLine": 28,
+          "params": []
+        },
+        {
+          "name": "fastUUID",
+          "startLine": 35,
+          "endLine": 38,
+          "params": []
+        },
+        {
+          "name": "fastSimpleUUID",
+          "startLine": 45,
+          "endLine": 48,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "IdUtils",
+          "startLine": 8,
+          "endLine": 49,
+          "methods": [
+            "randomUUID",
+            "simpleUUID",
+            "fastUUID",
+            "fastSimpleUUID"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "randomUUID",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "simpleUUID",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "fastUUID",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "fastSimpleUUID",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "IdUtils",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "randomUUID",
+          "callee": "UUID.randomUUID().toString",
+          "lineNumber": 17
+        },
+        {
+          "caller": "randomUUID",
+          "callee": "UUID.randomUUID",
+          "lineNumber": 17
+        },
+        {
+          "caller": "simpleUUID",
+          "callee": "UUID.randomUUID().toString",
+          "lineNumber": 27
+        },
+        {
+          "caller": "simpleUUID",
+          "callee": "UUID.randomUUID",
+          "lineNumber": 27
+        },
+        {
+          "caller": "fastUUID",
+          "callee": "UUID.fastUUID().toString",
+          "lineNumber": 37
+        },
+        {
+          "caller": "fastUUID",
+          "callee": "UUID.fastUUID",
+          "lineNumber": 37
+        },
+        {
+          "caller": "fastSimpleUUID",
+          "callee": "UUID.fastUUID().toString",
+          "lineNumber": 47
+        },
+        {
+          "caller": "fastSimpleUUID",
+          "callee": "UUID.fastUUID",
+          "lineNumber": 47
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/RateLimiterAspect.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 89,
+      "nonEmptyLines": 80,
+      "functions": [
+        {
+          "name": "setRedisTemplate1",
+          "startLine": 37,
+          "endLine": 41,
+          "params": [
+            "redisTemplate"
+          ]
+        },
+        {
+          "name": "setLimitScript",
+          "startLine": 43,
+          "endLine": 47,
+          "params": [
+            "limitScript"
+          ]
+        },
+        {
+          "name": "doBefore",
+          "startLine": 49,
+          "endLine": 74,
+          "params": [
+            "point",
+            "rateLimiter"
+          ]
+        },
+        {
+          "name": "getCombineKey",
+          "startLine": 76,
+          "endLine": 88,
+          "params": [
+            "rateLimiter",
+            "point"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "RateLimiterAspect",
+          "startLine": 27,
+          "endLine": 89,
+          "methods": [
+            "setRedisTemplate1",
+            "setLimitScript",
+            "doBefore",
+            "getCombineKey"
+          ],
+          "properties": [
+            "log",
+            "redisTemplate",
+            "limitScript"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "setRedisTemplate1",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "setLimitScript",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "doBefore",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "getCombineKey",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "RateLimiterAspect",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "doBefore",
+          "callee": "rateLimiter.time",
+          "lineNumber": 52
+        },
+        {
+          "caller": "doBefore",
+          "callee": "rateLimiter.count",
+          "lineNumber": 53
+        },
+        {
+          "caller": "doBefore",
+          "callee": "getCombineKey",
+          "lineNumber": 55
+        },
+        {
+          "caller": "doBefore",
+          "callee": "Collections.singletonList",
+          "lineNumber": 56
+        },
+        {
+          "caller": "doBefore",
+          "callee": "redisTemplate.execute",
+          "lineNumber": 59
+        },
+        {
+          "caller": "doBefore",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 60
+        },
+        {
+          "caller": "doBefore",
+          "callee": "number.intValue",
+          "lineNumber": 60
+        },
+        {
+          "caller": "doBefore",
+          "callee": "new ServiceException",
+          "lineNumber": 62
+        },
+        {
+          "caller": "doBefore",
+          "callee": "log.info",
+          "lineNumber": 64
+        },
+        {
+          "caller": "doBefore",
+          "callee": "number.intValue",
+          "lineNumber": 64
+        },
+        {
+          "caller": "doBefore",
+          "callee": "new RuntimeException",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "new StringBuffer",
+          "lineNumber": 78
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "rateLimiter.key",
+          "lineNumber": 78
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "rateLimiter.limitType",
+          "lineNumber": 79
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "stringBuffer.append(IpUtils.getIpAddr()).append",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "stringBuffer.append",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "IpUtils.getIpAddr",
+          "lineNumber": 81
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "point.getSignature",
+          "lineNumber": 83
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "signature.getMethod",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "method.getDeclaringClass",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "stringBuffer.append(targetClass.getName()).append(\"-\").append",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "stringBuffer.append(targetClass.getName()).append",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "stringBuffer.append",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "targetClass.getName",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "method.getName",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getCombineKey",
+          "callee": "stringBuffer.toString",
+          "lineNumber": 87
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/FastJson2JsonRedisSerializer.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 44,
+      "functions": [
+        {
+          "name": "FastJson2JsonRedisSerializer",
+          "startLine": 25,
+          "endLine": 29,
+          "params": [
+            "clazz"
+          ]
+        },
+        {
+          "name": "serialize",
+          "startLine": 31,
+          "endLine": 39,
+          "params": [
+            "t"
+          ]
+        },
+        {
+          "name": "deserialize",
+          "startLine": 41,
+          "endLine": 51,
+          "params": [
+            "bytes"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "FastJson2JsonRedisSerializer",
+          "startLine": 17,
+          "endLine": 52,
+          "methods": [
+            "FastJson2JsonRedisSerializer",
+            "serialize",
+            "deserialize"
+          ],
+          "properties": [
+            "DEFAULT_CHARSET",
+            "AUTO_TYPE_FILTER",
+            "clazz"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DEFAULT_CHARSET",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "FastJson2JsonRedisSerializer",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "serialize",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "deserialize",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "FastJson2JsonRedisSerializer",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "serialize",
+          "callee": "JSON.toJSONString(t, JSONWriter.Feature.WriteClassName).getBytes",
+          "lineNumber": 38
+        },
+        {
+          "caller": "serialize",
+          "callee": "JSON.toJSONString",
+          "lineNumber": 38
+        },
+        {
+          "caller": "deserialize",
+          "callee": "new String",
+          "lineNumber": 48
+        },
+        {
+          "caller": "deserialize",
+          "callee": "JSON.parseObject",
+          "lineNumber": 50
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 5,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/I18nConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 43,
+      "nonEmptyLines": 39,
+      "functions": [
+        {
+          "name": "localeResolver",
+          "startLine": 20,
+          "endLine": 27,
+          "params": []
+        },
+        {
+          "name": "localeChangeInterceptor",
+          "startLine": 29,
+          "endLine": 36,
+          "params": []
+        },
+        {
+          "name": "addInterceptors",
+          "startLine": 38,
+          "endLine": 42,
+          "params": [
+            "registry"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "I18nConfig",
+          "startLine": 17,
+          "endLine": 43,
+          "methods": [
+            "localeResolver",
+            "localeChangeInterceptor",
+            "addInterceptors"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "localeResolver",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "localeChangeInterceptor",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "addInterceptors",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "I18nConfig",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "localeResolver",
+          "callee": "new SessionLocaleResolver",
+          "lineNumber": 23
+        },
+        {
+          "caller": "localeResolver",
+          "callee": "slr.setDefaultLocale",
+          "lineNumber": 25
+        },
+        {
+          "caller": "localeChangeInterceptor",
+          "callee": "new LocaleChangeInterceptor",
+          "lineNumber": 32
+        },
+        {
+          "caller": "localeChangeInterceptor",
+          "callee": "lci.setParamName",
+          "lineNumber": 34
+        },
+        {
+          "caller": "addInterceptors",
+          "callee": "registry.addInterceptor",
+          "lineNumber": 41
+        },
+        {
+          "caller": "addInterceptors",
+          "callee": "localeChangeInterceptor",
+          "lineNumber": 41
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ResourcesConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 72,
+      "nonEmptyLines": 66,
+      "functions": [
+        {
+          "name": "addResourceHandlers",
+          "startLine": 29,
+          "endLine": 40,
+          "params": [
+            "registry"
+          ]
+        },
+        {
+          "name": "addInterceptors",
+          "startLine": 45,
+          "endLine": 49,
+          "params": [
+            "registry"
+          ]
+        },
+        {
+          "name": "corsFilter",
+          "startLine": 54,
+          "endLine": 71,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "ResourcesConfig",
+          "startLine": 23,
+          "endLine": 72,
+          "methods": [
+            "addResourceHandlers",
+            "addInterceptors",
+            "corsFilter"
+          ],
+          "properties": [
+            "repeatSubmitInterceptor"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "addResourceHandlers",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "addInterceptors",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "corsFilter",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "ResourcesConfig",
+          "line": 23,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addResourceHandlers",
+          "callee": "registry.addResourceHandler(Constants.RESOURCE_PREFIX + \"/**\").addResourceLocations",
+          "lineNumber": 33
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "registry.addResourceHandler",
+          "lineNumber": 33
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "RuoYiConfig.getProfile",
+          "lineNumber": 34
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "registry.addResourceHandler(\"/swagger-ui/**\")\r\n                .addResourceLocations(\"classpath:/META-INF/resources/webjars/springfox-swagger-ui/\").setCacheControl",
+          "lineNumber": 37
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "registry.addResourceHandler(\"/swagger-ui/**\").addResourceLocations",
+          "lineNumber": 37
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "registry.addResourceHandler",
+          "lineNumber": 37
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "CacheControl.maxAge(5, TimeUnit.HOURS).cachePublic",
+          "lineNumber": 39
+        },
+        {
+          "caller": "addResourceHandlers",
+          "callee": "CacheControl.maxAge",
+          "lineNumber": 39
+        },
+        {
+          "caller": "addInterceptors",
+          "callee": "registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns",
+          "lineNumber": 48
+        },
+        {
+          "caller": "addInterceptors",
+          "callee": "registry.addInterceptor",
+          "lineNumber": 48
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "new CorsConfiguration",
+          "lineNumber": 57
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "config.addAllowedOriginPattern",
+          "lineNumber": 59
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "config.addAllowedHeader",
+          "lineNumber": 61
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "config.addAllowedMethod",
+          "lineNumber": 63
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "config.setMaxAge",
+          "lineNumber": 65
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "new UrlBasedCorsConfigurationSource",
+          "lineNumber": 67
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "source.registerCorsConfiguration",
+          "lineNumber": 68
+        },
+        {
+          "caller": "corsFilter",
+          "callee": "new CorsFilter",
+          "lineNumber": 70
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/SecurityConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 128,
+      "nonEmptyLines": 119,
+      "functions": [
+        {
+          "name": "authenticationManager",
+          "startLine": 64,
+          "endLine": 68,
+          "params": [
+            "authenticationConfiguration"
+          ]
+        },
+        {
+          "name": "filterChain",
+          "startLine": 85,
+          "endLine": 118,
+          "params": [
+            "httpSecurity"
+          ]
+        },
+        {
+          "name": "bCryptPasswordEncoder",
+          "startLine": 123,
+          "endLine": 127,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "SecurityConfig",
+          "startLine": 27,
+          "endLine": 128,
+          "methods": [
+            "authenticationManager",
+            "filterChain",
+            "bCryptPasswordEncoder"
+          ],
+          "properties": [
+            "unauthorizedHandler",
+            "logoutSuccessHandler",
+            "authenticationTokenFilter",
+            "corsFilter",
+            "permitAllUrl"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "authenticationManager",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "bCryptPasswordEncoder",
+          "line": 123,
+          "isDefault": false
+        },
+        {
+          "name": "SecurityConfig",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "authenticationManager",
+          "callee": "authenticationConfiguration.getAuthenticationManager",
+          "lineNumber": 67
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            })\r\n            // 认证失败处理类\r\n            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))\r\n            // 基于token，所以不需要session\r\n            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\r\n            // 注解标记允许匿名访问的url\r\n            .authorizeHttpRequests((requests) -> {\r\n                permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());\r\n                // 对于登录login 注册register 验证码captchaImage 允许匿名访问\r\n                requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll()\r\n                    // 除上面外的所有请求全部需要鉴权认证\r\n                    .anyRequest().authenticated();\r\n            })\r\n            // 添加Logout filter\r\n            .logout(logout -> logout.logoutUrl(\"/logout\").logoutSuccessHandler(logoutSuccessHandler))\r\n            // 添加JWT filter\r\n            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)\r\n            // 添加CORS filter\r\n            .addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class)\r\n            .addFilterBefore(corsFilter, LogoutFilter.class).build",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            })\r\n            // 认证失败处理类\r\n            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))\r\n            // 基于token，所以不需要session\r\n            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\r\n            // 注解标记允许匿名访问的url\r\n            .authorizeHttpRequests((requests) -> {\r\n                permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());\r\n                // 对于登录login 注册register 验证码captchaImage 允许匿名访问\r\n                requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll()\r\n                    // 除上面外的所有请求全部需要鉴权认证\r\n                    .anyRequest().authenticated();\r\n            })\r\n            // 添加Logout filter\r\n            .logout(logout -> logout.logoutUrl(\"/logout\").logoutSuccessHandler(logoutSuccessHandler))\r\n            // 添加JWT filter\r\n            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)\r\n            // 添加CORS filter\r\n            .addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class).addFilterBefore",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            })\r\n            // 认证失败处理类\r\n            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))\r\n            // 基于token，所以不需要session\r\n            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\r\n            // 注解标记允许匿名访问的url\r\n            .authorizeHttpRequests((requests) -> {\r\n                permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());\r\n                // 对于登录login 注册register 验证码captchaImage 允许匿名访问\r\n                requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll()\r\n                    // 除上面外的所有请求全部需要鉴权认证\r\n                    .anyRequest().authenticated();\r\n            })\r\n            // 添加Logout filter\r\n            .logout(logout -> logout.logoutUrl(\"/logout\").logoutSuccessHandler(logoutSuccessHandler))\r\n            // 添加JWT filter\r\n            .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class).addFilterBefore",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            })\r\n            // 认证失败处理类\r\n            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))\r\n            // 基于token，所以不需要session\r\n            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\r\n            // 注解标记允许匿名访问的url\r\n            .authorizeHttpRequests((requests) -> {\r\n                permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());\r\n                // 对于登录login 注册register 验证码captchaImage 允许匿名访问\r\n                requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll()\r\n                    // 除上面外的所有请求全部需要鉴权认证\r\n                    .anyRequest().authenticated();\r\n            })\r\n            // 添加Logout filter\r\n            .logout(logout -> logout.logoutUrl(\"/logout\").logoutSuccessHandler(logoutSuccessHandler)).addFilterBefore",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            })\r\n            // 认证失败处理类\r\n            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))\r\n            // 基于token，所以不需要session\r\n            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))\r\n            // 注解标记允许匿名访问的url\r\n            .authorizeHttpRequests((requests) -> {\r\n                permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());\r\n                // 对于登录login 注册register 验证码captchaImage 允许匿名访问\r\n                requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll()\r\n                    // 除上面外的所有请求全部需要鉴权认证\r\n                    .anyRequest().authenticated();\r\n            }).logout",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            })\r\n            // 认证失败处理类\r\n            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))\r\n            // 基于token，所以不需要session\r\n            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            })\r\n            // 认证失败处理类\r\n            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler)).sessionManagement",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable())\r\n            // 禁用HTTP响应标头\r\n            .headers((headersCustomizer) -> {\r\n                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());\r\n            }).exceptionHandling",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity\r\n            // CSRF禁用，因为不使用session\r\n            .csrf(csrf -> csrf.disable()).headers",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "httpSecurity.csrf",
+          "lineNumber": 88
+        },
+        {
+          "caller": "filterChain",
+          "callee": "csrf.disable",
+          "lineNumber": 90
+        },
+        {
+          "caller": "filterChain",
+          "callee": "headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions",
+          "lineNumber": 93
+        },
+        {
+          "caller": "filterChain",
+          "callee": "headersCustomizer.cacheControl",
+          "lineNumber": 93
+        },
+        {
+          "caller": "filterChain",
+          "callee": "cache.disable",
+          "lineNumber": 93
+        },
+        {
+          "caller": "filterChain",
+          "callee": "options.sameOrigin",
+          "lineNumber": 93
+        },
+        {
+          "caller": "filterChain",
+          "callee": "exception.authenticationEntryPoint",
+          "lineNumber": 96
+        },
+        {
+          "caller": "filterChain",
+          "callee": "session.sessionCreationPolicy",
+          "lineNumber": 98
+        },
+        {
+          "caller": "filterChain",
+          "callee": "permitAllUrl.getUrls().forEach",
+          "lineNumber": 101
+        },
+        {
+          "caller": "filterChain",
+          "callee": "permitAllUrl.getUrls",
+          "lineNumber": 101
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(url).permitAll",
+          "lineNumber": 101
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers",
+          "lineNumber": 101
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll()\r\n                    // 除上面外的所有请求全部需要鉴权认证\r\n                    .anyRequest().authenticated",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll().anyRequest",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll()\r\n                    .requestMatchers(\"/swagger-ui.html\", \"/v3/api-docs/**\", \"/swagger-ui/**\", \"/druid/**\").permitAll",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll().requestMatchers",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll()\r\n                    // 静态资源，可匿名访问\r\n                    .requestMatchers(HttpMethod.GET, \"/\", \"/*.html\", \"/**.html\", \"/**.css\", \"/**.js\", \"/profile/**\").permitAll",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll().requestMatchers",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers(\"/login\", \"/register\", \"/captchaImage\").permitAll",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "requests.requestMatchers",
+          "lineNumber": 103
+        },
+        {
+          "caller": "filterChain",
+          "callee": "logout.logoutUrl(\"/logout\").logoutSuccessHandler",
+          "lineNumber": 111
+        },
+        {
+          "caller": "filterChain",
+          "callee": "logout.logoutUrl",
+          "lineNumber": 111
+        },
+        {
+          "caller": "bCryptPasswordEncoder",
+          "callee": "new BCryptPasswordEncoder",
+          "lineNumber": 126
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ServerConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 32,
+      "nonEmptyLines": 29,
+      "functions": [
+        {
+          "name": "getUrl",
+          "startLine": 20,
+          "endLine": 24,
+          "params": []
+        },
+        {
+          "name": "getDomain",
+          "startLine": 26,
+          "endLine": 31,
+          "params": [
+            "request"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "ServerConfig",
+          "startLine": 12,
+          "endLine": 32,
+          "methods": [
+            "getUrl",
+            "getDomain"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "getUrl",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "getDomain",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "ServerConfig",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getUrl",
+          "callee": "ServletUtils.getRequest",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getUrl",
+          "callee": "getDomain",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getDomain",
+          "callee": "request.getRequestURL",
+          "lineNumber": 28
+        },
+        {
+          "caller": "getDomain",
+          "callee": "request.getServletContext().getContextPath",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getDomain",
+          "callee": "request.getServletContext",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getDomain",
+          "callee": "url.delete(url.length() - request.getRequestURI().length(), url.length()).append(contextPath).toString",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getDomain",
+          "callee": "url.delete(url.length() - request.getRequestURI().length(), url.length()).append",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getDomain",
+          "callee": "url.delete",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getDomain",
+          "callee": "url.length",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getDomain",
+          "callee": "request.getRequestURI().length",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getDomain",
+          "callee": "request.getRequestURI",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getDomain",
+          "callee": "url.length",
+          "lineNumber": 30
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ThreadPoolConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 63,
+      "nonEmptyLines": 56,
+      "functions": [
+        {
+          "name": "threadPoolTaskExecutor",
+          "startLine": 32,
+          "endLine": 43,
+          "params": []
+        },
+        {
+          "name": "scheduledExecutorService",
+          "startLine": 48,
+          "endLine": 62,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "ThreadPoolConfig",
+          "startLine": 17,
+          "endLine": 63,
+          "methods": [
+            "threadPoolTaskExecutor",
+            "scheduledExecutorService"
+          ],
+          "properties": [
+            "corePoolSize",
+            "maxPoolSize",
+            "queueCapacity",
+            "keepAliveSeconds"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "threadPoolTaskExecutor",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "ThreadPoolConfig",
+          "line": 17,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "threadPoolTaskExecutor",
+          "callee": "new ThreadPoolTaskExecutor",
+          "lineNumber": 35
+        },
+        {
+          "caller": "threadPoolTaskExecutor",
+          "callee": "executor.setMaxPoolSize",
+          "lineNumber": 36
+        },
+        {
+          "caller": "threadPoolTaskExecutor",
+          "callee": "executor.setCorePoolSize",
+          "lineNumber": 37
+        },
+        {
+          "caller": "threadPoolTaskExecutor",
+          "callee": "executor.setQueueCapacity",
+          "lineNumber": 38
+        },
+        {
+          "caller": "threadPoolTaskExecutor",
+          "callee": "executor.setKeepAliveSeconds",
+          "lineNumber": 39
+        },
+        {
+          "caller": "threadPoolTaskExecutor",
+          "callee": "executor.setRejectedExecutionHandler",
+          "lineNumber": 41
+        },
+        {
+          "caller": "threadPoolTaskExecutor",
+          "callee": "new ThreadPoolExecutor.CallerRunsPolicy",
+          "lineNumber": 41
+        },
+        {
+          "caller": "scheduledExecutorService",
+          "callee": "new ScheduledThreadPoolExecutor",
+          "lineNumber": 51
+        },
+        {
+          "caller": "scheduledExecutorService",
+          "callee": "BasicThreadFactory.builder().namingPattern(\"schedule-pool-%d\").daemon(true).build",
+          "lineNumber": 52
+        },
+        {
+          "caller": "scheduledExecutorService",
+          "callee": "BasicThreadFactory.builder().namingPattern(\"schedule-pool-%d\").daemon",
+          "lineNumber": 52
+        },
+        {
+          "caller": "scheduledExecutorService",
+          "callee": "BasicThreadFactory.builder().namingPattern",
+          "lineNumber": 52
+        },
+        {
+          "caller": "scheduledExecutorService",
+          "callee": "BasicThreadFactory.builder",
+          "lineNumber": 52
+        },
+        {
+          "caller": "scheduledExecutorService",
+          "callee": "new ThreadPoolExecutor.CallerRunsPolicy",
+          "lineNumber": 53
+        },
+        {
+          "caller": "afterExecute",
+          "callee": "super.afterExecute",
+          "lineNumber": 58
+        },
+        {
+          "caller": "afterExecute",
+          "callee": "Threads.printException",
+          "lineNumber": 59
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/properties/PermitAllUrlProperties.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 74,
+      "nonEmptyLines": 62,
+      "functions": [
+        {
+          "name": "afterPropertiesSet",
+          "startLine": 37,
+          "endLine": 57,
+          "params": []
+        },
+        {
+          "name": "setApplicationContext",
+          "startLine": 59,
+          "endLine": 63,
+          "params": [
+            "context"
+          ]
+        },
+        {
+          "name": "getUrls",
+          "startLine": 65,
+          "endLine": 68,
+          "params": []
+        },
+        {
+          "name": "setUrls",
+          "startLine": 70,
+          "endLine": 73,
+          "params": [
+            "urls"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "PermitAllUrlProperties",
+          "startLine": 26,
+          "endLine": 74,
+          "methods": [
+            "afterPropertiesSet",
+            "setApplicationContext",
+            "getUrls",
+            "setUrls"
+          ],
+          "properties": [
+            "PATTERN",
+            "applicationContext",
+            "urls",
+            "ASTERISK"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "ASTERISK",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "afterPropertiesSet",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "setApplicationContext",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "getUrls",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "setUrls",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "PermitAllUrlProperties",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "applicationContext.getBean",
+          "lineNumber": 41
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "mapping.getHandlerMethods",
+          "lineNumber": 42
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "map.keySet().forEach",
+          "lineNumber": 44
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "map.keySet",
+          "lineNumber": 44
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "map.get",
+          "lineNumber": 45
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "AnnotationUtils.findAnnotation",
+          "lineNumber": 48
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "handlerMethod.getMethod",
+          "lineNumber": 48
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Optional.ofNullable(method).ifPresent",
+          "lineNumber": 49
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Optional.ofNullable",
+          "lineNumber": 49
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Objects.requireNonNull(info.getPathPatternsCondition().getPatternValues()).forEach",
+          "lineNumber": 49
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Objects.requireNonNull",
+          "lineNumber": 49
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "info.getPathPatternsCondition().getPatternValues",
+          "lineNumber": 49
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "info.getPathPatternsCondition",
+          "lineNumber": 49
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "urls.add",
+          "lineNumber": 50
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "RegExUtils.replaceAll",
+          "lineNumber": 50
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "AnnotationUtils.findAnnotation",
+          "lineNumber": 53
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "handlerMethod.getBeanType",
+          "lineNumber": 53
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Optional.ofNullable(controller).ifPresent",
+          "lineNumber": 54
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Optional.ofNullable",
+          "lineNumber": 54
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Objects.requireNonNull(info.getPathPatternsCondition().getPatternValues()).forEach",
+          "lineNumber": 54
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "Objects.requireNonNull",
+          "lineNumber": 54
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "info.getPathPatternsCondition().getPatternValues",
+          "lineNumber": 54
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "info.getPathPatternsCondition",
+          "lineNumber": 54
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "urls.add",
+          "lineNumber": 55
+        },
+        {
+          "caller": "afterPropertiesSet",
+          "callee": "RegExUtils.replaceAll",
+          "lineNumber": 55
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 6,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/RepeatSubmitInterceptor.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 56,
+      "nonEmptyLines": 53,
+      "functions": [
+        {
+          "name": "preHandle",
+          "startLine": 22,
+          "endLine": 45,
+          "params": [
+            "request",
+            "response",
+            "handler"
+          ]
+        },
+        {
+          "name": "isRepeatSubmit",
+          "startLine": 55,
+          "endLine": 55,
+          "params": [
+            "request",
+            "annotation"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "RepeatSubmitInterceptor",
+          "startLine": 19,
+          "endLine": 56,
+          "methods": [
+            "preHandle",
+            "isRepeatSubmit"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "preHandle",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "isRepeatSubmit",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "RepeatSubmitInterceptor",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "preHandle",
+          "callee": "handlerMethod.getMethod",
+          "lineNumber": 28
+        },
+        {
+          "caller": "preHandle",
+          "callee": "method.getAnnotation",
+          "lineNumber": 29
+        },
+        {
+          "caller": "preHandle",
+          "callee": "this.isRepeatSubmit",
+          "lineNumber": 32
+        },
+        {
+          "caller": "preHandle",
+          "callee": "AjaxResult.error",
+          "lineNumber": 34
+        },
+        {
+          "caller": "preHandle",
+          "callee": "annotation.message",
+          "lineNumber": 34
+        },
+        {
+          "caller": "preHandle",
+          "callee": "ServletUtils.renderString",
+          "lineNumber": 35
+        },
+        {
+          "caller": "preHandle",
+          "callee": "JSON.toJSONString",
+          "lineNumber": 35
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/impl/SameUrlDataInterceptor.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 110,
+      "nonEmptyLines": 97,
+      "functions": [
+        {
+          "name": "isRepeatSubmit",
+          "startLine": 39,
+          "endLine": 85,
+          "params": [
+            "request",
+            "annotation"
+          ]
+        },
+        {
+          "name": "compareParams",
+          "startLine": 90,
+          "endLine": 95,
+          "params": [
+            "nowMap",
+            "preMap"
+          ]
+        },
+        {
+          "name": "compareTime",
+          "startLine": 100,
+          "endLine": 109,
+          "params": [
+            "nowMap",
+            "preMap",
+            "interval"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SameUrlDataInterceptor",
+          "startLine": 25,
+          "endLine": 110,
+          "methods": [
+            "isRepeatSubmit",
+            "compareParams",
+            "compareTime"
+          ],
+          "properties": [
+            "REPEAT_PARAMS",
+            "REPEAT_TIME",
+            "header",
+            "redisCache"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "REPEAT_PARAMS",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "REPEAT_TIME",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "isRepeatSubmit",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "SameUrlDataInterceptor",
+          "line": 25,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "HttpHelper.getBodyString",
+          "lineNumber": 47
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 51
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "JSON.toJSONString",
+          "lineNumber": 53
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "request.getParameterMap",
+          "lineNumber": 53
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "new HashMap<String, Object>",
+          "lineNumber": 55
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "nowDataMap.put",
+          "lineNumber": 56
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "nowDataMap.put",
+          "lineNumber": 57
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "System.currentTimeMillis",
+          "lineNumber": 57
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "request.getRequestURI",
+          "lineNumber": 60
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "StringUtils.trimToEmpty",
+          "lineNumber": 63
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "request.getHeader",
+          "lineNumber": 63
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "redisCache.getCacheObject",
+          "lineNumber": 68
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "sessionMap.containsKey",
+          "lineNumber": 72
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "sessionMap.get",
+          "lineNumber": 74
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "compareParams",
+          "lineNumber": 75
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "compareTime",
+          "lineNumber": 75
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "annotation.interval",
+          "lineNumber": 75
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "new HashMap<String, Object>",
+          "lineNumber": 81
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "cacheMap.put",
+          "lineNumber": 82
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "redisCache.setCacheObject",
+          "lineNumber": 83
+        },
+        {
+          "caller": "isRepeatSubmit",
+          "callee": "annotation.interval",
+          "lineNumber": 83
+        },
+        {
+          "caller": "compareParams",
+          "callee": "nowMap.get",
+          "lineNumber": 92
+        },
+        {
+          "caller": "compareParams",
+          "callee": "preMap.get",
+          "lineNumber": 93
+        },
+        {
+          "caller": "compareParams",
+          "callee": "nowParams.equals",
+          "lineNumber": 94
+        },
+        {
+          "caller": "compareTime",
+          "callee": "nowMap.get",
+          "lineNumber": 102
+        },
+        {
+          "caller": "compareTime",
+          "callee": "preMap.get",
+          "lineNumber": 103
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/AsyncManager.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 55,
+      "nonEmptyLines": 47,
+      "functions": [
+        {
+          "name": "AsyncManager",
+          "startLine": 29,
+          "endLine": 29,
+          "params": []
+        },
+        {
+          "name": "me",
+          "startLine": 33,
+          "endLine": 36,
+          "params": []
+        },
+        {
+          "name": "execute",
+          "startLine": 43,
+          "endLine": 46,
+          "params": [
+            "task"
+          ]
+        },
+        {
+          "name": "shutdown",
+          "startLine": 51,
+          "endLine": 54,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "AsyncManager",
+          "startLine": 14,
+          "endLine": 55,
+          "methods": [
+            "AsyncManager",
+            "me",
+            "execute",
+            "shutdown"
+          ],
+          "properties": [
+            "OPERATE_DELAY_TIME",
+            "executor",
+            "me"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "me",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "execute",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "shutdown",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "AsyncManager",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "execute",
+          "callee": "executor.schedule",
+          "lineNumber": 45
+        },
+        {
+          "caller": "shutdown",
+          "callee": "Threads.shutdownAndAwaitTermination",
+          "lineNumber": 53
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 4,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/LogoutSuccessHandlerImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 53,
+      "nonEmptyLines": 50,
+      "functions": [
+        {
+          "name": "onLogoutSuccess",
+          "startLine": 38,
+          "endLine": 52,
+          "params": [
+            "request",
+            "response",
+            "authentication"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "LogoutSuccessHandlerImpl",
+          "startLine": 27,
+          "endLine": 53,
+          "methods": [
+            "onLogoutSuccess"
+          ],
+          "properties": [
+            "tokenService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "onLogoutSuccess",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "LogoutSuccessHandlerImpl",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "tokenService.getLoginUser",
+          "lineNumber": 42
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 43
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "loginUser.getUsername",
+          "lineNumber": 45
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "tokenService.delLoginUser",
+          "lineNumber": 47
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "loginUser.getToken",
+          "lineNumber": 47
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "AsyncManager.me().execute",
+          "lineNumber": 49
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "AsyncManager.me",
+          "lineNumber": 49
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "AsyncFactory.recordLogininfor",
+          "lineNumber": 49
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "MessageUtils.message",
+          "lineNumber": 49
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "ServletUtils.renderString",
+          "lineNumber": 51
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "JSON.toJSONString",
+          "lineNumber": 51
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "AjaxResult.success",
+          "lineNumber": 51
+        },
+        {
+          "caller": "onLogoutSuccess",
+          "callee": "MessageUtils.message",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 9,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 270,
+      "nonEmptyLines": 247,
+      "functions": [
+        {
+          "name": "getLoginUser",
+          "startLine": 63,
+          "endLine": 84,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "setLoginUser",
+          "startLine": 89,
+          "endLine": 95,
+          "params": [
+            "loginUser"
+          ]
+        },
+        {
+          "name": "delLoginUser",
+          "startLine": 100,
+          "endLine": 107,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "createToken",
+          "startLine": 115,
+          "endLine": 126,
+          "params": [
+            "loginUser"
+          ]
+        },
+        {
+          "name": "verifyToken",
+          "startLine": 134,
+          "endLine": 142,
+          "params": [
+            "loginUser"
+          ]
+        },
+        {
+          "name": "refreshToken",
+          "startLine": 149,
+          "endLine": 156,
+          "params": [
+            "loginUser"
+          ]
+        },
+        {
+          "name": "setUserAgent",
+          "startLine": 163,
+          "endLine": 171,
+          "params": [
+            "loginUser"
+          ]
+        },
+        {
+          "name": "createToken",
+          "startLine": 179,
+          "endLine": 185,
+          "params": [
+            "claims"
+          ]
+        },
+        {
+          "name": "parseToken",
+          "startLine": 193,
+          "endLine": 199,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "getUsernameFromToken",
+          "startLine": 207,
+          "endLine": 211,
+          "params": [
+            "token"
+          ]
+        },
+        {
+          "name": "getToken",
+          "startLine": 219,
+          "endLine": 227,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "getTokenKey",
+          "startLine": 229,
+          "endLine": 232,
+          "params": [
+            "uuid"
+          ]
+        },
+        {
+          "name": "refreshPermissionByRoleId",
+          "startLine": 240,
+          "endLine": 269,
+          "params": [
+            "roleId",
+            "permissionService"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "TokenService",
+          "startLine": 32,
+          "endLine": 270,
+          "methods": [
+            "getLoginUser",
+            "setLoginUser",
+            "delLoginUser",
+            "createToken",
+            "verifyToken",
+            "refreshToken",
+            "setUserAgent",
+            "createToken",
+            "parseToken",
+            "getUsernameFromToken",
+            "getToken",
+            "getTokenKey",
+            "refreshPermissionByRoleId"
+          ],
+          "properties": [
+            "log",
+            "header",
+            "secret",
+            "expireTime",
+            "MILLIS_SECOND",
+            "MILLIS_MINUTE",
+            "MILLIS_MINUTE_TWENTY",
+            "redisCache"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getLoginUser",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "setLoginUser",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "delLoginUser",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "createToken",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "verifyToken",
+          "line": 134,
+          "isDefault": false
+        },
+        {
+          "name": "refreshToken",
+          "line": 149,
+          "isDefault": false
+        },
+        {
+          "name": "setUserAgent",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "getUsernameFromToken",
+          "line": 207,
+          "isDefault": false
+        },
+        {
+          "name": "refreshPermissionByRoleId",
+          "line": 240,
+          "isDefault": false
+        },
+        {
+          "name": "TokenService",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getLoginUser",
+          "callee": "getToken",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "parseToken",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "claims.get",
+          "lineNumber": 73
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "getTokenKey",
+          "lineNumber": 74
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "redisCache.getCacheObject",
+          "lineNumber": 75
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "log.error",
+          "lineNumber": 80
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "e.getMessage",
+          "lineNumber": 80
+        },
+        {
+          "caller": "setLoginUser",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 91
+        },
+        {
+          "caller": "setLoginUser",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 91
+        },
+        {
+          "caller": "setLoginUser",
+          "callee": "loginUser.getToken",
+          "lineNumber": 91
+        },
+        {
+          "caller": "setLoginUser",
+          "callee": "refreshToken",
+          "lineNumber": 93
+        },
+        {
+          "caller": "delLoginUser",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 102
+        },
+        {
+          "caller": "delLoginUser",
+          "callee": "getTokenKey",
+          "lineNumber": 104
+        },
+        {
+          "caller": "delLoginUser",
+          "callee": "redisCache.deleteObject",
+          "lineNumber": 105
+        },
+        {
+          "caller": "createToken",
+          "callee": "IdUtils.fastUUID",
+          "lineNumber": 117
+        },
+        {
+          "caller": "createToken",
+          "callee": "loginUser.setToken",
+          "lineNumber": 118
+        },
+        {
+          "caller": "createToken",
+          "callee": "setUserAgent",
+          "lineNumber": 119
+        },
+        {
+          "caller": "createToken",
+          "callee": "refreshToken",
+          "lineNumber": 120
+        },
+        {
+          "caller": "createToken",
+          "callee": "new HashMap<>",
+          "lineNumber": 122
+        },
+        {
+          "caller": "createToken",
+          "callee": "claims.put",
+          "lineNumber": 123
+        },
+        {
+          "caller": "createToken",
+          "callee": "claims.put",
+          "lineNumber": 124
+        },
+        {
+          "caller": "createToken",
+          "callee": "loginUser.getUsername",
+          "lineNumber": 124
+        },
+        {
+          "caller": "createToken",
+          "callee": "createToken",
+          "lineNumber": 125
+        },
+        {
+          "caller": "verifyToken",
+          "callee": "loginUser.getExpireTime",
+          "lineNumber": 136
+        },
+        {
+          "caller": "verifyToken",
+          "callee": "System.currentTimeMillis",
+          "lineNumber": 137
+        },
+        {
+          "caller": "verifyToken",
+          "callee": "refreshToken",
+          "lineNumber": 140
+        },
+        {
+          "caller": "refreshToken",
+          "callee": "loginUser.setLoginTime",
+          "lineNumber": 151
+        },
+        {
+          "caller": "refreshToken",
+          "callee": "System.currentTimeMillis",
+          "lineNumber": 151
+        },
+        {
+          "caller": "refreshToken",
+          "callee": "loginUser.setExpireTime",
+          "lineNumber": 152
+        },
+        {
+          "caller": "refreshToken",
+          "callee": "loginUser.getLoginTime",
+          "lineNumber": 152
+        },
+        {
+          "caller": "refreshToken",
+          "callee": "getTokenKey",
+          "lineNumber": 154
+        },
+        {
+          "caller": "refreshToken",
+          "callee": "loginUser.getToken",
+          "lineNumber": 154
+        },
+        {
+          "caller": "refreshToken",
+          "callee": "redisCache.setCacheObject",
+          "lineNumber": 155
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "ServletUtils.getRequest().getHeader",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "ServletUtils.getRequest",
+          "lineNumber": 165
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "IpUtils.getIpAddr",
+          "lineNumber": 166
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "loginUser.setIpaddr",
+          "lineNumber": 167
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "loginUser.setLoginLocation",
+          "lineNumber": 168
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "AddressUtils.getRealAddressByIP",
+          "lineNumber": 168
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "loginUser.setBrowser",
+          "lineNumber": 169
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "UserAgentUtils.getBrowser",
+          "lineNumber": 169
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "loginUser.setOs",
+          "lineNumber": 170
+        },
+        {
+          "caller": "setUserAgent",
+          "callee": "UserAgentUtils.getOperatingSystem",
+          "lineNumber": 170
+        },
+        {
+          "caller": "createToken",
+          "callee": "Jwts.builder()\r\n                .setClaims(claims)\r\n                .signWith(SignatureAlgorithm.HS512, secret).compact",
+          "lineNumber": 181
+        },
+        {
+          "caller": "createToken",
+          "callee": "Jwts.builder()\r\n                .setClaims(claims).signWith",
+          "lineNumber": 181
+        },
+        {
+          "caller": "createToken",
+          "callee": "Jwts.builder().setClaims",
+          "lineNumber": 181
+        },
+        {
+          "caller": "createToken",
+          "callee": "Jwts.builder",
+          "lineNumber": 181
+        },
+        {
+          "caller": "parseToken",
+          "callee": "Jwts.parser()\r\n                .setSigningKey(secret)\r\n                .parseClaimsJws(token).getBody",
+          "lineNumber": 195
+        },
+        {
+          "caller": "parseToken",
+          "callee": "Jwts.parser()\r\n                .setSigningKey(secret).parseClaimsJws",
+          "lineNumber": 195
+        },
+        {
+          "caller": "parseToken",
+          "callee": "Jwts.parser().setSigningKey",
+          "lineNumber": 195
+        },
+        {
+          "caller": "parseToken",
+          "callee": "Jwts.parser",
+          "lineNumber": 195
+        },
+        {
+          "caller": "getUsernameFromToken",
+          "callee": "parseToken",
+          "lineNumber": 209
+        },
+        {
+          "caller": "getUsernameFromToken",
+          "callee": "claims.getSubject",
+          "lineNumber": 210
+        },
+        {
+          "caller": "getToken",
+          "callee": "request.getHeader",
+          "lineNumber": 221
+        },
+        {
+          "caller": "getToken",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 222
+        },
+        {
+          "caller": "getToken",
+          "callee": "token.startsWith",
+          "lineNumber": 222
+        },
+        {
+          "caller": "getToken",
+          "callee": "token.replace",
+          "lineNumber": 224
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "redisCache.keys",
+          "lineNumber": 244
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "keys.isEmpty",
+          "lineNumber": 245
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "redisCache.getCacheObject",
+          "lineNumber": 251
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser",
+          "lineNumber": 252
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser().isAdmin",
+          "lineNumber": 252
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser",
+          "lineNumber": 252
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser().getRoles",
+          "lineNumber": 258
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser",
+          "lineNumber": 258
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser().getRoles().stream().anyMatch",
+          "lineNumber": 259
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser().getRoles().stream",
+          "lineNumber": 259
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser().getRoles",
+          "lineNumber": 259
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser",
+          "lineNumber": 259
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "roleId.equals",
+          "lineNumber": 259
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "r.getRoleId",
+          "lineNumber": 259
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.setPermissions",
+          "lineNumber": 265
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "permissionService.getMenuPermission",
+          "lineNumber": 265
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUser",
+          "lineNumber": 265
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "refreshToken",
+          "lineNumber": 266
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "log.info",
+          "lineNumber": 267
+        },
+        {
+          "caller": "refreshPermissionByRoleId",
+          "callee": "loginUser.getUsername",
+          "lineNumber": 267
+        }
+      ],
+      "metrics": {
+        "importCount": 10,
+        "exportCount": 10,
+        "functionCount": 13,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-generator/src/main/java/com/ruoyi/generator/util/VelocityInitializer.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 32,
+      "functions": [
+        {
+          "name": "initVelocity",
+          "startLine": 17,
+          "endLine": 33,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "VelocityInitializer",
+          "startLine": 12,
+          "endLine": 34,
+          "methods": [
+            "initVelocity"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "initVelocity",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "VelocityInitializer",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "initVelocity",
+          "callee": "new Properties",
+          "lineNumber": 19
+        },
+        {
+          "caller": "initVelocity",
+          "callee": "p.setProperty",
+          "lineNumber": 23
+        },
+        {
+          "caller": "initVelocity",
+          "callee": "p.setProperty",
+          "lineNumber": 25
+        },
+        {
+          "caller": "initVelocity",
+          "callee": "Velocity.init",
+          "lineNumber": 27
+        },
+        {
+          "caller": "initVelocity",
+          "callee": "new RuntimeException",
+          "lineNumber": 31
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysCache.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 81,
+      "nonEmptyLines": 64,
+      "functions": [
+        {
+          "name": "SysCache",
+          "startLine": 24,
+          "endLine": 27,
+          "params": []
+        },
+        {
+          "name": "SysCache",
+          "startLine": 29,
+          "endLine": 33,
+          "params": [
+            "cacheName",
+            "remark"
+          ]
+        },
+        {
+          "name": "SysCache",
+          "startLine": 35,
+          "endLine": 40,
+          "params": [
+            "cacheName",
+            "cacheKey",
+            "cacheValue"
+          ]
+        },
+        {
+          "name": "getCacheName",
+          "startLine": 42,
+          "endLine": 45,
+          "params": []
+        },
+        {
+          "name": "setCacheName",
+          "startLine": 47,
+          "endLine": 50,
+          "params": [
+            "cacheName"
+          ]
+        },
+        {
+          "name": "getCacheKey",
+          "startLine": 52,
+          "endLine": 55,
+          "params": []
+        },
+        {
+          "name": "setCacheKey",
+          "startLine": 57,
+          "endLine": 60,
+          "params": [
+            "cacheKey"
+          ]
+        },
+        {
+          "name": "getCacheValue",
+          "startLine": 62,
+          "endLine": 65,
+          "params": []
+        },
+        {
+          "name": "setCacheValue",
+          "startLine": 67,
+          "endLine": 70,
+          "params": [
+            "cacheValue"
+          ]
+        },
+        {
+          "name": "getRemark",
+          "startLine": 72,
+          "endLine": 75,
+          "params": []
+        },
+        {
+          "name": "setRemark",
+          "startLine": 77,
+          "endLine": 80,
+          "params": [
+            "remark"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysCache",
+          "startLine": 10,
+          "endLine": 81,
+          "methods": [
+            "SysCache",
+            "SysCache",
+            "SysCache",
+            "getCacheName",
+            "setCacheName",
+            "getCacheKey",
+            "setCacheKey",
+            "getCacheValue",
+            "setCacheValue",
+            "getRemark",
+            "setRemark"
+          ],
+          "properties": [
+            "cacheName",
+            "cacheKey",
+            "cacheValue",
+            "remark"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SysCache",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "SysCache",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "SysCache",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheName",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheName",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheKey",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheKey",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "getCacheValue",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "setCacheValue",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "getRemark",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "setRemark",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "SysCache",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "SysCache",
+          "callee": "StringUtils.replace",
+          "lineNumber": 37
+        },
+        {
+          "caller": "SysCache",
+          "callee": "StringUtils.replace",
+          "lineNumber": 38
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 12,
+        "functionCount": 11,
+        "classCount": 1
+      }
+    }
+  ]
+}

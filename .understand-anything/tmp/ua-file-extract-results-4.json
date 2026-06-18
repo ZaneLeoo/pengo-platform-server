@@ -1,0 +1,7069 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 30,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 83,
+      "nonEmptyLines": 78,
+      "functions": [
+        {
+          "name": "list",
+          "startLine": 41,
+          "endLine": 70,
+          "params": [
+            "ipaddr",
+            "userName"
+          ]
+        },
+        {
+          "name": "forceLogout",
+          "startLine": 75,
+          "endLine": 82,
+          "params": [
+            "tokenId"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysUserOnlineController",
+          "startLine": 31,
+          "endLine": 83,
+          "methods": [
+            "list",
+            "forceLogout"
+          ],
+          "properties": [
+            "userOnlineService",
+            "redisCache"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "list",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "forceLogout",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "SysUserOnlineController",
+          "line": 31,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "list",
+          "callee": "redisCache.keys",
+          "lineNumber": 45
+        },
+        {
+          "caller": "list",
+          "callee": "new ArrayList<SysUserOnline>",
+          "lineNumber": 46
+        },
+        {
+          "caller": "list",
+          "callee": "redisCache.getCacheObject",
+          "lineNumber": 49
+        },
+        {
+          "caller": "list",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 50
+        },
+        {
+          "caller": "list",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 50
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineList.add",
+          "lineNumber": 52
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineService.selectOnlineByInfo",
+          "lineNumber": 52
+        },
+        {
+          "caller": "list",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 54
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineList.add",
+          "lineNumber": 56
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineService.selectOnlineByIpaddr",
+          "lineNumber": 56
+        },
+        {
+          "caller": "list",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 58
+        },
+        {
+          "caller": "list",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 58
+        },
+        {
+          "caller": "list",
+          "callee": "user.getUser",
+          "lineNumber": 58
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineList.add",
+          "lineNumber": 60
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineService.selectOnlineByUserName",
+          "lineNumber": 60
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineList.add",
+          "lineNumber": 64
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineService.loginUserToUserOnline",
+          "lineNumber": 64
+        },
+        {
+          "caller": "list",
+          "callee": "Collections.reverse",
+          "lineNumber": 67
+        },
+        {
+          "caller": "list",
+          "callee": "userOnlineList.removeAll",
+          "lineNumber": 68
+        },
+        {
+          "caller": "list",
+          "callee": "Collections.singleton",
+          "lineNumber": 68
+        },
+        {
+          "caller": "list",
+          "callee": "getDataTable",
+          "lineNumber": 69
+        },
+        {
+          "caller": "forceLogout",
+          "callee": "redisCache.deleteObject",
+          "lineNumber": 80
+        },
+        {
+          "caller": "forceLogout",
+          "callee": "success",
+          "lineNumber": 81
+        }
+      ],
+      "metrics": {
+        "importCount": 11,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 38,
+      "nonEmptyLines": 34,
+      "functions": [
+        {
+          "name": "register",
+          "startLine": 28,
+          "endLine": 37,
+          "params": [
+            "user"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysRegisterController",
+          "startLine": 19,
+          "endLine": 38,
+          "methods": [
+            "register"
+          ],
+          "properties": [
+            "registerService",
+            "configService"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "register",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "SysRegisterController",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "register",
+          "callee": "\"true\".equals",
+          "lineNumber": 31
+        },
+        {
+          "caller": "register",
+          "callee": "configService.selectConfigByKey",
+          "lineNumber": 31
+        },
+        {
+          "caller": "register",
+          "callee": "error",
+          "lineNumber": 33
+        },
+        {
+          "caller": "register",
+          "callee": "registerService.register",
+          "lineNumber": 35
+        },
+        {
+          "caller": "register",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 36
+        },
+        {
+          "caller": "register",
+          "callee": "success",
+          "lineNumber": 36
+        },
+        {
+          "caller": "register",
+          "callee": "error",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 175,
+      "nonEmptyLines": 153,
+      "functions": [
+        {
+          "name": "userList",
+          "startLine": 38,
+          "endLine": 44,
+          "params": []
+        },
+        {
+          "name": "getUser",
+          "startLine": 46,
+          "endLine": 59,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "save",
+          "startLine": 61,
+          "endLine": 71,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "update",
+          "startLine": 73,
+          "endLine": 89,
+          "params": [
+            "user"
+          ]
+        },
+        {
+          "name": "delete",
+          "startLine": 91,
+          "endLine": 105,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "UserEntity",
+          "startLine": 123,
+          "endLine": 126,
+          "params": []
+        },
+        {
+          "name": "UserEntity",
+          "startLine": 128,
+          "endLine": 134,
+          "params": [
+            "userId",
+            "username",
+            "password",
+            "mobile"
+          ]
+        },
+        {
+          "name": "getUserId",
+          "startLine": 136,
+          "endLine": 139,
+          "params": []
+        },
+        {
+          "name": "setUserId",
+          "startLine": 141,
+          "endLine": 144,
+          "params": [
+            "userId"
+          ]
+        },
+        {
+          "name": "getUsername",
+          "startLine": 146,
+          "endLine": 149,
+          "params": []
+        },
+        {
+          "name": "setUsername",
+          "startLine": 151,
+          "endLine": 154,
+          "params": [
+            "username"
+          ]
+        },
+        {
+          "name": "getPassword",
+          "startLine": 156,
+          "endLine": 159,
+          "params": []
+        },
+        {
+          "name": "setPassword",
+          "startLine": 161,
+          "endLine": 164,
+          "params": [
+            "password"
+          ]
+        },
+        {
+          "name": "getMobile",
+          "startLine": 166,
+          "endLine": 169,
+          "params": []
+        },
+        {
+          "name": "setMobile",
+          "startLine": 171,
+          "endLine": 174,
+          "params": [
+            "mobile"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "TestController",
+          "startLine": 27,
+          "endLine": 106,
+          "methods": [
+            "userList",
+            "getUser",
+            "save",
+            "update",
+            "delete"
+          ],
+          "properties": [
+            "users"
+          ]
+        },
+        {
+          "name": "UserEntity",
+          "startLine": 108,
+          "endLine": 175,
+          "methods": [
+            "UserEntity",
+            "UserEntity",
+            "getUserId",
+            "setUserId",
+            "getUsername",
+            "setUsername",
+            "getPassword",
+            "setPassword",
+            "getMobile",
+            "setMobile"
+          ],
+          "properties": [
+            "userId",
+            "username",
+            "password",
+            "mobile"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "userList",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "getUser",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "save",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "update",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "delete",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "TestController",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "UserEntity",
+          "line": 123,
+          "isDefault": false
+        },
+        {
+          "name": "UserEntity",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "getUserId",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "setUserId",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "getUsername",
+          "line": 146,
+          "isDefault": false
+        },
+        {
+          "name": "setUsername",
+          "line": 151,
+          "isDefault": false
+        },
+        {
+          "name": "getPassword",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "setPassword",
+          "line": 161,
+          "isDefault": false
+        },
+        {
+          "name": "getMobile",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "setMobile",
+          "line": 171,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "userList",
+          "callee": "new ArrayList<UserEntity>",
+          "lineNumber": 42
+        },
+        {
+          "caller": "userList",
+          "callee": "users.values",
+          "lineNumber": 42
+        },
+        {
+          "caller": "userList",
+          "callee": "R.ok",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getUser",
+          "callee": "users.isEmpty",
+          "lineNumber": 51
+        },
+        {
+          "caller": "getUser",
+          "callee": "users.containsKey",
+          "lineNumber": 51
+        },
+        {
+          "caller": "getUser",
+          "callee": "R.ok",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getUser",
+          "callee": "users.get",
+          "lineNumber": 53
+        },
+        {
+          "caller": "getUser",
+          "callee": "R.fail",
+          "lineNumber": 57
+        },
+        {
+          "caller": "save",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 65
+        },
+        {
+          "caller": "save",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 65
+        },
+        {
+          "caller": "save",
+          "callee": "user.getUserId",
+          "lineNumber": 65
+        },
+        {
+          "caller": "save",
+          "callee": "R.fail",
+          "lineNumber": 67
+        },
+        {
+          "caller": "save",
+          "callee": "users.put",
+          "lineNumber": 69
+        },
+        {
+          "caller": "save",
+          "callee": "user.getUserId",
+          "lineNumber": 69
+        },
+        {
+          "caller": "save",
+          "callee": "R.ok",
+          "lineNumber": 70
+        },
+        {
+          "caller": "update",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 78
+        },
+        {
+          "caller": "update",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 78
+        },
+        {
+          "caller": "update",
+          "callee": "user.getUserId",
+          "lineNumber": 78
+        },
+        {
+          "caller": "update",
+          "callee": "R.fail",
+          "lineNumber": 80
+        },
+        {
+          "caller": "update",
+          "callee": "users.isEmpty",
+          "lineNumber": 82
+        },
+        {
+          "caller": "update",
+          "callee": "users.containsKey",
+          "lineNumber": 82
+        },
+        {
+          "caller": "update",
+          "callee": "user.getUserId",
+          "lineNumber": 82
+        },
+        {
+          "caller": "update",
+          "callee": "R.fail",
+          "lineNumber": 84
+        },
+        {
+          "caller": "update",
+          "callee": "users.remove",
+          "lineNumber": 86
+        },
+        {
+          "caller": "update",
+          "callee": "user.getUserId",
+          "lineNumber": 86
+        },
+        {
+          "caller": "update",
+          "callee": "users.put",
+          "lineNumber": 87
+        },
+        {
+          "caller": "update",
+          "callee": "user.getUserId",
+          "lineNumber": 87
+        },
+        {
+          "caller": "update",
+          "callee": "R.ok",
+          "lineNumber": 88
+        },
+        {
+          "caller": "delete",
+          "callee": "users.isEmpty",
+          "lineNumber": 96
+        },
+        {
+          "caller": "delete",
+          "callee": "users.containsKey",
+          "lineNumber": 96
+        },
+        {
+          "caller": "delete",
+          "callee": "users.remove",
+          "lineNumber": 98
+        },
+        {
+          "caller": "delete",
+          "callee": "R.ok",
+          "lineNumber": 99
+        },
+        {
+          "caller": "delete",
+          "callee": "R.fail",
+          "lineNumber": 103
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 16,
+        "functionCount": 15,
+        "classCount": 2
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 94,
+      "nonEmptyLines": 77,
+      "classes": [
+        {
+          "name": "HttpStatus",
+          "startLine": 8,
+          "endLine": 94,
+          "methods": [],
+          "properties": [
+            "SUCCESS",
+            "CREATED",
+            "ACCEPTED",
+            "NO_CONTENT",
+            "MOVED_PERM",
+            "SEE_OTHER",
+            "NOT_MODIFIED",
+            "BAD_REQUEST",
+            "UNAUTHORIZED",
+            "FORBIDDEN",
+            "NOT_FOUND",
+            "BAD_METHOD",
+            "CONFLICT",
+            "UNSUPPORTED_TYPE",
+            "ERROR",
+            "NOT_IMPLEMENTED",
+            "WARN"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SUCCESS",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "CREATED",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "ACCEPTED",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "NO_CONTENT",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "MOVED_PERM",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "SEE_OTHER",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "NOT_MODIFIED",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "BAD_REQUEST",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "UNAUTHORIZED",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "FORBIDDEN",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "NOT_FOUND",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "BAD_METHOD",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "CONFLICT",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "UNSUPPORTED_TYPE",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "ERROR",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "NOT_IMPLEMENTED",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "WARN",
+          "line": 93,
+          "isDefault": false
+        },
+        {
+          "name": "HttpStatus",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 18,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 202,
+      "nonEmptyLines": 182,
+      "functions": [
+        {
+          "name": "initBinder",
+          "startLine": 36,
+          "endLine": 48,
+          "params": [
+            "binder"
+          ]
+        },
+        {
+          "name": "startPage",
+          "startLine": 53,
+          "endLine": 56,
+          "params": []
+        },
+        {
+          "name": "startOrderBy",
+          "startLine": 61,
+          "endLine": 69,
+          "params": []
+        },
+        {
+          "name": "clearPage",
+          "startLine": 74,
+          "endLine": 77,
+          "params": []
+        },
+        {
+          "name": "getDataTable",
+          "startLine": 82,
+          "endLine": 91,
+          "params": [
+            "list"
+          ]
+        },
+        {
+          "name": "success",
+          "startLine": 96,
+          "endLine": 99,
+          "params": []
+        },
+        {
+          "name": "error",
+          "startLine": 104,
+          "endLine": 107,
+          "params": []
+        },
+        {
+          "name": "success",
+          "startLine": 112,
+          "endLine": 115,
+          "params": [
+            "message"
+          ]
+        },
+        {
+          "name": "success",
+          "startLine": 120,
+          "endLine": 123,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "error",
+          "startLine": 128,
+          "endLine": 131,
+          "params": [
+            "message"
+          ]
+        },
+        {
+          "name": "warn",
+          "startLine": 136,
+          "endLine": 139,
+          "params": [
+            "message"
+          ]
+        },
+        {
+          "name": "toAjax",
+          "startLine": 147,
+          "endLine": 150,
+          "params": [
+            "rows"
+          ]
+        },
+        {
+          "name": "toAjax",
+          "startLine": 158,
+          "endLine": 161,
+          "params": [
+            "result"
+          ]
+        },
+        {
+          "name": "redirect",
+          "startLine": 166,
+          "endLine": 169,
+          "params": [
+            "url"
+          ]
+        },
+        {
+          "name": "getLoginUser",
+          "startLine": 174,
+          "endLine": 177,
+          "params": []
+        },
+        {
+          "name": "getUserId",
+          "startLine": 182,
+          "endLine": 185,
+          "params": []
+        },
+        {
+          "name": "getDeptId",
+          "startLine": 190,
+          "endLine": 193,
+          "params": []
+        },
+        {
+          "name": "getUsername",
+          "startLine": 198,
+          "endLine": 201,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "BaseController",
+          "startLine": 29,
+          "endLine": 202,
+          "methods": [
+            "initBinder",
+            "startPage",
+            "startOrderBy",
+            "clearPage",
+            "getDataTable",
+            "success",
+            "error",
+            "success",
+            "success",
+            "error",
+            "warn",
+            "toAjax",
+            "toAjax",
+            "redirect",
+            "getLoginUser",
+            "getUserId",
+            "getDeptId",
+            "getUsername"
+          ],
+          "properties": [
+            "logger"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "initBinder",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "success",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "error",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "success",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "success",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "error",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "warn",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "redirect",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginUser",
+          "line": 174,
+          "isDefault": false
+        },
+        {
+          "name": "getUserId",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "getDeptId",
+          "line": 190,
+          "isDefault": false
+        },
+        {
+          "name": "getUsername",
+          "line": 198,
+          "isDefault": false
+        },
+        {
+          "name": "BaseController",
+          "line": 29,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "initBinder",
+          "callee": "binder.registerCustomEditor",
+          "lineNumber": 40
+        },
+        {
+          "caller": "initBinder",
+          "callee": "new PropertyEditorSupport",
+          "lineNumber": 40
+        },
+        {
+          "caller": "setAsText",
+          "callee": "setValue",
+          "lineNumber": 45
+        },
+        {
+          "caller": "setAsText",
+          "callee": "DateUtils.parseDate",
+          "lineNumber": 45
+        },
+        {
+          "caller": "startPage",
+          "callee": "PageUtils.startPage",
+          "lineNumber": 55
+        },
+        {
+          "caller": "startOrderBy",
+          "callee": "TableSupport.buildPageRequest",
+          "lineNumber": 63
+        },
+        {
+          "caller": "startOrderBy",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 64
+        },
+        {
+          "caller": "startOrderBy",
+          "callee": "pageDomain.getOrderBy",
+          "lineNumber": 64
+        },
+        {
+          "caller": "startOrderBy",
+          "callee": "SqlUtil.escapeOrderBySql",
+          "lineNumber": 66
+        },
+        {
+          "caller": "startOrderBy",
+          "callee": "pageDomain.getOrderBy",
+          "lineNumber": 66
+        },
+        {
+          "caller": "startOrderBy",
+          "callee": "PageHelper.orderBy",
+          "lineNumber": 67
+        },
+        {
+          "caller": "clearPage",
+          "callee": "PageUtils.clearPage",
+          "lineNumber": 76
+        },
+        {
+          "caller": "getDataTable",
+          "callee": "new TableDataInfo",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getDataTable",
+          "callee": "rspData.setCode",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getDataTable",
+          "callee": "rspData.setMsg",
+          "lineNumber": 87
+        },
+        {
+          "caller": "getDataTable",
+          "callee": "rspData.setRows",
+          "lineNumber": 88
+        },
+        {
+          "caller": "getDataTable",
+          "callee": "rspData.setTotal",
+          "lineNumber": 89
+        },
+        {
+          "caller": "getDataTable",
+          "callee": "new PageInfo(list).getTotal",
+          "lineNumber": 89
+        },
+        {
+          "caller": "getDataTable",
+          "callee": "new PageInfo",
+          "lineNumber": 89
+        },
+        {
+          "caller": "success",
+          "callee": "AjaxResult.success",
+          "lineNumber": 98
+        },
+        {
+          "caller": "error",
+          "callee": "AjaxResult.error",
+          "lineNumber": 106
+        },
+        {
+          "caller": "success",
+          "callee": "AjaxResult.success",
+          "lineNumber": 114
+        },
+        {
+          "caller": "success",
+          "callee": "AjaxResult.success",
+          "lineNumber": 122
+        },
+        {
+          "caller": "error",
+          "callee": "AjaxResult.error",
+          "lineNumber": 130
+        },
+        {
+          "caller": "warn",
+          "callee": "AjaxResult.warn",
+          "lineNumber": 138
+        },
+        {
+          "caller": "toAjax",
+          "callee": "AjaxResult.success",
+          "lineNumber": 149
+        },
+        {
+          "caller": "toAjax",
+          "callee": "AjaxResult.error",
+          "lineNumber": 149
+        },
+        {
+          "caller": "toAjax",
+          "callee": "success",
+          "lineNumber": 160
+        },
+        {
+          "caller": "toAjax",
+          "callee": "error",
+          "lineNumber": 160
+        },
+        {
+          "caller": "redirect",
+          "callee": "StringUtils.format",
+          "lineNumber": 168
+        },
+        {
+          "caller": "getLoginUser",
+          "callee": "SecurityUtils.getLoginUser",
+          "lineNumber": 176
+        },
+        {
+          "caller": "getUserId",
+          "callee": "getLoginUser().getUserId",
+          "lineNumber": 184
+        },
+        {
+          "caller": "getUserId",
+          "callee": "getLoginUser",
+          "lineNumber": 184
+        },
+        {
+          "caller": "getDeptId",
+          "callee": "getLoginUser().getDeptId",
+          "lineNumber": 192
+        },
+        {
+          "caller": "getDeptId",
+          "callee": "getLoginUser",
+          "lineNumber": 192
+        },
+        {
+          "caller": "getUsername",
+          "callee": "getLoginUser().getUsername",
+          "lineNumber": 200
+        },
+        {
+          "caller": "getUsername",
+          "callee": "getLoginUser",
+          "lineNumber": 200
+        }
+      ],
+      "metrics": {
+        "importCount": 11,
+        "exportCount": 13,
+        "functionCount": 18,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 216,
+      "nonEmptyLines": 194,
+      "functions": [
+        {
+          "name": "AjaxResult",
+          "startLine": 29,
+          "endLine": 31,
+          "params": []
+        },
+        {
+          "name": "AjaxResult",
+          "startLine": 39,
+          "endLine": 43,
+          "params": [
+            "code",
+            "msg"
+          ]
+        },
+        {
+          "name": "AjaxResult",
+          "startLine": 52,
+          "endLine": 60,
+          "params": [
+            "code",
+            "msg",
+            "data"
+          ]
+        },
+        {
+          "name": "success",
+          "startLine": 67,
+          "endLine": 70,
+          "params": []
+        },
+        {
+          "name": "success",
+          "startLine": 77,
+          "endLine": 80,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "success",
+          "startLine": 88,
+          "endLine": 91,
+          "params": [
+            "msg"
+          ]
+        },
+        {
+          "name": "success",
+          "startLine": 100,
+          "endLine": 103,
+          "params": [
+            "msg",
+            "data"
+          ]
+        },
+        {
+          "name": "warn",
+          "startLine": 111,
+          "endLine": 114,
+          "params": [
+            "msg"
+          ]
+        },
+        {
+          "name": "warn",
+          "startLine": 123,
+          "endLine": 126,
+          "params": [
+            "msg",
+            "data"
+          ]
+        },
+        {
+          "name": "error",
+          "startLine": 133,
+          "endLine": 136,
+          "params": []
+        },
+        {
+          "name": "error",
+          "startLine": 144,
+          "endLine": 147,
+          "params": [
+            "msg"
+          ]
+        },
+        {
+          "name": "error",
+          "startLine": 156,
+          "endLine": 159,
+          "params": [
+            "msg",
+            "data"
+          ]
+        },
+        {
+          "name": "error",
+          "startLine": 168,
+          "endLine": 171,
+          "params": [
+            "code",
+            "msg"
+          ]
+        },
+        {
+          "name": "isSuccess",
+          "startLine": 178,
+          "endLine": 181,
+          "params": []
+        },
+        {
+          "name": "isWarn",
+          "startLine": 188,
+          "endLine": 191,
+          "params": []
+        },
+        {
+          "name": "isError",
+          "startLine": 198,
+          "endLine": 201,
+          "params": []
+        },
+        {
+          "name": "put",
+          "startLine": 210,
+          "endLine": 215,
+          "params": [
+            "key",
+            "value"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AjaxResult",
+          "startLine": 13,
+          "endLine": 216,
+          "methods": [
+            "AjaxResult",
+            "AjaxResult",
+            "AjaxResult",
+            "success",
+            "success",
+            "success",
+            "success",
+            "warn",
+            "warn",
+            "error",
+            "error",
+            "error",
+            "error",
+            "isSuccess",
+            "isWarn",
+            "isError",
+            "put"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "CODE_TAG",
+            "MSG_TAG",
+            "DATA_TAG"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "CODE_TAG",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "MSG_TAG",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "DATA_TAG",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "AjaxResult",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "AjaxResult",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "AjaxResult",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "success",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "success",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "success",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "success",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "warn",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "warn",
+          "line": 123,
+          "isDefault": false
+        },
+        {
+          "name": "error",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "error",
+          "line": 144,
+          "isDefault": false
+        },
+        {
+          "name": "error",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "error",
+          "line": 168,
+          "isDefault": false
+        },
+        {
+          "name": "isSuccess",
+          "line": 178,
+          "isDefault": false
+        },
+        {
+          "name": "isWarn",
+          "line": 188,
+          "isDefault": false
+        },
+        {
+          "name": "isError",
+          "line": 198,
+          "isDefault": false
+        },
+        {
+          "name": "put",
+          "line": 210,
+          "isDefault": false
+        },
+        {
+          "name": "AjaxResult",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "AjaxResult",
+          "callee": "super.put",
+          "lineNumber": 41
+        },
+        {
+          "caller": "AjaxResult",
+          "callee": "super.put",
+          "lineNumber": 42
+        },
+        {
+          "caller": "AjaxResult",
+          "callee": "super.put",
+          "lineNumber": 54
+        },
+        {
+          "caller": "AjaxResult",
+          "callee": "super.put",
+          "lineNumber": 55
+        },
+        {
+          "caller": "AjaxResult",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 56
+        },
+        {
+          "caller": "AjaxResult",
+          "callee": "super.put",
+          "lineNumber": 58
+        },
+        {
+          "caller": "success",
+          "callee": "AjaxResult.success",
+          "lineNumber": 69
+        },
+        {
+          "caller": "success",
+          "callee": "AjaxResult.success",
+          "lineNumber": 79
+        },
+        {
+          "caller": "success",
+          "callee": "AjaxResult.success",
+          "lineNumber": 90
+        },
+        {
+          "caller": "success",
+          "callee": "new AjaxResult",
+          "lineNumber": 102
+        },
+        {
+          "caller": "warn",
+          "callee": "AjaxResult.warn",
+          "lineNumber": 113
+        },
+        {
+          "caller": "warn",
+          "callee": "new AjaxResult",
+          "lineNumber": 125
+        },
+        {
+          "caller": "error",
+          "callee": "AjaxResult.error",
+          "lineNumber": 135
+        },
+        {
+          "caller": "error",
+          "callee": "AjaxResult.error",
+          "lineNumber": 146
+        },
+        {
+          "caller": "error",
+          "callee": "new AjaxResult",
+          "lineNumber": 158
+        },
+        {
+          "caller": "error",
+          "callee": "new AjaxResult",
+          "lineNumber": 170
+        },
+        {
+          "caller": "isSuccess",
+          "callee": "Objects.equals",
+          "lineNumber": 180
+        },
+        {
+          "caller": "isSuccess",
+          "callee": "this.get",
+          "lineNumber": 180
+        },
+        {
+          "caller": "isWarn",
+          "callee": "Objects.equals",
+          "lineNumber": 190
+        },
+        {
+          "caller": "isWarn",
+          "callee": "this.get",
+          "lineNumber": 190
+        },
+        {
+          "caller": "isError",
+          "callee": "Objects.equals",
+          "lineNumber": 200
+        },
+        {
+          "caller": "isError",
+          "callee": "this.get",
+          "lineNumber": 200
+        },
+        {
+          "caller": "put",
+          "callee": "super.put",
+          "lineNumber": 213
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 21,
+        "functionCount": 17,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 115,
+      "nonEmptyLines": 91,
+      "functions": [
+        {
+          "name": "ok",
+          "startLine": 27,
+          "endLine": 30,
+          "params": []
+        },
+        {
+          "name": "ok",
+          "startLine": 32,
+          "endLine": 35,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "ok",
+          "startLine": 37,
+          "endLine": 40,
+          "params": [
+            "data",
+            "msg"
+          ]
+        },
+        {
+          "name": "fail",
+          "startLine": 42,
+          "endLine": 45,
+          "params": []
+        },
+        {
+          "name": "fail",
+          "startLine": 47,
+          "endLine": 50,
+          "params": [
+            "msg"
+          ]
+        },
+        {
+          "name": "fail",
+          "startLine": 52,
+          "endLine": 55,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "fail",
+          "startLine": 57,
+          "endLine": 60,
+          "params": [
+            "data",
+            "msg"
+          ]
+        },
+        {
+          "name": "fail",
+          "startLine": 62,
+          "endLine": 65,
+          "params": [
+            "code",
+            "msg"
+          ]
+        },
+        {
+          "name": "restResult",
+          "startLine": 67,
+          "endLine": 74,
+          "params": [
+            "data",
+            "code",
+            "msg"
+          ]
+        },
+        {
+          "name": "getCode",
+          "startLine": 76,
+          "endLine": 79,
+          "params": []
+        },
+        {
+          "name": "setCode",
+          "startLine": 81,
+          "endLine": 84,
+          "params": [
+            "code"
+          ]
+        },
+        {
+          "name": "getMsg",
+          "startLine": 86,
+          "endLine": 89,
+          "params": []
+        },
+        {
+          "name": "setMsg",
+          "startLine": 91,
+          "endLine": 94,
+          "params": [
+            "msg"
+          ]
+        },
+        {
+          "name": "getData",
+          "startLine": 96,
+          "endLine": 99,
+          "params": []
+        },
+        {
+          "name": "setData",
+          "startLine": 101,
+          "endLine": 104,
+          "params": [
+            "data"
+          ]
+        },
+        {
+          "name": "isError",
+          "startLine": 106,
+          "endLine": 109,
+          "params": [
+            "ret"
+          ]
+        },
+        {
+          "name": "isSuccess",
+          "startLine": 111,
+          "endLine": 114,
+          "params": [
+            "ret"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "R",
+          "startLine": 11,
+          "endLine": 115,
+          "methods": [
+            "ok",
+            "ok",
+            "ok",
+            "fail",
+            "fail",
+            "fail",
+            "fail",
+            "fail",
+            "restResult",
+            "getCode",
+            "setCode",
+            "getMsg",
+            "setMsg",
+            "getData",
+            "setData",
+            "isError",
+            "isSuccess"
+          ],
+          "properties": [
+            "serialVersionUID",
+            "SUCCESS",
+            "FAIL",
+            "code",
+            "msg",
+            "data"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SUCCESS",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "FAIL",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "ok",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "ok",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "ok",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "fail",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "fail",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "fail",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "fail",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "fail",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "getCode",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "setCode",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "getMsg",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "setMsg",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "getData",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "setData",
+          "line": 101,
+          "isDefault": false
+        },
+        {
+          "name": "isError",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "isSuccess",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "R",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ok",
+          "callee": "restResult",
+          "lineNumber": 29
+        },
+        {
+          "caller": "ok",
+          "callee": "restResult",
+          "lineNumber": 34
+        },
+        {
+          "caller": "ok",
+          "callee": "restResult",
+          "lineNumber": 39
+        },
+        {
+          "caller": "fail",
+          "callee": "restResult",
+          "lineNumber": 44
+        },
+        {
+          "caller": "fail",
+          "callee": "restResult",
+          "lineNumber": 49
+        },
+        {
+          "caller": "fail",
+          "callee": "restResult",
+          "lineNumber": 54
+        },
+        {
+          "caller": "fail",
+          "callee": "restResult",
+          "lineNumber": 59
+        },
+        {
+          "caller": "fail",
+          "callee": "restResult",
+          "lineNumber": 64
+        },
+        {
+          "caller": "restResult",
+          "callee": "new R<>",
+          "lineNumber": 69
+        },
+        {
+          "caller": "restResult",
+          "callee": "apiResult.setCode",
+          "lineNumber": 70
+        },
+        {
+          "caller": "restResult",
+          "callee": "apiResult.setData",
+          "lineNumber": 71
+        },
+        {
+          "caller": "restResult",
+          "callee": "apiResult.setMsg",
+          "lineNumber": 72
+        },
+        {
+          "caller": "isError",
+          "callee": "isSuccess",
+          "lineNumber": 108
+        },
+        {
+          "caller": "isSuccess",
+          "callee": "ret.getCode",
+          "lineNumber": 113
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 19,
+        "functionCount": 17,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 11,
+      "nonEmptyLines": 9,
+      "classes": [
+        {
+          "name": "RegisterBody",
+          "startLine": 8,
+          "endLine": 11,
+          "methods": [],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "RegisterBody",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 101,
+      "nonEmptyLines": 84,
+      "functions": [
+        {
+          "name": "getOrderBy",
+          "startLine": 27,
+          "endLine": 34,
+          "params": []
+        },
+        {
+          "name": "getPageNum",
+          "startLine": 36,
+          "endLine": 39,
+          "params": []
+        },
+        {
+          "name": "setPageNum",
+          "startLine": 41,
+          "endLine": 44,
+          "params": [
+            "pageNum"
+          ]
+        },
+        {
+          "name": "getPageSize",
+          "startLine": 46,
+          "endLine": 49,
+          "params": []
+        },
+        {
+          "name": "setPageSize",
+          "startLine": 51,
+          "endLine": 54,
+          "params": [
+            "pageSize"
+          ]
+        },
+        {
+          "name": "getOrderByColumn",
+          "startLine": 56,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "setOrderByColumn",
+          "startLine": 61,
+          "endLine": 64,
+          "params": [
+            "orderByColumn"
+          ]
+        },
+        {
+          "name": "getIsAsc",
+          "startLine": 66,
+          "endLine": 69,
+          "params": []
+        },
+        {
+          "name": "setIsAsc",
+          "startLine": 71,
+          "endLine": 86,
+          "params": [
+            "isAsc"
+          ]
+        },
+        {
+          "name": "getReasonable",
+          "startLine": 88,
+          "endLine": 95,
+          "params": []
+        },
+        {
+          "name": "setReasonable",
+          "startLine": 97,
+          "endLine": 100,
+          "params": [
+            "reasonable"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "PageDomain",
+          "startLine": 10,
+          "endLine": 101,
+          "methods": [
+            "getOrderBy",
+            "getPageNum",
+            "setPageNum",
+            "getPageSize",
+            "setPageSize",
+            "getOrderByColumn",
+            "setOrderByColumn",
+            "getIsAsc",
+            "setIsAsc",
+            "getReasonable",
+            "setReasonable"
+          ],
+          "properties": [
+            "pageNum",
+            "pageSize",
+            "orderByColumn",
+            "isAsc",
+            "reasonable"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getOrderBy",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "getPageNum",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "setPageNum",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "getPageSize",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "setPageSize",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "getOrderByColumn",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "setOrderByColumn",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "getIsAsc",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "setIsAsc",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "getReasonable",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "setReasonable",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "PageDomain",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getOrderBy",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 29
+        },
+        {
+          "caller": "getOrderBy",
+          "callee": "StringUtils.toUnderScoreCase",
+          "lineNumber": 33
+        },
+        {
+          "caller": "setIsAsc",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 73
+        },
+        {
+          "caller": "setIsAsc",
+          "callee": "\"ascending\".equals",
+          "lineNumber": 76
+        },
+        {
+          "caller": "setIsAsc",
+          "callee": "\"descending\".equals",
+          "lineNumber": 80
+        },
+        {
+          "caller": "getReasonable",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 90
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 12,
+        "functionCount": 11,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 56,
+      "nonEmptyLines": 48,
+      "functions": [
+        {
+          "name": "getPageDomain",
+          "startLine": 41,
+          "endLine": 50,
+          "params": []
+        },
+        {
+          "name": "buildPageRequest",
+          "startLine": 52,
+          "endLine": 55,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "TableSupport",
+          "startLine": 11,
+          "endLine": 56,
+          "methods": [
+            "getPageDomain",
+            "buildPageRequest"
+          ],
+          "properties": [
+            "PAGE_NUM",
+            "PAGE_SIZE",
+            "ORDER_BY_COLUMN",
+            "IS_ASC",
+            "REASONABLE"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "PAGE_NUM",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "PAGE_SIZE",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "ORDER_BY_COLUMN",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "IS_ASC",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "REASONABLE",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "getPageDomain",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "buildPageRequest",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "TableSupport",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getPageDomain",
+          "callee": "new PageDomain",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "pageDomain.setPageNum",
+          "lineNumber": 44
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "Convert.toInt",
+          "lineNumber": 44
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "ServletUtils.getParameter",
+          "lineNumber": 44
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "pageDomain.setPageSize",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "Convert.toInt",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "ServletUtils.getParameter",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "pageDomain.setOrderByColumn",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "ServletUtils.getParameter",
+          "lineNumber": 46
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "pageDomain.setIsAsc",
+          "lineNumber": 47
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "ServletUtils.getParameter",
+          "lineNumber": 47
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "pageDomain.setReasonable",
+          "lineNumber": 48
+        },
+        {
+          "caller": "getPageDomain",
+          "callee": "ServletUtils.getParameterToBool",
+          "lineNumber": 48
+        },
+        {
+          "caller": "buildPageRequest",
+          "callee": "getPageDomain",
+          "lineNumber": 54
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 8,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 92,
+      "nonEmptyLines": 86,
+      "functions": [
+        {
+          "name": "format",
+          "startLine": 30,
+          "endLine": 91,
+          "params": [
+            "strPattern"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "StrFormatter",
+          "startLine": 10,
+          "endLine": 92,
+          "methods": [
+            "format"
+          ],
+          "properties": [
+            "EMPTY_JSON",
+            "C_BACKSLASH",
+            "C_DELIM_START",
+            "C_DELIM_END"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "EMPTY_JSON",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "C_BACKSLASH",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "C_DELIM_START",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "C_DELIM_END",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "format",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "StrFormatter",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "format",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 32
+        },
+        {
+          "caller": "format",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 32
+        },
+        {
+          "caller": "format",
+          "callee": "strPattern.length",
+          "lineNumber": 36
+        },
+        {
+          "caller": "format",
+          "callee": "new StringBuilder",
+          "lineNumber": 39
+        },
+        {
+          "caller": "format",
+          "callee": "strPattern.indexOf",
+          "lineNumber": 45
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 54
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.toString",
+          "lineNumber": 55
+        },
+        {
+          "caller": "format",
+          "callee": "strPattern.charAt",
+          "lineNumber": 60
+        },
+        {
+          "caller": "format",
+          "callee": "strPattern.charAt",
+          "lineNumber": 62
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 65
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 66
+        },
+        {
+          "caller": "format",
+          "callee": "Convert.utf8Str",
+          "lineNumber": 66
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 73
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 74
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 81
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 82
+        },
+        {
+          "caller": "format",
+          "callee": "Convert.utf8Str",
+          "lineNumber": 82
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.append",
+          "lineNumber": 88
+        },
+        {
+          "caller": "format",
+          "callee": "strPattern.length",
+          "lineNumber": 88
+        },
+        {
+          "caller": "format",
+          "callee": "sbuf.toString",
+          "lineNumber": 90
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 6,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 36,
+      "nonEmptyLines": 30,
+      "callGraph": [
+        {
+          "caller": "resolve",
+          "callee": "mappings.get",
+          "lineNumber": 29
+        },
+        {
+          "caller": "matches",
+          "callee": "resolve",
+          "lineNumber": 34
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/exception/DemoModeException.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 15,
+      "nonEmptyLines": 13,
+      "functions": [
+        {
+          "name": "DemoModeException",
+          "startLine": 12,
+          "endLine": 14,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "DemoModeException",
+          "startLine": 8,
+          "endLine": 15,
+          "methods": [
+            "DemoModeException"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DemoModeException",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "DemoModeException",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 77,
+      "nonEmptyLines": 67,
+      "functions": [
+        {
+          "name": "init",
+          "startLine": 27,
+          "endLine": 32,
+          "params": [
+            "filterConfig"
+          ]
+        },
+        {
+          "name": "doFilter",
+          "startLine": 34,
+          "endLine": 70,
+          "params": [
+            "request",
+            "response",
+            "chain"
+          ]
+        },
+        {
+          "name": "destroy",
+          "startLine": 72,
+          "endLine": 76,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "RefererFilter",
+          "startLine": 20,
+          "endLine": 77,
+          "methods": [
+            "init",
+            "doFilter",
+            "destroy"
+          ],
+          "properties": [
+            "allowedDomains"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "allowedDomains",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "init",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "doFilter",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "destroy",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "RefererFilter",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "init",
+          "callee": "filterConfig.getInitParameter",
+          "lineNumber": 30
+        },
+        {
+          "caller": "init",
+          "callee": "Arrays.asList",
+          "lineNumber": 31
+        },
+        {
+          "caller": "init",
+          "callee": "domains.split",
+          "lineNumber": 31
+        },
+        {
+          "caller": "doFilter",
+          "callee": "req.getHeader",
+          "lineNumber": 41
+        },
+        {
+          "caller": "doFilter",
+          "callee": "referer.isEmpty",
+          "lineNumber": 44
+        },
+        {
+          "caller": "doFilter",
+          "callee": "resp.sendError",
+          "lineNumber": 46
+        },
+        {
+          "caller": "doFilter",
+          "callee": "referer.contains",
+          "lineNumber": 54
+        },
+        {
+          "caller": "doFilter",
+          "callee": "chain.doFilter",
+          "lineNumber": 64
+        },
+        {
+          "caller": "doFilter",
+          "callee": "resp.sendError",
+          "lineNumber": 68
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 46,
+      "functions": [
+        {
+          "name": "init",
+          "startLine": 21,
+          "endLine": 25,
+          "params": [
+            "filterConfig"
+          ]
+        },
+        {
+          "name": "doFilter",
+          "startLine": 27,
+          "endLine": 45,
+          "params": [
+            "request",
+            "response",
+            "chain"
+          ]
+        },
+        {
+          "name": "destroy",
+          "startLine": 47,
+          "endLine": 51,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "RepeatableFilter",
+          "startLine": 19,
+          "endLine": 52,
+          "methods": [
+            "init",
+            "doFilter",
+            "destroy"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "init",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "doFilter",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "destroy",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "RepeatableFilter",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "doFilter",
+          "callee": "StringUtils.startsWithIgnoreCase",
+          "lineNumber": 33
+        },
+        {
+          "caller": "doFilter",
+          "callee": "request.getContentType",
+          "lineNumber": 33
+        },
+        {
+          "caller": "doFilter",
+          "callee": "new RepeatedlyRequestWrapper",
+          "lineNumber": 35
+        },
+        {
+          "caller": "doFilter",
+          "callee": "chain.doFilter",
+          "lineNumber": 39
+        },
+        {
+          "caller": "doFilter",
+          "callee": "chain.doFilter",
+          "lineNumber": 43
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/XssFilter.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 75,
+      "nonEmptyLines": 68,
+      "functions": [
+        {
+          "name": "init",
+          "startLine": 29,
+          "endLine": 41,
+          "params": [
+            "filterConfig"
+          ]
+        },
+        {
+          "name": "doFilter",
+          "startLine": 43,
+          "endLine": 56,
+          "params": [
+            "request",
+            "response",
+            "chain"
+          ]
+        },
+        {
+          "name": "handleExcludeURL",
+          "startLine": 58,
+          "endLine": 68,
+          "params": [
+            "request",
+            "response"
+          ]
+        },
+        {
+          "name": "destroy",
+          "startLine": 70,
+          "endLine": 74,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "XssFilter",
+          "startLine": 22,
+          "endLine": 75,
+          "methods": [
+            "init",
+            "doFilter",
+            "handleExcludeURL",
+            "destroy"
+          ],
+          "properties": [
+            "excludes"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "excludes",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "init",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "doFilter",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "destroy",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "XssFilter",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "init",
+          "callee": "filterConfig.getInitParameter",
+          "lineNumber": 32
+        },
+        {
+          "caller": "init",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 33
+        },
+        {
+          "caller": "init",
+          "callee": "tempExcludes.split",
+          "lineNumber": 35
+        },
+        {
+          "caller": "init",
+          "callee": "excludes.add",
+          "lineNumber": 38
+        },
+        {
+          "caller": "doFilter",
+          "callee": "handleExcludeURL",
+          "lineNumber": 49
+        },
+        {
+          "caller": "doFilter",
+          "callee": "chain.doFilter",
+          "lineNumber": 51
+        },
+        {
+          "caller": "doFilter",
+          "callee": "new XssHttpServletRequestWrapper",
+          "lineNumber": 54
+        },
+        {
+          "caller": "doFilter",
+          "callee": "chain.doFilter",
+          "lineNumber": 55
+        },
+        {
+          "caller": "handleExcludeURL",
+          "callee": "request.getServletPath",
+          "lineNumber": 60
+        },
+        {
+          "caller": "handleExcludeURL",
+          "callee": "request.getMethod",
+          "lineNumber": 61
+        },
+        {
+          "caller": "handleExcludeURL",
+          "callee": "HttpMethod.GET.matches",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleExcludeURL",
+          "callee": "HttpMethod.DELETE.matches",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleExcludeURL",
+          "callee": "StringUtils.matches",
+          "lineNumber": 67
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/filter/XssHttpServletRequestWrapper.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 111,
+      "nonEmptyLines": 100,
+      "functions": [
+        {
+          "name": "XssHttpServletRequestWrapper",
+          "startLine": 25,
+          "endLine": 28,
+          "params": [
+            "request"
+          ]
+        },
+        {
+          "name": "getParameterValues",
+          "startLine": 30,
+          "endLine": 46,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getInputStream",
+          "startLine": 48,
+          "endLine": 99,
+          "params": []
+        },
+        {
+          "name": "isJsonRequest",
+          "startLine": 106,
+          "endLine": 110,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "XssHttpServletRequestWrapper",
+          "startLine": 20,
+          "endLine": 111,
+          "methods": [
+            "XssHttpServletRequestWrapper",
+            "getParameterValues",
+            "getInputStream",
+            "isJsonRequest"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "XssHttpServletRequestWrapper",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "getParameterValues",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "getInputStream",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "isJsonRequest",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "XssHttpServletRequestWrapper",
+          "line": 20,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getParameterValues",
+          "callee": "super.getParameterValues",
+          "lineNumber": 33
+        },
+        {
+          "caller": "getParameterValues",
+          "callee": "EscapeUtil.clean(values[i]).trim",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getParameterValues",
+          "callee": "EscapeUtil.clean",
+          "lineNumber": 41
+        },
+        {
+          "caller": "getParameterValues",
+          "callee": "super.getParameterValues",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "isJsonRequest",
+          "lineNumber": 52
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "super.getInputStream",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "IOUtils.toString",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "super.getInputStream",
+          "lineNumber": 58
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 59
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "super.getInputStream",
+          "lineNumber": 61
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "EscapeUtil.clean(json).trim",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "EscapeUtil.clean",
+          "lineNumber": 65
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "json.getBytes",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "new ByteArrayInputStream",
+          "lineNumber": 67
+        },
+        {
+          "caller": "getInputStream",
+          "callee": "new ServletInputStream",
+          "lineNumber": 68
+        },
+        {
+          "caller": "read",
+          "callee": "bis.read",
+          "lineNumber": 96
+        },
+        {
+          "caller": "isJsonRequest",
+          "callee": "super.getHeader",
+          "lineNumber": 108
+        },
+        {
+          "caller": "isJsonRequest",
+          "callee": "StringUtils.startsWithIgnoreCase",
+          "lineNumber": 109
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/PageUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 35,
+      "nonEmptyLines": 32,
+      "functions": [
+        {
+          "name": "startPage",
+          "startLine": 18,
+          "endLine": 26,
+          "params": []
+        },
+        {
+          "name": "clearPage",
+          "startLine": 31,
+          "endLine": 34,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "PageUtils",
+          "startLine": 13,
+          "endLine": 35,
+          "methods": [
+            "startPage",
+            "clearPage"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "startPage",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "clearPage",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "PageUtils",
+          "line": 13,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "startPage",
+          "callee": "TableSupport.buildPageRequest",
+          "lineNumber": 20
+        },
+        {
+          "caller": "startPage",
+          "callee": "pageDomain.getPageNum",
+          "lineNumber": 21
+        },
+        {
+          "caller": "startPage",
+          "callee": "pageDomain.getPageSize",
+          "lineNumber": 22
+        },
+        {
+          "caller": "startPage",
+          "callee": "SqlUtil.escapeOrderBySql",
+          "lineNumber": 23
+        },
+        {
+          "caller": "startPage",
+          "callee": "pageDomain.getOrderBy",
+          "lineNumber": 23
+        },
+        {
+          "caller": "startPage",
+          "callee": "pageDomain.getReasonable",
+          "lineNumber": 24
+        },
+        {
+          "caller": "startPage",
+          "callee": "PageHelper.startPage(pageNum, pageSize, orderBy).setReasonable",
+          "lineNumber": 25
+        },
+        {
+          "caller": "startPage",
+          "callee": "PageHelper.startPage",
+          "lineNumber": 25
+        },
+        {
+          "caller": "clearPage",
+          "callee": "PageHelper.clearPage",
+          "lineNumber": 33
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 921,
+      "nonEmptyLines": 851,
+      "functions": [
+        {
+          "name": "nvl",
+          "startLine": 37,
+          "endLine": 40,
+          "params": [
+            "value",
+            "defaultValue"
+          ]
+        },
+        {
+          "name": "isEmpty",
+          "startLine": 48,
+          "endLine": 51,
+          "params": [
+            "coll"
+          ]
+        },
+        {
+          "name": "isNotEmpty",
+          "startLine": 59,
+          "endLine": 62,
+          "params": [
+            "coll"
+          ]
+        },
+        {
+          "name": "isEmpty",
+          "startLine": 70,
+          "endLine": 73,
+          "params": [
+            "objects"
+          ]
+        },
+        {
+          "name": "isNotEmpty",
+          "startLine": 81,
+          "endLine": 84,
+          "params": [
+            "objects"
+          ]
+        },
+        {
+          "name": "isEmpty",
+          "startLine": 92,
+          "endLine": 95,
+          "params": [
+            "map"
+          ]
+        },
+        {
+          "name": "isNotEmpty",
+          "startLine": 103,
+          "endLine": 106,
+          "params": [
+            "map"
+          ]
+        },
+        {
+          "name": "isEmpty",
+          "startLine": 114,
+          "endLine": 117,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "isNotEmpty",
+          "startLine": 125,
+          "endLine": 128,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "isNull",
+          "startLine": 136,
+          "endLine": 139,
+          "params": [
+            "object"
+          ]
+        },
+        {
+          "name": "isNotNull",
+          "startLine": 147,
+          "endLine": 150,
+          "params": [
+            "object"
+          ]
+        },
+        {
+          "name": "isArray",
+          "startLine": 158,
+          "endLine": 161,
+          "params": [
+            "object"
+          ]
+        },
+        {
+          "name": "trim",
+          "startLine": 166,
+          "endLine": 169,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "hide",
+          "startLine": 179,
+          "endLine": 212,
+          "params": [
+            "str",
+            "startInclude",
+            "endExclude"
+          ]
+        },
+        {
+          "name": "substring",
+          "startLine": 221,
+          "endLine": 243,
+          "params": [
+            "str",
+            "start"
+          ]
+        },
+        {
+          "name": "substring",
+          "startLine": 253,
+          "endLine": 289,
+          "params": [
+            "str",
+            "start",
+            "end"
+          ]
+        },
+        {
+          "name": "substringBetweenLast",
+          "startLine": 299,
+          "endLine": 315,
+          "params": [
+            "str",
+            "open",
+            "close"
+          ]
+        },
+        {
+          "name": "hasText",
+          "startLine": 323,
+          "endLine": 326,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "containsText",
+          "startLine": 328,
+          "endLine": 339,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "format",
+          "startLine": 354,
+          "endLine": 361,
+          "params": [
+            "template"
+          ]
+        },
+        {
+          "name": "ishttp",
+          "startLine": 369,
+          "endLine": 372,
+          "params": [
+            "link"
+          ]
+        },
+        {
+          "name": "str2Set",
+          "startLine": 381,
+          "endLine": 384,
+          "params": [
+            "str",
+            "sep"
+          ]
+        },
+        {
+          "name": "str2List",
+          "startLine": 393,
+          "endLine": 396,
+          "params": [
+            "str",
+            "sep"
+          ]
+        },
+        {
+          "name": "str2List",
+          "startLine": 407,
+          "endLine": 435,
+          "params": [
+            "str",
+            "sep",
+            "filterBlank",
+            "trim"
+          ]
+        },
+        {
+          "name": "contains",
+          "startLine": 444,
+          "endLine": 447,
+          "params": [
+            "seq",
+            "searchSeq"
+          ]
+        },
+        {
+          "name": "containsAny",
+          "startLine": 456,
+          "endLine": 473,
+          "params": [
+            "collection"
+          ]
+        },
+        {
+          "name": "containsAny",
+          "startLine": 482,
+          "endLine": 485,
+          "params": [
+            "cs"
+          ]
+        },
+        {
+          "name": "containsAnyIgnoreCase",
+          "startLine": 494,
+          "endLine": 508,
+          "params": [
+            "cs"
+          ]
+        },
+        {
+          "name": "containsIgnoreCase",
+          "startLine": 517,
+          "endLine": 520,
+          "params": [
+            "str",
+            "searchStr"
+          ]
+        },
+        {
+          "name": "startsWithAny",
+          "startLine": 529,
+          "endLine": 532,
+          "params": [
+            "sequence"
+          ]
+        },
+        {
+          "name": "startsWithIgnoreCase",
+          "startLine": 541,
+          "endLine": 544,
+          "params": [
+            "str",
+            "prefix"
+          ]
+        },
+        {
+          "name": "equals",
+          "startLine": 553,
+          "endLine": 556,
+          "params": [
+            "cs1",
+            "cs2"
+          ]
+        },
+        {
+          "name": "replace",
+          "startLine": 566,
+          "endLine": 569,
+          "params": [
+            "text",
+            "searchString",
+            "replacement"
+          ]
+        },
+        {
+          "name": "removeEnd",
+          "startLine": 577,
+          "endLine": 580,
+          "params": [
+            "str",
+            "remove"
+          ]
+        },
+        {
+          "name": "indexOf",
+          "startLine": 589,
+          "endLine": 592,
+          "params": [
+            "seq",
+            "searchSeq"
+          ]
+        },
+        {
+          "name": "endsWith",
+          "startLine": 601,
+          "endLine": 604,
+          "params": [
+            "str",
+            "suffix"
+          ]
+        },
+        {
+          "name": "equalsAny",
+          "startLine": 613,
+          "endLine": 616,
+          "params": [
+            "string"
+          ]
+        },
+        {
+          "name": "endsWithAny",
+          "startLine": 625,
+          "endLine": 628,
+          "params": [
+            "sequence"
+          ]
+        },
+        {
+          "name": "endsWithIgnoreCase",
+          "startLine": 637,
+          "endLine": 640,
+          "params": [
+            "str",
+            "suffix"
+          ]
+        },
+        {
+          "name": "indexOfIgnoreCase",
+          "startLine": 649,
+          "endLine": 652,
+          "params": [
+            "str",
+            "searchStr"
+          ]
+        },
+        {
+          "name": "equalsAnyIgnoreCase",
+          "startLine": 662,
+          "endLine": 665,
+          "params": [
+            "string"
+          ]
+        },
+        {
+          "name": "toUnderScoreCase",
+          "startLine": 670,
+          "endLine": 714,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "inStringIgnoreCase",
+          "startLine": 723,
+          "endLine": 736,
+          "params": [
+            "str"
+          ]
+        },
+        {
+          "name": "lastStringDel",
+          "startLine": 745,
+          "endLine": 752,
+          "params": [
+            "str",
+            "spit"
+          ]
+        },
+        {
+          "name": "convertToCamelCase",
+          "startLine": 760,
+          "endLine": 788,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "toCamelCase",
+          "startLine": 794,
+          "endLine": 826,
+          "params": [
+            "s"
+          ]
+        },
+        {
+          "name": "matches",
+          "startLine": 835,
+          "endLine": 849,
+          "params": [
+            "str",
+            "strs"
+          ]
+        },
+        {
+          "name": "isMatch",
+          "startLine": 861,
+          "endLine": 865,
+          "params": [
+            "pattern",
+            "url"
+          ]
+        },
+        {
+          "name": "cast",
+          "startLine": 867,
+          "endLine": 871,
+          "params": [
+            "obj"
+          ]
+        },
+        {
+          "name": "padl",
+          "startLine": 880,
+          "endLine": 883,
+          "params": [
+            "num",
+            "size"
+          ]
+        },
+        {
+          "name": "padl",
+          "startLine": 893,
+          "endLine": 920,
+          "params": [
+            "s",
+            "size",
+            "c"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "StringUtils",
+          "startLine": 19,
+          "endLine": 921,
+          "methods": [
+            "nvl",
+            "isEmpty",
+            "isNotEmpty",
+            "isEmpty",
+            "isNotEmpty",
+            "isEmpty",
+            "isNotEmpty",
+            "isEmpty",
+            "isNotEmpty",
+            "isNull",
+            "isNotNull",
+            "isArray",
+            "trim",
+            "hide",
+            "substring",
+            "substring",
+            "substringBetweenLast",
+            "hasText",
+            "containsText",
+            "format",
+            "ishttp",
+            "str2Set",
+            "str2List",
+            "str2List",
+            "contains",
+            "containsAny",
+            "containsAny",
+            "containsAnyIgnoreCase",
+            "containsIgnoreCase",
+            "startsWithAny",
+            "startsWithIgnoreCase",
+            "equals",
+            "replace",
+            "removeEnd",
+            "indexOf",
+            "endsWith",
+            "equalsAny",
+            "endsWithAny",
+            "endsWithIgnoreCase",
+            "indexOfIgnoreCase",
+            "equalsAnyIgnoreCase",
+            "toUnderScoreCase",
+            "inStringIgnoreCase",
+            "lastStringDel",
+            "convertToCamelCase",
+            "toCamelCase",
+            "matches",
+            "isMatch",
+            "cast",
+            "padl",
+            "padl"
+          ],
+          "properties": [
+            "NULLSTR",
+            "SEPARATOR",
+            "ASTERISK"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "nvl",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "isEmpty",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "isNotEmpty",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "isEmpty",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "isNotEmpty",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "isEmpty",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "isNotEmpty",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "isEmpty",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "isNotEmpty",
+          "line": 125,
+          "isDefault": false
+        },
+        {
+          "name": "isNull",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "isNotNull",
+          "line": 147,
+          "isDefault": false
+        },
+        {
+          "name": "isArray",
+          "line": 158,
+          "isDefault": false
+        },
+        {
+          "name": "trim",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "hide",
+          "line": 179,
+          "isDefault": false
+        },
+        {
+          "name": "substring",
+          "line": 221,
+          "isDefault": false
+        },
+        {
+          "name": "substring",
+          "line": 253,
+          "isDefault": false
+        },
+        {
+          "name": "substringBetweenLast",
+          "line": 299,
+          "isDefault": false
+        },
+        {
+          "name": "hasText",
+          "line": 323,
+          "isDefault": false
+        },
+        {
+          "name": "format",
+          "line": 354,
+          "isDefault": false
+        },
+        {
+          "name": "ishttp",
+          "line": 369,
+          "isDefault": false
+        },
+        {
+          "name": "str2Set",
+          "line": 381,
+          "isDefault": false
+        },
+        {
+          "name": "str2List",
+          "line": 393,
+          "isDefault": false
+        },
+        {
+          "name": "str2List",
+          "line": 407,
+          "isDefault": false
+        },
+        {
+          "name": "contains",
+          "line": 444,
+          "isDefault": false
+        },
+        {
+          "name": "containsAny",
+          "line": 456,
+          "isDefault": false
+        },
+        {
+          "name": "containsAny",
+          "line": 482,
+          "isDefault": false
+        },
+        {
+          "name": "containsAnyIgnoreCase",
+          "line": 494,
+          "isDefault": false
+        },
+        {
+          "name": "containsIgnoreCase",
+          "line": 517,
+          "isDefault": false
+        },
+        {
+          "name": "startsWithAny",
+          "line": 529,
+          "isDefault": false
+        },
+        {
+          "name": "startsWithIgnoreCase",
+          "line": 541,
+          "isDefault": false
+        },
+        {
+          "name": "equals",
+          "line": 553,
+          "isDefault": false
+        },
+        {
+          "name": "replace",
+          "line": 566,
+          "isDefault": false
+        },
+        {
+          "name": "removeEnd",
+          "line": 577,
+          "isDefault": false
+        },
+        {
+          "name": "indexOf",
+          "line": 589,
+          "isDefault": false
+        },
+        {
+          "name": "endsWith",
+          "line": 601,
+          "isDefault": false
+        },
+        {
+          "name": "equalsAny",
+          "line": 613,
+          "isDefault": false
+        },
+        {
+          "name": "endsWithAny",
+          "line": 625,
+          "isDefault": false
+        },
+        {
+          "name": "endsWithIgnoreCase",
+          "line": 637,
+          "isDefault": false
+        },
+        {
+          "name": "indexOfIgnoreCase",
+          "line": 649,
+          "isDefault": false
+        },
+        {
+          "name": "equalsAnyIgnoreCase",
+          "line": 662,
+          "isDefault": false
+        },
+        {
+          "name": "toUnderScoreCase",
+          "line": 670,
+          "isDefault": false
+        },
+        {
+          "name": "inStringIgnoreCase",
+          "line": 723,
+          "isDefault": false
+        },
+        {
+          "name": "lastStringDel",
+          "line": 745,
+          "isDefault": false
+        },
+        {
+          "name": "convertToCamelCase",
+          "line": 760,
+          "isDefault": false
+        },
+        {
+          "name": "toCamelCase",
+          "line": 794,
+          "isDefault": false
+        },
+        {
+          "name": "matches",
+          "line": 835,
+          "isDefault": false
+        },
+        {
+          "name": "isMatch",
+          "line": 861,
+          "isDefault": false
+        },
+        {
+          "name": "cast",
+          "line": 867,
+          "isDefault": false
+        },
+        {
+          "name": "padl",
+          "line": 880,
+          "isDefault": false
+        },
+        {
+          "name": "padl",
+          "line": 893,
+          "isDefault": false
+        },
+        {
+          "name": "StringUtils",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "isEmpty",
+          "callee": "isNull",
+          "lineNumber": 50
+        },
+        {
+          "caller": "isEmpty",
+          "callee": "coll.isEmpty",
+          "lineNumber": 50
+        },
+        {
+          "caller": "isNotEmpty",
+          "callee": "isEmpty",
+          "lineNumber": 61
+        },
+        {
+          "caller": "isEmpty",
+          "callee": "isNull",
+          "lineNumber": 72
+        },
+        {
+          "caller": "isNotEmpty",
+          "callee": "isEmpty",
+          "lineNumber": 83
+        },
+        {
+          "caller": "isEmpty",
+          "callee": "isNull",
+          "lineNumber": 94
+        },
+        {
+          "caller": "isEmpty",
+          "callee": "map.isEmpty",
+          "lineNumber": 94
+        },
+        {
+          "caller": "isNotEmpty",
+          "callee": "isEmpty",
+          "lineNumber": 105
+        },
+        {
+          "caller": "isEmpty",
+          "callee": "isNull",
+          "lineNumber": 116
+        },
+        {
+          "caller": "isEmpty",
+          "callee": "NULLSTR.equals",
+          "lineNumber": 116
+        },
+        {
+          "caller": "isEmpty",
+          "callee": "str.trim",
+          "lineNumber": 116
+        },
+        {
+          "caller": "isNotEmpty",
+          "callee": "isEmpty",
+          "lineNumber": 127
+        },
+        {
+          "caller": "isNotNull",
+          "callee": "isNull",
+          "lineNumber": 149
+        },
+        {
+          "caller": "isArray",
+          "callee": "isNotNull",
+          "lineNumber": 160
+        },
+        {
+          "caller": "isArray",
+          "callee": "object.getClass().isArray",
+          "lineNumber": 160
+        },
+        {
+          "caller": "isArray",
+          "callee": "object.getClass",
+          "lineNumber": 160
+        },
+        {
+          "caller": "trim",
+          "callee": "str.trim",
+          "lineNumber": 168
+        },
+        {
+          "caller": "hide",
+          "callee": "isEmpty",
+          "lineNumber": 181
+        },
+        {
+          "caller": "hide",
+          "callee": "str.length",
+          "lineNumber": 185
+        },
+        {
+          "caller": "hide",
+          "callee": "str.charAt",
+          "lineNumber": 208
+        },
+        {
+          "caller": "hide",
+          "callee": "new String",
+          "lineNumber": 211
+        },
+        {
+          "caller": "substring",
+          "callee": "str.length",
+          "lineNumber": 230
+        },
+        {
+          "caller": "substring",
+          "callee": "str.length",
+          "lineNumber": 237
+        },
+        {
+          "caller": "substring",
+          "callee": "str.substring",
+          "lineNumber": 242
+        },
+        {
+          "caller": "substring",
+          "callee": "str.length",
+          "lineNumber": 262
+        },
+        {
+          "caller": "substring",
+          "callee": "str.length",
+          "lineNumber": 266
+        },
+        {
+          "caller": "substring",
+          "callee": "str.length",
+          "lineNumber": 269
+        },
+        {
+          "caller": "substring",
+          "callee": "str.length",
+          "lineNumber": 271
+        },
+        {
+          "caller": "substring",
+          "callee": "str.substring",
+          "lineNumber": 288
+        },
+        {
+          "caller": "substringBetweenLast",
+          "callee": "isEmpty",
+          "lineNumber": 301
+        },
+        {
+          "caller": "substringBetweenLast",
+          "callee": "isEmpty",
+          "lineNumber": 301
+        },
+        {
+          "caller": "substringBetweenLast",
+          "callee": "isEmpty",
+          "lineNumber": 301
+        },
+        {
+          "caller": "substringBetweenLast",
+          "callee": "str.indexOf",
+          "lineNumber": 305
+        },
+        {
+          "caller": "substringBetweenLast",
+          "callee": "str.lastIndexOf",
+          "lineNumber": 308
+        },
+        {
+          "caller": "substringBetweenLast",
+          "callee": "str.substring",
+          "lineNumber": 311
+        },
+        {
+          "caller": "substringBetweenLast",
+          "callee": "open.length",
+          "lineNumber": 311
+        },
+        {
+          "caller": "hasText",
+          "callee": "str.isEmpty",
+          "lineNumber": 325
+        },
+        {
+          "caller": "hasText",
+          "callee": "containsText",
+          "lineNumber": 325
+        },
+        {
+          "caller": "containsText",
+          "callee": "str.length",
+          "lineNumber": 330
+        },
+        {
+          "caller": "containsText",
+          "callee": "Character.isWhitespace",
+          "lineNumber": 333
+        },
+        {
+          "caller": "containsText",
+          "callee": "str.charAt",
+          "lineNumber": 333
+        },
+        {
+          "caller": "format",
+          "callee": "isEmpty",
+          "lineNumber": 356
+        },
+        {
+          "caller": "format",
+          "callee": "isEmpty",
+          "lineNumber": 356
+        },
+        {
+          "caller": "format",
+          "callee": "StrFormatter.format",
+          "lineNumber": 360
+        },
+        {
+          "caller": "ishttp",
+          "callee": "StringUtils.startsWithAny",
+          "lineNumber": 371
+        },
+        {
+          "caller": "str2Set",
+          "callee": "new HashSet<String>",
+          "lineNumber": 383
+        },
+        {
+          "caller": "str2Set",
+          "callee": "str2List",
+          "lineNumber": 383
+        },
+        {
+          "caller": "str2List",
+          "callee": "str2List",
+          "lineNumber": 395
+        },
+        {
+          "caller": "str2List",
+          "callee": "new ArrayList<String>",
+          "lineNumber": 409
+        },
+        {
+          "caller": "str2List",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 410
+        },
+        {
+          "caller": "str2List",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 416
+        },
+        {
+          "caller": "str2List",
+          "callee": "str.split",
+          "lineNumber": 420
+        },
+        {
+          "caller": "str2List",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 423
+        },
+        {
+          "caller": "str2List",
+          "callee": "string.trim",
+          "lineNumber": 429
+        },
+        {
+          "caller": "str2List",
+          "callee": "list.add",
+          "lineNumber": 431
+        },
+        {
+          "caller": "contains",
+          "callee": "Strings.CS.contains",
+          "lineNumber": 446
+        },
+        {
+          "caller": "containsAny",
+          "callee": "isEmpty",
+          "lineNumber": 458
+        },
+        {
+          "caller": "containsAny",
+          "callee": "isEmpty",
+          "lineNumber": 458
+        },
+        {
+          "caller": "containsAny",
+          "callee": "collection.contains",
+          "lineNumber": 466
+        },
+        {
+          "caller": "containsAny",
+          "callee": "Strings.CS.containsAny",
+          "lineNumber": 484
+        },
+        {
+          "caller": "containsAnyIgnoreCase",
+          "callee": "isEmpty",
+          "lineNumber": 496
+        },
+        {
+          "caller": "containsAnyIgnoreCase",
+          "callee": "isEmpty",
+          "lineNumber": 496
+        },
+        {
+          "caller": "containsAnyIgnoreCase",
+          "callee": "containsIgnoreCase",
+          "lineNumber": 502
+        },
+        {
+          "caller": "containsIgnoreCase",
+          "callee": "Strings.CI.contains",
+          "lineNumber": 519
+        },
+        {
+          "caller": "startsWithAny",
+          "callee": "Strings.CS.startsWithAny",
+          "lineNumber": 531
+        },
+        {
+          "caller": "startsWithIgnoreCase",
+          "callee": "Strings.CI.startsWith",
+          "lineNumber": 543
+        },
+        {
+          "caller": "equals",
+          "callee": "Strings.CS.equals",
+          "lineNumber": 555
+        },
+        {
+          "caller": "replace",
+          "callee": "Strings.CS.replace",
+          "lineNumber": 568
+        },
+        {
+          "caller": "removeEnd",
+          "callee": "Strings.CS.removeEnd",
+          "lineNumber": 579
+        },
+        {
+          "caller": "indexOf",
+          "callee": "Strings.CS.indexOf",
+          "lineNumber": 591
+        },
+        {
+          "caller": "endsWith",
+          "callee": "Strings.CS.endsWith",
+          "lineNumber": 603
+        },
+        {
+          "caller": "equalsAny",
+          "callee": "Strings.CS.equalsAny",
+          "lineNumber": 615
+        },
+        {
+          "caller": "endsWithAny",
+          "callee": "Strings.CS.endsWithAny",
+          "lineNumber": 627
+        },
+        {
+          "caller": "endsWithIgnoreCase",
+          "callee": "Strings.CI.endsWith",
+          "lineNumber": 639
+        },
+        {
+          "caller": "indexOfIgnoreCase",
+          "callee": "Strings.CI.indexOf",
+          "lineNumber": 651
+        },
+        {
+          "caller": "equalsAnyIgnoreCase",
+          "callee": "Strings.CI.equalsAny",
+          "lineNumber": 664
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "new StringBuilder",
+          "lineNumber": 676
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "str.length",
+          "lineNumber": 683
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "str.charAt",
+          "lineNumber": 685
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "Character.isUpperCase",
+          "lineNumber": 688
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "str.charAt",
+          "lineNumber": 688
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "Character.isUpperCase",
+          "lineNumber": 695
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "str.length",
+          "lineNumber": 697
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "Character.isUpperCase",
+          "lineNumber": 699
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "str.charAt",
+          "lineNumber": 699
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "sb.append",
+          "lineNumber": 704
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "sb.append",
+          "lineNumber": 708
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "sb.append",
+          "lineNumber": 710
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "Character.toLowerCase",
+          "lineNumber": 710
+        },
+        {
+          "caller": "toUnderScoreCase",
+          "callee": "sb.toString",
+          "lineNumber": 713
+        },
+        {
+          "caller": "inStringIgnoreCase",
+          "callee": "str.equalsIgnoreCase",
+          "lineNumber": 729
+        },
+        {
+          "caller": "inStringIgnoreCase",
+          "callee": "trim",
+          "lineNumber": 729
+        },
+        {
+          "caller": "lastStringDel",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 747
+        },
+        {
+          "caller": "lastStringDel",
+          "callee": "str.endsWith",
+          "lineNumber": 747
+        },
+        {
+          "caller": "lastStringDel",
+          "callee": "str.subSequence(0, str.length() - 1).toString",
+          "lineNumber": 749
+        },
+        {
+          "caller": "lastStringDel",
+          "callee": "str.subSequence",
+          "lineNumber": 749
+        },
+        {
+          "caller": "lastStringDel",
+          "callee": "str.length",
+          "lineNumber": 749
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "new StringBuilder",
+          "lineNumber": 762
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "name.isEmpty",
+          "lineNumber": 764
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "name.contains",
+          "lineNumber": 769
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "name.substring(0, 1).toUpperCase",
+          "lineNumber": 772
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "name.substring",
+          "lineNumber": 772
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "name.substring",
+          "lineNumber": 772
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "name.split",
+          "lineNumber": 775
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "camel.isEmpty",
+          "lineNumber": 779
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "result.append",
+          "lineNumber": 784
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "camel.substring(0, 1).toUpperCase",
+          "lineNumber": 784
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "camel.substring",
+          "lineNumber": 784
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "result.append",
+          "lineNumber": 785
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "camel.substring(1).toLowerCase",
+          "lineNumber": 785
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "camel.substring",
+          "lineNumber": 785
+        },
+        {
+          "caller": "convertToCamelCase",
+          "callee": "result.toString",
+          "lineNumber": 787
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "s.indexOf",
+          "lineNumber": 800
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "s.toLowerCase",
+          "lineNumber": 804
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "new StringBuilder",
+          "lineNumber": 805
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "s.length",
+          "lineNumber": 805
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "s.length",
+          "lineNumber": 807
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "s.charAt",
+          "lineNumber": 809
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "sb.append",
+          "lineNumber": 817
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "Character.toUpperCase",
+          "lineNumber": 817
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "sb.append",
+          "lineNumber": 822
+        },
+        {
+          "caller": "toCamelCase",
+          "callee": "sb.toString",
+          "lineNumber": 825
+        },
+        {
+          "caller": "matches",
+          "callee": "isEmpty",
+          "lineNumber": 837
+        },
+        {
+          "caller": "matches",
+          "callee": "isEmpty",
+          "lineNumber": 837
+        },
+        {
+          "caller": "matches",
+          "callee": "isMatch",
+          "lineNumber": 843
+        },
+        {
+          "caller": "isMatch",
+          "callee": "new AntPathMatcher",
+          "lineNumber": 863
+        },
+        {
+          "caller": "isMatch",
+          "callee": "matcher.match",
+          "lineNumber": 864
+        },
+        {
+          "caller": "padl",
+          "callee": "padl",
+          "lineNumber": 882
+        },
+        {
+          "caller": "padl",
+          "callee": "num.toString",
+          "lineNumber": 882
+        },
+        {
+          "caller": "padl",
+          "callee": "new StringBuilder",
+          "lineNumber": 895
+        },
+        {
+          "caller": "padl",
+          "callee": "s.length",
+          "lineNumber": 898
+        },
+        {
+          "caller": "padl",
+          "callee": "s.length",
+          "lineNumber": 899
+        },
+        {
+          "caller": "padl",
+          "callee": "sb.append",
+          "lineNumber": 903
+        },
+        {
+          "caller": "padl",
+          "callee": "sb.append",
+          "lineNumber": 905
+        },
+        {
+          "caller": "padl",
+          "callee": "s.substring",
+          "lineNumber": 909
+        },
+        {
+          "caller": "padl",
+          "callee": "sb.append",
+          "lineNumber": 916
+        },
+        {
+          "caller": "padl",
+          "callee": "sb.toString",
+          "lineNumber": 919
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 51,
+        "functionCount": 51,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/html/EscapeUtil.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 167,
+      "nonEmptyLines": 154,
+      "functions": [
+        {
+          "name": "escape",
+          "startLine": 37,
+          "endLine": 40,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "unescape",
+          "startLine": 48,
+          "endLine": 51,
+          "params": [
+            "content"
+          ]
+        },
+        {
+          "name": "clean",
+          "startLine": 59,
+          "endLine": 62,
+          "params": [
+            "content"
+          ]
+        },
+        {
+          "name": "encode",
+          "startLine": 70,
+          "endLine": 103,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "decode",
+          "startLine": 111,
+          "endLine": 154,
+          "params": [
+            "content"
+          ]
+        },
+        {
+          "name": "main",
+          "startLine": 156,
+          "endLine": 166,
+          "params": [
+            "args"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "EscapeUtil",
+          "startLine": 10,
+          "endLine": 167,
+          "methods": [
+            "escape",
+            "unescape",
+            "clean",
+            "encode",
+            "decode",
+            "main"
+          ],
+          "properties": [
+            "RE_HTML_MARK",
+            "TEXT"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "RE_HTML_MARK",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "escape",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "unescape",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "clean",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "decode",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "main",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "EscapeUtil",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "escape",
+          "callee": "encode",
+          "lineNumber": 39
+        },
+        {
+          "caller": "unescape",
+          "callee": "decode",
+          "lineNumber": 50
+        },
+        {
+          "caller": "clean",
+          "callee": "new HTMLFilter().filter",
+          "lineNumber": 61
+        },
+        {
+          "caller": "clean",
+          "callee": "new HTMLFilter",
+          "lineNumber": 61
+        },
+        {
+          "caller": "encode",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 72
+        },
+        {
+          "caller": "encode",
+          "callee": "new StringBuilder",
+          "lineNumber": 77
+        },
+        {
+          "caller": "encode",
+          "callee": "text.length",
+          "lineNumber": 77
+        },
+        {
+          "caller": "encode",
+          "callee": "text.length",
+          "lineNumber": 79
+        },
+        {
+          "caller": "encode",
+          "callee": "text.charAt",
+          "lineNumber": 81
+        },
+        {
+          "caller": "encode",
+          "callee": "tmp.append",
+          "lineNumber": 84
+        },
+        {
+          "caller": "encode",
+          "callee": "tmp.append",
+          "lineNumber": 87
+        },
+        {
+          "caller": "encode",
+          "callee": "tmp.append",
+          "lineNumber": 89
+        },
+        {
+          "caller": "encode",
+          "callee": "Integer.toString",
+          "lineNumber": 89
+        },
+        {
+          "caller": "encode",
+          "callee": "tmp.append",
+          "lineNumber": 93
+        },
+        {
+          "caller": "encode",
+          "callee": "tmp.append",
+          "lineNumber": 97
+        },
+        {
+          "caller": "encode",
+          "callee": "tmp.append",
+          "lineNumber": 99
+        },
+        {
+          "caller": "encode",
+          "callee": "Integer.toString",
+          "lineNumber": 99
+        },
+        {
+          "caller": "encode",
+          "callee": "tmp.toString",
+          "lineNumber": 102
+        },
+        {
+          "caller": "decode",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 113
+        },
+        {
+          "caller": "decode",
+          "callee": "new StringBuilder",
+          "lineNumber": 118
+        },
+        {
+          "caller": "decode",
+          "callee": "content.length",
+          "lineNumber": 118
+        },
+        {
+          "caller": "decode",
+          "callee": "content.length",
+          "lineNumber": 121
+        },
+        {
+          "caller": "decode",
+          "callee": "content.indexOf",
+          "lineNumber": 123
+        },
+        {
+          "caller": "decode",
+          "callee": "content.charAt",
+          "lineNumber": 126
+        },
+        {
+          "caller": "decode",
+          "callee": "Integer.parseInt",
+          "lineNumber": 128
+        },
+        {
+          "caller": "decode",
+          "callee": "content.substring",
+          "lineNumber": 128
+        },
+        {
+          "caller": "decode",
+          "callee": "tmp.append",
+          "lineNumber": 129
+        },
+        {
+          "caller": "decode",
+          "callee": "Integer.parseInt",
+          "lineNumber": 134
+        },
+        {
+          "caller": "decode",
+          "callee": "content.substring",
+          "lineNumber": 134
+        },
+        {
+          "caller": "decode",
+          "callee": "tmp.append",
+          "lineNumber": 135
+        },
+        {
+          "caller": "decode",
+          "callee": "tmp.append",
+          "lineNumber": 143
+        },
+        {
+          "caller": "decode",
+          "callee": "content.substring",
+          "lineNumber": 143
+        },
+        {
+          "caller": "decode",
+          "callee": "content.length",
+          "lineNumber": 144
+        },
+        {
+          "caller": "decode",
+          "callee": "tmp.append",
+          "lineNumber": 148
+        },
+        {
+          "caller": "decode",
+          "callee": "content.substring",
+          "lineNumber": 148
+        },
+        {
+          "caller": "decode",
+          "callee": "tmp.toString",
+          "lineNumber": 153
+        },
+        {
+          "caller": "main",
+          "callee": "EscapeUtil.escape",
+          "lineNumber": 159
+        },
+        {
+          "caller": "main",
+          "callee": "System.out.println",
+          "lineNumber": 163
+        },
+        {
+          "caller": "main",
+          "callee": "EscapeUtil.clean",
+          "lineNumber": 163
+        },
+        {
+          "caller": "main",
+          "callee": "System.out.println",
+          "lineNumber": 164
+        },
+        {
+          "caller": "main",
+          "callee": "System.out.println",
+          "lineNumber": 165
+        },
+        {
+          "caller": "main",
+          "callee": "EscapeUtil.unescape",
+          "lineNumber": 165
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 7,
+        "functionCount": 6,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/utils/sql/SqlUtil.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 71,
+      "nonEmptyLines": 64,
+      "functions": [
+        {
+          "name": "escapeOrderBySql",
+          "startLine": 31,
+          "endLine": 42,
+          "params": [
+            "value"
+          ]
+        },
+        {
+          "name": "isValidOrderBySql",
+          "startLine": 47,
+          "endLine": 50,
+          "params": [
+            "value"
+          ]
+        },
+        {
+          "name": "filterKeyword",
+          "startLine": 55,
+          "endLine": 70,
+          "params": [
+            "value"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SqlUtil",
+          "startLine": 11,
+          "endLine": 71,
+          "methods": [
+            "escapeOrderBySql",
+            "isValidOrderBySql",
+            "filterKeyword"
+          ],
+          "properties": [
+            "SQL_REGEX",
+            "SQL_PATTERN",
+            "ORDER_BY_MAX_LENGTH"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SQL_REGEX",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "SQL_PATTERN",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "escapeOrderBySql",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "isValidOrderBySql",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "filterKeyword",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "SqlUtil",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "escapeOrderBySql",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 33
+        },
+        {
+          "caller": "escapeOrderBySql",
+          "callee": "isValidOrderBySql",
+          "lineNumber": 33
+        },
+        {
+          "caller": "escapeOrderBySql",
+          "callee": "new UtilException",
+          "lineNumber": 35
+        },
+        {
+          "caller": "escapeOrderBySql",
+          "callee": "StringUtils.length",
+          "lineNumber": 37
+        },
+        {
+          "caller": "escapeOrderBySql",
+          "callee": "new UtilException",
+          "lineNumber": 39
+        },
+        {
+          "caller": "isValidOrderBySql",
+          "callee": "value.matches",
+          "lineNumber": 49
+        },
+        {
+          "caller": "filterKeyword",
+          "callee": "StringUtils.isEmpty",
+          "lineNumber": 57
+        },
+        {
+          "caller": "filterKeyword",
+          "callee": "value.replaceAll",
+          "lineNumber": 61
+        },
+        {
+          "caller": "filterKeyword",
+          "callee": "StringUtils.split",
+          "lineNumber": 62
+        },
+        {
+          "caller": "filterKeyword",
+          "callee": "StringUtils.indexOfIgnoreCase",
+          "lineNumber": 65
+        },
+        {
+          "caller": "filterKeyword",
+          "callee": "new UtilException",
+          "lineNumber": 67
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 6,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-common/src/main/java/com/ruoyi/common/xss/XssValidator.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 39,
+      "nonEmptyLines": 35,
+      "functions": [
+        {
+          "name": "isValid",
+          "startLine": 18,
+          "endLine": 26,
+          "params": [
+            "value",
+            "constraintValidatorContext"
+          ]
+        },
+        {
+          "name": "containsHtml",
+          "startLine": 28,
+          "endLine": 38,
+          "params": [
+            "value"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "XssValidator",
+          "startLine": 14,
+          "endLine": 39,
+          "methods": [
+            "isValid",
+            "containsHtml"
+          ],
+          "properties": [
+            "HTML_PATTERN"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "isValid",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "containsHtml",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "XssValidator",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "isValid",
+          "callee": "StringUtils.isBlank",
+          "lineNumber": 21
+        },
+        {
+          "caller": "isValid",
+          "callee": "containsHtml",
+          "lineNumber": 25
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "new StringBuilder",
+          "lineNumber": 30
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "Pattern.compile",
+          "lineNumber": 31
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "pattern.matcher",
+          "lineNumber": 32
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "matcher.find",
+          "lineNumber": 33
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "sHtml.append",
+          "lineNumber": 35
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "matcher.group",
+          "lineNumber": 35
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "pattern.matcher(sHtml).matches",
+          "lineNumber": 37
+        },
+        {
+          "caller": "containsHtml",
+          "callee": "pattern.matcher",
+          "lineNumber": 37
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/FilterConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 80,
+      "nonEmptyLines": 72,
+      "functions": [
+        {
+          "name": "xssFilterRegistration",
+          "startLine": 34,
+          "endLine": 49,
+          "params": []
+        },
+        {
+          "name": "refererFilterRegistration",
+          "startLine": 51,
+          "endLine": 66,
+          "params": []
+        },
+        {
+          "name": "someFilterRegistration",
+          "startLine": 68,
+          "endLine": 78,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "FilterConfig",
+          "startLine": 22,
+          "endLine": 80,
+          "methods": [
+            "xssFilterRegistration",
+            "refererFilterRegistration",
+            "someFilterRegistration"
+          ],
+          "properties": [
+            "excludes",
+            "urlPatterns",
+            "allowedDomains"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "xssFilterRegistration",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "refererFilterRegistration",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "someFilterRegistration",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "FilterConfig",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "new FilterRegistrationBean",
+          "lineNumber": 39
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "registration.setDispatcherTypes",
+          "lineNumber": 40
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "registration.setFilter",
+          "lineNumber": 41
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "new XssFilter",
+          "lineNumber": 41
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "registration.addUrlPatterns",
+          "lineNumber": 42
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "StringUtils.split",
+          "lineNumber": 42
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "registration.setName",
+          "lineNumber": 43
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "registration.setOrder",
+          "lineNumber": 44
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "new HashMap<String, String>",
+          "lineNumber": 45
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "initParameters.put",
+          "lineNumber": 46
+        },
+        {
+          "caller": "xssFilterRegistration",
+          "callee": "registration.setInitParameters",
+          "lineNumber": 47
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "new FilterRegistrationBean",
+          "lineNumber": 56
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "registration.setDispatcherTypes",
+          "lineNumber": 57
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "registration.setFilter",
+          "lineNumber": 58
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "new RefererFilter",
+          "lineNumber": 58
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "registration.addUrlPatterns",
+          "lineNumber": 59
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "registration.setName",
+          "lineNumber": 60
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "registration.setOrder",
+          "lineNumber": 61
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "new HashMap<String, String>",
+          "lineNumber": 62
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "initParameters.put",
+          "lineNumber": 63
+        },
+        {
+          "caller": "refererFilterRegistration",
+          "callee": "registration.setInitParameters",
+          "lineNumber": 64
+        },
+        {
+          "caller": "someFilterRegistration",
+          "callee": "new FilterRegistrationBean",
+          "lineNumber": 72
+        },
+        {
+          "caller": "someFilterRegistration",
+          "callee": "registration.setFilter",
+          "lineNumber": 73
+        },
+        {
+          "caller": "someFilterRegistration",
+          "callee": "new RepeatableFilter",
+          "lineNumber": 73
+        },
+        {
+          "caller": "someFilterRegistration",
+          "callee": "registration.addUrlPatterns",
+          "lineNumber": 74
+        },
+        {
+          "caller": "someFilterRegistration",
+          "callee": "registration.setName",
+          "lineNumber": 75
+        },
+        {
+          "caller": "someFilterRegistration",
+          "callee": "registration.setOrder",
+          "lineNumber": 76
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/config/MyBatisConfig.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 132,
+      "nonEmptyLines": 125,
+      "functions": [
+        {
+          "name": "setTypeAliasesPackage",
+          "startLine": 40,
+          "endLine": 92,
+          "params": [
+            "typeAliasesPackage"
+          ]
+        },
+        {
+          "name": "resolveMapperLocations",
+          "startLine": 94,
+          "endLine": 114,
+          "params": [
+            "mapperLocations"
+          ]
+        },
+        {
+          "name": "sqlSessionFactory",
+          "startLine": 116,
+          "endLine": 131,
+          "params": [
+            "dataSource"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "MyBatisConfig",
+          "startLine": 32,
+          "endLine": 132,
+          "methods": [
+            "setTypeAliasesPackage",
+            "resolveMapperLocations",
+            "sqlSessionFactory"
+          ],
+          "properties": [
+            "env",
+            "DEFAULT_RESOURCE_PATTERN"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "setTypeAliasesPackage",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "resolveMapperLocations",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "sqlSessionFactory",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "MyBatisConfig",
+          "line": 32,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "new PathMatchingResourcePatternResolver",
+          "lineNumber": 42
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "new CachingMetadataReaderFactory",
+          "lineNumber": 43
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "new ArrayList<String>",
+          "lineNumber": 44
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "typeAliasesPackage.split",
+          "lineNumber": 47
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "new ArrayList<String>",
+          "lineNumber": 49
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "ClassUtils.convertClassNameToResourcePath",
+          "lineNumber": 51
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "aliasesPackage.trim",
+          "lineNumber": 51
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "resolver.getResources",
+          "lineNumber": 52
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "resource.isReadable",
+          "lineNumber": 58
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "metadataReaderFactory.getMetadataReader",
+          "lineNumber": 60
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "result.add",
+          "lineNumber": 63
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "Class.forName(metadataReader.getClassMetadata().getClassName()).getPackage().getName",
+          "lineNumber": 63
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "Class.forName(metadataReader.getClassMetadata().getClassName()).getPackage",
+          "lineNumber": 63
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "Class.forName",
+          "lineNumber": 63
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "metadataReader.getClassMetadata().getClassName",
+          "lineNumber": 63
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "metadataReader.getClassMetadata",
+          "lineNumber": 63
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "e.printStackTrace",
+          "lineNumber": 67
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "result.size",
+          "lineNumber": 72
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "new HashSet<String>",
+          "lineNumber": 74
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "allResult.addAll",
+          "lineNumber": 75
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "allResult.size",
+          "lineNumber": 78
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "String.join",
+          "lineNumber": 80
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "allResult.toArray",
+          "lineNumber": 80
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "new RuntimeException",
+          "lineNumber": 84
+        },
+        {
+          "caller": "setTypeAliasesPackage",
+          "callee": "e.printStackTrace",
+          "lineNumber": 89
+        },
+        {
+          "caller": "resolveMapperLocations",
+          "callee": "new PathMatchingResourcePatternResolver",
+          "lineNumber": 96
+        },
+        {
+          "caller": "resolveMapperLocations",
+          "callee": "new ArrayList<Resource>",
+          "lineNumber": 97
+        },
+        {
+          "caller": "resolveMapperLocations",
+          "callee": "resourceResolver.getResources",
+          "lineNumber": 104
+        },
+        {
+          "caller": "resolveMapperLocations",
+          "callee": "resources.addAll",
+          "lineNumber": 105
+        },
+        {
+          "caller": "resolveMapperLocations",
+          "callee": "Arrays.asList",
+          "lineNumber": 105
+        },
+        {
+          "caller": "resolveMapperLocations",
+          "callee": "resources.toArray",
+          "lineNumber": 113
+        },
+        {
+          "caller": "resolveMapperLocations",
+          "callee": "resources.size",
+          "lineNumber": 113
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "env.getProperty",
+          "lineNumber": 119
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "env.getProperty",
+          "lineNumber": 120
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "env.getProperty",
+          "lineNumber": 121
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "setTypeAliasesPackage",
+          "lineNumber": 122
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "VFS.addImplClass",
+          "lineNumber": 123
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "new SqlSessionFactoryBean",
+          "lineNumber": 125
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "sessionFactory.setDataSource",
+          "lineNumber": 126
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "sessionFactory.setTypeAliasesPackage",
+          "lineNumber": 127
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "sessionFactory.setMapperLocations",
+          "lineNumber": 128
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "resolveMapperLocations",
+          "lineNumber": 128
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "StringUtils.split",
+          "lineNumber": 128
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "sessionFactory.setConfigLocation",
+          "lineNumber": 129
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "new DefaultResourceLoader().getResource",
+          "lineNumber": 129
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "new DefaultResourceLoader",
+          "lineNumber": 129
+        },
+        {
+          "caller": "sqlSessionFactory",
+          "callee": "sessionFactory.getObject",
+          "lineNumber": 130
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/AuthenticationEntryPointImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 34,
+      "nonEmptyLines": 31,
+      "functions": [
+        {
+          "name": "commence",
+          "startLine": 26,
+          "endLine": 33,
+          "params": [
+            "request",
+            "response",
+            "e"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "AuthenticationEntryPointImpl",
+          "startLine": 21,
+          "endLine": 34,
+          "methods": [
+            "commence"
+          ],
+          "properties": [
+            "serialVersionUID"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "commence",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "AuthenticationEntryPointImpl",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "commence",
+          "callee": "StringUtils.format",
+          "lineNumber": 31
+        },
+        {
+          "caller": "commence",
+          "callee": "request.getRequestURI",
+          "lineNumber": 31
+        },
+        {
+          "caller": "commence",
+          "callee": "ServletUtils.renderString",
+          "lineNumber": 32
+        },
+        {
+          "caller": "commence",
+          "callee": "JSON.toJSONString",
+          "lineNumber": 32
+        },
+        {
+          "caller": "commence",
+          "callee": "AjaxResult.error",
+          "lineNumber": 32
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-framework/src/main/java/com/ruoyi/framework/web/exception/GlobalExceptionHandler.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 145,
+      "nonEmptyLines": 133,
+      "functions": [
+        {
+          "name": "handleAccessDeniedException",
+          "startLine": 35,
+          "endLine": 41,
+          "params": [
+            "e",
+            "request"
+          ]
+        },
+        {
+          "name": "handleHttpRequestMethodNotSupported",
+          "startLine": 46,
+          "endLine": 53,
+          "params": [
+            "e",
+            "request"
+          ]
+        },
+        {
+          "name": "handleServiceException",
+          "startLine": 58,
+          "endLine": 64,
+          "params": [
+            "e",
+            "request"
+          ]
+        },
+        {
+          "name": "handleMissingPathVariableException",
+          "startLine": 69,
+          "endLine": 75,
+          "params": [
+            "e",
+            "request"
+          ]
+        },
+        {
+          "name": "handleMethodArgumentTypeMismatchException",
+          "startLine": 80,
+          "endLine": 91,
+          "params": [
+            "e",
+            "request"
+          ]
+        },
+        {
+          "name": "handleRuntimeException",
+          "startLine": 96,
+          "endLine": 102,
+          "params": [
+            "e",
+            "request"
+          ]
+        },
+        {
+          "name": "handleException",
+          "startLine": 107,
+          "endLine": 113,
+          "params": [
+            "e",
+            "request"
+          ]
+        },
+        {
+          "name": "handleBindException",
+          "startLine": 118,
+          "endLine": 124,
+          "params": [
+            "e"
+          ]
+        },
+        {
+          "name": "handleMethodArgumentNotValidException",
+          "startLine": 129,
+          "endLine": 135,
+          "params": [
+            "e"
+          ]
+        },
+        {
+          "name": "handleDemoModeException",
+          "startLine": 140,
+          "endLine": 144,
+          "params": [
+            "e"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "GlobalExceptionHandler",
+          "startLine": 27,
+          "endLine": 145,
+          "methods": [
+            "handleAccessDeniedException",
+            "handleHttpRequestMethodNotSupported",
+            "handleServiceException",
+            "handleMissingPathVariableException",
+            "handleMethodArgumentTypeMismatchException",
+            "handleRuntimeException",
+            "handleException",
+            "handleBindException",
+            "handleMethodArgumentNotValidException",
+            "handleDemoModeException"
+          ],
+          "properties": [
+            "log"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "handleAccessDeniedException",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "handleHttpRequestMethodNotSupported",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "handleServiceException",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "handleMissingPathVariableException",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "handleMethodArgumentTypeMismatchException",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "handleRuntimeException",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "handleException",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "handleBindException",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "handleMethodArgumentNotValidException",
+          "line": 129,
+          "isDefault": false
+        },
+        {
+          "name": "handleDemoModeException",
+          "line": 140,
+          "isDefault": false
+        },
+        {
+          "name": "GlobalExceptionHandler",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "handleAccessDeniedException",
+          "callee": "request.getRequestURI",
+          "lineNumber": 38
+        },
+        {
+          "caller": "handleAccessDeniedException",
+          "callee": "log.error",
+          "lineNumber": 39
+        },
+        {
+          "caller": "handleAccessDeniedException",
+          "callee": "e.getMessage",
+          "lineNumber": 39
+        },
+        {
+          "caller": "handleAccessDeniedException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 40
+        },
+        {
+          "caller": "handleHttpRequestMethodNotSupported",
+          "callee": "request.getRequestURI",
+          "lineNumber": 50
+        },
+        {
+          "caller": "handleHttpRequestMethodNotSupported",
+          "callee": "log.error",
+          "lineNumber": 51
+        },
+        {
+          "caller": "handleHttpRequestMethodNotSupported",
+          "callee": "e.getMethod",
+          "lineNumber": 51
+        },
+        {
+          "caller": "handleHttpRequestMethodNotSupported",
+          "callee": "AjaxResult.error",
+          "lineNumber": 52
+        },
+        {
+          "caller": "handleHttpRequestMethodNotSupported",
+          "callee": "e.getMessage",
+          "lineNumber": 52
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "log.error",
+          "lineNumber": 61
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "e.getMessage",
+          "lineNumber": 61
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "e.getCode",
+          "lineNumber": 62
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "e.getMessage",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleServiceException",
+          "callee": "e.getMessage",
+          "lineNumber": 63
+        },
+        {
+          "caller": "handleMissingPathVariableException",
+          "callee": "request.getRequestURI",
+          "lineNumber": 72
+        },
+        {
+          "caller": "handleMissingPathVariableException",
+          "callee": "log.error",
+          "lineNumber": 73
+        },
+        {
+          "caller": "handleMissingPathVariableException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleMissingPathVariableException",
+          "callee": "String.format",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleMissingPathVariableException",
+          "callee": "e.getVariableName",
+          "lineNumber": 74
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "request.getRequestURI",
+          "lineNumber": 83
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "Convert.toStr",
+          "lineNumber": 84
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "e.getValue",
+          "lineNumber": 84
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "StringUtils.isNotEmpty",
+          "lineNumber": 85
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "EscapeUtil.clean",
+          "lineNumber": 87
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "log.error",
+          "lineNumber": 89
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 90
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "String.format",
+          "lineNumber": 90
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "e.getName",
+          "lineNumber": 90
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "e.getRequiredType().getName",
+          "lineNumber": 90
+        },
+        {
+          "caller": "handleMethodArgumentTypeMismatchException",
+          "callee": "e.getRequiredType",
+          "lineNumber": 90
+        },
+        {
+          "caller": "handleRuntimeException",
+          "callee": "request.getRequestURI",
+          "lineNumber": 99
+        },
+        {
+          "caller": "handleRuntimeException",
+          "callee": "log.error",
+          "lineNumber": 100
+        },
+        {
+          "caller": "handleRuntimeException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 101
+        },
+        {
+          "caller": "handleRuntimeException",
+          "callee": "e.getMessage",
+          "lineNumber": 101
+        },
+        {
+          "caller": "handleException",
+          "callee": "request.getRequestURI",
+          "lineNumber": 110
+        },
+        {
+          "caller": "handleException",
+          "callee": "log.error",
+          "lineNumber": 111
+        },
+        {
+          "caller": "handleException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 112
+        },
+        {
+          "caller": "handleException",
+          "callee": "e.getMessage",
+          "lineNumber": 112
+        },
+        {
+          "caller": "handleBindException",
+          "callee": "log.error",
+          "lineNumber": 121
+        },
+        {
+          "caller": "handleBindException",
+          "callee": "e.getMessage",
+          "lineNumber": 121
+        },
+        {
+          "caller": "handleBindException",
+          "callee": "e.getAllErrors().get(0).getDefaultMessage",
+          "lineNumber": 122
+        },
+        {
+          "caller": "handleBindException",
+          "callee": "e.getAllErrors().get",
+          "lineNumber": 122
+        },
+        {
+          "caller": "handleBindException",
+          "callee": "e.getAllErrors",
+          "lineNumber": 122
+        },
+        {
+          "caller": "handleBindException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 123
+        },
+        {
+          "caller": "handleMethodArgumentNotValidException",
+          "callee": "log.error",
+          "lineNumber": 132
+        },
+        {
+          "caller": "handleMethodArgumentNotValidException",
+          "callee": "e.getMessage",
+          "lineNumber": 132
+        },
+        {
+          "caller": "handleMethodArgumentNotValidException",
+          "callee": "e.getBindingResult().getFieldError().getDefaultMessage",
+          "lineNumber": 133
+        },
+        {
+          "caller": "handleMethodArgumentNotValidException",
+          "callee": "e.getBindingResult().getFieldError",
+          "lineNumber": 133
+        },
+        {
+          "caller": "handleMethodArgumentNotValidException",
+          "callee": "e.getBindingResult",
+          "lineNumber": 133
+        },
+        {
+          "caller": "handleMethodArgumentNotValidException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 134
+        },
+        {
+          "caller": "handleDemoModeException",
+          "callee": "AjaxResult.error",
+          "lineNumber": 143
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 11,
+        "functionCount": 10,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-quartz/src/main/java/com/ruoyi/quartz/task/RyTask.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 24,
+      "functions": [
+        {
+          "name": "ryMultipleParams",
+          "startLine": 14,
+          "endLine": 17,
+          "params": [
+            "s",
+            "b",
+            "l",
+            "d",
+            "i"
+          ]
+        },
+        {
+          "name": "ryParams",
+          "startLine": 19,
+          "endLine": 22,
+          "params": [
+            "params"
+          ]
+        },
+        {
+          "name": "ryNoParams",
+          "startLine": 24,
+          "endLine": 27,
+          "params": []
+        }
+      ],
+      "classes": [
+        {
+          "name": "RyTask",
+          "startLine": 11,
+          "endLine": 28,
+          "methods": [
+            "ryMultipleParams",
+            "ryParams",
+            "ryNoParams"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ryMultipleParams",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "ryParams",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "ryNoParams",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "RyTask",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "ryMultipleParams",
+          "callee": "System.out.println",
+          "lineNumber": 16
+        },
+        {
+          "caller": "ryMultipleParams",
+          "callee": "StringUtils.format",
+          "lineNumber": 16
+        },
+        {
+          "caller": "ryParams",
+          "callee": "System.out.println",
+          "lineNumber": 21
+        },
+        {
+          "caller": "ryNoParams",
+          "callee": "System.out.println",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 3,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserOnline.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 89,
+      "functions": [
+        {
+          "name": "getTokenId",
+          "startLine": 34,
+          "endLine": 37,
+          "params": []
+        },
+        {
+          "name": "setTokenId",
+          "startLine": 39,
+          "endLine": 42,
+          "params": [
+            "tokenId"
+          ]
+        },
+        {
+          "name": "getDeptName",
+          "startLine": 44,
+          "endLine": 47,
+          "params": []
+        },
+        {
+          "name": "setDeptName",
+          "startLine": 49,
+          "endLine": 52,
+          "params": [
+            "deptName"
+          ]
+        },
+        {
+          "name": "getUserName",
+          "startLine": 54,
+          "endLine": 57,
+          "params": []
+        },
+        {
+          "name": "setUserName",
+          "startLine": 59,
+          "endLine": 62,
+          "params": [
+            "userName"
+          ]
+        },
+        {
+          "name": "getIpaddr",
+          "startLine": 64,
+          "endLine": 67,
+          "params": []
+        },
+        {
+          "name": "setIpaddr",
+          "startLine": 69,
+          "endLine": 72,
+          "params": [
+            "ipaddr"
+          ]
+        },
+        {
+          "name": "getLoginLocation",
+          "startLine": 74,
+          "endLine": 77,
+          "params": []
+        },
+        {
+          "name": "setLoginLocation",
+          "startLine": 79,
+          "endLine": 82,
+          "params": [
+            "loginLocation"
+          ]
+        },
+        {
+          "name": "getBrowser",
+          "startLine": 84,
+          "endLine": 87,
+          "params": []
+        },
+        {
+          "name": "setBrowser",
+          "startLine": 89,
+          "endLine": 92,
+          "params": [
+            "browser"
+          ]
+        },
+        {
+          "name": "getOs",
+          "startLine": 94,
+          "endLine": 97,
+          "params": []
+        },
+        {
+          "name": "setOs",
+          "startLine": 99,
+          "endLine": 102,
+          "params": [
+            "os"
+          ]
+        },
+        {
+          "name": "getLoginTime",
+          "startLine": 104,
+          "endLine": 107,
+          "params": []
+        },
+        {
+          "name": "setLoginTime",
+          "startLine": 109,
+          "endLine": 112,
+          "params": [
+            "loginTime"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysUserOnline",
+          "startLine": 8,
+          "endLine": 113,
+          "methods": [
+            "getTokenId",
+            "setTokenId",
+            "getDeptName",
+            "setDeptName",
+            "getUserName",
+            "setUserName",
+            "getIpaddr",
+            "setIpaddr",
+            "getLoginLocation",
+            "setLoginLocation",
+            "getBrowser",
+            "setBrowser",
+            "getOs",
+            "setOs",
+            "getLoginTime",
+            "setLoginTime"
+          ],
+          "properties": [
+            "tokenId",
+            "deptName",
+            "userName",
+            "ipaddr",
+            "loginLocation",
+            "browser",
+            "os",
+            "loginTime"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getTokenId",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "setTokenId",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "getDeptName",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "setDeptName",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "getUserName",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "setUserName",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "getIpaddr",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "setIpaddr",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginLocation",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "setLoginLocation",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "getBrowser",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "setBrowser",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "getOs",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "setOs",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "getLoginTime",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "setLoginTime",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "SysUserOnline",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 17,
+        "functionCount": 16,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserOnlineService.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 48,
+      "nonEmptyLines": 43,
+      "classes": [
+        {
+          "name": "ISysUserOnlineService",
+          "startLine": 11,
+          "endLine": 48,
+          "methods": [
+            "selectOnlineByIpaddr",
+            "selectOnlineByUserName",
+            "selectOnlineByInfo",
+            "loginUserToUserOnline"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "ISysUserOnlineService",
+          "line": 11,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysUserOnlineServiceImpl.java",
+      "language": "java",
+      "fileCategory": "code",
+      "totalLines": 96,
+      "nonEmptyLines": 91,
+      "functions": [
+        {
+          "name": "selectOnlineByIpaddr",
+          "startLine": 24,
+          "endLine": 32,
+          "params": [
+            "ipaddr",
+            "user"
+          ]
+        },
+        {
+          "name": "selectOnlineByUserName",
+          "startLine": 41,
+          "endLine": 49,
+          "params": [
+            "userName",
+            "user"
+          ]
+        },
+        {
+          "name": "selectOnlineByInfo",
+          "startLine": 59,
+          "endLine": 67,
+          "params": [
+            "ipaddr",
+            "userName",
+            "user"
+          ]
+        },
+        {
+          "name": "loginUserToUserOnline",
+          "startLine": 75,
+          "endLine": 95,
+          "params": [
+            "user"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SysUserOnlineServiceImpl",
+          "startLine": 14,
+          "endLine": 96,
+          "methods": [
+            "selectOnlineByIpaddr",
+            "selectOnlineByUserName",
+            "selectOnlineByInfo",
+            "loginUserToUserOnline"
+          ],
+          "properties": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "selectOnlineByIpaddr",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "selectOnlineByUserName",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "selectOnlineByInfo",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "loginUserToUserOnline",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "SysUserOnlineServiceImpl",
+          "line": 14,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "selectOnlineByIpaddr",
+          "callee": "StringUtils.equals",
+          "lineNumber": 27
+        },
+        {
+          "caller": "selectOnlineByIpaddr",
+          "callee": "user.getIpaddr",
+          "lineNumber": 27
+        },
+        {
+          "caller": "selectOnlineByIpaddr",
+          "callee": "loginUserToUserOnline",
+          "lineNumber": 29
+        },
+        {
+          "caller": "selectOnlineByUserName",
+          "callee": "StringUtils.equals",
+          "lineNumber": 44
+        },
+        {
+          "caller": "selectOnlineByUserName",
+          "callee": "user.getUsername",
+          "lineNumber": 44
+        },
+        {
+          "caller": "selectOnlineByUserName",
+          "callee": "loginUserToUserOnline",
+          "lineNumber": 46
+        },
+        {
+          "caller": "selectOnlineByInfo",
+          "callee": "StringUtils.equals",
+          "lineNumber": 62
+        },
+        {
+          "caller": "selectOnlineByInfo",
+          "callee": "user.getIpaddr",
+          "lineNumber": 62
+        },
+        {
+          "caller": "selectOnlineByInfo",
+          "callee": "StringUtils.equals",
+          "lineNumber": 62
+        },
+        {
+          "caller": "selectOnlineByInfo",
+          "callee": "user.getUsername",
+          "lineNumber": 62
+        },
+        {
+          "caller": "selectOnlineByInfo",
+          "callee": "loginUserToUserOnline",
+          "lineNumber": 64
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 78
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "StringUtils.isNull",
+          "lineNumber": 78
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getUser",
+          "lineNumber": 78
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "new SysUserOnline",
+          "lineNumber": 82
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setTokenId",
+          "lineNumber": 83
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getToken",
+          "lineNumber": 83
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setUserName",
+          "lineNumber": 84
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getUsername",
+          "lineNumber": 84
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setIpaddr",
+          "lineNumber": 85
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getIpaddr",
+          "lineNumber": 85
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setLoginLocation",
+          "lineNumber": 86
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getLoginLocation",
+          "lineNumber": 86
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setBrowser",
+          "lineNumber": 87
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getBrowser",
+          "lineNumber": 87
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setOs",
+          "lineNumber": 88
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getOs",
+          "lineNumber": 88
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setLoginTime",
+          "lineNumber": 89
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getLoginTime",
+          "lineNumber": 89
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "StringUtils.isNotNull",
+          "lineNumber": 90
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getUser().getDept",
+          "lineNumber": 90
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getUser",
+          "lineNumber": 90
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "sysUserOnline.setDeptName",
+          "lineNumber": 92
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getUser().getDept().getDeptName",
+          "lineNumber": 92
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getUser().getDept",
+          "lineNumber": 92
+        },
+        {
+          "caller": "loginUserToUserOnline",
+          "callee": "user.getUser",
+          "lineNumber": 92
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,1299 @@
+{
+  "scriptCompleted": true,
+  "stats": {
+    "filesScanned": 334,
+    "filesWithImports": 184,
+    "totalEdges": 771
+  },
+  "importMap": {
+    ".github/FUNDING.yml": [],
+    ".understand-anything/.understandignore": [],
+    ".understand-anything/config.json": [],
+    "bin/clean.bat": [],
+    "bin/package.bat": [],
+    "bin/run.bat": [],
+    "doc/若依环境使用手册.docx": [],
+    "pom.xml": [],
+    "README.md": [],
+    "ruoyi-admin/pom.xml": [],
+    "ruoyi-admin/src/main/java/com/ruoyi/RuoYiApplication.java": [],
+    "ruoyi-admin/src/main/java/com/ruoyi/RuoYiServletInitializer.java": [],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/common/CaptchaController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/sign/Base64.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/IdUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/common/CommonController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUploadUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ServerConfig.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/CacheController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysCache.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/ServerController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/Server.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysLogininforController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPasswordService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysLogininfor.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysLogininforService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysOperlogController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysOperLogService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserOnline.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserOnlineService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysConfigController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysConfig.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysDeptController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDeptService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysDictDataController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictDataService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictTypeService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysDictTypeController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictTypeService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysIndexController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysLoginController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginBody.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysLoginService.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPermissionService.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysMenuService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysMenuController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysMenuService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysNoticeController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeReadService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysPostController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysPost.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysPostService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysProfileController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUploadUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/MimeTypeUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysRegisterService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRoleController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPermissionService.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserRole.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDeptService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysRoleService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysUserController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDeptService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysPostService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysRoleService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-admin/src/main/java/com/ruoyi/web/core/config/SwaggerConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java"
+    ],
+    "ruoyi-admin/src/main/resources/application-druid.yml": [],
+    "ruoyi-admin/src/main/resources/application.yml": [],
+    "ruoyi-admin/src/main/resources/banner.txt": [],
+    "ruoyi-admin/src/main/resources/i18n/messages.properties": [],
+    "ruoyi-admin/src/main/resources/logback.xml": [],
+    "ruoyi-admin/src/main/resources/META-INF/spring-devtools.properties": [],
+    "ruoyi-admin/src/main/resources/mybatis/mybatis-config.xml": [],
+    "ruoyi-common/pom.xml": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Anonymous.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataScope.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataSource.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/DataSourceType.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelHandlerAdapter.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excels.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/OperatorType.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RateLimiter.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/LimitType.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RepeatSubmit.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Sensitive.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/serializer/SensitiveJsonSerializer.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/DesensitizedType.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/config/serializer/SensitiveJsonSerializer.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Sensitive.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/DesensitizedType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/constant/GenConstants.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/constant/ScheduleConstants.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/PageUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/sql/SqlUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictType.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excels.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/xss/Xss.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginBody.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeEntity.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeSelect.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/text/CharsetKit.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessStatus.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/DataSourceType.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/DesensitizedType.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DesensitizedUtil.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/LimitType.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/OperatorType.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/enums/UserStatus.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/base/BaseException.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/DemoModeException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileException.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/base/BaseException.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileNameLengthLimitExceededException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileSizeLimitExceededException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileUploadException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/InvalidExtensionException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/GlobalException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/job/TaskException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/BlackListException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaExpireException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserException.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/base/BaseException.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserNotExistsException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordNotMatchException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordRetryLimitExceedException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/exception/UtilException.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/filter/PropertyPreExcludeFilter.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatedlyRequestWrapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpHelper.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/filter/XssFilter.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/filter/XssHttpServletRequestWrapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/html/EscapeUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/Arith.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/bean/BeanUtils.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/bean/BeanValidators.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/DesensitizedUtil.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/DictUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/ExceptionUtil.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileTypeUtils.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUploadUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileNameLengthLimitExceededException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/FileSizeLimitExceededException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/file/InvalidExtensionException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/IdUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/Seq.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/IdUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/ImageUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/MimeTypeUtils.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/html/EscapeUtil.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/html/HTMLFilter.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpHelper.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/UserAgentUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/AddressUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/LogUtils.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/PageUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/sql/SqlUtil.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelHandlerAdapter.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelSheet.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excels.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/UtilException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DictUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileTypeUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/FileUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/file/ImageUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/reflect/ReflectUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/reflect/ReflectUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/sign/Base64.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/sign/Md5Utils.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/sql/SqlUtil.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/UtilException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/Threads.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/IdUtils.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/Seq.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/UUID.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/UtilException.java"
+    ],
+    "ruoyi-common/src/main/java/com/ruoyi/common/xss/Xss.java": [],
+    "ruoyi-common/src/main/java/com/ruoyi/common/xss/XssValidator.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-framework/pom.xml": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/DataScopeAspect.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataScope.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/PermissionContextHolder.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/DataSourceAspect.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataSource.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/datasource/DynamicDataSourceContextHolder.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/LogAspect.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessStatus.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/filter/PropertyPreExcludeFilter.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ExceptionUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/AsyncManager.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/factory/AsyncFactory.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/aspectj/RateLimiterAspect.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RateLimiter.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/LimitType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ApplicationConfig.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/CaptchaConfig.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/DruidConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/DataSourceType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/config/properties/DruidProperties.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/datasource/DynamicDataSource.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/FastJson2JsonRedisSerializer.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/FilterConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/filter/XssFilter.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/I18nConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/KaptchaTextCreator.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/MyBatisConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/properties/DruidProperties.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/properties/PermitAllUrlProperties.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Anonymous.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/RedisConfig.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ResourcesConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/config/RuoYiConfig.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/RepeatSubmitInterceptor.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/SecurityConfig.java": [
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/config/properties/PermitAllUrlProperties.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/security/filter/JwtAuthenticationTokenFilter.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/AuthenticationEntryPointImpl.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/LogoutSuccessHandlerImpl.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ServerConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/config/ThreadPoolConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/Threads.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/datasource/DynamicDataSource.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/datasource/DynamicDataSourceContextHolder.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/impl/SameUrlDataInterceptor.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RepeatSubmit.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatedlyRequestWrapper.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/HttpHelper.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/RepeatSubmitInterceptor.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/interceptor/RepeatSubmitInterceptor.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/RepeatSubmit.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/AsyncManager.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/Threads.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/factory/AsyncFactory.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/UserAgentUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/AddressUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/LogUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysLogininfor.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysLogininforService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysOperLogService.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/ShutdownManager.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/AuthenticationContextHolder.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/PermissionContextHolder.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/security/filter/JwtAuthenticationTokenFilter.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/AuthenticationEntryPointImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/security/handle/LogoutSuccessHandlerImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/AsyncManager.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/factory/AsyncFactory.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/Server.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/Arith.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Cpu.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Jvm.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Mem.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Sys.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/SysFile.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Cpu.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/Arith.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Jvm.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/Arith.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Mem.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/Arith.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/Sys.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/domain/server/SysFile.java": [],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/exception/GlobalExceptionHandler.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/DemoModeException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/html/EscapeUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/PermissionService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/PermissionContextHolder.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysLoginService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/BlackListException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaExpireException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserNotExistsException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordNotMatchException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/AsyncManager.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/factory/AsyncFactory.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/AuthenticationContextHolder.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPasswordService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordNotMatchException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/UserPasswordRetryLimitExceedException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/security/context/AuthenticationContextHolder.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysPermissionService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysMenuService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysRoleService.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysRegisterService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/user/CaptchaExpireException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/AsyncManager.java",
+      "ruoyi-framework/src/main/java/com/ruoyi/framework/manager/factory/AsyncFactory.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/TokenService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/http/UserAgentUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/AddressUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ip/IpUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/uuid/IdUtils.java"
+    ],
+    "ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/UserDetailsServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/UserStatus.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/MessageUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-generator/pom.xml": [],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/config/GenConfig.java": [],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/controller/GenController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/sql/SqlUtil.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/config/GenConfig.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/service/IGenTableColumnService.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/service/IGenTableService.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/GenConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/mapper/GenTableColumnMapper.java": [
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/mapper/GenTableMapper.java": [
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/service/GenTableColumnServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/mapper/GenTableColumnMapper.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/service/GenTableServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/GenConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/CharsetKit.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/mapper/GenTableColumnMapper.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/mapper/GenTableMapper.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/util/GenUtils.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/util/VelocityInitializer.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/util/VelocityUtils.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/service/IGenTableColumnService.java": [
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/service/IGenTableService.java": [
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/util/GenUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/GenConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/config/GenConfig.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/util/VelocityInitializer.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java"
+    ],
+    "ruoyi-generator/src/main/java/com/ruoyi/generator/util/VelocityUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/GenConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTable.java",
+      "ruoyi-generator/src/main/java/com/ruoyi/generator/domain/GenTableColumn.java"
+    ],
+    "ruoyi-generator/src/main/resources/generator.yml": [],
+    "ruoyi-generator/src/main/resources/mapper/generator/GenTableColumnMapper.xml": [],
+    "ruoyi-generator/src/main/resources/mapper/generator/GenTableMapper.xml": [],
+    "ruoyi-generator/src/main/resources/vm/java/controller.java.vm": [],
+    "ruoyi-generator/src/main/resources/vm/java/domain.java.vm": [],
+    "ruoyi-generator/src/main/resources/vm/java/mapper.java.vm": [],
+    "ruoyi-generator/src/main/resources/vm/java/service.java.vm": [],
+    "ruoyi-generator/src/main/resources/vm/java/serviceImpl.java.vm": [],
+    "ruoyi-generator/src/main/resources/vm/java/sub-domain.java.vm": [],
+    "ruoyi-generator/src/main/resources/vm/js/api.js.vm": [],
+    "ruoyi-generator/src/main/resources/vm/sql/sql.vm": [],
+    "ruoyi-generator/src/main/resources/vm/ts/api.ts.vm": [],
+    "ruoyi-generator/src/main/resources/vm/ts/index.ts.vm": [],
+    "ruoyi-generator/src/main/resources/vm/ts/type.ts.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/index-tree.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/index.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/v3/index-tree.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/v3/index.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/v3/view.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/v3ts/index-tree.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/v3ts/index.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/v3ts/view.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/vue/view.vue.vm": [],
+    "ruoyi-generator/src/main/resources/vm/xml/mapper.xml.vm": [],
+    "ruoyi-quartz/pom.xml": [],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/config/ScheduleConfig.java": [],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/controller/SysJobController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/job/TaskException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobService.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/CronUtils.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/ScheduleUtils.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/controller/SysJobLogController.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/poi/ExcelUtil.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobLogService.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/ScheduleConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/CronUtils.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobLogMapper.java": [
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobMapper.java": [
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/impl/SysJobLogServiceImpl.java": [
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobLogMapper.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobLogService.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/impl/SysJobServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/ScheduleConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/job/TaskException.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/mapper/SysJobMapper.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobService.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/CronUtils.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/ScheduleUtils.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobLogService.java": [
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/job/TaskException.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/task/RyTask.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/AbstractQuartzJob.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/ScheduleConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/bean/BeanUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/ExceptionUtil.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJobLog.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/service/ISysJobLogService.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/CronUtils.java": [],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/JobInvokeUtil.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/QuartzDisallowConcurrentExecution.java": [
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/QuartzJobExecution.java": [
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java"
+    ],
+    "ruoyi-quartz/src/main/java/com/ruoyi/quartz/util/ScheduleUtils.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/ScheduleConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/job/TaskException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-quartz/src/main/java/com/ruoyi/quartz/domain/SysJob.java"
+    ],
+    "ruoyi-quartz/src/main/resources/mapper/quartz/SysJobLogMapper.xml": [],
+    "ruoyi-quartz/src/main/resources/mapper/quartz/SysJobMapper.xml": [],
+    "ruoyi-system/pom.xml": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysCache.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysConfig.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysLogininfor.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/xss/Xss.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNoticeRead.java": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysPost.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/Excel.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/BaseEntity.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleDept.java": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleMenu.java": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserOnline.java": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserPost.java": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserRole.java": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/vo/MetaVo.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/domain/vo/RouterVo.java": [],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysConfigMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysConfig.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDeptMapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDictDataMapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDictTypeMapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictType.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysLogininforMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysLogininfor.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysMenuMapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysNoticeMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysNoticeReadMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNoticeRead.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysOperLogMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysPostMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysPost.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleDeptMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleDept.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMenuMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleMenu.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserMapper.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserPostMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserPost.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserRoleMapper.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserRole.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysConfigServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysConfig.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysConfigMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysDeptServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataScope.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeSelect.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDeptMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDeptService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysDictDataServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DictUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDictDataMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictDataService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysDictTypeServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictType.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/DictUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDictDataMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysDictTypeMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictTypeService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysLogininforServiceImpl.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysLogininfor.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysLogininforMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysLogininforService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysMenuServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/Constants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeSelect.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/vo/MetaVo.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/vo/RouterVo.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysMenuMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMenuMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysMenuService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysNoticeReadServiceImpl.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNoticeRead.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysNoticeReadMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeReadService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysNoticeServiceImpl.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysNoticeMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysOperLogServiceImpl.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysOperLogMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysOperLogService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysPostServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysPost.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysPostMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserPostMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysPostService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysRoleServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataScope.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleDept.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysRoleMenu.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserRole.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleDeptMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMenuMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserRoleMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysRoleService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysUserOnlineServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserOnline.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserOnlineService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/impl/SysUserServiceImpl.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/annotation/DataScope.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/constant/UserConstants.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/exception/ServiceException.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/bean/BeanValidators.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/spring/SpringUtils.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysPost.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserPost.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserRole.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysPostMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysRoleMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserPostMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/mapper/SysUserRoleMapper.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDeptService.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysConfig.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDeptService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDept.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeSelect.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictDataService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysDictTypeService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictData.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysDictType.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysLogininforService.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysLogininfor.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysMenuService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysMenu.java",
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/TreeSelect.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/vo/RouterVo.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeReadService.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysNoticeService.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysNotice.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysOperLogService.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysOperLog.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysPostService.java": [
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysPost.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysRoleService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysRole.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserRole.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserOnlineService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserOnline.java"
+    ],
+    "ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserService.java": [
+      "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/entity/SysUser.java"
+    ],
+    "ruoyi-system/src/main/resources/mapper/system/SysConfigMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysDeptMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysDictDataMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysDictTypeMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysLogininforMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysMenuMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysNoticeMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysNoticeReadMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysOperLogMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysPostMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysRoleDeptMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysRoleMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysRoleMenuMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysUserMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysUserPostMapper.xml": [],
+    "ruoyi-system/src/main/resources/mapper/system/SysUserRoleMapper.xml": [],
+    "ry.bat": [],
+    "ry.sh": [],
+    "sql/quartz.sql": [],
+    "sql/ry_20260417.sql": []
+  }
+}

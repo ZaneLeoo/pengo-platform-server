@@ -1,0 +1,818 @@
+{
+  "nodes": [
+    {
+      "id": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "type": "file",
+      "name": "SysUserOnlineController.java",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "summary": "在线用户监控控制器，提供在线用户列表查询和强制登出功能，通过 Redis 缓存键检索登录用户信息。",
+      "tags": ["api-handler", "monitoring", "在线用户", "controller"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "type": "file",
+      "name": "SysRegisterController.java",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "summary": "用户注册控制器，处理新用户注册请求，校验系统注册开关状态后委托注册服务完成注册。",
+      "tags": ["api-handler", "注册", "controller", "authentication"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "type": "file",
+      "name": "TestController.java",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "summary": "测试控制器，提供内存中的用户 CRUD 操作接口，用于开发调试和接口联调测试，内嵌 UserEntity 内部类。",
+      "tags": ["test", "controller", "开发工具", "api-handler"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "type": "file",
+      "name": "HttpStatus.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "summary": "HTTP 状态码常量类，定义了 SUCCESS(200) 到 WARN(601) 等 17 个标准状态常量，为 AjaxResult 和 R 类提供状态码引用。",
+      "tags": ["常量", "http-status", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "type": "file",
+      "name": "BaseController.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "summary": "控制器基类，提供分页辅助（startPage/clearPage）、统一响应（success/error/warn/toAjax）、日期绑定和登录用户获取等通用方法。所有业务控制器均继承此类。",
+      "tags": ["base-class", "controller", "分页", "utility", "entry-point"],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "type": "file",
+      "name": "AjaxResult.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "summary": "统一 Ajax 响应结果类，继承 HashMap，封装 code/msg/data 三要素，提供 success/warn/error 静态工厂方法和状态判断方法。",
+      "tags": ["data-model", "response", "api-handler", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "type": "file",
+      "name": "R.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "summary": "通用 API 响应结果类（REST Result），提供 ok/fail 静态工厂方法和 restResult 内部构建方法，用于非分页的 API 数据返回。",
+      "tags": ["data-model", "response", "api-handler", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java",
+      "type": "file",
+      "name": "RegisterBody.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java",
+      "summary": "注册请求体数据模型，继承 LoginBody 用于接收注册表单提交的用户数据。",
+      "tags": ["data-model", "注册", "dto"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "type": "file",
+      "name": "PageDomain.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "summary": "分页参数领域对象，封装 pageNum/pageSize/orderByColumn/isAsc/reasonable 等分页查询参数，支持自动驼峰转下划线排序。",
+      "tags": ["data-model", "分页", "utility"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "type": "file",
+      "name": "TableSupport.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "summary": "表格分页支持类，从 Servlet 请求参数中提取分页信息并构建 PageDomain 对象，定义分页参数常量名。",
+      "tags": ["utility", "分页", "servlet"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java",
+      "type": "file",
+      "name": "StrFormatter.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java",
+      "summary": "字符串格式化工具，实现类似 Slf4j 风格的 {} 占位符替换，支持转义处理，用于日志和消息模板格式化。",
+      "tags": ["utility", "字符串", "formatting"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java",
+      "type": "file",
+      "name": "HttpMethod.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java",
+      "summary": "HTTP 请求方法枚举，定义 GET/POST/PUT/DELETE 等 HTTP 方法，支持字符串解析和 Ant 路径模式匹配。",
+      "tags": ["枚举", "http", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/exception/DemoModeException.java",
+      "type": "file",
+      "name": "DemoModeException.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/exception/DemoModeException.java",
+      "summary": "演示模式异常，继承 RuntimeException，用于在演示环境下阻止增删改等敏感操作。",
+      "tags": ["异常", "security", "演示模式"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java",
+      "type": "file",
+      "name": "RefererFilter.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java",
+      "summary": "Referer 请求头过滤器，校验 HTTP 请求的 Referer 来源域是否在白名单中，提供 CSRF 防护。",
+      "tags": ["security", "filter", "csrf"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "type": "file",
+      "name": "RepeatableFilter.java",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "summary": "请求体可重复读取过滤器，对 JSON 内容类型的请求包装 RepeatedlyRequestWrapper，支持多次读取请求 InputStream。",
+      "tags": ["filter", "middleware", "request-wrapper"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:SysUserOnlineController",
+      "type": "class",
+      "name": "SysUserOnlineController",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "lineRange": [31, 83],
+      "summary": "在线用户监控 REST 控制器，注入 userOnlineService 和 redisCache，提供 list(分页查询在线用户) 和 forceLogout(强制登出) 两个接口。",
+      "tags": ["controller", "monitoring", "rest"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:list",
+      "type": "function",
+      "name": "list",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "lineRange": [41, 70],
+      "summary": "查询在线用户列表，从 Redis 缓存键中获取所有登录 token，按 IP/用户名/登录用户信息三维度筛选匹配后分页返回。",
+      "tags": ["api-handler", "查询", "分页"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java:SysRegisterController",
+      "type": "class",
+      "name": "SysRegisterController",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "lineRange": [19, 38],
+      "summary": "用户注册 REST 控制器，注入 registerService 和 configService，提供 register 注册接口。",
+      "tags": ["controller", "注册", "rest"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java:register",
+      "type": "function",
+      "name": "register",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "lineRange": [28, 37],
+      "summary": "处理用户注册请求，先校验系统是否开启注册功能，然后调用 registerService.register 完成注册并返回结果。",
+      "tags": ["api-handler", "注册", "验证"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java:TestController",
+      "type": "class",
+      "name": "TestController",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "lineRange": [27, 106],
+      "summary": "测试 REST 控制器，使用 ConcurrentHashMap 模拟内存数据库，提供用户列表、查询、新增、修改、删除五个测试接口。",
+      "tags": ["controller", "test", "开发工具"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java:UserEntity",
+      "type": "class",
+      "name": "UserEntity",
+      "filePath": "ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "lineRange": [108, 175],
+      "summary": "测试用户实体内部类，包含 userId/username/password/mobile 四个属性和对应的 getter/setter 方法。",
+      "tags": ["data-model", "entity", "test"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java:HttpStatus",
+      "type": "class",
+      "name": "HttpStatus",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "lineRange": [8, 94],
+      "summary": "HTTP 状态码常量容器类，定义从 SUCCESS(200)、UNAUTHORIZED(401)、FORBIDDEN(403)、NOT_FOUND(404) 到 WARN(601) 的标准状态码及对应消息。",
+      "tags": ["常量", "http-status", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "type": "class",
+      "name": "BaseController",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "lineRange": [29, 202],
+      "summary": "控制器抽象基类，提供 initBinder(日期绑定)、分页相关(startPage/startOrderBy/clearPage/getDataTable)、统一响应(success/error/warn/toAjax)、重定向和登录用户获取等 17 个通用方法。",
+      "tags": ["base-class", "controller", "分页", "utility"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:startPage",
+      "type": "function",
+      "name": "startPage",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "lineRange": [53, 56],
+      "summary": "启动分页，委托 PageUtils.startPage() 设置 PageHelper 分页参数。",
+      "tags": ["分页", "utility"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:getDataTable",
+      "type": "function",
+      "name": "getDataTable",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "lineRange": [82, 91],
+      "summary": "将分页查询结果封装为 TableDataInfo 对象，包含 code、msg、total、rows 四个字段。",
+      "tags": ["分页", "data-table", "response"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:getLoginUser",
+      "type": "function",
+      "name": "getLoginUser",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "lineRange": [174, 177],
+      "summary": "获取当前登录用户信息，委托 SecurityUtils.getLoginUser() 从 SecurityContext 或 Token 中获取。",
+      "tags": ["authentication", "security"],
+      "complexity": "simple"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java:AjaxResult",
+      "type": "class",
+      "name": "AjaxResult",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "lineRange": [13, 216],
+      "summary": "统一 Ajax 响应结果类，继承 HashMap，提供 4 个 success、2 个 warn、4 个 error 静态工厂方法，以及 isSuccess/isWarn/isError 状态判断和 put 链式扩展方法。",
+      "tags": ["data-model", "response", "factory"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java:R",
+      "type": "class",
+      "name": "R",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "lineRange": [11, 115],
+      "summary": "通用 REST 响应类（泛型 Serializable），提供 3 个 ok、5 个 fail 静态工厂方法，以及 getCode/setCode/getMsg/setMsg/getData/setData 等 getter/setter 方法。",
+      "tags": ["data-model", "response", "factory", "泛型"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java:PageDomain",
+      "type": "class",
+      "name": "PageDomain",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "lineRange": [10, 101],
+      "summary": "分页参数领域对象，封装 pageNum/pageSize/orderByColumn/isAsc/reasonable 参数，getOrderBy 方法自动将驼峰列名转为下划线。",
+      "tags": ["data-model", "分页"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java:TableSupport",
+      "type": "class",
+      "name": "TableSupport",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "lineRange": [11, 56],
+      "summary": "表格分页支持类，从 ServletRequest 参数中提取分页信息构建 PageDomain，提供 buildPageRequest 供 PageHelper 使用。",
+      "tags": ["utility", "分页", "servlet"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java:StrFormatter",
+      "type": "class",
+      "name": "StrFormatter",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java",
+      "lineRange": [10, 92],
+      "summary": "字符串格式化工具类，核心方法 format 实现 {} 占位符替换，支持转义字符和嵌套 {} 处理。",
+      "tags": ["utility", "字符串", "formatting"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java:RefererFilter",
+      "type": "class",
+      "name": "RefererFilter",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java",
+      "lineRange": [20, 77],
+      "summary": "Servlet Filter 实现，校验请求 Referer 头是否在允许的域名白名单中，不匹配则返回 403。",
+      "tags": ["filter", "security", "csrf"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java:RepeatableFilter",
+      "type": "class",
+      "name": "RepeatableFilter",
+      "filePath": "ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "lineRange": [19, 52],
+      "summary": "Servlet Filter 实现，对 application/json 请求体包装为 RepeatedlyRequestWrapper，解决 InputStream 只能读取一次的问题。",
+      "tags": ["filter", "middleware", "request-wrapper"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/annotation/Log.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/constant/CacheConstants.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/redis/RedisCache.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/enums/BusinessType.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-system/src/main/java/com/ruoyi/system/domain/SysUserOnline.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "file:ruoyi-system/src/main/java/com/ruoyi/system/service/ISysUserOnlineService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/RegisterBody.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "file:ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysRegisterService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "file:ruoyi-system/src/main/java/com/ruoyi/system/service/ISysConfigService.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/model/LoginUser.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/DateUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/PageUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/sql/SqlUtil.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/text/Convert.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/ServletUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/filter/XssFilter.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/enums/HttpMethod.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/filter/XssFilter.java",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/StringUtils.java",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:SysUserOnlineController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:SysUserOnlineController",
+      "target": "function:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:list",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "function:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:list",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java",
+      "target": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:SysUserOnlineController",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java:SysRegisterController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java:SysRegisterController",
+      "target": "function:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java:register",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java",
+      "target": "function:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java:register",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "target": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java:TestController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java",
+      "target": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java:UserEntity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/constant/HttpStatus.java:HttpStatus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "target": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:startPage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "target": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:getDataTable",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "target": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:getLoginUser",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java:AjaxResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java:R",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/page/PageDomain.java:PageDomain",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java:TableSupport",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/text/StrFormatter.java:StrFormatter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/filter/RefererFilter.java:RefererFilter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/filter/RepeatableFilter.java:RepeatableFilter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:startPage",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/PageUtils.java",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:getDataTable",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableDataInfo.java",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:getLoginUser",
+      "target": "file:ruoyi-common/src/main/java/com/ruoyi/common/utils/SecurityUtils.java",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/monitor/SysUserOnlineController.java:SysUserOnlineController",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysRegisterController.java:SysRegisterController",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "class:ruoyi-admin/src/main/java/com/ruoyi/web/controller/tool/TestController.java:TestController",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:BaseController",
+      "type": "inherits",
+      "direction": "forward",
+      "weight": 0.9
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/AjaxResult.java:AjaxResult",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/domain/R.java:R",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:ruoyi-common/src/main/java/com/ruoyi/common/core/controller/BaseController.java:startPage",
+      "target": "class:ruoyi-common/src/main/java/com/ruoyi/common/core/page/TableSupport.java:TableSupport",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}
