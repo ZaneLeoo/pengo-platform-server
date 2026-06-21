@@ -1,7 +1,10 @@
 package com.ruoyi.web.controller.agent;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ruoyi.agent.application.AgentConversationService;
+import com.ruoyi.agent.domain.AgentConversation;
+import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
+import java.util.Map;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,71 +12,44 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.agent.domain.AgentConversation;
-import com.ruoyi.agent.domain.AgentMessage;
-import com.ruoyi.agent.service.IAgentConversationService;
-import com.ruoyi.agent.service.IAgentMessageService;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
 
-/**
- * Agent会话管理
- *
- * @author Dylan
- */
+/** 当前用户的 Agent 本地会话接口。 */
 @RestController
 @RequestMapping("/agent/conversations")
 public class AgentConversationController extends BaseController
 {
-    @Autowired
-    private IAgentConversationService conversationService;
+    private final AgentConversationService conversationService;
+    public AgentConversationController(AgentConversationService service) { this.conversationService = service; }
 
-    @Autowired
-    private IAgentMessageService messageService;
-
-    /**
-     * 获取当前用户的会话列表
-     */
+    /** 查询当前用户会话。 */
     @GetMapping
-    public AjaxResult listConversations()
-    {
-        Long userId = getUserId();
-        List<AgentConversation> list = conversationService.selectConversationList(userId);
-        return success(list);
-    }
+    public AjaxResult list() { return success(conversationService.list(getUserId())); }
 
-    /**
-     * 获取会话的消息列表
-     */
-    @GetMapping("/{id}/messages")
-    public AjaxResult listMessages(@PathVariable Long id)
-    {
-        List<AgentMessage> messages = messageService.selectMessagesByConversationId(id);
-        return success(messages);
-    }
-
-    /**
-     * 创建新会话
-     */
+    /** 创建空会话。 */
     @PostMapping
-    public AjaxResult createConversation(@RequestBody AgentConversation conversation)
+    public AjaxResult create(@RequestBody(required = false) Map<String, String> body)
     {
-        conversation.setUserId(getUserId());
-        conversation.setCreateBy(getUsername());
-        conversation.setStatus("0");
-        conversation.setMessageCount(0);
-        conversationService.insertConversation(conversation);
-        return success(conversation);
+        String title = body == null ? null : body.get("title");
+        return success(conversationService.create(getUserId(), title, getUsername()));
     }
 
-    /**
-     * 删除会话（同时删除消息）
-     */
-    @DeleteMapping("/{id}")
-    public AjaxResult deleteConversation(@PathVariable Long id)
+    /** 查询会话消息。 */
+    @GetMapping("/{id}/messages")
+    public AjaxResult messages(@PathVariable Long id) { return success(conversationService.messages(id, getUserId())); }
+
+    /** 修改会话标题。 */
+    @PostMapping("/{id}/rename")
+    public AjaxResult rename(@PathVariable Long id, @RequestBody Map<String, String> body)
     {
-        messageService.deleteMessagesByConversationId(id);
-        conversationService.deleteConversationById(id);
+        conversationService.rename(id, getUserId(), body.get("title"), getUsername());
+        return success();
+    }
+
+    /** 删除会话及本地消息。 */
+    @DeleteMapping("/{id}")
+    public AjaxResult delete(@PathVariable Long id)
+    {
+        conversationService.delete(id, getUserId());
         return success();
     }
 }

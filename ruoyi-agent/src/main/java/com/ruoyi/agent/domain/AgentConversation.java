@@ -1,38 +1,33 @@
 package com.ruoyi.agent.domain;
 
 import com.ruoyi.common.core.domain.BaseEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.io.Serial;
-
-/**
- * Agent对话会话表 agent_conversation
- *
- * @author Dylan
- */
-@Data
-@EqualsAndHashCode(callSuper = true)
+/** 本地 Agent 会话。 */
 public class AgentConversation extends BaseEntity
 {
-    @Serial
     private static final long serialVersionUID = 1L;
-
-    /** 主键 */
     private Long id;
-
-    /** 用户ID */
     private Long userId;
-
-    /** Dify侧对话ID */
     private String difyConversationId;
-
-    /** 会话标题 */
     private String title;
-
-    /** 状态（0进行中 1已结束） */
     private String status;
-
-    /** 消息数量 */
+    private String lastTaskId;
+    private String lastWorkflowRunId;
     private Integer messageCount;
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+    public String getDifyConversationId() { return difyConversationId; }
+    public void setDifyConversationId(String value) { this.difyConversationId = value; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getLastTaskId() { return lastTaskId; }
+    public void setLastTaskId(String value) { this.lastTaskId = value; }
+    public String getLastWorkflowRunId() { return lastWorkflowRunId; }
+    public void setLastWorkflowRunId(String value) { this.lastWorkflowRunId = value; }
+    public Integer getMessageCount() { return messageCount; }
+    public void setMessageCount(Integer value) { this.messageCount = value; }
 }
