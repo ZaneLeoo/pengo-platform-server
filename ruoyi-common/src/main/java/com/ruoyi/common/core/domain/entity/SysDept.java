@@ -55,6 +55,9 @@ public class SysDept extends BaseEntity
     /** 子部门 */
     private List<SysDept> children = new ArrayList<SysDept>();
 
+    /** 是否有子部门（懒加载用，不持久化） */
+    private Boolean hasChildren;
+
     public Long getDeptId()
     {
         return deptId;
@@ -179,6 +182,16 @@ public class SysDept extends BaseEntity
     public void setChildren(List<SysDept> children)
     {
         this.children = children;
+    }
+
+    public Boolean getHasChildren()
+    {
+        return hasChildren;
+    }
+
+    public void setHasChildren(Boolean hasChildren)
+    {
+        this.hasChildren = hasChildren;
     }
 
     @Override

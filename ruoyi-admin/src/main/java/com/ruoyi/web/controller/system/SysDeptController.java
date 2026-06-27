@@ -47,6 +47,17 @@ public class SysDeptController extends BaseController
     }
 
     /**
+     * 懒加载部门列表（根据父节点ID获取子部门，含hasChildren标记）
+     */
+    @PreAuthorize("@ss.hasPermi('system:dept:list')")
+    @GetMapping("/list/lazy/{parentId}")
+    public AjaxResult listLazy(@PathVariable Long parentId)
+    {
+        List<SysDept> depts = deptService.selectChildrenDeptListByParentId(parentId);
+        return success(depts);
+    }
+
+    /**
      * 查询部门列表（排除节点）
      */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")

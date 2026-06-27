@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.base.mapper.BomItemMapper">
+
+    <resultMap type="BomItem" id="BomItemResult">
+        <id     property="id"                column="id"                 />
+        <result property="bomVersionId"      column="bom_version_id"     />
+        <result property="lineNo"            column="line_no"            />
+        <result property="parentItemCode"    column="parent_item_code"   />
+        <result property="componentItemId"   column="component_item_id"  />
+        <result property="componentItemCode" column="component_item_code"/>
+        <result property="componentItemName" column="component_item_name"/>
+        <result property="componentItemSpec" column="component_item_spec"/>
+        <result property="componentItemUnit" column="component_item_unit"/>
+        <result property="componentAttribute" column="component_attribute"/>
+        <result property="componentQty"      column="component_qty"      />
+        <result property="fixedLossQty"      column="fixed_loss_qty"     />
+        <result property="changeLossRate"    column="change_loss_rate"   />
+        <result property="length"            column="length"             />
+        <result property="width"             column="width"              />
+        <result property="supplyType"        column="supply_type"        />
+        <result property="isVirtual"         column="is_virtual"         />
+        <result property="mrpExpandFlag"     column="mrp_expand_flag"    />
+        <result property="sourceSystem"      column="source_system"      />
+        <result property="hasChildBom"       column="has_child_bom"      />
+        <result property="createBy"          column="create_by"          />
+        <result property="createTime"        column="create_time"        />
+        <result property="updateBy"          column="update_by"          />
+        <result property="updateTime"        column="update_time"        />
+        <result property="remark"            column="remark"             />
+    </resultMap>
+
+    <sql id="selectBomItemVo">
+        SELECT bi.id, bi.bom_version_id, bi.line_no, bi.parent_item_code,
+               bi.component_item_id, bi.component_item_code, bi.component_item_name,
+               bi.component_item_spec, bi.component_item_unit, bi.component_attribute,
+               bi.component_qty, bi.fixed_loss_qty, bi.change_loss_rate,
+               bi.length, bi.width, bi.supply_type, bi.is_virtual, bi.mrp_expand_flag,
+               bi.source_system,
+               bi.create_by, bi.create_time, bi.update_by, bi.update_time, bi.remark,
+               (SELECT CASE
+                   WHEN EXISTS (SELECT 1 FROM bom_master bm WHERE bm.parent_item_code = bi.component_item_code)
+                    AND (SELECT m.source_type FROM material m WHERE m.material_code = bi.component_item_code LIMIT 1) IN ('MAKE', 'OUTSOURCE')
+                   THEN 1 ELSE 0 END) AS has_child_bom
+        FROM bom_item bi
+    </sql>
+
+    <select id="selectBomItemList" parameterType="BomItem" resultMap="BomItemResult">
+        <include refid="selectBomItemVo"/>
+        <where>
+            <if test="bomVersionId != null">AND bi.bom_version_id = #{bomVersionId}</if>
+            <if test="componentItemCode != null and componentItemCode != ''">AND bi.component_item_code = #{componentItemCode}</if>
+            <if test="componentItemName != null and componentItemName != ''">AND bi.component_item_name LIKE CONCAT('%', #{componentItemName}, '%')</if>
+            <if test="supplyType != null and supplyType != ''">AND bi.supply_type = #{supplyType}</if>
+            <if test="isVirtual != null">AND bi.is_virtual = #{isVirtual}</if>
+        </where>
+        ORDER BY bi.line_no ASC, bi.id ASC
+    </select>
+
+    <select id="selectBomItemById" parameterType="Long" resultMap="BomItemResult">
+        <include refid="selectBomItemVo"/>
+        WHERE bi.id = #{id}
+    </select>
+
+    <select id="selectBomItemByLineNo" resultMap="BomItemResult">
+        <include refid="selectBomItemVo"/>
+        WHERE bi.bom_version_id = #{bomVersionId} AND bi.line_no = #{lineNo}
+    </select>
+
+    <insert id="insertBomItem" parameterType="BomItem" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO bom_item (
+            bom_version_id, line_no, parent_item_code,
+            component_item_id, component_item_code, component_item_name,
+            component_item_spec, component_item_unit, component_attribute,
+            component_qty, fixed_loss_qty, change_loss_rate,
+            length, width, supply_type, is_virtual, mrp_expand_flag, source_system,
+            create_by, create_time
+        ) VALUES (
+            #{bomVersionId}, #{lineNo}, #{parentItemCode},
+            #{componentItemId}, #{componentItemCode}, #{componentItemName},
+            #{componentItemSpec}, #{componentItemUnit}, #{componentAttribute},
+            #{componentQty}, #{fixedLossQty}, #{changeLossRate},
+            #{length}, #{width}, #{supplyType}, #{isVirtual}, #{mrpExpandFlag}, #{sourceSystem},
+            #{createBy}, SYSDATE()
+        )
+    </insert>
+
+    <update id="updateBomItem" parameterType="BomItem">
+        UPDATE bom_item
+        <set>
+            <if test="lineNo != null">line_no = #{lineNo},</if>
+            <if test="parentItemCode != null">parent_item_code = #{parentItemCode},</if>
+            <if test="componentItemId != null">component_item_id = #{componentItemId},</if>
+            <if test="componentItemCode != null">component_item_code = #{componentItemCode},</if>
+            <if test="componentItemName != null">component_item_name = #{componentItemName},</if>
+            <if test="componentItemSpec != null">component_item_spec = #{componentItemSpec},</if>
+            <if test="componentItemUnit != null">component_item_unit = #{componentItemUnit},</if>
+            <if test="componentAttribute != null">component_attribute = #{componentAttribute},</if>
+            <if test="componentQty != null">component_qty = #{componentQty},</if>
+            <if test="fixedLossQty != null">fixed_loss_qty = #{fixedLossQty},</if>
+            <if test="changeLossRate != null">change_loss_rate = #{changeLossRate},</if>
+            <if test="length != null">length = #{length},</if>
+            <if test="width != null">width = #{width},</if>
+            <if test="supplyType != null">supply_type = #{supplyType},</if>
+            <if test="isVirtual != null">is_virtual = #{isVirtual},</if>
+            <if test="mrpExpandFlag != null">mrp_expand_flag = #{mrpExpandFlag},</if>
+            <if test="sourceSystem != null">source_system = #{sourceSystem},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = SYSDATE()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteBomItemByIds" parameterType="Long">
+        DELETE FROM bom_item WHERE id IN
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBomItemByVersionIds" parameterType="Long">
+        DELETE FROM bom_item WHERE bom_version_id IN
+        <foreach collection="array" item="versionId" open="(" separator="," close=")">
+            #{versionId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBomItemByMasterIds" parameterType="Long">
+        DELETE FROM bom_item WHERE bom_version_id IN (
+            SELECT id FROM bom_version WHERE bom_master_id IN
+            <foreach collection="array" item="masterId" open="(" separator="," close=")">
+                #{masterId}
+            </foreach>
+        )
+    </delete>
+
+</mapper>

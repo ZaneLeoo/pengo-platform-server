@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.base.mapper.MaterialMapper">
+
+    <resultMap id="MaterialResult" type="Material">
+        <id property="materialId" column="material_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="materialType" column="material_type"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="spec" column="spec"/>
+        <result property="model" column="model"/>
+        <result property="unit" column="unit"/>
+        <result property="drawingNo" column="drawing_no"/>
+        <result property="materialVersion" column="material_version"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="lotControlFlag" column="lot_control_flag"/>
+        <result property="snControlFlag" column="sn_control_flag"/>
+        <result property="inspectionFlag" column="inspection_flag"/>
+        <result property="safeStock" column="safe_stock"/>
+        <result property="defaultBomId" column="default_bom_id"/>
+        <result property="defaultRouteId" column="default_route_id"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectMaterialVo">
+        select m.material_id, m.material_code, m.material_name, m.material_type, m.category_id,
+               c.category_name, m.spec, m.model, m.unit, m.drawing_no, m.material_version,
+               m.source_type, m.lot_control_flag, m.sn_control_flag, m.inspection_flag, m.safe_stock,
+               m.default_bom_id, m.default_route_id, m.status, m.create_by, m.create_time,
+               m.update_by, m.update_time, m.remark
+        from material m
+        left join material_category c on c.category_id = m.category_id
+    </sql>
+
+    <select id="selectMaterialList" parameterType="Material" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        <where>
+            <if test="materialCode != null and materialCode != ''">
+                AND m.material_code like concat('%', #{materialCode}, '%')
+            </if>
+            <if test="materialName != null and materialName != ''">
+                AND m.material_name like concat('%', #{materialName}, '%')
+            </if>
+            <if test="materialType != null and materialType != ''">
+                AND m.material_type = #{materialType}
+            </if>
+            <if test="categoryId != null">
+                AND (m.category_id = #{categoryId} or m.category_id in (
+                    select category_id from material_category where find_in_set(#{categoryId}, ancestors)
+                ))
+            </if>
+            <if test="sourceType != null and sourceType != ''">
+                AND m.source_type = #{sourceType}
+            </if>
+            <if test="status != null and status != ''">
+                AND m.status = #{status}
+            </if>
+        </where>
+        order by m.material_id desc
+    </select>
+
+    <select id="selectMaterialById" parameterType="Long" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        where m.material_id = #{materialId}
+    </select>
+
+    <select id="selectMaterialByCode" parameterType="String" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        where m.material_code = #{materialCode}
+        limit 1
+    </select>
+
+    <select id="countMaterialByCategoryId" parameterType="Long" resultType="int">
+        select count(1) from material where category_id = #{categoryId}
+    </select>
+
+    <insert id="insertMaterial" parameterType="Material" useGeneratedKeys="true" keyProperty="materialId">
+        insert into material(
+            material_code, material_name, material_type, category_id, spec, model, unit, drawing_no,
+            material_version, source_type, lot_control_flag, sn_control_flag, inspection_flag,
+            safe_stock, default_bom_id, default_route_id, status, remark, create_by, create_time
+        ) values (
+            #{materialCode}, #{materialName}, #{materialType}, #{categoryId}, #{spec}, #{model}, #{unit}, #{drawingNo},
+            #{materialVersion}, #{sourceType}, #{lotControlFlag}, #{snControlFlag}, #{inspectionFlag},
+            #{safeStock}, #{defaultBomId}, #{defaultRouteId}, #{status}, #{remark}, #{createBy}, sysdate()
+        )
+    </insert>
+
+    <update id="updateMaterial" parameterType="Material">
+        update material
+        <set>
+            <if test="materialCode != null and materialCode != ''">material_code = #{materialCode},</if>
+            <if test="materialName != null and materialName != ''">material_name = #{materialName},</if>
+            <if test="materialType != null and materialType != ''">material_type = #{materialType},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="spec != null">spec = #{spec},</if>
+            <if test="model != null">model = #{model},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="drawingNo != null">drawing_no = #{drawingNo},</if>
+            <if test="materialVersion != null">material_version = #{materialVersion},</if>
+            <if test="sourceType != null and sourceType != ''">source_type = #{sourceType},</if>
+            <if test="lotControlFlag != null and lotControlFlag != ''">lot_control_flag = #{lotControlFlag},</if>
+            <if test="snControlFlag != null and snControlFlag != ''">sn_control_flag = #{snControlFlag},</if>
+            <if test="inspectionFlag != null and inspectionFlag != ''">inspection_flag = #{inspectionFlag},</if>
+            <if test="safeStock != null">safe_stock = #{safeStock},</if>
+            <if test="defaultBomId != null">default_bom_id = #{defaultBomId},</if>
+            <if test="defaultRouteId != null">default_route_id = #{defaultRouteId},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            update_time = sysdate()
+        </set>
+        where material_id = #{materialId}
+    </update>
+
+    <delete id="deleteMaterialByIds" parameterType="Long">
+        delete from material where material_id in
+        <foreach collection="array" item="materialId" open="(" separator="," close=")">
+            #{materialId}
+        </foreach>
+    </delete>
+
+</mapper>

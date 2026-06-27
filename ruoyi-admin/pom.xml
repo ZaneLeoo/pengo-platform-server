@@ -60,6 +60,12 @@
             <artifactId>ruoyi-agent</artifactId>
         </dependency>
 
+        <!-- MES制造执行模块-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-mes</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

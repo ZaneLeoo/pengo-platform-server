@@ -253,4 +253,15 @@ public class SysUserController extends BaseController
     {
         return success(deptService.selectDeptTreeList(dept));
     }
+
+    /**
+     * 懒加载部门树（根据父节点ID获取子部门）
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/deptTree/lazy/{parentId}")
+    public AjaxResult deptTreeLazy(@PathVariable Long parentId)
+    {
+        List<SysDept> depts = deptService.selectDeptTreeLazyByParentId(parentId);
+        return success(depts);
+    }
 }

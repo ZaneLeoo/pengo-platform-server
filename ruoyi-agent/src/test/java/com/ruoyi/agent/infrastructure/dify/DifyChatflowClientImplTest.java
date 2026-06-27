@@ -61,6 +61,29 @@ class DifyChatflowClientImplTest
     }
 
     @Test
+    void shouldRecordEveryRawSseLineBeforeParsing() throws Exception
+    {
+        server.createContext("/chat-messages", exchange -> {
+            byte[] response = ("data: {\"event\":\"message\",\"answer\":\"你好\"}\n\n"
+                + "event: ping\n\n").getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, response.length);
+            exchange.getResponseBody().write(response);
+            exchange.close();
+        });
+        List<String> rawLines = new ArrayList<>();
+        DifyRawEventLogger rawEventLogger = new DifyRawEventLogger(rawLines::add, () -> true);
+        DifyChatflowClientImpl client = new DifyChatflowClientImpl(
+            java.net.http.HttpClient.newHttpClient(), new DifySseParser(), rawEventLogger);
+        List<DifyStreamEvent> events = new ArrayList<>();
+
+        client.stream(new DifyClientSettings(baseUrl, "secret"),
+            new DifyChatRequest("你好", Map.of(), null, "ruoyi-user-1"), events::add);
+
+        assertEquals(List.of("data: {\"event\":\"message\",\"answer\":\"你好\"}", "event: ping"), rawLines);
+        assertEquals(1, events.size());
+    }
+
+    @Test
     void shouldCallStopEndpoint() throws Exception
     {
         server.createContext("/chat-messages/task-1/stop", exchange -> {

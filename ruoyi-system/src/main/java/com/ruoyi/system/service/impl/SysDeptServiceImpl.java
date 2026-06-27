@@ -308,6 +308,30 @@ public class SysDeptServiceImpl implements ISysDeptService
     }
 
     /**
+     * 根据父部门ID懒加载子部门列表（含hasChildren标记）
+     *
+     * @param parentId 父部门ID
+     * @return 子部门列表
+     */
+    @Override
+    public List<SysDept> selectChildrenDeptListByParentId(Long parentId)
+    {
+        return deptMapper.selectChildrenDeptListByParentId(parentId);
+    }
+
+    /**
+     * 根据父部门ID懒加载部门树（含hasChildren标记）
+     *
+     * @param parentId 父部门ID
+     * @return 子部门列表
+     */
+    @Override
+    public List<SysDept> selectDeptTreeLazyByParentId(Long parentId)
+    {
+        return deptMapper.selectDeptTreeLazyByParentId(parentId);
+    }
+
+    /**
      * 删除部门管理信息
      * 
      * @param deptId 部门ID

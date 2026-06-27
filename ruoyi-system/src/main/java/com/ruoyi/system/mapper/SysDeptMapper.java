@@ -116,6 +116,22 @@ public interface SysDeptMapper
     public void updateDeptSort(SysDept dept);
 
     /**
+     * 根据父部门ID查询直接子部门（含hasChildren标记，用于懒加载）
+     *
+     * @param parentId 父部门ID
+     * @return 子部门列表
+     */
+    public List<SysDept> selectChildrenDeptListByParentId(Long parentId);
+
+    /**
+     * 根据父部门ID查询直接子部门（含hasChildren标记，用于下拉树懒加载）
+     *
+     * @param parentId 父部门ID
+     * @return 子部门列表
+     */
+    public List<SysDept> selectDeptTreeLazyByParentId(Long parentId);
+
+    /**
      * 删除部门管理信息
      * 
      * @param deptId 部门ID

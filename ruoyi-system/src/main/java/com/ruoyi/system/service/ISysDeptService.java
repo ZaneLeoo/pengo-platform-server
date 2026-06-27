@@ -123,6 +123,22 @@ public interface ISysDeptService
     public void updateDeptSort(String[] deptIds, String[] orderNums);
 
     /**
+     * 根据父部门ID懒加载子部门列表（含hasChildren标记）
+     *
+     * @param parentId 父部门ID
+     * @return 子部门列表
+     */
+    public List<SysDept> selectChildrenDeptListByParentId(Long parentId);
+
+    /**
+     * 根据父部门ID懒加载部门树（含hasChildren标记）
+     *
+     * @param parentId 父部门ID
+     * @return 子部门列表
+     */
+    public List<SysDept> selectDeptTreeLazyByParentId(Long parentId);
+
+    /**
      * 删除部门管理信息
      * 
      * @param deptId 部门ID

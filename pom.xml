@@ -185,6 +185,13 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- MES制造执行模块 -->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-mes</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -196,6 +203,7 @@
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
         <module>ruoyi-agent</module>
+        <module>ruoyi-mes</module>
     </modules>
     <packaging>pom</packaging>
 

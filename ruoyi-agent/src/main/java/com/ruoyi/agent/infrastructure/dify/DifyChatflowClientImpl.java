@@ -25,16 +25,25 @@ public class DifyChatflowClientImpl implements DifyChatflowClient
     private static final Duration REQUEST_TIMEOUT = Duration.ofMinutes(10);
     private final HttpClient httpClient;
     private final DifySseParser parser;
+    private final DifyRawEventLogger rawEventLogger;
 
     public DifyChatflowClientImpl()
     {
-        this(HttpClient.newBuilder().connectTimeout(CONNECT_TIMEOUT).build(), new DifySseParser());
+        this(HttpClient.newBuilder().connectTimeout(CONNECT_TIMEOUT).build(), new DifySseParser(),
+            new DifyRawEventLogger());
     }
 
     DifyChatflowClientImpl(HttpClient httpClient, DifySseParser parser)
     {
+        this(httpClient, parser, new DifyRawEventLogger());
+    }
+
+    /** 创建具有可替换基础设施依赖的 Dify 客户端。 */
+    DifyChatflowClientImpl(HttpClient httpClient, DifySseParser parser, DifyRawEventLogger rawEventLogger)
+    {
         this.httpClient = httpClient;
         this.parser = parser;
+        this.rawEventLogger = rawEventLogger;
     }
 
     /** 发送流式消息，并逐行解析 Dify SSE。 */
@@ -60,6 +69,7 @@ public class DifyChatflowClientImpl implements DifyChatflowClient
             String line;
             while ((line = reader.readLine()) != null)
             {
+                rawEventLogger.log(line);
                 parser.parseDataLine(line).ifPresent(consumer);
             }
         }

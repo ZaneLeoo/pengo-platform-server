@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.base.mapper.BomMasterMapper">
+    <resultMap id="BomMasterResult" type="BomMaster">
+        <id property="id" column="id"/>
+        <result property="bomCode" column="bom_code"/>
+        <result property="parentItemId" column="parent_item_id"/>
+        <result property="parentItemCode" column="parent_item_code"/>
+        <result property="parentItemName" column="parent_item_name"/>
+        <result property="parentItemSpec" column="parent_item_spec"/>
+        <result property="parentItemUnit" column="parent_item_unit"/>
+        <result property="bomType" column="bom_type"/>
+        <result property="status" column="status"/>
+        <result property="sourceSystem" column="source_system"/>
+        <result property="sourceId" column="source_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    <sql id="selectBomMasterVo">
+        select id,bom_code,parent_item_id,parent_item_code,parent_item_name,parent_item_spec,parent_item_unit,bom_type,status,source_system,source_id,create_by,create_time,update_by,update_time,remark from bom_master
+    </sql>
+    <select id="selectBomMasterList" parameterType="BomMaster" resultMap="BomMasterResult">
+        <include refid="selectBomMasterVo"/>
+        <where>
+            <if test="bomCode != null and bomCode != ''">and bom_code like concat('%', #{bomCode}, '%')</if>
+            <if test="parentItemCode != null and parentItemCode != ''">and parent_item_code like concat('%', #{parentItemCode}, '%')</if>
+            <if test="parentItemName != null and parentItemName != ''">and parent_item_name like concat('%', #{parentItemName}, '%')</if>
+            <if test="bomType != null and bomType != ''">and bom_type = #{bomType}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+    <select id="selectBomMasterById" parameterType="Long" resultMap="BomMasterResult">
+        <include refid="selectBomMasterVo"/> where id = #{id}
+    </select>
+    <select id="selectBomMasterByCode" parameterType="String" resultMap="BomMasterResult">
+        <include refid="selectBomMasterVo"/> where bom_code = #{bomCode} limit 1
+    </select>
+    <insert id="insertBomMaster" parameterType="BomMaster">
+        insert into bom_master(bom_code,parent_item_id,parent_item_code,parent_item_name,parent_item_spec,parent_item_unit,bom_type,status,source_system,source_id,remark,create_by,create_time)
+        values(#{bomCode},#{parentItemId},#{parentItemCode},#{parentItemName},#{parentItemSpec},#{parentItemUnit},#{bomType},#{status},#{sourceSystem},#{sourceId},#{remark},#{createBy},sysdate())
+    </insert>
+    <update id="updateBomMaster" parameterType="BomMaster">
+        update bom_master
+        <set>
+            <if test="bomCode != null and bomCode != ''">bom_code=#{bomCode},</if>
+            <if test="parentItemId != null">parent_item_id=#{parentItemId},</if>
+            <if test="parentItemCode != null and parentItemCode != ''">parent_item_code=#{parentItemCode},</if>
+            <if test="parentItemName != null and parentItemName != ''">parent_item_name=#{parentItemName},</if>
+            <if test="parentItemSpec != null">parent_item_spec=#{parentItemSpec},</if>
+            <if test="parentItemUnit != null">parent_item_unit=#{parentItemUnit},</if>
+            <if test="bomType != null and bomType != ''">bom_type=#{bomType},</if>
+            <if test="status != null and status != ''">status=#{status},</if>
+            <if test="sourceSystem != null">source_system=#{sourceSystem},</if>
+            <if test="sourceId != null">source_id=#{sourceId},</if>
+            <if test="remark != null">remark=#{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by=#{updateBy},</if>
+            update_time=sysdate()
+        </set>
+        where id=#{id}
+    </update>
+    <delete id="deleteBomMasterByIds" parameterType="String">
+        delete from bom_master where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>
