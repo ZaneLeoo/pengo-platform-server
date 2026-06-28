@@ -50,7 +50,7 @@ SET @b_shade_master_id = LAST_INSERT_ID();
 
 -- 3.2 插入BOM Version
 INSERT INTO bom_version (bom_master_id, version_code, version_name, version_desc, base_qty, usage_type, effective_date, expire_date, status, approve_status, default_flag, create_by, create_time, remark)
-VALUES (@b_shade_master_id, 'V1.0', '台灯灯罩组件标准版', '初代设计生效标准BOM', 1.000000, 'GENERAL', '2026-06-26', '2036-06-26', 'ENABLED', 'APPROVED', 1, 'admin', SYSDATE(), '系统自动生成');
+VALUES (@b_shade_master_id, 'V1.0', '台灯灯罩组件标准版', '初代设计生效标准BOM', 1.000000, 'GENERAL', '2026-06-26', '2036-06-26', 'EFFECTIVE', 'APPROVED', 1, 'admin', SYSDATE(), '系统自动生成');
 SET @b_shade_version_id = LAST_INSERT_ID();
 
 -- 更新默认BOM ID关联回物料表
@@ -72,7 +72,7 @@ SET @b_lamp_master_id = LAST_INSERT_ID();
 
 -- 4.2 插入BOM Version
 INSERT INTO bom_version (bom_master_id, version_code, version_name, version_desc, base_qty, usage_type, effective_date, expire_date, status, approve_status, default_flag, create_by, create_time, remark)
-VALUES (@b_lamp_master_id, 'V1.0', '智能台灯标准量产版', '标准智能台灯多级结构BOM', 1.000000, 'GENERAL', '2026-06-26', '2036-06-26', 'ENABLED', 'APPROVED', 1, 'admin', SYSDATE(), '系统自动生成');
+VALUES (@b_lamp_master_id, 'V1.0', '智能台灯标准量产版', '标准智能台灯多级结构BOM', 1.000000, 'GENERAL', '2026-06-26', '2036-06-26', 'EFFECTIVE', 'APPROVED', 1, 'admin', SYSDATE(), '系统自动生成');
 SET @b_lamp_version_id = LAST_INSERT_ID();
 
 -- 更新默认BOM ID关联回物料表

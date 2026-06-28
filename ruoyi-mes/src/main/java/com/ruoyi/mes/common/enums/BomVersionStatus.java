@@ -7,9 +7,8 @@ package com.ruoyi.mes.common.enums;
  */
 public enum BomVersionStatus {
     DRAFT("DRAFT", "草稿"),
-    ENABLED("ENABLED", "启用"),
-    DISABLED("DISABLED", "停用"),
-    ARCHIVED("ARCHIVED", "归档");
+    EFFECTIVE("EFFECTIVE", "生效"),
+    FROZEN("FROZEN", "冻结");
 
     private final String code;
     private final String label;

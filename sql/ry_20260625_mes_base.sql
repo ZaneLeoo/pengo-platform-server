@@ -130,7 +130,7 @@ create table bom_version (
     effective_date             date           default null             comment '生效日期',
     expire_date                date           default null             comment '失效日期',
     status                     varchar(32)    not null default 'DRAFT' comment '版本状态',
-    approve_status             varchar(32)    not null default 'UNAPPROVED' comment '审批状态',
+    approve_status             varchar(32)    not null default 'PENDING' comment '审批状态',
     default_flag               tinyint        not null default 0       comment '是否默认版本',
     default_routing_code       varchar(64)    default null             comment '默认工艺路线编码',
     default_routing_name       varchar(255)   default null             comment '默认工艺路线名称',
@@ -183,9 +183,14 @@ create table bom_item (
 ) engine=innodb comment='BOM子件明细表';
 
 insert into sys_menu(menu_name, parent_id, order_num, path, component, query, route_name, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, remark)
-select 'BOM管理', @mes_base_id, 3, 'bom', 'mes/base/bom/index', '', '', 1, 0, 'C', '0', '0', 'mes:bomMaster:list', 'tree', 'admin', sysdate(), 'BOM管理菜单'
+select 'BOM管理', @mes_base_id, 3, 'bom', 'mes/base/bom/index', '', 'BomMaster', 1, 0, 'C', '0', '0', 'mes:bomMaster:list', 'tree', 'admin', sysdate(), 'BOM管理菜单'
 where not exists (select 1 from sys_menu where perms = 'mes:bomMaster:list');
 select @bom_menu_id := menu_id from sys_menu where perms = 'mes:bomMaster:list' limit 1;
+
+insert into sys_menu(menu_name, parent_id, order_num, path, component, query, route_name, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, remark)
+select 'BOM详情', @mes_base_id, 4, 'bom/:id', 'mes/base/bom/detail', '', 'BomDetail', 1, 0, 'C', '1', '0', 'mes:bomMaster:detail', '#', 'admin', sysdate(), 'BOM详情隐藏路由'
+where not exists (select 1 from sys_menu where route_name = 'BomDetail');
+
 insert into sys_menu(menu_name, parent_id, order_num, path, component, query, route_name, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, remark)
 select 'BOM查询', @bom_menu_id, 1, '', '', '', '', 1, 0, 'F', '0', '0', 'mes:bomMaster:query', '#', 'admin', sysdate(), '' where not exists (select 1 from sys_menu where perms = 'mes:bomMaster:query');
 insert into sys_menu(menu_name, parent_id, order_num, path, component, query, route_name, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, remark)

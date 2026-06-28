@@ -7,6 +7,8 @@ import com.ruoyi.mes.base.domain.BomVersion;
 import com.ruoyi.mes.base.mapper.BomItemMapper;
 import com.ruoyi.mes.base.mapper.BomVersionMapper;
 import com.ruoyi.mes.base.service.IBomVersionService;
+import com.ruoyi.mes.common.enums.BomApproveStatus;
+import com.ruoyi.mes.common.enums.BomVersionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,8 +83,39 @@ public class BomVersionServiceImpl implements IBomVersionService {
      */
     private void resetOtherDefaults(BomVersion bomVersion) {
         if (Integer.valueOf(1).equals(bomVersion.getDefaultFlag())) {
+            BomVersion versionForDefault = resolveVersionForDefault(bomVersion);
+            if (!BomVersionStatus.EFFECTIVE.getCode().equals(versionForDefault.getStatus())
+                    || !BomApproveStatus.APPROVED.getCode().equals(versionForDefault.getApproveStatus())) {
+                throw new ServiceException("只有已审核且生效的BOM版本才能设为默认版本");
+            }
             bomVersionMapper.resetDefaultFlag(bomVersion.getBomMasterId(), bomVersion.getId());
         }
+    }
+
+    /**
+     * 获取用于默认版本校验的完整版本信息。
+     *
+     * @param bomVersion BOM版本
+     * @return 完整BOM版本
+     */
+    private BomVersion resolveVersionForDefault(BomVersion bomVersion) {
+        if (bomVersion.getId() == null) {
+            return bomVersion;
+        }
+        BomVersion current = bomVersionMapper.selectBomVersionById(bomVersion.getId());
+        if (current == null) {
+            throw new ServiceException("未找到BOM版本信息");
+        }
+        if (bomVersion.getBomMasterId() == null) {
+            bomVersion.setBomMasterId(current.getBomMasterId());
+        }
+        if (bomVersion.getStatus() != null) {
+            current.setStatus(bomVersion.getStatus());
+        }
+        if (bomVersion.getApproveStatus() != null) {
+            current.setApproveStatus(bomVersion.getApproveStatus());
+        }
+        return current;
     }
 
     @Override
@@ -114,7 +147,7 @@ public class BomVersionServiceImpl implements IBomVersionService {
         targetVersion.setEffectiveDate(sourceVersion.getEffectiveDate());
         targetVersion.setExpireDate(sourceVersion.getExpireDate());
         targetVersion.setStatus("DRAFT"); // 复制出的版本状态默认设为草稿
-        targetVersion.setApproveStatus("UNAPPROVED"); // 审批状态默认为未审核
+        targetVersion.setApproveStatus(BomApproveStatus.PENDING.getCode()); // 审批状态默认为待审核
         targetVersion.setDefaultFlag(0); // 复制出的版本默认非默认版本
         targetVersion.setSourceSystem("MANUAL");
         targetVersion.setCreateBy(createBy);
