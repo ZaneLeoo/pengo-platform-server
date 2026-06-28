@@ -2,6 +2,7 @@ package com.ruoyi.mes.base.service;
 
 import com.ruoyi.mes.base.domain.BomCheckResult;
 import com.ruoyi.mes.base.domain.BomVersion;
+import com.ruoyi.mes.base.domain.BomVersionCompareResult;
 import java.util.List;
 
 /**
@@ -17,6 +18,7 @@ public interface IBomVersionService {
     int updateBomVersion(BomVersion bomVersion);
     int deleteBomVersionByIds(Long[] ids);
     BomCheckResult checkBomVersion(Long id);
+    BomVersionCompareResult compareBomVersion(Long baseVersionId, Long targetVersionId);
 
     /**
      * 复制BOM版本及子件明细。

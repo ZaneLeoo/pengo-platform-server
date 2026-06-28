@@ -6,6 +6,8 @@ import com.ruoyi.mes.base.domain.BomCheckIssue;
 import com.ruoyi.mes.base.domain.BomCheckResult;
 import com.ruoyi.mes.base.domain.BomItem;
 import com.ruoyi.mes.base.domain.BomVersion;
+import com.ruoyi.mes.base.domain.BomVersionCompareItem;
+import com.ruoyi.mes.base.domain.BomVersionCompareResult;
 import com.ruoyi.mes.base.mapper.BomItemMapper;
 import com.ruoyi.mes.base.mapper.BomVersionMapper;
 import com.ruoyi.mes.base.service.IBomVersionService;
@@ -16,8 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * BOM版本业务处理。
@@ -100,6 +104,48 @@ public class BomVersionServiceImpl implements IBomVersionService {
         return result;
     }
 
+    @Override
+    public BomVersionCompareResult compareBomVersion(Long baseVersionId, Long targetVersionId) {
+        if (Objects.equals(baseVersionId, targetVersionId)) {
+            throw new ServiceException("请选择两个不同的BOM版本进行对比");
+        }
+
+        BomVersion baseVersion = bomVersionMapper.selectBomVersionById(baseVersionId);
+        BomVersion targetVersion = bomVersionMapper.selectBomVersionById(targetVersionId);
+        if (baseVersion == null || targetVersion == null) {
+            throw new ServiceException("未找到BOM版本信息");
+        }
+        if (!Objects.equals(baseVersion.getBomMasterId(), targetVersion.getBomMasterId())) {
+            throw new ServiceException("只能对比同一BOM主表下的版本");
+        }
+
+        BomVersionCompareResult result = new BomVersionCompareResult();
+        result.setBaseVersionId(baseVersion.getId());
+        result.setBaseVersionCode(baseVersion.getVersionCode());
+        result.setTargetVersionId(targetVersion.getId());
+        result.setTargetVersionCode(targetVersion.getVersionCode());
+
+        Map<String, BomItem> baseItems = loadVersionItems(baseVersionId);
+        Map<String, BomItem> targetItems = loadVersionItems(targetVersionId);
+
+        for (Map.Entry<String, BomItem> entry : targetItems.entrySet()) {
+            BomItem targetItem = entry.getValue();
+            BomItem baseItem = baseItems.get(entry.getKey());
+            if (baseItem == null) {
+                result.addDifference(buildCompareItem("ADD", targetItem, "component", "子件", null, targetItem.getComponentItemCode()));
+            } else {
+                appendChangedFields(result, baseItem, targetItem);
+            }
+        }
+        for (Map.Entry<String, BomItem> entry : baseItems.entrySet()) {
+            if (!targetItems.containsKey(entry.getKey())) {
+                BomItem baseItem = entry.getValue();
+                result.addDifference(buildCompareItem("DELETE", baseItem, "component", "子件", baseItem.getComponentItemCode(), null));
+            }
+        }
+        return result;
+    }
+
     /**
      * 校验生效失效日期。
      *
@@ -133,6 +179,65 @@ public class BomVersionServiceImpl implements IBomVersionService {
                 componentMap.put(duplicateKey, item);
             }
         }
+    }
+
+    private Map<String, BomItem> loadVersionItems(Long bomVersionId) {
+        BomItem query = new BomItem();
+        query.setBomVersionId(bomVersionId);
+        List<BomItem> items = bomItemMapper.selectBomItemList(query);
+        Map<String, BomItem> itemMap = new LinkedHashMap<>();
+        if (items == null) {
+            return itemMap;
+        }
+        for (BomItem item : items) {
+            itemMap.put(compareKey(item), item);
+        }
+        return itemMap;
+    }
+
+    private String compareKey(BomItem item) {
+        return (item.getParentItemCode() == null ? "" : item.getParentItemCode())
+                + "|" + item.getComponentItemCode();
+    }
+
+    private void appendChangedFields(BomVersionCompareResult result, BomItem baseItem, BomItem targetItem) {
+        addChangeIfNeeded(result, baseItem, targetItem, "componentQty", "用量",
+                valueOf(baseItem.getComponentQty()), valueOf(targetItem.getComponentQty()));
+        addChangeIfNeeded(result, baseItem, targetItem, "fixedLossQty", "固定损耗",
+                valueOf(baseItem.getFixedLossQty()), valueOf(targetItem.getFixedLossQty()));
+        addChangeIfNeeded(result, baseItem, targetItem, "changeLossRate", "变动损耗率",
+                valueOf(baseItem.getChangeLossRate()), valueOf(targetItem.getChangeLossRate()));
+        addChangeIfNeeded(result, baseItem, targetItem, "supplyType", "发料方式",
+                baseItem.getSupplyType(), targetItem.getSupplyType());
+        addChangeIfNeeded(result, baseItem, targetItem, "isVirtual", "虚拟件",
+                valueOf(baseItem.getIsVirtual()), valueOf(targetItem.getIsVirtual()));
+        addChangeIfNeeded(result, baseItem, targetItem, "mrpExpandFlag", "MRP展开",
+                valueOf(baseItem.getMrpExpandFlag()), valueOf(targetItem.getMrpExpandFlag()));
+    }
+
+    private void addChangeIfNeeded(BomVersionCompareResult result, BomItem baseItem, BomItem targetItem,
+                                   String fieldName, String fieldLabel, String baseValue, String targetValue) {
+        if (!Objects.equals(baseValue, targetValue)) {
+            result.addDifference(buildCompareItem("CHANGE", targetItem, fieldName, fieldLabel, baseValue, targetValue));
+        }
+    }
+
+    private BomVersionCompareItem buildCompareItem(String diffType, BomItem item, String fieldName,
+                                                   String fieldLabel, String baseValue, String targetValue) {
+        BomVersionCompareItem compareItem = new BomVersionCompareItem();
+        compareItem.setDiffType(diffType);
+        compareItem.setParentItemCode(item.getParentItemCode());
+        compareItem.setComponentItemCode(item.getComponentItemCode());
+        compareItem.setComponentItemName(item.getComponentItemName());
+        compareItem.setFieldName(fieldName);
+        compareItem.setFieldLabel(fieldLabel);
+        compareItem.setBaseValue(baseValue);
+        compareItem.setTargetValue(targetValue);
+        return compareItem;
+    }
+
+    private String valueOf(Object value) {
+        return value == null ? null : String.valueOf(value);
     }
 
     private BomCheckIssue buildItemIssue(String level, String code, String message, BomItem item) {

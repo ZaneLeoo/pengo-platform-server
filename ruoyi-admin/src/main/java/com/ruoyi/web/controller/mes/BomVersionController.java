@@ -52,6 +52,15 @@ public class BomVersionController extends BaseController {
     }
 
     /**
+     * BOM版本差异对比。
+     */
+    @PreAuthorize("@ss.hasPermi('mes:bomVersion:query')")
+    @GetMapping("/compare")
+    public AjaxResult compare(@RequestParam Long baseVersionId, @RequestParam Long targetVersionId) {
+        return success(bomVersionService.compareBomVersion(baseVersionId, targetVersionId));
+    }
+
+    /**
      * 新增BOM版本。
      */
     @PreAuthorize("@ss.hasPermi('mes:bomVersion:add')")
