@@ -2,6 +2,8 @@ package com.ruoyi.mes.base.domain;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -53,6 +55,7 @@ public class BomItem extends BaseEntity {
     public void setLineNo(Integer lineNo) { this.lineNo = lineNo; }
     public String getParentItemCode() { return parentItemCode; }
     public void setParentItemCode(String parentItemCode) { this.parentItemCode = parentItemCode; }
+    @NotNull(message = "子件物料不能为空")
     public Long getComponentItemId() { return componentItemId; }
     public void setComponentItemId(Long componentItemId) { this.componentItemId = componentItemId; }
     @NotBlank(message = "子件编码不能为空")
@@ -68,10 +71,14 @@ public class BomItem extends BaseEntity {
     public String getComponentAttribute() { return componentAttribute; }
     public void setComponentAttribute(String componentAttribute) { this.componentAttribute = componentAttribute; }
     @NotNull(message = "子件用量不能为空")
+    @DecimalMin(value = "0.000001", message = "子件用量必须大于0")
     public BigDecimal getComponentQty() { return componentQty; }
     public void setComponentQty(BigDecimal componentQty) { this.componentQty = componentQty; }
+    @DecimalMin(value = "0", message = "固定损耗不能小于0")
     public BigDecimal getFixedLossQty() { return fixedLossQty; }
     public void setFixedLossQty(BigDecimal fixedLossQty) { this.fixedLossQty = fixedLossQty; }
+    @DecimalMin(value = "0", message = "变动损耗率不能小于0")
+    @DecimalMax(value = "100", message = "变动损耗率不能大于100")
     public BigDecimal getChangeLossRate() { return changeLossRate; }
     public void setChangeLossRate(BigDecimal changeLossRate) { this.changeLossRate = changeLossRate; }
     public BigDecimal getLength() { return length; }
