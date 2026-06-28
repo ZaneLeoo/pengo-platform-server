@@ -2,6 +2,8 @@ package com.ruoyi.mes.base.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.mes.base.domain.BomCheckIssue;
+import com.ruoyi.mes.base.domain.BomCheckResult;
 import com.ruoyi.mes.base.domain.BomItem;
 import com.ruoyi.mes.base.domain.BomVersion;
 import com.ruoyi.mes.base.mapper.BomItemMapper;
@@ -12,7 +14,10 @@ import com.ruoyi.mes.common.enums.BomVersionStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * BOM版本业务处理。
@@ -64,6 +69,37 @@ public class BomVersionServiceImpl implements IBomVersionService {
         return bomVersionMapper.deleteBomVersionByIds(ids);
     }
 
+    @Override
+    public BomCheckResult checkBomVersion(Long id) {
+        BomVersion version = bomVersionMapper.selectBomVersionById(id);
+        if (version == null) {
+            throw new ServiceException("未找到BOM版本信息");
+        }
+
+        BomCheckResult result = new BomCheckResult();
+        result.setBomVersionId(version.getId());
+        result.setVersionCode(version.getVersionCode());
+        result.setStatus(version.getStatus());
+        result.setApproveStatus(version.getApproveStatus());
+
+        BomItem query = new BomItem();
+        query.setBomVersionId(id);
+        List<BomItem> items = bomItemMapper.selectBomItemList(query);
+        if (items == null || items.isEmpty()) {
+            result.addIssue(new BomCheckIssue("ERROR", "NO_ITEMS", "当前版本未维护任何子件，不能投产"));
+        } else {
+            appendItemIssues(result, items);
+        }
+
+        if (BomVersionStatus.DRAFT.getCode().equals(version.getStatus())) {
+            result.addIssue(new BomCheckIssue("INFO", "VERSION_DRAFT", "当前版本仍为草稿，投产前需要先生效"));
+        }
+        if (BomVersionStatus.FROZEN.getCode().equals(version.getStatus())) {
+            result.addIssue(new BomCheckIssue("INFO", "VERSION_FROZEN", "当前版本已冻结，建议复制新版本后再调整"));
+        }
+        return result;
+    }
+
     /**
      * 校验生效失效日期。
      *
@@ -74,6 +110,37 @@ public class BomVersionServiceImpl implements IBomVersionService {
                 && bomVersion.getExpireDate().before(bomVersion.getEffectiveDate())) {
             throw new ServiceException("失效日期不能早于生效日期");
         }
+    }
+
+    private void appendItemIssues(BomCheckResult result, List<BomItem> items) {
+        Map<String, BomItem> componentMap = new HashMap<>();
+        for (BomItem item : items) {
+            if (StringUtils.isEmpty(item.getComponentItemCode()) || StringUtils.isEmpty(item.getComponentItemName())) {
+                result.addIssue(buildItemIssue("ERROR", "MISSING_COMPONENT", "存在未完整维护物料编码或名称的子件", item));
+            }
+            if (item.getComponentQty() == null || BigDecimal.ZERO.compareTo(item.getComponentQty()) >= 0) {
+                result.addIssue(buildItemIssue("ERROR", "INVALID_QTY", "子件用量必须大于0", item));
+            }
+            if (StringUtils.isEmpty(item.getSupplyType())) {
+                result.addIssue(buildItemIssue("ERROR", "MISSING_SUPPLY_TYPE", "子件未维护发料方式", item));
+            }
+
+            String duplicateKey = (item.getParentItemCode() == null ? "" : item.getParentItemCode())
+                    + "|" + item.getComponentItemCode();
+            if (!StringUtils.isEmpty(item.getComponentItemCode()) && componentMap.containsKey(duplicateKey)) {
+                result.addIssue(buildItemIssue("WARN", "DUPLICATE_COMPONENT", "同一父件下存在重复子件，请确认是否需要合并用量", item));
+            } else {
+                componentMap.put(duplicateKey, item);
+            }
+        }
+    }
+
+    private BomCheckIssue buildItemIssue(String level, String code, String message, BomItem item) {
+        BomCheckIssue issue = new BomCheckIssue(level, code, message);
+        issue.setItemId(item.getId());
+        issue.setLineNo(item.getLineNo());
+        issue.setComponentItemCode(item.getComponentItemCode());
+        return issue;
     }
 
     /**

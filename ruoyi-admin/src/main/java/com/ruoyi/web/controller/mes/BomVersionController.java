@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/mes/bomVersion")
+@RequestMapping("/mes/base/bomVersion")
 public class BomVersionController extends BaseController {
     @Autowired
     private IBomVersionService bomVersionService;
@@ -40,6 +40,15 @@ public class BomVersionController extends BaseController {
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(bomVersionService.selectBomVersionById(id));
+    }
+
+    /**
+     * BOM版本完整性检查。
+     */
+    @PreAuthorize("@ss.hasPermi('mes:bomVersion:query')")
+    @GetMapping("/{id}/check")
+    public AjaxResult check(@PathVariable Long id) {
+        return success(bomVersionService.checkBomVersion(id));
     }
 
     /**
@@ -103,4 +112,3 @@ public class BomVersionController extends BaseController {
         return success();
     }
 }
-
