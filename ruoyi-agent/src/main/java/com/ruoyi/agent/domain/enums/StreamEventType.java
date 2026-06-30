@@ -4,7 +4,7 @@ package com.ruoyi.agent.domain.enums;
 public enum StreamEventType
 {
     CONVERSATION("conversation"), MESSAGE("message"), MESSAGE_REPLACE("message_replace"),
-    WORKFLOW("workflow"), NODE("node"), ARTIFACT("artifact"), ERROR("error"), DONE("done");
+    WORKFLOW("workflow"), NODE("node"), ARTIFACT("artifact"), SOURCES("sources"), ERROR("error"), DONE("done");
     private final String code;
     StreamEventType(String code) { this.code = code; }
     /** 返回 SSE event 名称。 */

@@ -6,6 +6,8 @@ import com.ruoyi.agent.application.AgentConversationService;
 import com.ruoyi.agent.application.AgentStreamRegistry;
 import com.ruoyi.agent.application.artifact.AgentArtifact;
 import com.ruoyi.agent.application.artifact.ArtifactExtractor;
+import com.ruoyi.agent.application.source.AgentSource;
+import com.ruoyi.agent.application.source.SourceExtractor;
 import com.ruoyi.agent.application.stream.ReasoningContentFilter;
 import com.ruoyi.agent.application.stream.SafeEventLogFactory;
 import com.ruoyi.agent.application.stream.SafeStreamEventProjector;
@@ -47,13 +49,15 @@ public class AgentChatService
     private final AgentStreamRegistry registry;
     private final Executor executor;
     private final ArtifactExtractor artifactExtractor;
+    private final SourceExtractor sourceExtractor;
     private final SafeEventLogFactory safeEventLogFactory;
     private final SafeStreamEventProjector streamEventProjector;
 
     public AgentChatService(AgentConversationService conversationService, AgentConversationMapper conversationMapper,
         AgentMessageMapper messageMapper, DifyChatflowClient difyClient, ISysConfigService configService,
-        AgentStreamRegistry registry, ArtifactExtractor artifactExtractor, SafeEventLogFactory safeEventLogFactory,
-        SafeStreamEventProjector streamEventProjector, @Qualifier("threadPoolTaskExecutor") Executor executor)
+        AgentStreamRegistry registry, ArtifactExtractor artifactExtractor, SourceExtractor sourceExtractor,
+        SafeEventLogFactory safeEventLogFactory, SafeStreamEventProjector streamEventProjector,
+        @Qualifier("threadPoolTaskExecutor") Executor executor)
     {
         this.conversationService = conversationService;
         this.conversationMapper = conversationMapper;
@@ -62,6 +66,7 @@ public class AgentChatService
         this.configService = configService;
         this.registry = registry;
         this.artifactExtractor = artifactExtractor;
+        this.sourceExtractor = sourceExtractor;
         this.safeEventLogFactory = safeEventLogFactory;
         this.streamEventProjector = streamEventProjector;
         this.executor = executor;
@@ -179,6 +184,12 @@ public class AgentChatService
         else if (type == DifyEventType.MESSAGE_END)
         {
             state.difyMetadata.putAll(event.getMetadata());
+            List<AgentSource> sources = sourceExtractor.extractFromMetadata(event.getMetadata());
+            if (!sources.isEmpty())
+            {
+                state.sources.addAll(sources);
+                send(emitter, StreamEventType.SOURCES, Map.of("sources", sources));
+            }
             state.message.setTokenCount(totalTokens(event.getMetadata()));
         }
     }
@@ -224,7 +235,7 @@ public class AgentChatService
     {
         state.message.setContent(state.answer.toString()); state.message.setEventLog(JSON.toJSONString(state.events));
         Map<String, Object> metadata = new LinkedHashMap<>();
-        metadata.put("artifacts", state.artifacts); metadata.put("dify", state.difyMetadata);
+        metadata.put("artifacts", state.artifacts); metadata.put("sources", state.sources); metadata.put("dify", state.difyMetadata);
         state.message.setMetadata(JSON.toJSONString(metadata));
         state.message.setStatus(status.getCode()); messageMapper.update(state.message);
         state.conversation.setMessageCount((state.conversation.getMessageCount() == null ? 0 : state.conversation.getMessageCount()) + 2);
@@ -288,6 +299,7 @@ public class AgentChatService
         private final AgentConversation conversation; private final AgentMessage message;
         private final StringBuilder answer = new StringBuilder(); private final List<Map<String, Object>> events = new ArrayList<>();
         private final List<AgentArtifact> artifacts = new ArrayList<>();
+        private final List<AgentSource> sources = new ArrayList<>();
         private final Map<String, Object> difyMetadata = new LinkedHashMap<>();
         private final ReasoningContentFilter reasoningFilter = new ReasoningContentFilter();
         private StreamState(AgentConversation conversation, AgentMessage message) { this.conversation = conversation; this.message = message; }
