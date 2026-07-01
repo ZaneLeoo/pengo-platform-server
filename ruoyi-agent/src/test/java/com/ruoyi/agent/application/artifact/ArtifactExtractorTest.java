@@ -72,4 +72,19 @@ class ArtifactExtractorTest
 
         assertEquals(List.of("第一季度", "第二季度"), artifact.getPayload().get("categories"));
     }
+
+    @Test
+    void shouldExtractArtifactsFromDifyToolOutputsKey()
+    {
+        Map<String, Object> chart = Map.of(
+            "type", "chart", "version", "1.0", "title", "季度销售BI柱状图 (测试)",
+            "payload", Map.of("chartType", "bar", "xAxis", List.of("第一季度", "第二季度", "第三季度"),
+                "series", List.of(Map.of("name", "营业额(万)", "data", List.of(128.5, 256.2, 198.4)))));
+
+        List<AgentArtifact> artifacts = extractor.extract(Map.of("outputs", Map.of("outputs", List.of(chart))));
+
+        assertEquals(1, artifacts.size());
+        assertEquals("季度销售BI柱状图 (测试)", artifacts.get(0).getTitle());
+        assertEquals(List.of("第一季度", "第二季度", "第三季度"), artifacts.get(0).getPayload().get("categories"));
+    }
 }

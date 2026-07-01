@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -168,6 +169,11 @@ public class AgentChatService
                 state.artifacts.add(artifact);
                 send(emitter, StreamEventType.ARTIFACT, artifact);
             }
+            List<AgentSource> sources = sourceExtractor.extractFromNodeData(event.getData());
+            if (addSources(state, sources))
+            {
+                send(emitter, StreamEventType.SOURCES, Map.of("sources", sources));
+            }
         }
         else if (type.isWorkflowEvent())
         {
@@ -185,9 +191,8 @@ public class AgentChatService
         {
             state.difyMetadata.putAll(event.getMetadata());
             List<AgentSource> sources = sourceExtractor.extractFromMetadata(event.getMetadata());
-            if (!sources.isEmpty())
+            if (addSources(state, sources))
             {
-                state.sources.addAll(sources);
                 send(emitter, StreamEventType.SOURCES, Map.of("sources", sources));
             }
             state.message.setTokenCount(totalTokens(event.getMetadata()));
@@ -203,6 +208,22 @@ public class AgentChatService
         }
         state.answer.append(text);
         send(emitter, StreamEventType.MESSAGE, Map.of("content", text));
+    }
+
+    /** 合并知识来源，避免同一 Dify 资源在节点和 message_end 中重复落库。 */
+    private boolean addSources(StreamState state, List<AgentSource> sources)
+    {
+        boolean changed = false;
+        for (AgentSource source : sources)
+        {
+            boolean exists = state.sources.stream().anyMatch(item -> Objects.equals(item.getId(), source.getId()));
+            if (!exists)
+            {
+                state.sources.add(source);
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     /** 更新 Dify 标识并登记可停止的 task。 */
