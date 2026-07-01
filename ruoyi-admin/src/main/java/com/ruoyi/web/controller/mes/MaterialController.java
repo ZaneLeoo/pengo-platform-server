@@ -29,7 +29,7 @@ import java.util.List;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/mes/material")
+@RequestMapping("/mes/base/material")
 public class MaterialController extends BaseController {
 
     @Autowired

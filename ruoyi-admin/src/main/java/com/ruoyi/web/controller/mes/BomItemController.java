@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/mes/bomItem")
+@RequestMapping("/mes/base/bomItem")
 public class BomItemController extends BaseController {
     @Autowired
     private IBomItemService bomItemService;
@@ -78,5 +78,28 @@ public class BomItemController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(bomItemService.deleteBomItemByIds(ids));
+    }
+
+    /**
+     * 懒加载 BOM 树形子节点（按父件编码查询）。
+     * parentItemCode 为空/不传时返回顶层子件。
+     */
+    @PreAuthorize("@ss.hasPermi('mes:bomItem:list')")
+    @GetMapping("/children")
+    public AjaxResult children(@RequestParam Long bomVersionId,
+                               @RequestParam(required = false) String parentItemCode) {
+        return success(bomItemService.selectBomItemChildren(bomVersionId,
+            parentItemCode == null || parentItemCode.isBlank() ? null : parentItemCode));
+    }
+
+    /**
+     * 跨BOM懒加载：按子件编码查找其BOM版本下的子件列表。
+     * versionId传入则取指定版本，为空则取默认版本。
+     */
+    @PreAuthorize("@ss.hasPermi('mes:bomItem:list')")
+    @GetMapping("/childrenByComponent")
+    public AjaxResult childrenByComponent(@RequestParam String componentItemCode,
+                                          @RequestParam(required = false) Long bomVersionId) {
+        return success(bomItemService.selectBomItemByComponentCode(componentItemCode, bomVersionId));
     }
 }

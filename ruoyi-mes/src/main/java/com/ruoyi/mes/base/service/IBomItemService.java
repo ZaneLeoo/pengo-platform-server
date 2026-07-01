@@ -15,4 +15,8 @@ public interface IBomItemService {
     int insertBomItem(BomItem bomItem);
     int updateBomItem(BomItem bomItem);
     int deleteBomItemByIds(Long[] ids);
+    /** 按父件编码懒加载子件列表（树形结构） */
+    List<BomItem> selectBomItemChildren(Long bomVersionId, String parentItemCode);
+    /** 跨BOM懒加载：按子件编码和版本查子件，versionId为空则取默认版本 */
+    List<BomItem> selectBomItemByComponentCode(String componentItemCode, Long bomVersionId);
 }

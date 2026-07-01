@@ -28,7 +28,7 @@ import java.util.List;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/mes/materialCategory")
+@RequestMapping("/mes/base/materialCategory")
 public class MaterialCategoryController extends BaseController {
 
     @Autowired
@@ -106,7 +106,7 @@ public class MaterialCategoryController extends BaseController {
     /**
      * 查询物料分类树选项。
      */
-    @GetMapping("/treeselect")
+    @GetMapping("/treeSelect")
     public AjaxResult treeselect(MaterialCategory category) {
         return success(categoryService.selectCategoryList(category));
     }

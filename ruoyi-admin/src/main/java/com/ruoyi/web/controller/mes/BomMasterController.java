@@ -21,7 +21,7 @@ import java.util.List;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/mes/bomMaster")
+@RequestMapping("/mes/base/bomMaster")
 public class BomMasterController extends BaseController {
     @Autowired
     private IBomMasterService bomMasterService;

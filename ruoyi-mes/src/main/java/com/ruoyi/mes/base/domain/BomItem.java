@@ -45,6 +45,9 @@ public class BomItem extends BaseEntity {
     /** 是否有下级BOM（自制/委外件且已创建BOM主数据）—— 仅查询填充，不入库 */
     private Boolean hasChildBom;
 
+    /** 子件引用的BOM版本ID，为空则取默认版本 */
+    private Long componentBomVersionId;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     @NotNull(message = "BOM版本ID不能为空")
@@ -99,4 +102,7 @@ public class BomItem extends BaseEntity {
 
     public Boolean getHasChildBom() { return hasChildBom; }
     public void setHasChildBom(Boolean hasChildBom) { this.hasChildBom = hasChildBom; }
+
+    public Long getComponentBomVersionId() { return componentBomVersionId; }
+    public void setComponentBomVersionId(Long componentBomVersionId) { this.componentBomVersionId = componentBomVersionId; }
 }

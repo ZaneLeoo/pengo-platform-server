@@ -54,6 +54,16 @@ public class BomItemServiceImpl implements IBomItemService {
         return bomItemMapper.deleteBomItemByIds(ids);
     }
 
+    @Override
+    public List<BomItem> selectBomItemChildren(Long bomVersionId, String parentItemCode) {
+        return bomItemMapper.selectBomItemChildren(bomVersionId, parentItemCode);
+    }
+
+    @Override
+    public List<BomItem> selectBomItemByComponentCode(String componentItemCode, Long bomVersionId) {
+        return bomItemMapper.selectBomItemByComponentCode(componentItemCode, bomVersionId);
+    }
+
     /**
      * 准备默认值与派生字段。
      *

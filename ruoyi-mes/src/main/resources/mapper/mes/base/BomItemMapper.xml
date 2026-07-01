@@ -24,7 +24,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="isVirtual"         column="is_virtual"         />
         <result property="mrpExpandFlag"     column="mrp_expand_flag"    />
         <result property="sourceSystem"      column="source_system"      />
-        <result property="hasChildBom"       column="has_child_bom"      />
+        <result property="hasChildBom"            column="has_child_bom"            />
+        <result property="componentBomVersionId" column="component_bom_version_id" />
         <result property="createBy"          column="create_by"          />
         <result property="createTime"        column="create_time"        />
         <result property="updateBy"          column="update_by"          />
@@ -40,7 +41,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                bi.length, bi.width, bi.supply_type, bi.is_virtual, bi.mrp_expand_flag,
                bi.source_system,
                bi.create_by, bi.create_time, bi.update_by, bi.update_time, bi.remark,
+               bi.component_bom_version_id,
                (SELECT CASE
+                   WHEN bi.component_bom_version_id IS NOT NULL THEN 1
                    WHEN EXISTS (SELECT 1 FROM bom_master bm WHERE bm.parent_item_code = bi.component_item_code)
                     AND (SELECT m.source_type FROM material m WHERE m.material_code = bi.component_item_code LIMIT 1) IN ('MAKE', 'OUTSOURCE')
                    THEN 1 ELSE 0 END) AS has_child_bom
@@ -76,6 +79,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             component_item_spec, component_item_unit, component_attribute,
             component_qty, fixed_loss_qty, change_loss_rate,
             length, width, supply_type, is_virtual, mrp_expand_flag, source_system,
+            component_bom_version_id,
             create_by, create_time
         ) VALUES (
             #{bomVersionId}, #{lineNo}, #{parentItemCode},
@@ -83,6 +87,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{componentItemSpec}, #{componentItemUnit}, #{componentAttribute},
             #{componentQty}, #{fixedLossQty}, #{changeLossRate},
             #{length}, #{width}, #{supplyType}, #{isVirtual}, #{mrpExpandFlag}, #{sourceSystem},
+            #{componentBomVersionId},
             #{createBy}, SYSDATE()
         )
     </insert>
@@ -107,6 +112,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="isVirtual != null">is_virtual = #{isVirtual},</if>
             <if test="mrpExpandFlag != null">mrp_expand_flag = #{mrpExpandFlag},</if>
             <if test="sourceSystem != null">source_system = #{sourceSystem},</if>
+            <if test="componentBomVersionId != null">component_bom_version_id = #{componentBomVersionId},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             update_time = SYSDATE()
@@ -136,5 +142,38 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </foreach>
         )
     </delete>
+
+    <select id="selectBomItemChildren" resultMap="BomItemResult">
+        <include refid="selectBomItemVo"/>
+        WHERE bi.bom_version_id = #{bomVersionId}
+        <choose>
+            <when test="parentItemCode == null or parentItemCode == ''">
+                AND (bi.parent_item_code IS NULL OR bi.parent_item_code = '')
+            </when>
+            <otherwise>
+                AND bi.parent_item_code = #{parentItemCode}
+            </otherwise>
+        </choose>
+        ORDER BY bi.line_no ASC, bi.id ASC
+    </select>
+
+    <select id="selectBomItemByComponentCode" resultMap="BomItemResult">
+        <include refid="selectBomItemVo"/>
+        WHERE bi.bom_version_id = (
+            <choose>
+                <when test="bomVersionId != null">
+                    #{bomVersionId}
+                </when>
+                <otherwise>
+                    SELECT bv.id FROM bom_version bv
+                    JOIN bom_master bm ON bv.bom_master_id = bm.id
+                    WHERE bm.parent_item_code = #{componentItemCode}
+                      AND bv.default_flag = 1
+                    LIMIT 1
+                </otherwise>
+            </choose>
+        )
+        ORDER BY bi.line_no ASC, bi.id ASC
+    </select>
 
 </mapper>
