@@ -31,7 +31,11 @@ where not exists (select 1 from agent_dify_app_config where app_code = 'BOM_OCR'
 -- 如需在 RuoYi 主前端维护该配置，可执行以下菜单初始化；若只走独立 agent-ui，可暂不执行菜单部分。
 insert into sys_menu(menu_name, parent_id, order_num, path, component, is_frame, is_cache, menu_type, visible, status, perms, icon, create_by, create_time, remark)
 select 'Dify应用配置',
-       coalesce((select menu_id from (select menu_id from sys_menu where menu_name = '智能助手' and menu_type = 'M' limit 1) t), 0),
+       coalesce(
+           (select menu_id from (select menu_id from sys_menu where menu_name = 'AI' and menu_type = 'M' limit 1) t),
+           (select menu_id from (select menu_id from sys_menu where menu_name = '智能助手' and menu_type = 'M' limit 1) t),
+           0
+       ),
        10, 'dify-app', 'agent/difyApp/index', 1, 0, 'C', '0', '0', 'agent:difyApp:list', 'system', 'admin', sysdate(), 'Dify多应用配置菜单'
 where not exists (select 1 from sys_menu where perms = 'agent:difyApp:list');
 
