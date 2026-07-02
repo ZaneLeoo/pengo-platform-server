@@ -3,6 +3,7 @@ package com.ruoyi.web.service.agent;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.agent.api.AgentChatRequest;
 import com.ruoyi.agent.application.AgentConversationService;
+import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.application.AgentStreamRegistry;
 import com.ruoyi.agent.application.artifact.AgentArtifact;
 import com.ruoyi.agent.application.artifact.ArtifactExtractor;
@@ -14,6 +15,7 @@ import com.ruoyi.agent.application.stream.SafeStreamEventProjector;
 import com.ruoyi.agent.domain.AgentConversation;
 import com.ruoyi.agent.domain.AgentMessage;
 import com.ruoyi.agent.domain.enums.AgentConfigKey;
+import com.ruoyi.agent.domain.enums.DifyAppCode;
 import com.ruoyi.agent.domain.enums.DifyEventType;
 import com.ruoyi.agent.domain.enums.MessageRole;
 import com.ruoyi.agent.domain.enums.MessageStatus;
@@ -46,6 +48,7 @@ public class AgentChatService
     private final AgentConversationMapper conversationMapper;
     private final AgentMessageMapper messageMapper;
     private final DifyChatflowClient difyClient;
+    private final DifyAppConfigService difyAppConfigService;
     private final ISysConfigService configService;
     private final AgentStreamRegistry registry;
     private final Executor executor;
@@ -55,15 +58,16 @@ public class AgentChatService
     private final SafeStreamEventProjector streamEventProjector;
 
     public AgentChatService(AgentConversationService conversationService, AgentConversationMapper conversationMapper,
-        AgentMessageMapper messageMapper, DifyChatflowClient difyClient, ISysConfigService configService,
-        AgentStreamRegistry registry, ArtifactExtractor artifactExtractor, SourceExtractor sourceExtractor,
-        SafeEventLogFactory safeEventLogFactory, SafeStreamEventProjector streamEventProjector,
-        @Qualifier("threadPoolTaskExecutor") Executor executor)
+        AgentMessageMapper messageMapper, DifyChatflowClient difyClient, DifyAppConfigService difyAppConfigService,
+        ISysConfigService configService, AgentStreamRegistry registry, ArtifactExtractor artifactExtractor,
+        SourceExtractor sourceExtractor, SafeEventLogFactory safeEventLogFactory,
+        SafeStreamEventProjector streamEventProjector, @Qualifier("threadPoolTaskExecutor") Executor executor)
     {
         this.conversationService = conversationService;
         this.conversationMapper = conversationMapper;
         this.messageMapper = messageMapper;
         this.difyClient = difyClient;
+        this.difyAppConfigService = difyAppConfigService;
         this.configService = configService;
         this.registry = registry;
         this.artifactExtractor = artifactExtractor;
@@ -303,13 +307,21 @@ public class AgentChatService
         catch (IOException e) { throw new ServiceException("客户端连接已断开"); }
     }
 
-    /** 从系统参数读取 Dify 设置并检查密钥。 */
+    /** 优先从多应用配置读取聊天 Dify 设置，未迁移时兼容旧系统参数。 */
     private DifyClientSettings settings()
+    {
+        DifyClientSettings appSettings = difyAppConfigService.findSettings(DifyAppCode.AGENT_CHAT.getCode());
+        return appSettings == null ? legacySettings() : appSettings;
+    }
+
+    /** 从旧系统参数读取 Dify 设置并检查密钥。 */
+    private DifyClientSettings legacySettings()
     {
         String baseUrl = configService.selectConfigByKey(AgentConfigKey.DIFY_API_BASE_URL.getKey());
         String apiKey = configService.selectConfigByKey(AgentConfigKey.DIFY_API_KEY.getKey());
         if (apiKey == null || apiKey.isBlank()) throw new ServiceException("请先配置 Dify API Key");
-        return new DifyClientSettings(baseUrl == null || baseUrl.isBlank() ? "https://api.dify.ai/v1" : baseUrl, apiKey);
+        return new DifyClientSettings(baseUrl == null || baseUrl.isBlank()
+            ? DifyAppConfigService.DEFAULT_API_BASE_URL : baseUrl, apiKey);
     }
 
     /** 为 Dify 构造稳定且不泄露用户名的终端用户标识。 */

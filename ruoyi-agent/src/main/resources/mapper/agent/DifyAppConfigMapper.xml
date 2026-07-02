@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.DifyAppConfigMapper">
+    <resultMap id="DifyAppConfigResult" type="com.ruoyi.agent.domain.DifyAppConfig">
+        <id property="id" column="id"/>
+        <result property="appCode" column="app_code"/>
+        <result property="appName" column="app_name"/>
+        <result property="appType" column="app_type"/>
+        <result property="apiBaseUrl" column="api_base_url"/>
+        <result property="apiKey" column="api_key"/>
+        <result property="enabled" column="enabled"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        select id, app_code, app_name, app_type, api_base_url, api_key, enabled, remark,
+               create_by, create_time, update_by, update_time
+        from agent_dify_app_config
+    </sql>
+
+    <select id="selectDifyAppConfigList" resultMap="DifyAppConfigResult">
+        <include refid="columns"/>
+        <where>
+            <if test="appCode != null and appCode != ''">and app_code like concat('%', #{appCode}, '%')</if>
+            <if test="appName != null and appName != ''">and app_name like concat('%', #{appName}, '%')</if>
+            <if test="appType != null and appType != ''">and app_type = #{appType}</if>
+            <if test="enabled != null and enabled != ''">and enabled = #{enabled}</if>
+        </where>
+        order by id asc
+    </select>
+
+    <select id="selectDifyAppConfigById" resultMap="DifyAppConfigResult">
+        <include refid="columns"/> where id = #{id}
+    </select>
+
+    <select id="selectDifyAppConfigByCode" resultMap="DifyAppConfigResult">
+        <include refid="columns"/> where app_code = #{appCode} limit 1
+    </select>
+
+    <insert id="insertDifyAppConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into agent_dify_app_config(app_code, app_name, app_type, api_base_url, api_key, enabled,
+                                          remark, create_by, create_time)
+        values(#{appCode}, #{appName}, #{appType}, #{apiBaseUrl}, #{apiKey}, #{enabled},
+               #{remark}, #{createBy}, sysdate())
+    </insert>
+
+    <update id="updateDifyAppConfig">
+        update agent_dify_app_config
+        set app_code = #{appCode},
+            app_name = #{appName},
+            app_type = #{appType},
+            api_base_url = #{apiBaseUrl},
+            api_key = #{apiKey},
+            enabled = #{enabled},
+            remark = #{remark},
+            update_by = #{updateBy},
+            update_time = sysdate()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDifyAppConfigByIds">
+        delete from agent_dify_app_config where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
