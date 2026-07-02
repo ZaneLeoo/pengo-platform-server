@@ -29,6 +29,9 @@ public class BomImportDraftItem
     /** 单位。 */
     private String unit;
 
+    /** 子件类型/属性。 */
+    private String itemType;
+
     /** 单件重量，仅作参考。 */
     private BigDecimal unitWeight;
 
@@ -85,6 +88,9 @@ public class BomImportDraftItem
 
     public String getUnit() { return unit; }
     public void setUnit(String unit) { this.unit = unit; }
+
+    public String getItemType() { return itemType; }
+    public void setItemType(String itemType) { this.itemType = itemType; }
 
     public BigDecimal getUnitWeight() { return unitWeight; }
     public void setUnitWeight(BigDecimal unitWeight) { this.unitWeight = unitWeight; }

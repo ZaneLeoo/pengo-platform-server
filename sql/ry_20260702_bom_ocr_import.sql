@@ -43,6 +43,7 @@ create table bom_import_item (
     quantity                   decimal(18,6)   default null            comment '子件数量候选',
     spec                       varchar(1000)   default null            comment '规格型号/材料/标准号',
     unit                       varchar(64)     default null            comment '单位',
+    item_type                  varchar(64)     default null            comment '子件类型/属性',
     unit_weight                decimal(18,6)   default null            comment '单件重量',
     total_weight               decimal(18,6)   default null            comment '总重量',
     remark                     varchar(500)    default null            comment '备注',

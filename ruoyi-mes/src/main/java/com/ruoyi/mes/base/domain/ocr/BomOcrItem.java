@@ -28,6 +28,10 @@ public class BomOcrItem
     /** 单位；图纸没有时为空，后端从物料主数据或默认值补齐。 */
     private String unit;
 
+    /** 子件类型/属性，例如成品、半成品、自制件、外购件。 */
+    @JsonAlias({"itemType", "type", "componentType", "componentAttribute", "itemAttribute"})
+    private String itemType;
+
     /** 单件重量，仅作参考。 */
     private BigDecimal unitWeight;
 
@@ -63,6 +67,9 @@ public class BomOcrItem
 
     public String getUnit() { return unit; }
     public void setUnit(String unit) { this.unit = unit; }
+
+    public String getItemType() { return itemType; }
+    public void setItemType(String itemType) { this.itemType = itemType; }
 
     public BigDecimal getUnitWeight() { return unitWeight; }
     public void setUnitWeight(BigDecimal unitWeight) { this.unitWeight = unitWeight; }

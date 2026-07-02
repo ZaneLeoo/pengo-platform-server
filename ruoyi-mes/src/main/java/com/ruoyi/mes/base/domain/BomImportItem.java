@@ -35,6 +35,9 @@ public class BomImportItem extends BaseEntity
     /** 单位。 */
     private String unit;
 
+    /** 子件类型/属性，例如成品、半成品、自制件、外购件。 */
+    private String itemType;
+
     /** 单件重量，仅作参考。 */
     private BigDecimal unitWeight;
 
@@ -94,6 +97,9 @@ public class BomImportItem extends BaseEntity
 
     public String getUnit() { return unit; }
     public void setUnit(String unit) { this.unit = unit; }
+
+    public String getItemType() { return itemType; }
+    public void setItemType(String itemType) { this.itemType = itemType; }
 
     public BigDecimal getUnitWeight() { return unitWeight; }
     public void setUnitWeight(BigDecimal unitWeight) { this.unitWeight = unitWeight; }

@@ -262,6 +262,7 @@ public class BomImportServiceImpl implements IBomImportService
         item.setQuantity(source.getQuantity());
         item.setSpec(source.getSpec());
         item.setUnit(source.getUnit());
+        item.setItemType(source.getItemType());
         item.setUnitWeight(source.getUnitWeight());
         item.setTotalWeight(source.getTotalWeight());
         item.setRemark(source.getRemark());
@@ -285,6 +286,7 @@ public class BomImportServiceImpl implements IBomImportService
         item.setQuantity(source.getQuantity());
         item.setSpec(source.getSpec());
         item.setUnit(source.getUnit());
+        item.setItemType(source.getItemType());
         item.setUnitWeight(source.getUnitWeight());
         item.setTotalWeight(source.getTotalWeight());
         item.setRemark(source.getRemark());
@@ -344,6 +346,7 @@ public class BomImportServiceImpl implements IBomImportService
         item.setQuantity(source.getQuantity());
         item.setSpec(source.getSpec());
         item.setUnit(source.getUnit());
+        item.setItemType(source.getItemType());
         item.setUnitWeight(source.getUnitWeight());
         item.setTotalWeight(source.getTotalWeight());
         item.setRemark(source.getRemark());
@@ -374,6 +377,7 @@ public class BomImportServiceImpl implements IBomImportService
             item.setQuantity(draftItem.getQuantity());
             item.setSpec(draftItem.getSpec());
             item.setUnit(draftItem.getUnit());
+            item.setItemType(draftItem.getItemType());
             item.setUnitWeight(draftItem.getUnitWeight());
             item.setTotalWeight(draftItem.getTotalWeight());
             item.setRemark(draftItem.getRemark());

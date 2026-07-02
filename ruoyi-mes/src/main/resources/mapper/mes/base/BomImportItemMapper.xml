@@ -11,6 +11,7 @@
         <result property="quantity" column="quantity"/>
         <result property="spec" column="spec"/>
         <result property="unit" column="unit"/>
+        <result property="itemType" column="item_type"/>
         <result property="unitWeight" column="unit_weight"/>
         <result property="totalWeight" column="total_weight"/>
         <result property="remark" column="remark"/>
@@ -29,7 +30,7 @@
     </resultMap>
 
     <sql id="selectBomImportItemVo">
-        select id,import_id,line_no,component_code_candidate,drawing_no,item_name,quantity,spec,unit,unit_weight,total_weight,remark,raw_text,confidence,matched_material_id,matched_material_code,matched_material_name,match_status,risk_level,issue_message,create_by,create_time,update_by,update_time from bom_import_item
+        select id,import_id,line_no,component_code_candidate,drawing_no,item_name,quantity,spec,unit,item_type,unit_weight,total_weight,remark,raw_text,confidence,matched_material_id,matched_material_code,matched_material_name,match_status,risk_level,issue_message,create_by,create_time,update_by,update_time from bom_import_item
     </sql>
 
     <select id="selectBomImportItemList" parameterType="BomImportItem" resultMap="BomImportItemResult">
@@ -42,8 +43,8 @@
     </select>
 
     <insert id="insertBomImportItem" parameterType="BomImportItem" useGeneratedKeys="true" keyProperty="id">
-        insert into bom_import_item(import_id,line_no,component_code_candidate,drawing_no,item_name,quantity,spec,unit,unit_weight,total_weight,remark,raw_text,confidence,matched_material_id,matched_material_code,matched_material_name,match_status,risk_level,issue_message,create_by,create_time)
-        values(#{importId},#{lineNo},#{componentCodeCandidate},#{drawingNo},#{itemName},#{quantity},#{spec},#{unit},#{unitWeight},#{totalWeight},#{remark},#{rawText},#{confidence},#{matchedMaterialId},#{matchedMaterialCode},#{matchedMaterialName},#{matchStatus},#{riskLevel},#{issueMessage},#{createBy},sysdate())
+        insert into bom_import_item(import_id,line_no,component_code_candidate,drawing_no,item_name,quantity,spec,unit,item_type,unit_weight,total_weight,remark,raw_text,confidence,matched_material_id,matched_material_code,matched_material_name,match_status,risk_level,issue_message,create_by,create_time)
+        values(#{importId},#{lineNo},#{componentCodeCandidate},#{drawingNo},#{itemName},#{quantity},#{spec},#{unit},#{itemType},#{unitWeight},#{totalWeight},#{remark},#{rawText},#{confidence},#{matchedMaterialId},#{matchedMaterialCode},#{matchedMaterialName},#{matchStatus},#{riskLevel},#{issueMessage},#{createBy},sysdate())
     </insert>
 
     <delete id="deleteBomImportItemByImportIds" parameterType="String">
