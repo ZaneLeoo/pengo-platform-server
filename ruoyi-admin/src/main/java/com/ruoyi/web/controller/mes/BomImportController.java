@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.mes.base.domain.BomImportTask;
+import com.ruoyi.mes.base.domain.dto.BomImportApplyRequest;
 import com.ruoyi.mes.base.domain.dto.BomImportCreateRequest;
 import com.ruoyi.mes.base.domain.dto.BomImportDraft;
 import com.ruoyi.mes.base.service.IBomImportService;
@@ -88,6 +89,15 @@ public class BomImportController extends BaseController
     public AjaxResult validate(@PathVariable Long id)
     {
         return success(bomImportService.validateDraft(id, getUsername()));
+    }
+
+    /** 将 BOM OCR 导入草稿应用到指定 BOM 版本。 */
+    @PreAuthorize("@ss.hasPermi('mes:bomItem:add')")
+    @Log(title = "BOM OCR导入正式BOM", businessType = BusinessType.INSERT)
+    @PostMapping("/{id}/import")
+    public AjaxResult importToBomVersion(@PathVariable Long id, @RequestBody BomImportApplyRequest request)
+    {
+        return success(bomImportService.importToBomVersion(id, request.getBomVersionId(), getUsername()));
     }
 
     /** 删除 BOM OCR 导入任务。 */

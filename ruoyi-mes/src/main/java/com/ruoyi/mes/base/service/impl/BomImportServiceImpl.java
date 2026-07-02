@@ -4,8 +4,11 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.mes.base.domain.BomItem;
 import com.ruoyi.mes.base.domain.BomImportItem;
 import com.ruoyi.mes.base.domain.BomImportTask;
+import com.ruoyi.mes.base.domain.Material;
+import com.ruoyi.mes.base.domain.dto.BomImportApplyResult;
 import com.ruoyi.mes.base.domain.dto.BomImportCreateRequest;
 import com.ruoyi.mes.base.domain.dto.BomImportDraft;
 import com.ruoyi.mes.base.domain.dto.BomImportDraftItem;
@@ -15,11 +18,16 @@ import com.ruoyi.mes.base.domain.ocr.BomOcrItem;
 import com.ruoyi.mes.base.domain.ocr.BomOcrResult;
 import com.ruoyi.mes.base.mapper.BomImportItemMapper;
 import com.ruoyi.mes.base.mapper.BomImportTaskMapper;
+import com.ruoyi.mes.base.mapper.MaterialMapper;
+import com.ruoyi.mes.base.service.IBomItemService;
 import com.ruoyi.mes.base.service.IBomImportService;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +39,7 @@ public class BomImportServiceImpl implements IBomImportService
     private static final String STATUS_PROCESSING = "processing";
     private static final String STATUS_RECOGNIZED = "recognized";
     private static final String STATUS_VALIDATED = "validated";
+    private static final String STATUS_IMPORTED = "imported";
     private static final String STATUS_FAILED = "failed";
     private static final String RISK_OK = "ok";
     private static final String RISK_WARNING = "warning";
@@ -45,6 +54,12 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Autowired
     private BomImportDraftValidator validator;
+
+    @Autowired
+    private IBomItemService bomItemService;
+
+    @Autowired
+    private MaterialMapper materialMapper;
 
     @Override
     public List<BomImportTask> selectBomImportTaskList(BomImportTask task)
@@ -170,10 +185,137 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public BomImportApplyResult importToBomVersion(Long id, Long bomVersionId, String username)
+    {
+        if (bomVersionId == null)
+        {
+            throw new ServiceException("目标 BOM 版本不能为空");
+        }
+        BomImportDraft draft = selectBomImportDraftById(id);
+        BomImportApplyResult result = new BomImportApplyResult();
+        result.setImportId(id);
+        result.setBomVersionId(bomVersionId);
+
+        BomItem query = new BomItem();
+        query.setBomVersionId(bomVersionId);
+        Set<Integer> usedLineNos = new HashSet<>();
+        for (BomItem existing : bomItemService.selectBomItemList(query))
+        {
+            if (existing.getLineNo() != null)
+            {
+                usedLineNos.add(existing.getLineNo());
+            }
+        }
+
+        int importedCount = 0;
+        for (BomImportDraftItem draftItem : safeDraftItems(draft.getItems()))
+        {
+            Material material = resolveMaterial(draftItem);
+            String skipReason = resolveImportSkipReason(draftItem, material);
+            if (StringUtils.isNotBlank(skipReason))
+            {
+                result.addSkippedItem(draftItem.getLineNo(), draftItem.getItemName(), skipReason);
+                continue;
+            }
+
+            BomItem bomItem = toBomItem(bomVersionId, draftItem, material, username);
+            bomItem.setLineNo(resolveLineNo(draftItem.getLineNo(), usedLineNos));
+            bomItemService.insertBomItem(bomItem);
+            usedLineNos.add(bomItem.getLineNo());
+            importedCount++;
+        }
+
+        result.setImportedCount(importedCount);
+        BomImportTask task = new BomImportTask();
+        task.setId(id);
+        task.setStatus(STATUS_IMPORTED);
+        task.setUpdateBy(username);
+        taskMapper.updateBomImportTask(task);
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteBomImportTaskByIds(Long[] ids)
     {
         itemMapper.deleteBomImportItemByImportIds(ids);
         return taskMapper.deleteBomImportTaskByIds(ids);
+    }
+
+    private Material resolveMaterial(BomImportDraftItem item)
+    {
+        if (item == null)
+        {
+            return null;
+        }
+        if (StringUtils.isNotBlank(item.getComponentCodeCandidate()))
+        {
+            Material material = materialMapper.selectMaterialByCode(item.getComponentCodeCandidate().trim());
+            if (material != null)
+            {
+                return material;
+            }
+        }
+        if (StringUtils.isNotBlank(item.getDrawingNo()))
+        {
+            Material query = new Material();
+            query.setMaterialCode(item.getDrawingNo().trim());
+            List<Material> list = materialMapper.selectMaterialList(query);
+            if (list != null && !list.isEmpty())
+            {
+                return list.get(0);
+            }
+        }
+        return null;
+    }
+
+    private String resolveImportSkipReason(BomImportDraftItem item, Material material)
+    {
+        if (item == null)
+        {
+            return "明细为空";
+        }
+        if (item.getQuantity() == null || item.getQuantity().compareTo(BigDecimal.ZERO) <= 0)
+        {
+            return "数量为空或小于等于 0";
+        }
+        if (material == null)
+        {
+            return "未匹配到系统物料";
+        }
+        return "";
+    }
+
+    private BomItem toBomItem(Long bomVersionId, BomImportDraftItem source, Material material, String username)
+    {
+        BomItem bomItem = new BomItem();
+        bomItem.setBomVersionId(bomVersionId);
+        bomItem.setComponentItemId(material.getMaterialId());
+        bomItem.setComponentItemCode(material.getMaterialCode());
+        bomItem.setComponentItemName(material.getMaterialName());
+        bomItem.setComponentItemSpec(StringUtils.isNotBlank(material.getSpec()) ? material.getSpec() : source.getSpec());
+        bomItem.setComponentItemUnit(StringUtils.isNotBlank(material.getUnit()) ? material.getUnit() : source.getUnit());
+        bomItem.setComponentAttribute(source.getItemType());
+        bomItem.setComponentQty(source.getQuantity());
+        bomItem.setFixedLossQty(BigDecimal.ZERO);
+        bomItem.setChangeLossRate(BigDecimal.ZERO);
+        bomItem.setSupplyType("PUSH");
+        bomItem.setIsVirtual(0);
+        bomItem.setMrpExpandFlag(1);
+        bomItem.setSourceSystem("OCR");
+        bomItem.setCreateBy(username);
+        bomItem.setRemark(source.getRemark());
+        return bomItem;
+    }
+
+    private Integer resolveLineNo(Integer preferredLineNo, Set<Integer> usedLineNos)
+    {
+        int lineNo = preferredLineNo == null || preferredLineNo <= 0 ? 10 : preferredLineNo;
+        while (usedLineNos.contains(lineNo))
+        {
+            lineNo += 10;
+        }
+        return lineNo;
     }
 
     private BomImportTask requireTask(Long id)

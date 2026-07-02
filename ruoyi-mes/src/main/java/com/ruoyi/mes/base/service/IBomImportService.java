@@ -1,6 +1,7 @@
 package com.ruoyi.mes.base.service;
 
 import com.ruoyi.mes.base.domain.BomImportTask;
+import com.ruoyi.mes.base.domain.dto.BomImportApplyResult;
 import com.ruoyi.mes.base.domain.dto.BomImportCreateRequest;
 import com.ruoyi.mes.base.domain.dto.BomImportDraft;
 import com.ruoyi.mes.base.domain.ocr.BomOcrIssue;
@@ -17,5 +18,6 @@ public interface IBomImportService
     void markRecognitionFailed(Long id, String errorMessage, String username);
     BomImportDraft updateDraft(Long id, BomImportDraft draft, String username);
     List<BomOcrIssue> validateDraft(Long id, String username);
+    BomImportApplyResult importToBomVersion(Long id, Long bomVersionId, String username);
     int deleteBomImportTaskByIds(Long[] ids);
 }
