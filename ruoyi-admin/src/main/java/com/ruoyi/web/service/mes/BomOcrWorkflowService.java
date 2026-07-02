@@ -22,6 +22,8 @@ import com.ruoyi.mes.base.service.IBomImportService;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class BomOcrWorkflowService
 {
+    private static final Logger log = LoggerFactory.getLogger(BomOcrWorkflowService.class);
     private static final String DEFAULT_FILE_VARIABLE = "image";
     private static final String DEFAULT_QUERY = "识别这份 BOM 图纸并返回系统约定的 JSON";
 
@@ -66,7 +69,8 @@ public class BomOcrWorkflowService
             DifyFileUploadResult uploadResult = workflowClient.uploadFile(settings, new DifyFileUploadRequest(
                 file.getOriginalFilename(), contentType(file), content, difyUser));
             Map<String, Object> inputs = buildInputs(file, uploadResult, fileVariable, query, inputsJson);
-            DifyWorkflowRunResult runResult = workflowClient.runBlocking(settings,
+            log.debug("BOM OCR Dify workflow inputs: {}", JSON.toJSONString(inputs));
+            DifyWorkflowRunResult runResult = workflowClient.runStreaming(settings,
                 new DifyWorkflowRunRequest(inputs, difyUser));
             requireWorkflowSucceeded(runResult);
             BomOcrResult ocrResult = resultParser.parse(runResult.outputs());
@@ -86,8 +90,8 @@ public class BomOcrWorkflowService
         String query, String inputsJson)
     {
         Map<String, Object> inputs = parseInputs(inputsJson);
-        inputs.put(StringUtils.isBlank(fileVariable) ? DEFAULT_FILE_VARIABLE : fileVariable, List.of(fileObject(file,
-            uploadResult)));
+        inputs.put(StringUtils.isBlank(fileVariable) ? DEFAULT_FILE_VARIABLE : fileVariable, fileObject(file,
+            uploadResult));
         if (StringUtils.isNotBlank(query))
         {
             inputs.put("query", query);

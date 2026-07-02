@@ -16,4 +16,8 @@ public interface DifyWorkflowClient
     /** 以阻塞模式执行默认发布工作流。 */
     DifyWorkflowRunResult runBlocking(DifyClientSettings settings, DifyWorkflowRunRequest request)
         throws IOException, InterruptedException;
+
+    /** 以流式模式执行默认发布工作流，并返回 workflow_finished 的最终结果。 */
+    DifyWorkflowRunResult runStreaming(DifyClientSettings settings, DifyWorkflowRunRequest request)
+        throws IOException, InterruptedException;
 }

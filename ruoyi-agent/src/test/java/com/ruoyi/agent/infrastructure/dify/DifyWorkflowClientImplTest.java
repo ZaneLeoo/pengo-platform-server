@@ -84,4 +84,34 @@ class DifyWorkflowClientImplTest
         assertEquals("succeeded", result.status());
         assertTrue(String.valueOf(result.outputs().get("result")).contains("version"));
     }
+
+    @Test
+    void shouldRunStreamingWorkflowAndUseFinishedOutputs() throws Exception
+    {
+        server.createContext("/workflows/run", exchange -> {
+            assertEquals("Bearer secret", exchange.getRequestHeaders().getFirst("Authorization"));
+            Map<String, Object> body = JSON.parseObject(new String(exchange.getRequestBody().readAllBytes(),
+                StandardCharsets.UTF_8));
+            assertEquals("streaming", body.get("response_mode"));
+            String stream = ""
+                + "data: {\"event\":\"workflow_started\",\"task_id\":\"task-2\",\"workflow_run_id\":\"run-2\"}\n\n"
+                + "data: {\"event\":\"node_finished\",\"task_id\":\"task-2\",\"workflow_run_id\":\"run-2\"}\n\n"
+                + "data: {\"event\":\"workflow_finished\",\"task_id\":\"task-2\",\"workflow_run_id\":\"run-2\","
+                + "\"data\":{\"id\":\"run-2\",\"status\":\"succeeded\",\"outputs\":{\"result\":\"{\\\"version\\\":\\\"1.0\\\"}\"}}}\n\n";
+            byte[] response = stream.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "text/event-stream");
+            exchange.sendResponseHeaders(200, response.length);
+            exchange.getResponseBody().write(response);
+            exchange.close();
+        });
+
+        DifyWorkflowRunResult result = new DifyWorkflowClientImpl().runStreaming(
+            new DifyClientSettings(baseUrl, "secret"), new DifyWorkflowRunRequest(Map.of("query", "识别BOM"),
+                "ruoyi-user-1"));
+
+        assertEquals("task-2", result.taskId());
+        assertEquals("run-2", result.workflowRunId());
+        assertEquals("succeeded", result.status());
+        assertTrue(String.valueOf(result.outputs().get("result")).contains("version"));
+    }
 }

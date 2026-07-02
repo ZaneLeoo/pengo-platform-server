@@ -18,12 +18,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /** 基于 JDK HttpClient 的 Dify 工作流客户端。 */
 @Component
 public class DifyWorkflowClientImpl implements DifyWorkflowClient
 {
+    private static final Logger log = LoggerFactory.getLogger(DifyWorkflowClientImpl.class);
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(15);
     private static final Duration REQUEST_TIMEOUT = Duration.ofMinutes(3);
     private static final String CRLF = "\r\n";
@@ -59,21 +62,96 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient
     public DifyWorkflowRunResult runBlocking(DifyClientSettings settings, DifyWorkflowRunRequest request)
         throws IOException, InterruptedException
     {
+        return runWorkflow(settings, request, "blocking");
+    }
+
+    /** 以流式模式执行默认发布工作流，并返回 workflow_finished 的最终结果。 */
+    @Override
+    public DifyWorkflowRunResult runStreaming(DifyClientSettings settings, DifyWorkflowRunRequest request)
+        throws IOException, InterruptedException
+    {
+        return runWorkflow(settings, request, "streaming");
+    }
+
+    private DifyWorkflowRunResult runWorkflow(DifyClientSettings settings, DifyWorkflowRunRequest request,
+        String responseMode) throws IOException, InterruptedException
+    {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("inputs", request.inputs());
-        body.put("response_mode", "blocking");
+        body.put("response_mode", responseMode);
         body.put("user", request.user());
-        HttpResponse<String> response = httpClient.send(jsonRequest(settings, "/workflows/run", JSON.toJSONString(body)),
+        String requestJson = JSON.toJSONString(body);
+        log.debug("Dify workflow request: {}", requestJson);
+        HttpResponse<String> response = httpClient.send(jsonRequest(settings, "/workflows/run", requestJson),
             HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         requireSuccess(response.statusCode(), response.body());
-        JSONObject root = JSON.parseObject(response.body());
+        log.debug("Dify workflow response: {}", response.body());
+        return "streaming".equals(responseMode) ? parseStreamingResponse(response.body()) : parseBlockingResponse(
+            response.body());
+    }
+
+    private DifyWorkflowRunResult parseBlockingResponse(String body)
+    {
+        JSONObject root = JSON.parseObject(body);
         JSONObject data = root.getJSONObject("data");
         Map<String, Object> outputs = data == null || data.get("outputs") == null
             ? new LinkedHashMap<>() : data.getJSONObject("outputs");
         String status = data == null ? null : data.getString("status");
         String error = data == null ? null : data.getString("error");
         return new DifyWorkflowRunResult(root.getString("task_id"), root.getString("workflow_run_id"), status,
-            outputs, error, response.body());
+            outputs, error, body);
+    }
+
+    private DifyWorkflowRunResult parseStreamingResponse(String body) throws IOException
+    {
+        DifyWorkflowRunResult finished = null;
+        StringBuilder eventData = new StringBuilder();
+        for (String line : body.split("\\R", -1))
+        {
+            if (line.startsWith("data:"))
+            {
+                eventData.append(line.substring(5).trim());
+            }
+            else if (line.isBlank() && eventData.length() > 0)
+            {
+                finished = parseStreamingEvent(eventData.toString(), body, finished);
+                eventData.setLength(0);
+            }
+        }
+        if (eventData.length() > 0)
+        {
+            finished = parseStreamingEvent(eventData.toString(), body, finished);
+        }
+        if (finished == null)
+        {
+            throw new IOException("Dify 流式响应未返回 workflow_finished 事件");
+        }
+        return finished;
+    }
+
+    private DifyWorkflowRunResult parseStreamingEvent(String data, String rawResponse, DifyWorkflowRunResult current)
+    {
+        if (data.isBlank() || "[DONE]".equals(data))
+        {
+            return current;
+        }
+        JSONObject root = JSON.parseObject(data);
+        if (!"workflow_finished".equals(root.getString("event")))
+        {
+            return current;
+        }
+        JSONObject eventData = root.getJSONObject("data");
+        Map<String, Object> outputs = eventData == null || eventData.get("outputs") == null
+            ? new LinkedHashMap<>() : eventData.getJSONObject("outputs");
+        String status = eventData == null ? null : eventData.getString("status");
+        String error = eventData == null ? null : eventData.getString("error");
+        String workflowRunId = root.getString("workflow_run_id");
+        if (workflowRunId == null && eventData != null)
+        {
+            workflowRunId = eventData.getString("id");
+        }
+        return new DifyWorkflowRunResult(root.getString("task_id"), workflowRunId, status, outputs, error,
+            rawResponse);
     }
 
     private HttpRequest uploadRequest(DifyClientSettings settings, DifyFileUploadRequest request, String boundary)
