@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.base.mapper.BomImportItemMapper">
+    <resultMap id="BomImportItemResult" type="BomImportItem">
+        <id property="id" column="id"/>
+        <result property="importId" column="import_id"/>
+        <result property="lineNo" column="line_no"/>
+        <result property="componentCodeCandidate" column="component_code_candidate"/>
+        <result property="drawingNo" column="drawing_no"/>
+        <result property="itemName" column="item_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="spec" column="spec"/>
+        <result property="unit" column="unit"/>
+        <result property="unitWeight" column="unit_weight"/>
+        <result property="totalWeight" column="total_weight"/>
+        <result property="remark" column="remark"/>
+        <result property="rawText" column="raw_text"/>
+        <result property="confidence" column="confidence"/>
+        <result property="matchedMaterialId" column="matched_material_id"/>
+        <result property="matchedMaterialCode" column="matched_material_code"/>
+        <result property="matchedMaterialName" column="matched_material_name"/>
+        <result property="matchStatus" column="match_status"/>
+        <result property="riskLevel" column="risk_level"/>
+        <result property="issueMessage" column="issue_message"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectBomImportItemVo">
+        select id,import_id,line_no,component_code_candidate,drawing_no,item_name,quantity,spec,unit,unit_weight,total_weight,remark,raw_text,confidence,matched_material_id,matched_material_code,matched_material_name,match_status,risk_level,issue_message,create_by,create_time,update_by,update_time from bom_import_item
+    </sql>
+
+    <select id="selectBomImportItemList" parameterType="BomImportItem" resultMap="BomImportItemResult">
+        <include refid="selectBomImportItemVo"/>
+        <where>
+            <if test="importId != null">and import_id = #{importId}</if>
+            <if test="riskLevel != null and riskLevel != ''">and risk_level = #{riskLevel}</if>
+        </where>
+        order by line_no asc, id asc
+    </select>
+
+    <insert id="insertBomImportItem" parameterType="BomImportItem" useGeneratedKeys="true" keyProperty="id">
+        insert into bom_import_item(import_id,line_no,component_code_candidate,drawing_no,item_name,quantity,spec,unit,unit_weight,total_weight,remark,raw_text,confidence,matched_material_id,matched_material_code,matched_material_name,match_status,risk_level,issue_message,create_by,create_time)
+        values(#{importId},#{lineNo},#{componentCodeCandidate},#{drawingNo},#{itemName},#{quantity},#{spec},#{unit},#{unitWeight},#{totalWeight},#{remark},#{rawText},#{confidence},#{matchedMaterialId},#{matchedMaterialCode},#{matchedMaterialName},#{matchStatus},#{riskLevel},#{issueMessage},#{createBy},sysdate())
+    </insert>
+
+    <delete id="deleteBomImportItemByImportIds" parameterType="String">
+        delete from bom_import_item where import_id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

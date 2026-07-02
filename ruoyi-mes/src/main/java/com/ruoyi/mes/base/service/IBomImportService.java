@@ -1,0 +1,18 @@
+package com.ruoyi.mes.base.service;
+
+import com.ruoyi.mes.base.domain.BomImportTask;
+import com.ruoyi.mes.base.domain.dto.BomImportCreateRequest;
+import com.ruoyi.mes.base.domain.dto.BomImportDraft;
+import com.ruoyi.mes.base.domain.ocr.BomOcrIssue;
+import java.util.List;
+
+/** BOM OCR 导入草稿服务。 */
+public interface IBomImportService
+{
+    List<BomImportTask> selectBomImportTaskList(BomImportTask task);
+    BomImportDraft selectBomImportDraftById(Long id);
+    BomImportDraft createDraft(BomImportCreateRequest request, String username);
+    BomImportDraft updateDraft(Long id, BomImportDraft draft, String username);
+    List<BomOcrIssue> validateDraft(Long id, String username);
+    int deleteBomImportTaskByIds(Long[] ids);
+}

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.base.mapper.BomImportTaskMapper">
+    <resultMap id="BomImportTaskResult" type="BomImportTask">
+        <id property="id" column="id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="fileType" column="file_type"/>
+        <result property="status" column="status"/>
+        <result property="title" column="title"/>
+        <result property="parentNameCandidate" column="parent_name_candidate"/>
+        <result property="parentCodeCandidate" column="parent_code_candidate"/>
+        <result property="productModel" column="product_model"/>
+        <result property="drawingNo" column="drawing_no"/>
+        <result property="revision" column="revision"/>
+        <result property="baseQtyCandidate" column="base_qty_candidate"/>
+        <result property="totalRows" column="total_rows"/>
+        <result property="unitWeight" column="unit_weight"/>
+        <result property="rawResultJson" column="raw_result_json"/>
+        <result property="extraFieldsJson" column="extra_fields_json"/>
+        <result property="issuesJson" column="issues_json"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectBomImportTaskVo">
+        select id,file_name,file_url,file_type,status,title,parent_name_candidate,parent_code_candidate,product_model,drawing_no,revision,base_qty_candidate,total_rows,unit_weight,raw_result_json,extra_fields_json,issues_json,error_message,create_by,create_time,update_by,update_time,remark from bom_import_task
+    </sql>
+
+    <select id="selectBomImportTaskList" parameterType="BomImportTask" resultMap="BomImportTaskResult">
+        <include refid="selectBomImportTaskVo"/>
+        <where>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            <if test="fileName != null and fileName != ''">and file_name like concat('%', #{fileName}, '%')</if>
+            <if test="parentCodeCandidate != null and parentCodeCandidate != ''">and parent_code_candidate like concat('%', #{parentCodeCandidate}, '%')</if>
+            <if test="parentNameCandidate != null and parentNameCandidate != ''">and parent_name_candidate like concat('%', #{parentNameCandidate}, '%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectBomImportTaskById" parameterType="Long" resultMap="BomImportTaskResult">
+        <include refid="selectBomImportTaskVo"/> where id = #{id}
+    </select>
+
+    <insert id="insertBomImportTask" parameterType="BomImportTask" useGeneratedKeys="true" keyProperty="id">
+        insert into bom_import_task(file_name,file_url,file_type,status,title,parent_name_candidate,parent_code_candidate,product_model,drawing_no,revision,base_qty_candidate,total_rows,unit_weight,raw_result_json,extra_fields_json,issues_json,error_message,remark,create_by,create_time)
+        values(#{fileName},#{fileUrl},#{fileType},#{status},#{title},#{parentNameCandidate},#{parentCodeCandidate},#{productModel},#{drawingNo},#{revision},#{baseQtyCandidate},#{totalRows},#{unitWeight},#{rawResultJson},#{extraFieldsJson},#{issuesJson},#{errorMessage},#{remark},#{createBy},sysdate())
+    </insert>
+
+    <update id="updateBomImportTask" parameterType="BomImportTask">
+        update bom_import_task
+        <set>
+            <if test="fileName != null">file_name=#{fileName},</if>
+            <if test="fileUrl != null">file_url=#{fileUrl},</if>
+            <if test="fileType != null">file_type=#{fileType},</if>
+            <if test="status != null and status != ''">status=#{status},</if>
+            <if test="title != null">title=#{title},</if>
+            <if test="parentNameCandidate != null">parent_name_candidate=#{parentNameCandidate},</if>
+            <if test="parentCodeCandidate != null">parent_code_candidate=#{parentCodeCandidate},</if>
+            <if test="productModel != null">product_model=#{productModel},</if>
+            <if test="drawingNo != null">drawing_no=#{drawingNo},</if>
+            <if test="revision != null">revision=#{revision},</if>
+            <if test="baseQtyCandidate != null">base_qty_candidate=#{baseQtyCandidate},</if>
+            <if test="totalRows != null">total_rows=#{totalRows},</if>
+            <if test="unitWeight != null">unit_weight=#{unitWeight},</if>
+            <if test="rawResultJson != null">raw_result_json=#{rawResultJson},</if>
+            <if test="extraFieldsJson != null">extra_fields_json=#{extraFieldsJson},</if>
+            <if test="issuesJson != null">issues_json=#{issuesJson},</if>
+            <if test="errorMessage != null">error_message=#{errorMessage},</if>
+            <if test="remark != null">remark=#{remark},</if>
+            <if test="updateBy != null and updateBy != ''">update_by=#{updateBy},</if>
+            update_time=sysdate()
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="deleteBomImportTaskByIds" parameterType="String">
+        delete from bom_import_task where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>
