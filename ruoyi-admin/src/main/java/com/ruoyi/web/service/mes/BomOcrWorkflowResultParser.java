@@ -1,7 +1,6 @@
 package com.ruoyi.web.service.mes;
 
 import com.alibaba.fastjson2.JSON;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mes.base.domain.ocr.BomOcrResult;
@@ -14,13 +13,6 @@ import org.springframework.stereotype.Component;
 public class BomOcrWorkflowResultParser
 {
     private static final List<String> RESULT_KEYS = List.of("result", "json", "output", "text", "answer");
-
-    private final ObjectMapper objectMapper;
-
-    public BomOcrWorkflowResultParser(ObjectMapper objectMapper)
-    {
-        this.objectMapper = objectMapper;
-    }
 
     /** 解析 Dify outputs，兼容字符串 JSON、代码块 JSON 和直接对象输出。 */
     public BomOcrResult parse(Map<String, Object> outputs)
@@ -71,7 +63,7 @@ public class BomOcrWorkflowResultParser
     {
         try
         {
-            BomOcrResult result = objectMapper.readValue(json, BomOcrResult.class);
+            BomOcrResult result = JSON.parseObject(json, BomOcrResult.class);
             if (result.getDocument() == null && (result.getItems() == null || result.getItems().isEmpty()))
             {
                 throw new ServiceException("Dify BOM 结构化结果缺少 document/items");
