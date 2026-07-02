@@ -22,8 +22,10 @@ import com.ruoyi.mes.base.service.IBomImportService;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,18 +42,21 @@ public class BomOcrWorkflowService
     private final IBomImportService bomImportService;
     private final BomOcrWorkflowResultParser resultParser;
     private final ServerConfig serverConfig;
+    private final Executor taskExecutor;
 
     public BomOcrWorkflowService(DifyAppConfigService difyAppConfigService, DifyWorkflowClient workflowClient,
-        IBomImportService bomImportService, BomOcrWorkflowResultParser resultParser, ServerConfig serverConfig)
+        IBomImportService bomImportService, BomOcrWorkflowResultParser resultParser, ServerConfig serverConfig,
+        @Qualifier("threadPoolTaskExecutor") Executor taskExecutor)
     {
         this.difyAppConfigService = difyAppConfigService;
         this.workflowClient = workflowClient;
         this.bomImportService = bomImportService;
         this.resultParser = resultParser;
         this.serverConfig = serverConfig;
+        this.taskExecutor = taskExecutor;
     }
 
-    /** 上传图纸、调用 BOM_OCR 工作流并创建导入草稿。 */
+    /** 创建识别任务并在后台调用 BOM_OCR 工作流。 */
     public BomImportDraft recognize(MultipartFile file, String fileVariable, String query, String inputsJson,
         Long userId, String username)
     {
@@ -61,20 +66,15 @@ public class BomOcrWorkflowService
         }
         try
         {
-            byte[] content = file.getBytes();
+            OcrFile ocrFile = new OcrFile(file.getOriginalFilename(), contentType(file), difyFileType(file),
+                file.getBytes());
             String localFileName = FileUploadUtils.upload(RuoYiConfig.getUploadPath(), file);
             String fileUrl = serverConfig.getUrl() + localFileName;
-            DifyClientSettings settings = difyAppConfigService.requireSettings(DifyAppCode.BOM_OCR.getCode());
-            String difyUser = "ruoyi-user-" + userId;
-            DifyFileUploadResult uploadResult = workflowClient.uploadFile(settings, new DifyFileUploadRequest(
-                file.getOriginalFilename(), contentType(file), content, difyUser));
-            Map<String, Object> inputs = buildInputs(file, uploadResult, fileVariable, query, inputsJson);
-            log.debug("BOM OCR Dify workflow inputs: {}", JSON.toJSONString(inputs));
-            DifyWorkflowRunResult runResult = workflowClient.runStreaming(settings,
-                new DifyWorkflowRunRequest(inputs, difyUser));
-            requireWorkflowSucceeded(runResult);
-            BomOcrResult ocrResult = resultParser.parse(runResult.outputs());
-            return bomImportService.createDraft(createRequest(file, localFileName, fileUrl, ocrResult), username);
+            BomImportCreateRequest request = createRequest(ocrFile, localFileName, fileUrl, null);
+            BomImportDraft draft = bomImportService.createProcessingDraft(request, username);
+            taskExecutor.execute(() -> runRecognition(draft.getId(), ocrFile, localFileName, fileUrl, fileVariable,
+                query, inputsJson, userId, username));
+            return draft;
         }
         catch (ServiceException e)
         {
@@ -82,11 +82,36 @@ public class BomOcrWorkflowService
         }
         catch (Exception e)
         {
-            throw new ServiceException("BOM OCR 识别失败：" + e.getMessage());
+            throw new ServiceException("BOM OCR 识别任务创建失败：" + e.getMessage());
         }
     }
 
-    private Map<String, Object> buildInputs(MultipartFile file, DifyFileUploadResult uploadResult, String fileVariable,
+    private void runRecognition(Long draftId, OcrFile file, String localFileName, String fileUrl, String fileVariable,
+        String query, String inputsJson, Long userId, String username)
+    {
+        try
+        {
+            DifyClientSettings settings = difyAppConfigService.requireSettings(DifyAppCode.BOM_OCR.getCode());
+            String difyUser = "ruoyi-user-" + userId;
+            DifyFileUploadResult uploadResult = workflowClient.uploadFile(settings, new DifyFileUploadRequest(
+                file.originalFilename(), file.contentType(), file.content(), difyUser));
+            Map<String, Object> inputs = buildInputs(file, uploadResult, fileVariable, query, inputsJson);
+            log.debug("BOM OCR Dify workflow inputs: {}", JSON.toJSONString(inputs));
+            DifyWorkflowRunResult runResult = workflowClient.runStreaming(settings,
+                new DifyWorkflowRunRequest(inputs, difyUser));
+            requireWorkflowSucceeded(runResult);
+            BomOcrResult ocrResult = resultParser.parse(runResult.outputs());
+            bomImportService.completeRecognition(draftId, createRequest(file, localFileName, fileUrl, ocrResult),
+                username);
+        }
+        catch (Exception e)
+        {
+            log.warn("BOM OCR recognition task failed, draftId={}", draftId, e);
+            bomImportService.markRecognitionFailed(draftId, "BOM OCR 识别失败：" + e.getMessage(), username);
+        }
+    }
+
+    private Map<String, Object> buildInputs(OcrFile file, DifyFileUploadResult uploadResult, String fileVariable,
         String query, String inputsJson)
     {
         Map<String, Object> inputs = parseInputs(inputsJson);
@@ -119,10 +144,10 @@ public class BomOcrWorkflowService
         }
     }
 
-    private Map<String, Object> fileObject(MultipartFile file, DifyFileUploadResult uploadResult)
+    private Map<String, Object> fileObject(OcrFile file, DifyFileUploadResult uploadResult)
     {
         Map<String, Object> value = new LinkedHashMap<>();
-        value.put("type", difyFileType(file));
+        value.put("type", file.difyFileType());
         value.put("transfer_method", "local_file");
         value.put("upload_file_id", uploadResult.id());
         return value;
@@ -141,13 +166,13 @@ public class BomOcrWorkflowService
         }
     }
 
-    private BomImportCreateRequest createRequest(MultipartFile file, String localFileName, String fileUrl,
+    private BomImportCreateRequest createRequest(OcrFile file, String localFileName, String fileUrl,
         BomOcrResult result)
     {
         BomImportCreateRequest request = new BomImportCreateRequest();
-        request.setFileName(StringUtils.isBlank(file.getOriginalFilename()) ? localFileName : file.getOriginalFilename());
+        request.setFileName(StringUtils.isBlank(file.originalFilename()) ? localFileName : file.originalFilename());
         request.setFileUrl(fileUrl);
-        request.setFileType(difyFileType(file));
+        request.setFileType(file.difyFileType());
         request.setResult(result);
         return request;
     }
@@ -170,4 +195,6 @@ public class BomOcrWorkflowService
     {
         return StringUtils.isBlank(file.getContentType()) ? "application/octet-stream" : file.getContentType();
     }
+
+    private record OcrFile(String originalFilename, String contentType, String difyFileType, byte[] content) { }
 }

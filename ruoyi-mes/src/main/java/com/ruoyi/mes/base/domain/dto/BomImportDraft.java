@@ -24,6 +24,9 @@ public class BomImportDraft
     /** 原始文件类型。 */
     private String fileType;
 
+    /** 识别失败原因。 */
+    private String errorMessage;
+
     /** 图纸标题区识别结果。 */
     private BomOcrDocument document;
 
@@ -53,6 +56,9 @@ public class BomImportDraft
 
     public String getFileType() { return fileType; }
     public void setFileType(String fileType) { this.fileType = fileType; }
+
+    public String getErrorMessage() { return errorMessage; }
+    public void setErrorMessage(String errorMessage) { this.errorMessage = errorMessage; }
 
     public BomOcrDocument getDocument() { return document; }
     public void setDocument(BomOcrDocument document) { this.document = document; }

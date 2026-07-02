@@ -28,8 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class BomImportServiceImpl implements IBomImportService
 {
+    private static final String STATUS_PROCESSING = "processing";
     private static final String STATUS_RECOGNIZED = "recognized";
     private static final String STATUS_VALIDATED = "validated";
+    private static final String STATUS_FAILED = "failed";
     private static final String RISK_OK = "ok";
     private static final String RISK_WARNING = "warning";
     private static final String RISK_ERROR = "error";
@@ -59,6 +61,24 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public BomImportDraft createProcessingDraft(BomImportCreateRequest request, String username)
+    {
+        if (request == null)
+        {
+            throw new ServiceException("识别任务不能为空");
+        }
+        BomImportTask task = new BomImportTask();
+        task.setFileName(request.getFileName());
+        task.setFileUrl(request.getFileUrl());
+        task.setFileType(request.getFileType());
+        task.setStatus(STATUS_PROCESSING);
+        task.setCreateBy(username);
+        taskMapper.insertBomImportTask(task);
+        return selectBomImportDraftById(task.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public BomImportDraft createDraft(BomImportCreateRequest request, String username)
     {
         if (request == null || request.getResult() == null)
@@ -76,6 +96,42 @@ public class BomImportServiceImpl implements IBomImportService
             itemMapper.insertBomImportItem(item);
         }
         return selectBomImportDraftById(task.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BomImportDraft completeRecognition(Long id, BomImportCreateRequest request, String username)
+    {
+        requireTask(id);
+        if (request == null || request.getResult() == null)
+        {
+            throw new ServiceException("识别结果不能为空");
+        }
+        BomOcrResult result = request.getResult();
+        List<BomOcrIssue> issues = mergeIssues(result.getIssues(), validator.validate(result));
+
+        BomImportTask task = toTask(id, request, result, issues, username);
+        taskMapper.updateBomImportTask(task);
+        itemMapper.deleteBomImportItemByImportIds(new Long[] {id});
+        for (BomOcrItem source : safeItems(result.getItems()))
+        {
+            BomImportItem item = toImportItem(id, source, username);
+            itemMapper.insertBomImportItem(item);
+        }
+        return selectBomImportDraftById(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void markRecognitionFailed(Long id, String errorMessage, String username)
+    {
+        requireTask(id);
+        BomImportTask task = new BomImportTask();
+        task.setId(id);
+        task.setStatus(STATUS_FAILED);
+        task.setErrorMessage(StringUtils.isBlank(errorMessage) ? "BOM OCR 识别失败" : errorMessage);
+        task.setUpdateBy(username);
+        taskMapper.updateBomImportTask(task);
     }
 
     @Override
@@ -147,6 +203,22 @@ public class BomImportServiceImpl implements IBomImportService
         task.setRawResultJson(JSON.toJSONString(result));
         task.setIssuesJson(JSON.toJSONString(issues));
         task.setCreateBy(username);
+        return task;
+    }
+
+    private BomImportTask toTask(Long id, BomImportCreateRequest request, BomOcrResult result,
+        List<BomOcrIssue> issues, String username)
+    {
+        BomImportTask task = fillTaskDocument(new BomImportTask(), result.getDocument());
+        task.setId(id);
+        task.setFileName(request.getFileName());
+        task.setFileUrl(request.getFileUrl());
+        task.setFileType(request.getFileType());
+        task.setStatus(STATUS_RECOGNIZED);
+        task.setRawResultJson(JSON.toJSONString(result));
+        task.setIssuesJson(JSON.toJSONString(issues));
+        task.setErrorMessage("");
+        task.setUpdateBy(username);
         return task;
     }
 
@@ -236,6 +308,7 @@ public class BomImportServiceImpl implements IBomImportService
         draft.setFileName(task.getFileName());
         draft.setFileUrl(task.getFileUrl());
         draft.setFileType(task.getFileType());
+        draft.setErrorMessage(task.getErrorMessage());
         draft.setDocument(toDocument(task));
         draft.setItems(items.stream().map(this::toDraftItem).toList());
         draft.setIssues(parseIssues(task.getIssuesJson()));

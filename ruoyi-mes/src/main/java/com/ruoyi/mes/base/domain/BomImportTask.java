@@ -20,7 +20,7 @@ public class BomImportTask extends BaseEntity
     /** 原始文件类型，例如 image、pdf。 */
     private String fileType;
 
-    /** 导入任务状态：draft、recognized、validated、imported、failed。 */
+    /** 导入任务状态：processing、draft、recognized、validated、imported、failed。 */
     private String status;
 
     /** 图纸标题。 */
