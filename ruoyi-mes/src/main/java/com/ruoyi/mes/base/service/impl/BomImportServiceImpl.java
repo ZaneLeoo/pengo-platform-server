@@ -28,6 +28,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,8 @@ public class BomImportServiceImpl implements IBomImportService
     private static final String RISK_WARNING = "warning";
     private static final String RISK_ERROR = "error";
     private static final String MATCH_MISSING = "missing";
+    private static final Pattern TYPE_REMARK_PATTERN = Pattern.compile(
+        "^\\s*类型\\s*[:：]\\s*([^;；]+?)\\s*(?:[;；]\\s*(?:原备注|备注)\\s*[:：]\\s*(.*))?\\s*$");
 
     @Autowired
     private BomImportTaskMapper taskMapper;
@@ -404,10 +408,11 @@ public class BomImportServiceImpl implements IBomImportService
         item.setQuantity(source.getQuantity());
         item.setSpec(source.getSpec());
         item.setUnit(source.getUnit());
-        item.setItemType(source.getItemType());
+        RemarkParts remarkParts = parseTypedRemark(source.getRemark());
+        item.setItemType(resolveItemType(source, remarkParts));
         item.setUnitWeight(source.getUnitWeight());
         item.setTotalWeight(source.getTotalWeight());
-        item.setRemark(source.getRemark());
+        item.setRemark(resolveRemark(source, remarkParts));
         item.setRawText(source.getRawText());
         item.setConfidence(source.getConfidence());
         item.setMatchStatus(MATCH_MISSING);
@@ -415,6 +420,59 @@ public class BomImportServiceImpl implements IBomImportService
         item.setIssueMessage(resolveIssueMessage(source));
         item.setCreateBy(username);
         return item;
+    }
+
+    private String resolveItemType(BomOcrItem source, RemarkParts remarkParts)
+    {
+        if (StringUtils.isNotBlank(source.getItemType()))
+        {
+            return source.getItemType().trim();
+        }
+        return remarkParts.matched ? remarkParts.itemType : source.getItemType();
+    }
+
+    private String resolveRemark(BomOcrItem source, RemarkParts remarkParts)
+    {
+        if (remarkParts.matched)
+        {
+            return remarkParts.remark;
+        }
+        return source.getRemark();
+    }
+
+    private RemarkParts parseTypedRemark(String remark)
+    {
+        if (StringUtils.isBlank(remark))
+        {
+            return RemarkParts.unmatched();
+        }
+        Matcher matcher = TYPE_REMARK_PATTERN.matcher(remark);
+        if (!matcher.matches())
+        {
+            return RemarkParts.unmatched();
+        }
+        String itemType = StringUtils.trimToEmpty(matcher.group(1));
+        String originalRemark = matcher.group(2) == null ? "" : StringUtils.trimToEmpty(matcher.group(2));
+        return new RemarkParts(true, itemType, originalRemark);
+    }
+
+    private static class RemarkParts
+    {
+        private final boolean matched;
+        private final String itemType;
+        private final String remark;
+
+        private RemarkParts(boolean matched, String itemType, String remark)
+        {
+            this.matched = matched;
+            this.itemType = itemType;
+            this.remark = remark;
+        }
+
+        private static RemarkParts unmatched()
+        {
+            return new RemarkParts(false, "", "");
+        }
     }
 
     private BomImportItem toImportItem(Long importId, BomImportDraftItem source, String username)
