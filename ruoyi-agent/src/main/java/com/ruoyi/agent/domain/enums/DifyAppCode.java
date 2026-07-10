@@ -3,8 +3,8 @@ package com.ruoyi.agent.domain.enums;
 /** Dify 应用编码。 */
 public enum DifyAppCode
 {
-    /** 企业智能体聊天应用。 */
-    AGENT_CHAT("AGENT_CHAT"),
+    /** 企业 Agent V2 Supervisor 应用。 */
+    AGENT_SUPERVISOR("AGENT_SUPERVISOR"),
 
     /** BOM 图纸 OCR 识别应用。 */
     BOM_OCR("BOM_OCR");

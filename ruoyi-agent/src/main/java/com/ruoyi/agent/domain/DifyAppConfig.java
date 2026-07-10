@@ -10,7 +10,7 @@ public class DifyAppConfig extends BaseEntity
     /** 配置 ID。 */
     private Long id;
 
-    /** 应用编码，例如 AGENT_CHAT、BOM_OCR。 */
+    /** 应用编码，例如 AGENT_SUPERVISOR、BOM_OCR。 */
     private String appCode;
 
     /** 应用名称。 */

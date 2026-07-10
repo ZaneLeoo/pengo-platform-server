@@ -12,6 +12,7 @@
     </resultMap>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">insert into agent_message(conversation_id,dify_message_id,task_id,workflow_run_id,role,content,event_log,metadata,token_count,status,error_message,create_by,create_time) values(#{conversationId},#{difyMessageId},#{taskId},#{workflowRunId},#{role},#{content},#{eventLog},#{metadata},#{tokenCount},#{status},#{errorMessage},#{createBy},sysdate())</insert>
     <update id="update">update agent_message set dify_message_id=#{difyMessageId},task_id=#{taskId},workflow_run_id=#{workflowRunId},content=#{content},event_log=#{eventLog},metadata=#{metadata},token_count=#{tokenCount},status=#{status},error_message=#{errorMessage} where id=#{id}</update>
+    <select id="selectById" resultMap="MessageResult">select * from agent_message where id=#{id}</select>
     <select id="selectByConversationId" resultMap="MessageResult">select * from agent_message where conversation_id=#{conversationId} order by id</select>
     <delete id="deleteByConversationId">delete from agent_message where conversation_id=#{conversationId}</delete>
 </mapper>

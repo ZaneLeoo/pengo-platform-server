@@ -42,6 +42,7 @@ class AgentConversationServiceTest
     {
         public int insert(AgentMessage value) { return 1; }
         public int update(AgentMessage value) { return 1; }
+        public AgentMessage selectById(Long id) { return null; }
         public List<AgentMessage> selectByConversationId(Long id) { return Collections.emptyList(); }
         public int deleteByConversationId(Long id) { return 0; }
     }

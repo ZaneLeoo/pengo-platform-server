@@ -14,6 +14,12 @@ public enum ChartType
         this.code = code;
     }
 
+    /** 返回图表协议编码。 */
+    public String getCode()
+    {
+        return code;
+    }
+
     /** 判断图表协议值是否受支持。 */
     public static boolean supports(String code)
     {

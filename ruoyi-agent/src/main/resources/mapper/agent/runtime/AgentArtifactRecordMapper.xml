@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.runtime.AgentArtifactRecordMapper">
+    <resultMap id="ArtifactResult" type="com.ruoyi.agent.domain.runtime.AgentArtifactRecord">
+        <id property="id" column="id"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="runId" column="run_id"/>
+        <result property="messageId" column="message_id"/>
+        <result property="datasetId" column="dataset_id"/>
+        <result property="artifactType" column="artifact_type"/>
+        <result property="version" column="version"/>
+        <result property="title" column="title"/>
+        <result property="status" column="status"/>
+        <result property="payloadJson" column="payload_json"/>
+        <result property="fileId" column="file_id"/>
+        <result property="mimeType" column="mime_type"/>
+        <result property="previewUrl" column="preview_url"/>
+        <result property="downloadUrl" column="download_url"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into agent_artifact(conversation_id, run_id, message_id, dataset_id, artifact_type,
+            version, title, status, payload_json, file_id, mime_type, preview_url, download_url,
+            create_by, create_time, update_by, update_time)
+        values(#{conversationId}, #{runId}, #{messageId}, #{datasetId}, #{artifactType}, #{version},
+            #{title}, #{status}, #{payloadJson}, #{fileId}, #{mimeType}, #{previewUrl}, #{downloadUrl},
+            #{createBy}, sysdate(), #{updateBy}, sysdate())
+    </insert>
+    <select id="selectById" resultMap="ArtifactResult">select * from agent_artifact where id=#{id}</select>
+    <select id="selectOwned" resultMap="ArtifactResult">
+        select artifact.* from agent_artifact artifact
+        join agent_conversation conversation on conversation.id=artifact.conversation_id
+        where artifact.id=#{id} and conversation.user_id=#{userId} and conversation.status!='deleted'
+    </select>
+    <select id="selectByRunId" resultMap="ArtifactResult">
+        select * from agent_artifact where run_id=#{runId} order by id
+    </select>
+    <select id="selectByConversationId" resultMap="ArtifactResult">
+        select * from agent_artifact where conversation_id=#{conversationId} order by id
+    </select>
+    <update id="updateStatus">
+        update agent_artifact set status=#{status}, update_by=#{updateBy}, update_time=sysdate() where id=#{id}
+    </update>
+</mapper>

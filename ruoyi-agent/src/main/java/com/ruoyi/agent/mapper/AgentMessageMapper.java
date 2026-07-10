@@ -10,6 +10,8 @@ public interface AgentMessageMapper
     int insert(AgentMessage message);
     /** 更新消息。 */
     int update(AgentMessage message);
+    /** 按主键查询消息。 */
+    AgentMessage selectById(Long id);
     /** 查询会话消息。 */
     List<AgentMessage> selectByConversationId(Long conversationId);
     /** 删除会话消息。 */

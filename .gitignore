@@ -45,3 +45,6 @@ nbdist/
 !*/build/*.java
 !*/build/*.html
 !*/build/*.xml
+ruoyi-agent/dify/agent-v2-supervisor.generated.yml
+ruoyi-agent/dify/agent-v2-tools.generated.openapi.yaml
+ruoyi-agent/dify/packages/

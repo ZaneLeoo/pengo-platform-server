@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.runtime.AgentDatasetMapper">
+    <resultMap id="DatasetResult" type="com.ruoyi.agent.domain.runtime.AgentDataset">
+        <id property="id" column="id"/>
+        <result property="ownerUserId" column="owner_user_id"/>
+        <result property="conversationId" column="conversation_id"/>
+        <result property="runId" column="run_id"/>
+        <result property="sourceToolCallId" column="source_tool_call_id"/>
+        <result property="datasetName" column="dataset_name"/>
+        <result property="storageType" column="storage_type"/>
+        <result property="schemaJson" column="schema_json"/>
+        <result property="dataJson" column="data_json"/>
+        <result property="rowCount" column="row_count"/>
+        <result property="expireTime" column="expire_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into agent_dataset(owner_user_id, conversation_id, run_id, source_tool_call_id,
+            dataset_name, storage_type, schema_json, data_json, row_count, expire_time, create_by, create_time)
+        values(#{ownerUserId}, #{conversationId}, #{runId}, #{sourceToolCallId}, #{datasetName},
+            #{storageType}, #{schemaJson}, #{dataJson}, #{rowCount}, #{expireTime}, #{createBy}, sysdate())
+    </insert>
+    <select id="selectById" resultMap="DatasetResult">select * from agent_dataset where id=#{id}</select>
+    <select id="selectOwned" resultMap="DatasetResult">
+        select * from agent_dataset where id=#{id} and owner_user_id=#{ownerUserId}
+            and (expire_time is null or expire_time &gt; sysdate())
+    </select>
+    <select id="selectByConversationId" resultMap="DatasetResult">
+        select * from agent_dataset where conversation_id=#{conversationId}
+            and (expire_time is null or expire_time &gt; sysdate()) order by id desc
+    </select>
+    <delete id="deleteExpired">delete from agent_dataset where expire_time is not null and expire_time &lt;= sysdate()</delete>
+</mapper>

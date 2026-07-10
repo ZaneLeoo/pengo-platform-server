@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.runtime.AgentSessionStateMapper">
+    <resultMap id="StateResult" type="com.ruoyi.agent.domain.runtime.AgentSessionState">
+        <id property="conversationId" column="conversation_id"/>
+        <result property="stateVersion" column="state_version"/>
+        <result property="activeGoal" column="active_goal"/>
+        <result property="currentDomain" column="current_domain"/>
+        <result property="conversationSummary" column="conversation_summary"/>
+        <result property="lastDatasetId" column="last_dataset_id"/>
+        <result property="lastArtifactId" column="last_artifact_id"/>
+        <result property="lastFileId" column="last_file_id"/>
+        <result property="pendingActionJson" column="pending_action_json"/>
+        <result property="contextJson" column="context_json"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <select id="selectByConversationId" resultMap="StateResult">
+        select * from agent_session_state where conversation_id=#{conversationId}
+    </select>
+    <select id="selectForUpdate" resultMap="StateResult">
+        select * from agent_session_state where conversation_id=#{conversationId} for update
+    </select>
+    <insert id="insert">
+        insert into agent_session_state(conversation_id, state_version, active_goal, current_domain,
+            conversation_summary, last_dataset_id, last_artifact_id, last_file_id, pending_action_json,
+            context_json, create_by, create_time, update_by, update_time)
+        values(#{conversationId}, #{stateVersion}, #{activeGoal}, #{currentDomain}, #{conversationSummary},
+            #{lastDatasetId}, #{lastArtifactId}, #{lastFileId}, #{pendingActionJson}, #{contextJson},
+            #{createBy}, sysdate(), #{updateBy}, sysdate())
+    </insert>
+    <update id="updateWithVersion">
+        update agent_session_state set state_version=state_version+1, active_goal=#{activeGoal},
+            current_domain=#{currentDomain}, conversation_summary=#{conversationSummary},
+            last_dataset_id=#{lastDatasetId}, last_artifact_id=#{lastArtifactId}, last_file_id=#{lastFileId},
+            pending_action_json=#{pendingActionJson}, context_json=#{contextJson}, update_by=#{updateBy},
+            update_time=sysdate()
+        where conversation_id=#{conversationId} and state_version=#{stateVersion}
+    </update>
+    <delete id="deleteByConversationId">delete from agent_session_state where conversation_id=#{conversationId}</delete>
+</mapper>
