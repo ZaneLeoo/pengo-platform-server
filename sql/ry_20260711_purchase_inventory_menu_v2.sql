@@ -36,3 +36,9 @@ insert into sys_menu(menu_name,parent_id,order_num,menu_type,visible,status,perm
 insert into sys_menu(menu_name,parent_id,order_num,menu_type,visible,status,perms,icon,create_by,create_time) select '库存新增',@inventory_id,3,'F','0','0','mes:inventoryBalance:add','#','admin',sysdate() where not exists(select 1 from sys_menu where perms='mes:inventoryBalance:add');
 insert into sys_menu(menu_name,parent_id,order_num,menu_type,visible,status,perms,icon,create_by,create_time) select '库存修改',@inventory_id,4,'F','0','0','mes:inventoryBalance:edit','#','admin',sysdate() where not exists(select 1 from sys_menu where perms='mes:inventoryBalance:edit');
 insert into sys_menu(menu_name,parent_id,order_num,menu_type,visible,status,perms,icon,create_by,create_time) select '库存删除',@inventory_id,5,'F','0','0','mes:inventoryBalance:remove','#','admin',sysdate() where not exists(select 1 from sys_menu where perms='mes:inventoryBalance:remove');
+
+-- 超级管理员默认拥有本次新增菜单权限；其他角色请在角色管理中按需授权。
+insert into sys_role_menu(role_id,menu_id)
+select 1,m.menu_id from sys_menu m
+where (m.perms like 'mes:purchase%' or m.perms like 'mes:inventoryBalance%')
+  and not exists(select 1 from sys_role_menu r where r.role_id=1 and r.menu_id=m.menu_id);
