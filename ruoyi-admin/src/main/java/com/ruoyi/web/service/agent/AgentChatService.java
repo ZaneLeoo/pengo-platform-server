@@ -7,6 +7,7 @@ import com.ruoyi.agent.infrastructure.dify.DifyChatflowClient;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyChatRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.exception.ServiceException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -69,6 +70,11 @@ public class AgentChatService
 
     private void forwardEvent(SseEmitter emitter, DifyStreamEvent event)
     {
+        if ("agent_thought".equals(event.getEvent()))
+        {
+            forwardToolEvent(emitter, event);
+            return;
+        }
         if ("message".equals(event.getEvent()) || "agent_message".equals(event.getEvent()))
         {
             if (event.getAnswer() != null && !event.getAnswer().isEmpty())
@@ -85,6 +91,57 @@ public class AgentChatService
             send(emitter, "metadata", data);
         }
         if ("error".equals(event.getEvent())) throw new ServiceException(safeMessage(event));
+    }
+
+    /** 将 Dify 工具执行状态转换为前端稳定的 tool 事件。 */
+    private void forwardToolEvent(SseEmitter emitter, DifyStreamEvent event)
+    {
+        if (event.getTool() == null || event.getTool().isBlank())
+        {
+            return;
+        }
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("phase", event.getObservation() == null || event.getObservation().isBlank() ? "started" : "finished");
+        data.put("callId", event.getId());
+        data.put("toolName", event.getTool());
+        data.put("toolLabel", resolveToolLabel(event));
+        if (event.getPosition() != null) data.put("position", event.getPosition());
+        if (event.getToolInput() != null && !event.getToolInput().isBlank())
+        {
+            data.put("input", parseStructuredValue(event.getToolInput()));
+        }
+        if (event.getObservation() != null && !event.getObservation().isBlank())
+        {
+            data.put("output", parseStructuredValue(event.getObservation()));
+        }
+        send(emitter, "tool", data);
+    }
+
+    /** 优先返回当前语言的工具展示名称。 */
+    private String resolveToolLabel(DifyStreamEvent event)
+    {
+        Object label = event.getToolLabels().get(event.getTool());
+        if (label instanceof Map<?, ?> labels)
+        {
+            Object zh = labels.get("zh_Hans");
+            if (zh != null && !zh.toString().isBlank()) return zh.toString();
+            Object en = labels.get("en_US");
+            if (en != null && !en.toString().isBlank()) return en.toString();
+        }
+        return event.getTool();
+    }
+
+    /** 将工具输入和输出解析为 JSON；非 JSON 内容按字符串保留。 */
+    private Object parseStructuredValue(String value)
+    {
+        try
+        {
+            return JSON.parse(value);
+        }
+        catch (RuntimeException ignored)
+        {
+            return value;
+        }
     }
 
     private void fail(SseEmitter emitter, String message)

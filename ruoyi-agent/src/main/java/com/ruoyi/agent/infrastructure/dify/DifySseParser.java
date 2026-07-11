@@ -52,6 +52,13 @@ public class DifySseParser
         event.setConversationId(json.getString("conversation_id"));
         event.setWorkflowRunId(json.getString("workflow_run_id"));
         event.setAnswer(json.getString("answer"));
+        event.setId(json.getString("id"));
+        event.setPosition(json.getInteger("position"));
+        event.setThought(json.getString("thought"));
+        event.setObservation(json.getString("observation"));
+        event.setTool(json.getString("tool"));
+        event.setToolInput(json.getString("tool_input"));
+        event.setToolLabels(json.getJSONObject("tool_labels"));
         event.setReason(json.getString("reason"));
         event.setStatus(json.getInteger("status"));
         event.setCode(json.getString("code"));

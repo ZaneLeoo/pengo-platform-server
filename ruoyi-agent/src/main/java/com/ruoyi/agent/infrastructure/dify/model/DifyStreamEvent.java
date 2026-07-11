@@ -15,6 +15,13 @@ public class DifyStreamEvent
     private String conversationId;
     private String workflowRunId;
     private String answer;
+    private String id;
+    private Integer position;
+    private String thought;
+    private String observation;
+    private String tool;
+    private String toolInput;
+    private Map<String, Object> toolLabels = Collections.emptyMap();
     private String reason;
     private Integer status;
     private String code;
@@ -82,6 +89,21 @@ public class DifyStreamEvent
     {
         this.answer = answer;
     }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public Integer getPosition() { return position; }
+    public void setPosition(Integer position) { this.position = position; }
+    public String getThought() { return thought; }
+    public void setThought(String thought) { this.thought = thought; }
+    public String getObservation() { return observation; }
+    public void setObservation(String observation) { this.observation = observation; }
+    public String getTool() { return tool; }
+    public void setTool(String tool) { this.tool = tool; }
+    public String getToolInput() { return toolInput; }
+    public void setToolInput(String toolInput) { this.toolInput = toolInput; }
+    public Map<String, Object> getToolLabels() { return toolLabels; }
+    public void setToolLabels(Map<String, Object> toolLabels) { this.toolLabels = immutableCopy(toolLabels); }
 
     public String getReason()
     {
