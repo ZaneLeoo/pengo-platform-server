@@ -1,6 +1,6 @@
 -- 采购管理、库存管理菜单及权限
 -- 依赖 MES 基础资料菜单（perms = mes:base:list）已存在。
-set @mes_base_id := (select menu_id from sys_menu where perms='mes:base:list' limit 1);
+set @mes_base_id := coalesce((select menu_id from sys_menu where perms='mes:base:list' limit 1), 0);
 update sys_menu set menu_name='采购管理', remark='采购订单、到货单、入库单' where perms='mes:purchase:list';
 
 insert into sys_menu(menu_name,parent_id,order_num,path,component,is_frame,is_cache,menu_type,visible,status,perms,icon,create_by,create_time,remark)
