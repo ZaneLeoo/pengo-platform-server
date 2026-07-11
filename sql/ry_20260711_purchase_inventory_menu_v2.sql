@@ -4,12 +4,12 @@ set @mes_base_id := coalesce((select menu_id from sys_menu where perms='mes:base
 update sys_menu set menu_name='采购管理', remark='采购订单、到货单、入库单' where perms='mes:purchase:list';
 
 insert into sys_menu(menu_name,parent_id,order_num,path,component,is_frame,is_cache,menu_type,visible,status,perms,icon,create_by,create_time,remark)
-select '采购管理',@mes_base_id,20,'purchase','mes/purchase/index',0,0,'C','0','0','mes:purchase:list','shopping-cart','admin',sysdate(),'采购订单、到货单、入库单'
+select '采购管理',@mes_base_id,20,'/purchase','mes/purchase/index',0,0,'C','0','0','mes:purchase:list','shopping-cart','admin',sysdate(),'采购订单、到货单、入库单'
 where not exists(select 1 from sys_menu where perms='mes:purchase:list');
 set @purchase_id := (select menu_id from sys_menu where perms='mes:purchase:list' limit 1);
 
 insert into sys_menu(menu_name,parent_id,order_num,path,component,is_frame,is_cache,menu_type,visible,status,perms,icon,create_by,create_time,remark)
-select '库存管理',@mes_base_id,21,'inventory','mes/purchase/index',0,0,'C','0','0','mes:inventoryBalance:list','database','admin',sysdate(),'库存余额管理'
+select '库存管理',@mes_base_id,21,'/inventory','mes/purchase/index',0,0,'C','0','0','mes:inventoryBalance:list','database','admin',sysdate(),'库存余额管理'
 where not exists(select 1 from sys_menu where perms='mes:inventoryBalance:list');
 set @inventory_id := (select menu_id from sys_menu where perms='mes:inventoryBalance:list' limit 1);
 
