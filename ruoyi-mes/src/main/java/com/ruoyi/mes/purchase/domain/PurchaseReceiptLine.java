@@ -14,17 +14,31 @@ import lombok.EqualsAndHashCode;
 public class PurchaseReceiptLine extends BaseEntity {
     private Long id;
     private Long receiptId;
-    @NotNull(message = "采购订单明细不能为空") private Long orderLineId;
-    @NotNull(message = "到货明细行号不能为空") private Integer lineNo;
-    @NotNull(message = "到货物料不能为空") private Long materialId;
-    @NotBlank(message = "物料编码不能为空") private String materialCode;
-    @NotBlank(message = "物料名称不能为空") private String materialName;
+    @NotNull(message = "采购订单明细不能为空")
+    private Long orderLineId;
+    @NotNull(message = "到货明细行号不能为空")
+    private Integer lineNo;
+    @NotNull(message = "到货物料不能为空")
+    private Long materialId;
+    @NotBlank(message = "物料编码不能为空")
+    private String materialCode;
+    @NotBlank(message = "物料名称不能为空")
+    private String materialName;
     private String spec;
-    @NotBlank(message = "物料单位不能为空") private String unit;
-    @NotNull(message = "到货数量不能为空") @DecimalMin(value = "0.000001", message = "到货数量必须大于0") private BigDecimal receivedQuantity;
-    @NotNull(message = "合格数量不能为空") @DecimalMin(value = "0.0", message = "合格数量不能小于0") private BigDecimal qualifiedQuantity;
-    @NotNull(message = "不合格数量不能为空") @DecimalMin(value = "0.0", message = "不合格数量不能小于0") private BigDecimal rejectedQuantity;
-    @NotNull(message = "待检数量不能为空") @DecimalMin(value = "0.0", message = "待检数量不能小于0") private BigDecimal pendingQuantity;
+    @NotBlank(message = "物料单位不能为空")
+    private String unit;
+    @NotNull(message = "到货数量不能为空")
+    @DecimalMin(value = "0.000001", message = "到货数量必须大于0")
+    private BigDecimal receivedQuantity;
+    @NotNull(message = "合格数量不能为空")
+    @DecimalMin(value = "0.0", message = "合格数量不能小于0")
+    private BigDecimal qualifiedQuantity;
+    @NotNull(message = "不合格数量不能为空")
+    @DecimalMin(value = "0.0", message = "不合格数量不能小于0")
+    private BigDecimal rejectedQuantity;
+    @NotNull(message = "待检数量不能为空")
+    @DecimalMin(value = "0.0", message = "待检数量不能小于0")
+    private BigDecimal pendingQuantity;
     private String lotNo;
     private String productionDate;
     private String expiryDate;

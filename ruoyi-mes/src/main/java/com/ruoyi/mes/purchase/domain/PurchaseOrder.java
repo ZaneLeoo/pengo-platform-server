@@ -26,11 +26,20 @@ public class PurchaseOrder extends BaseEntity {
     @NotBlank(message = "供应商不能为空")
     private String supplierName;
 
-    @NotBlank(message = "订单日期不能为空") private String orderDate;
+    @NotBlank(message = "订单日期不能为空")
+    private String orderDate;
     private String expectedDate;
-    @NotBlank(message = "订单状态不能为空") private String status;
-    @NotNull(message = "订单总数量不能为空") @DecimalMin(value = "0.0", message = "订单总数量不能小于0") private BigDecimal totalQuantity;
-    @NotNull(message = "订单总金额不能为空") @DecimalMin(value = "0.0", message = "订单总金额不能小于0") private BigDecimal totalAmount;
-    @NotBlank(message = "币种不能为空") private String currency;
-    @Valid @NotEmpty(message = "采购订单至少需要一条明细") private List<PurchaseOrderLine> lines;
+    @NotBlank(message = "订单状态不能为空")
+    private String status;
+    @NotNull(message = "订单总数量不能为空")
+    @DecimalMin(value = "0.0", message = "订单总数量不能小于0")
+    private BigDecimal totalQuantity;
+    @NotNull(message = "订单总金额不能为空")
+    @DecimalMin(value = "0.0", message = "订单总金额不能小于0")
+    private BigDecimal totalAmount;
+    @NotBlank(message = "币种不能为空")
+    private String currency;
+    @Valid
+    @NotEmpty(message = "采购订单至少需要一条明细")
+    private List<PurchaseOrderLine> lines;
 }

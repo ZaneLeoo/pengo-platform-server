@@ -16,14 +16,24 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class PurchaseReceipt extends BaseEntity {
     private Long id;
-    @NotBlank(message = "到货单编号不能为空") private String receiptCode;
-    @NotNull(message = "采购订单不能为空") private Long orderId;
-    @NotBlank(message = "采购订单编号不能为空") private String orderCode;
+    @NotBlank(message = "到货单编号不能为空")
+    private String receiptCode;
+    @NotNull(message = "采购订单不能为空")
+    private Long orderId;
+    @NotBlank(message = "采购订单编号不能为空")
+    private String orderCode;
     private String supplierCode;
     private String supplierName;
-    @NotBlank(message = "到货日期不能为空") private String receiptDate;
-    @NotBlank(message = "到货单状态不能为空") private String status;
-    @NotBlank(message = "检验状态不能为空") private String inspectionStatus;
-    @NotNull(message = "到货总数量不能为空") @DecimalMin(value = "0.0", message = "到货总数量不能小于0") private BigDecimal totalQuantity;
-    @Valid @NotEmpty(message = "到货单至少需要一条明细") private List<PurchaseReceiptLine> lines;
+    @NotBlank(message = "到货日期不能为空")
+    private String receiptDate;
+    @NotBlank(message = "到货单状态不能为空")
+    private String status;
+    @NotBlank(message = "检验状态不能为空")
+    private String inspectionStatus;
+    @NotNull(message = "到货总数量不能为空")
+    @DecimalMin(value = "0.0", message = "到货总数量不能小于0")
+    private BigDecimal totalQuantity;
+    @Valid
+    @NotEmpty(message = "到货单至少需要一条明细")
+    private List<PurchaseReceiptLine> lines;
 }
