@@ -79,7 +79,7 @@ flowchart LR
 
 ## Dify 工作流建议
 
-Dify 节点命名延续 Agent V2 的节点规范：
+Dify 节点命名延续 Agent 节点规范：
 
 - `[输入] 文件接收`
 - `[OCR] 图纸文字识别`
