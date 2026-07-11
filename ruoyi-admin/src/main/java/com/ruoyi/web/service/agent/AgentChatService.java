@@ -100,21 +100,30 @@ public class AgentChatService
         {
             return;
         }
+        boolean knowledgeEvent = event.getTool().startsWith("dataset_");
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("phase", event.getObservation() == null || event.getObservation().isBlank() ? "started" : "finished");
         data.put("callId", event.getId());
-        data.put("toolName", event.getTool());
-        data.put("toolLabel", resolveToolLabel(event));
+        data.put(knowledgeEvent ? "datasetId" : "toolName", event.getTool());
+        data.put(knowledgeEvent ? "datasetLabel" : "toolLabel", resolveToolLabel(event));
         if (event.getPosition() != null) data.put("position", event.getPosition());
         if (event.getToolInput() != null && !event.getToolInput().isBlank())
         {
-            data.put("input", parseStructuredValue(event.getToolInput()));
+            Object input = parseStructuredValue(event.getToolInput());
+            if (knowledgeEvent)
+            {
+                data.put("query", extractKnowledgeQuery(input, event.getTool()));
+            }
+            else
+            {
+                data.put("input", input);
+            }
         }
         if (event.getObservation() != null && !event.getObservation().isBlank())
         {
             data.put("output", parseStructuredValue(event.getObservation()));
         }
-        send(emitter, "tool", data);
+        send(emitter, knowledgeEvent ? "knowledge" : "tool", data);
     }
 
     /** 优先返回当前语言的工具展示名称。 */
@@ -142,6 +151,21 @@ public class AgentChatService
         {
             return value;
         }
+    }
+
+    /** 提取 Dify 知识库工具输入中的查询文本。 */
+    private String extractKnowledgeQuery(Object input, String datasetId)
+    {
+        if (input instanceof Map<?, ?> values)
+        {
+            Object datasetInput = values.get(datasetId);
+            if (datasetInput instanceof Map<?, ?> queryValues && queryValues.get("query") != null)
+            {
+                return queryValues.get("query").toString();
+            }
+            if (datasetInput != null) return datasetInput.toString();
+        }
+        return input == null ? "" : input.toString();
     }
 
     private void fail(SseEmitter emitter, String message)
