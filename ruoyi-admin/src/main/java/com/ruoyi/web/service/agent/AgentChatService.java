@@ -24,13 +24,16 @@ public class AgentChatService
     private static final long TIMEOUT = 10 * 60 * 1000L;
     private final DifyChatflowClient difyClient;
     private final DifyAppConfigService configService;
+    private final KnowledgeBaseService knowledgeBaseService;
     private final Executor executor;
 
     public AgentChatService(DifyChatflowClient difyClient, DifyAppConfigService configService,
+        KnowledgeBaseService knowledgeBaseService,
         @Qualifier("threadPoolTaskExecutor") Executor executor)
     {
         this.difyClient = difyClient;
         this.configService = configService;
+        this.knowledgeBaseService = knowledgeBaseService;
         this.executor = executor;
     }
 
@@ -105,7 +108,8 @@ public class AgentChatService
         data.put("phase", event.getObservation() == null || event.getObservation().isBlank() ? "started" : "finished");
         data.put("callId", event.getId());
         data.put(knowledgeEvent ? "datasetId" : "toolName", event.getTool());
-        data.put(knowledgeEvent ? "datasetLabel" : "toolLabel", resolveToolLabel(event));
+        data.put(knowledgeEvent ? "datasetLabel" : "toolLabel",
+            knowledgeEvent ? knowledgeBaseService.resolveName(event.getTool()) : resolveToolLabel(event));
         if (event.getPosition() != null) data.put("position", event.getPosition());
         if (event.getToolInput() != null && !event.getToolInput().isBlank())
         {
