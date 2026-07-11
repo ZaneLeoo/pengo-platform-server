@@ -2,6 +2,7 @@ package com.ruoyi.mes.base.mapper;
 
 import com.ruoyi.mes.base.domain.Material;
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 物料主数据访问接口。
@@ -17,6 +18,11 @@ public interface MaterialMapper {
      * @return 物料集合
      */
     List<Material> selectMaterialList(Material material);
+
+    /** 查询 Agent 工具使用的物料列表。 */
+    List<Material> selectMaterialListForAgent(@Param("keyword") String keyword,
+        @Param("categoryId") Long categoryId, @Param("materialType") String materialType,
+        @Param("status") String status);
 
     /**
      * 根据物料ID查询物料。

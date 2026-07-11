@@ -68,6 +68,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by m.material_id desc
     </select>
 
+    <select id="selectMaterialListForAgent" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (m.material_code like concat('%', #{keyword}, '%')
+                  OR m.material_name like concat('%', #{keyword}, '%')
+                  OR m.spec like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="categoryId != null">AND m.category_id = #{categoryId}</if>
+            <if test="materialType != null and materialType != ''">AND m.material_type = #{materialType}</if>
+            <if test="status != null and status != ''">AND m.status = #{status}</if>
+        </where>
+        order by m.material_id desc
+        limit 50
+    </select>
+
     <select id="selectMaterialById" parameterType="Long" resultMap="MaterialResult">
         <include refid="selectMaterialVo"/>
         where m.material_id = #{materialId}
