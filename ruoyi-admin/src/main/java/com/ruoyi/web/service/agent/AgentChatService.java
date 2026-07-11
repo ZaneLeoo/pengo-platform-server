@@ -3,6 +3,7 @@ package com.ruoyi.web.service.agent;
 import com.ruoyi.agent.api.AgentChatRequest;
 import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.domain.enums.DifyAppCode;
+import com.ruoyi.agent.domain.enums.AgentStreamEventType;
 import com.ruoyi.agent.infrastructure.dify.DifyChatflowClient;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyChatRequest;
@@ -53,7 +54,7 @@ public class AgentChatService
             DifyChatRequest difyRequest = new DifyChatRequest(request.getQuery(), request.getInputs(),
                 request.getDifyConversationId(), "ruoyi-user-" + userId);
             difyClient.stream(settings, difyRequest, event -> forwardEvent(emitter, event));
-            send(emitter, "done", Map.of());
+            send(emitter, AgentStreamEventType.DONE, Map.of());
             emitter.complete();
         }
         catch (InterruptedException e)
@@ -82,7 +83,7 @@ public class AgentChatService
         {
             if (event.getAnswer() != null && !event.getAnswer().isEmpty())
             {
-                send(emitter, "message", Map.of("content", event.getAnswer()));
+                send(emitter, AgentStreamEventType.MESSAGE, Map.of("content", event.getAnswer()));
             }
             return;
         }
@@ -91,7 +92,7 @@ public class AgentChatService
             Map<String, Object> data = new LinkedHashMap<>();
             if (event.getConversationId() != null) data.put("conversationId", event.getConversationId());
             if (event.getTaskId() != null) data.put("taskId", event.getTaskId());
-            send(emitter, "metadata", data);
+            send(emitter, AgentStreamEventType.METADATA, data);
         }
         if ("error".equals(event.getEvent())) throw new ServiceException(safeMessage(event));
     }
@@ -132,7 +133,7 @@ public class AgentChatService
         {
             data.put("output", parseStructuredValue(event.getObservation()));
         }
-        send(emitter, knowledgeEvent ? "knowledge" : "tool", data);
+        send(emitter, knowledgeEvent ? AgentStreamEventType.KNOWLEDGE : AgentStreamEventType.TOOL, data);
     }
 
     /** 优先返回当前语言的工具展示名称。 */
@@ -179,7 +180,7 @@ public class AgentChatService
 
     private void fail(SseEmitter emitter, String message)
     {
-        send(emitter, "error", Map.of("message", message));
+        send(emitter, AgentStreamEventType.ERROR, Map.of("message", message));
         emitter.complete();
     }
 
@@ -187,6 +188,12 @@ public class AgentChatService
     {
         try { emitter.send(SseEmitter.event().name(name).data(data)); }
         catch (IOException ignored) { emitter.complete(); }
+    }
+
+    /** 使用统一事件枚举发送 SSE，避免业务代码散落硬编码事件名称。 */
+    private void send(SseEmitter emitter, AgentStreamEventType type, Map<String, Object> data)
+    {
+        send(emitter, type.getValue(), data);
     }
 
     private String safeMessage(Exception error)
