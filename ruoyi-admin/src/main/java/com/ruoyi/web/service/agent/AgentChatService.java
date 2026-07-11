@@ -9,9 +9,11 @@ import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyChatRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.exception.ServiceException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -104,6 +106,11 @@ public class AgentChatService
         {
             return;
         }
+        if (isChartTool(event.getTool()))
+        {
+            forwardChartEvents(emitter, event);
+            return;
+        }
         boolean knowledgeEvent = event.getTool().startsWith("dataset_");
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("phase", event.getObservation() == null || event.getObservation().isBlank() ? "started" : "finished");
@@ -134,6 +141,97 @@ public class AgentChatService
             data.put("output", parseStructuredValue(event.getObservation()));
         }
         send(emitter, knowledgeEvent ? AgentStreamEventType.KNOWLEDGE : AgentStreamEventType.TOOL, data);
+    }
+
+    /** 将一个 Dify 并行图表工具事件拆分为多个标准 chart 事件。 */
+    private void forwardChartEvents(SseEmitter emitter, DifyStreamEvent event)
+    {
+        JSONObject inputs = parseObject(event.getToolInput());
+        JSONObject outputs = parseObject(event.getObservation());
+        for (String toolName : event.getTool().split(";"))
+        {
+            String chartType = chartType(toolName);
+            if (chartType == null) continue;
+            Map<String, Object> data = new LinkedHashMap<>();
+            data.put("phase", outputs == null ? "started" : "finished");
+            data.put("callId", event.getId() + "-" + toolName);
+            data.put("toolName", toolName);
+            data.put("chartType", chartType);
+            if (event.getPosition() != null) data.put("position", event.getPosition());
+            JSONObject toolInput = nestedObject(inputs, toolName);
+            if (toolInput != null && toolInput.getString("title") != null)
+            {
+                data.put("title", toolInput.getString("title"));
+            }
+            if (outputs != null)
+            {
+                String option = outputs.getString(toolName);
+                JSONObject optionJson = extractEchartsOption(option);
+                if (optionJson != null) data.put("option", optionJson);
+            }
+            send(emitter, AgentStreamEventType.CHART, data);
+        }
+    }
+
+    /** 判断是否包含受支持的图表工具。 */
+    private boolean isChartTool(String toolNames)
+    {
+        for (String toolName : toolNames.split(";"))
+        {
+            if (chartType(toolName) != null) return true;
+        }
+        return false;
+    }
+
+    /** 将插件工具名映射为受支持的图表类型。 */
+    private String chartType(String toolName)
+    {
+        return switch (toolName)
+        {
+            case "bar_chart" -> "bar";
+            case "line_chart" -> "line";
+            case "pie_chart" -> "pie";
+            default -> null;
+        };
+    }
+
+    /** 解析 Dify 工具输入或输出对象。 */
+    private JSONObject parseObject(String value)
+    {
+        if (value == null || value.isBlank()) return null;
+        try
+        {
+            return JSON.parseObject(value);
+        }
+        catch (RuntimeException ignored)
+        {
+            return null;
+        }
+    }
+
+    /** 读取并行工具对象中的单个工具参数。 */
+    private JSONObject nestedObject(JSONObject object, String key)
+    {
+        if (object == null) return null;
+        Object value = object.get(key);
+        if (value instanceof JSONObject json) return json;
+        if (value instanceof String text) return parseObject(text);
+        return null;
+    }
+
+    /** 从 ```echarts 代码块中提取并解析图表 option。 */
+    private JSONObject extractEchartsOption(String output)
+    {
+        if (output == null || output.isBlank()) return null;
+        String normalized = output.trim();
+        int start = normalized.indexOf("```echarts");
+        if (start >= 0)
+        {
+            normalized = normalized.substring(start + "```echarts".length());
+            int end = normalized.indexOf("```");
+            if (end >= 0) normalized = normalized.substring(0, end);
+        }
+        return parseObject(normalized.trim());
     }
 
     /** 优先返回当前语言的工具展示名称。 */

@@ -10,6 +10,7 @@ public enum AgentStreamEventType
     METADATA("metadata"),
     TOOL("tool"),
     KNOWLEDGE("knowledge"),
+    CHART("chart"),
     DONE("done"),
     ERROR("error");
 
