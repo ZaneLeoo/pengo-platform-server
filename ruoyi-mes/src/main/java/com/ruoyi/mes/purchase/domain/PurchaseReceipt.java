@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,6 +20,7 @@ public class PurchaseReceipt extends BaseEntity {
     @NotBlank(message = "到货单编号不能为空")
     private String receiptCode;
     private String supplierCode;
+    @NotBlank(message = "供应商不能为空")
     private String supplierName;
     @NotBlank(message = "到货日期不能为空")
     private String receiptDate;
@@ -26,6 +28,10 @@ public class PurchaseReceipt extends BaseEntity {
     private String status;
     @NotBlank(message = "检验状态不能为空")
     private String inspectionStatus;
+    private String approvedBy;
+    private Date approvedTime;
+    private String inspectionBy;
+    private Date inspectionTime;
     @NotNull(message = "到货总数量不能为空")
     @DecimalMin(value = "0.0", message = "到货总数量不能小于0")
     private BigDecimal totalQuantity;

@@ -45,10 +45,13 @@ public class PurchaseReceiptLine extends BaseEntity {
     @NotNull(message = "待检数量不能为空")
     @DecimalMin(value = "0.0", message = "待检数量不能小于0")
     private BigDecimal pendingQuantity;
+    @NotNull(message = "已入库数量不能为空")
+    @DecimalMin(value = "0.0", message = "已入库数量不能小于0")
     private BigDecimal inboundQuantity;
     private String lotNo;
     private String productionDate;
     private String expiryDate;
+    @NotBlank(message = "入库仓库不能为空")
     private String warehouseCode;
     private String warehouseName;
     private String locationCode;

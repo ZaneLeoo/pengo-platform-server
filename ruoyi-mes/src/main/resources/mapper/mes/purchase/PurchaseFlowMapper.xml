@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.purchase.mapper.PurchaseFlowMapper">
+  <update id="updateOrderStatus">
+    update purchase_order set status=#{toStatus}, approved_by=case when #{toStatus}='APPROVED' then #{operator} else null end, approved_time=case when #{toStatus}='APPROVED' then now() else null end, update_by=#{operator}, update_time=now()
+    where id=#{id} and status=#{fromStatus}
+  </update>
+  <update id="updateReceiptStatus">
+    update purchase_receipt set status=#{toStatus}, approved_by=case when #{toStatus}='APPROVED' then #{operator} else null end, approved_time=case when #{toStatus}='APPROVED' then now() else null end, update_by=#{operator}, update_time=now()
+    where id=#{id} and status=#{fromStatus}
+  </update>
+  <update id="updateInboundStatus">
+    update purchase_inbound set status=#{toStatus}, approved_by=case when #{toStatus}='APPROVED' then #{operator} else null end, approved_time=case when #{toStatus}='APPROVED' then now() else null end, update_by=#{operator}, update_time=now()
+    where id=#{id} and status=#{fromStatus}
+  </update>
+  <select id="countApprovedReceiptByOrder" resultType="int">
+    select count(1) from purchase_receipt_line rl inner join purchase_receipt r on r.id=rl.receipt_id
+    where rl.source_order_id=#{orderId} and r.status='APPROVED'
+  </select>
+  <select id="countApprovedInboundByReceipt" resultType="int">
+    select count(1) from purchase_inbound_line il inner join purchase_inbound i on i.id=il.inbound_id
+    where il.source_receipt_id=#{receiptId} and i.status='APPROVED'
+  </select>
+  <select id="countReceiptSourceSuppliers" resultType="int">
+    select count(distinct concat(ifnull(po.supplier_code,''), '|', ifnull(po.supplier_name,'')))
+    from purchase_receipt_line rl inner join purchase_order po on po.id=rl.source_order_id
+    where rl.receipt_id=#{receiptId}
+  </select>
+  <select id="countReceiptHeaderSupplierMismatch" resultType="int">
+    select count(1)
+    from purchase_receipt_line rl
+      inner join purchase_receipt r on r.id=rl.receipt_id
+      inner join purchase_order po on po.id=rl.source_order_id
+    where rl.receipt_id=#{receiptId}
+      and (ifnull(r.supplier_code,'') != ifnull(po.supplier_code,'') or ifnull(r.supplier_name,'') != ifnull(po.supplier_name,''))
+  </select>
+  <select id="countValidReceiptSource" resultType="int">
+    select count(1)
+    from purchase_order po inner join purchase_order_line pol on pol.order_id=po.id
+    where po.id=#{line.sourceOrderId} and po.order_code=#{line.sourceOrderCode}
+      and pol.id=#{line.sourceOrderLineId} and pol.line_no=#{line.sourceOrderLineNo}
+      and pol.material_id=#{line.materialId} and pol.material_code=#{line.materialCode}
+  </select>
+  <select id="countInboundSourceWarehouses" resultType="int">
+    select count(distinct ifnull(warehouse_code,'')) from purchase_inbound_line where inbound_id=#{inboundId}
+  </select>
+  <select id="countInboundHeaderWarehouseMismatch" resultType="int">
+    select count(1)
+    from purchase_inbound_line il inner join purchase_inbound i on i.id=il.inbound_id
+    where il.inbound_id=#{inboundId} and ifnull(i.warehouse_code,'') != ifnull(il.warehouse_code,'')
+  </select>
+  <select id="countValidInboundSource" resultType="int">
+    select count(1)
+    from purchase_receipt r
+      inner join purchase_receipt_line rl on rl.receipt_id=r.id
+      inner join purchase_order po on po.id=rl.source_order_id
+      inner join purchase_order_line pol on pol.id=rl.source_order_line_id
+    where r.id=#{line.sourceReceiptId} and r.receipt_code=#{line.sourceReceiptCode}
+      and rl.id=#{line.sourceReceiptLineId} and rl.line_no=#{line.sourceReceiptLineNo}
+      and po.id=#{line.sourceOrderId} and po.order_code=#{line.sourceOrderCode}
+      and pol.id=#{line.sourceOrderLineId} and pol.line_no=#{line.sourceOrderLineNo}
+      and rl.material_id=#{line.materialId} and rl.material_code=#{line.materialCode}
+  </select>
+  <update id="increaseOrderReceived">
+    update purchase_order_line pol inner join purchase_order po on po.id=pol.order_id
+    set pol.received_quantity=pol.received_quantity+#{quantity}
+    where pol.id=#{orderLineId} and po.status='APPROVED' and pol.received_quantity+#{quantity}&lt;=pol.order_quantity
+  </update>
+  <update id="increaseOrderQualified">
+    update purchase_order_line set qualified_quantity=qualified_quantity+#{quantity}
+    where id=#{orderLineId} and qualified_quantity+#{quantity}&gt;=0 and qualified_quantity+#{quantity}&lt;=received_quantity
+  </update>
+  <update id="increaseOrderInbound">
+    update purchase_order_line set inbound_quantity=inbound_quantity+#{quantity}
+    where id=#{orderLineId} and inbound_quantity+#{quantity}&gt;=0 and inbound_quantity+#{quantity}&lt;=qualified_quantity
+  </update>
+  <update id="resetReceiptInspection">
+    update purchase_receipt_line set qualified_quantity=0, rejected_quantity=0, pending_quantity=received_quantity
+    where receipt_id=#{receiptId}
+  </update>
+  <update id="updateReceiptInspection">
+    update purchase_receipt_line set qualified_quantity=#{line.qualifiedQuantity}, rejected_quantity=#{line.rejectedQuantity}, pending_quantity=#{line.pendingQuantity}, update_by=#{line.updateBy}, update_time=now()
+    where id=#{line.id}
+  </update>
+  <update id="updateReceiptInspectionStatus">
+    update purchase_receipt set inspection_status=#{status}, inspection_by=#{operator}, inspection_time=now(), update_by=#{operator}, update_time=now()
+    where id=#{receiptId}
+  </update>
+  <update id="increaseReceiptInbound">
+    update purchase_receipt_line rl inner join purchase_receipt r on r.id=rl.receipt_id
+    set rl.inbound_quantity=rl.inbound_quantity+#{quantity}
+    where rl.id=#{receiptLineId} and r.status='APPROVED' and rl.pending_quantity=0
+      and rl.qualified_quantity-rl.inbound_quantity&gt;=#{quantity} and rl.inbound_quantity+#{quantity}&gt;=0
+  </update>
+  <insert id="upsertInventoryBalance">
+    insert into inventory_balance(material_id,material_code,material_name,warehouse_code,location_code,lot_no,unit,quantity,available_quantity,locked_quantity,status,last_inbound_date,last_update_time,create_by,create_time)
+    values(#{transaction.materialId},#{transaction.materialCode},#{transaction.materialName},#{transaction.warehouseCode},#{transaction.locationCode},#{transaction.lotNo},#{transaction.unit},#{transaction.quantity},#{transaction.quantity},0,'NORMAL',curdate(),now(),#{transaction.createBy},now())
+    on duplicate key update quantity=quantity+values(quantity), available_quantity=available_quantity+values(available_quantity), last_inbound_date=curdate(), last_update_time=now(), update_by=values(create_by), update_time=now()
+  </insert>
+  <update id="decreaseInventoryBalance">
+    update inventory_balance set quantity=quantity-#{transaction.quantity}, available_quantity=available_quantity-#{transaction.quantity}, last_update_time=now(), update_by=#{transaction.createBy}, update_time=now()
+    where material_id=#{transaction.materialId} and warehouse_code=#{transaction.warehouseCode} and location_code=#{transaction.locationCode} and lot_no=#{transaction.lotNo}
+      and quantity&gt;=#{transaction.quantity} and available_quantity&gt;=#{transaction.quantity}
+  </update>
+  <insert id="insertInventoryTransaction" useGeneratedKeys="true" keyProperty="id">
+    insert into inventory_transaction(transaction_type,business_id,business_code,business_line_id,material_id,material_code,material_name,warehouse_code,location_code,lot_no,unit,quantity,source_receipt_line_id,source_order_line_id,create_by,create_time,remark)
+    values(#{transactionType},#{businessId},#{businessCode},#{businessLineId},#{materialId},#{materialCode},#{materialName},#{warehouseCode},#{locationCode},#{lotNo},#{unit},#{quantity},#{sourceReceiptLineId},#{sourceOrderLineId},#{createBy},now(),#{remark})
+  </insert>
+  <select id="selectReceiptReferenceLines" resultType="com.ruoyi.mes.purchase.domain.dto.ReceiptReferenceLine">
+    select po.id source_order_id, po.order_code source_order_code, pol.id source_order_line_id, pol.line_no source_order_line_no,
+      po.supplier_code, po.supplier_name, pol.material_id, pol.material_code, pol.material_name, pol.spec, pol.unit,
+      pol.order_quantity, pol.received_quantity, pol.order_quantity-pol.received_quantity remaining_quantity
+    from purchase_order po inner join purchase_order_line pol on pol.order_id=po.id
+    where po.status='APPROVED' and pol.order_quantity&gt;pol.received_quantity
+    <if test="orderCode != null and orderCode != ''">and po.order_code like concat('%',#{orderCode},'%')</if>
+    <if test="supplierName != null and supplierName != ''">and po.supplier_name like concat('%',#{supplierName},'%')</if>
+    order by po.id desc, pol.line_no
+  </select>
+  <select id="selectInboundReferenceLines" resultType="com.ruoyi.mes.purchase.domain.dto.InboundReferenceLine">
+    select r.id source_receipt_id, r.receipt_code source_receipt_code, rl.id source_receipt_line_id, rl.line_no source_receipt_line_no,
+      rl.source_order_id, rl.source_order_code, rl.source_order_line_id, rl.source_order_line_no,
+      rl.material_id, rl.material_code, rl.material_name, rl.spec, rl.unit, rl.warehouse_code, rl.warehouse_name, rl.location_code, rl.location_name, rl.lot_no,
+      rl.qualified_quantity, rl.inbound_quantity, rl.qualified_quantity-rl.inbound_quantity remaining_quantity
+    from purchase_receipt r inner join purchase_receipt_line rl on rl.receipt_id=r.id
+    where r.status='APPROVED' and r.inspection_status in ('PASSED','PARTIAL') and rl.pending_quantity=0 and rl.qualified_quantity&gt;rl.inbound_quantity
+    <if test="receiptCode != null and receiptCode != ''">and r.receipt_code like concat('%',#{receiptCode},'%')</if>
+    <if test="warehouseCode != null and warehouseCode != ''">and rl.warehouse_code=#{warehouseCode}</if>
+    order by r.id desc, rl.line_no
+  </select>
+</mapper>

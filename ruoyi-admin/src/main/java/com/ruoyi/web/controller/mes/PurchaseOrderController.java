@@ -5,8 +5,10 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.mes.common.enums.PurchaseDocumentStatus;
 import com.ruoyi.mes.purchase.domain.PurchaseOrder;
 import com.ruoyi.mes.purchase.service.IPurchaseOrderService;
+import com.ruoyi.mes.purchase.service.IPurchaseFlowService;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -25,10 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PurchaseOrderController extends BaseController
 {
     private final IPurchaseOrderService orderService;
+    private final IPurchaseFlowService flowService;
 
-    public PurchaseOrderController(IPurchaseOrderService orderService)
+    public PurchaseOrderController(IPurchaseOrderService orderService, IPurchaseFlowService flowService)
     {
         this.orderService = orderService;
+        this.flowService = flowService;
     }
 
     /** 查询采购订单列表。 */
@@ -65,6 +69,9 @@ public class PurchaseOrderController extends BaseController
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody PurchaseOrder order)
     {
+        PurchaseOrder existing = orderService.selectPurchaseOrderById(order.getId());
+        if (existing == null) return error("采购订单不存在");
+        if (!PurchaseDocumentStatus.DRAFT.getCode().equals(existing.getStatus())) return error("已审核采购订单不允许编辑");
         if (!orderService.checkOrderCodeUnique(order)) return error("采购订单编号已存在");
         order.setUpdateBy(getUsername());
         return toAjax(orderService.updatePurchaseOrder(order));
@@ -76,6 +83,30 @@ public class PurchaseOrderController extends BaseController
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
+        for (Long id : ids) {
+            PurchaseOrder existing = orderService.selectPurchaseOrderById(id);
+            if (existing != null && !PurchaseDocumentStatus.DRAFT.getCode().equals(existing.getStatus())) return error("已审核采购订单不允许删除");
+        }
         return toAjax(orderService.deletePurchaseOrderByIds(ids));
+    }
+
+    /** 审核采购订单。 */
+    @PreAuthorize("@ss.hasPermi('mes:purchaseOrder:approve')")
+    @Log(title = "采购订单审核", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/approve")
+    public AjaxResult approve(@PathVariable Long id)
+    {
+        flowService.approveOrder(id, getUsername());
+        return success();
+    }
+
+    /** 弃审采购订单。 */
+    @PreAuthorize("@ss.hasPermi('mes:purchaseOrder:unapprove')")
+    @Log(title = "采购订单弃审", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/unapprove")
+    public AjaxResult unapprove(@PathVariable Long id)
+    {
+        flowService.unapproveOrder(id, getUsername());
+        return success();
     }
 }

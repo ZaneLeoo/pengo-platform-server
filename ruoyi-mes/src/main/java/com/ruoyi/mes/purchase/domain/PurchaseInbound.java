@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,6 +26,8 @@ public class PurchaseInbound extends BaseEntity {
     private String warehouseName;
     @NotBlank(message = "入库单状态不能为空")
     private String status;
+    private String approvedBy;
+    private Date approvedTime;
     @NotNull(message = "入库总数量不能为空")
     @DecimalMin(value = "0.0", message = "入库总数量不能小于0")
     private BigDecimal totalQuantity;
