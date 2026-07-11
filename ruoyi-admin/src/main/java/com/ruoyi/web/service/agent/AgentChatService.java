@@ -116,7 +116,12 @@ public class AgentChatService
             Object input = parseStructuredValue(event.getToolInput());
             if (knowledgeEvent)
             {
-                data.put("query", extractKnowledgeQuery(input, event.getTool()));
+                String query = extractKnowledgeQuery(input, event.getTool());
+                data.put("query", query);
+                if (event.getObservation() != null && !event.getObservation().isBlank())
+                {
+                    data.put("sources", knowledgeBaseService.retrieveSources(event.getTool(), query));
+                }
             }
             else
             {

@@ -11,6 +11,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Service;
 
@@ -58,6 +63,41 @@ public class KnowledgeBaseService
         }
         redisCache.setCacheObject(cacheKey, name, CACHE_TTL_HOURS, TimeUnit.HOURS);
         return name;
+    }
+
+    /** 根据用户查询检索知识库分段，返回前端可展示的来源摘要。 */
+    public List<Map<String, Object>> retrieveSources(String toolName, String query)
+    {
+        String datasetId = normalizeDatasetId(toolName);
+        String baseUrl = configService.selectConfigByKey(API_BASE_URL_KEY);
+        String apiKey = configService.selectConfigByKey(API_KEY_KEY);
+        if (StringUtils.isBlank(datasetId) || StringUtils.isBlank(query)
+            || StringUtils.isBlank(baseUrl) || StringUtils.isBlank(apiKey))
+        {
+            return Collections.emptyList();
+        }
+        try
+        {
+            String body = JSON.toJSONString(Map.of("query", query));
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(baseUrl.replaceAll("/+$", "") + "/datasets/" + datasetId + "/retrieve"))
+                .timeout(Duration.ofSeconds(15))
+                .header("Authorization", "Bearer " + apiKey)
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() < 200 || response.statusCode() >= 300)
+            {
+                return Collections.emptyList();
+            }
+            JSONObject result = JSON.parseObject(response.body());
+            return toSources(result);
+        }
+        catch (Exception ignored)
+        {
+            return Collections.emptyList();
+        }
     }
 
     /** 将 Agent 工具名 dataset_xxx 转换为知识库 API 使用的 UUID。 */
@@ -108,5 +148,30 @@ public class KnowledgeBaseService
         {
             return StringUtils.EMPTY;
         }
+    }
+
+    /** 将 Dify 分段响应转换为稳定的来源字段。 */
+    private List<Map<String, Object>> toSources(JSONObject result)
+    {
+        if (result == null || result.getJSONArray("records") == null)
+        {
+            return Collections.emptyList();
+        }
+        List<Map<String, Object>> sources = new ArrayList<>();
+        result.getJSONArray("records").stream().limit(5).forEach(item -> {
+            if (!(item instanceof JSONObject record)) return;
+            JSONObject segment = record.getJSONObject("segment");
+            if (segment == null) return;
+            JSONObject document = segment.getJSONObject("document");
+            Map<String, Object> source = new LinkedHashMap<>();
+            source.put("sourceId", segment.getString("id"));
+            source.put("segmentId", segment.getString("id"));
+            source.put("documentId", segment.getString("document_id"));
+            source.put("documentName", document == null ? "文档片段" : document.getString("name"));
+            source.put("content", segment.getString("content"));
+            source.put("score", record.getBigDecimal("score"));
+            sources.add(source);
+        });
+        return sources;
     }
 }
