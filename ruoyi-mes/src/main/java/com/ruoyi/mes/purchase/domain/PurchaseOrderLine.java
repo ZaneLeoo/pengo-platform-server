@@ -31,6 +31,7 @@ public class PurchaseOrderLine extends BaseEntity {
     private BigDecimal orderQuantity;
     private BigDecimal receivedQuantity;
     private BigDecimal qualifiedQuantity;
+    private BigDecimal inboundQuantity;
     private BigDecimal unitPrice;
     private BigDecimal taxRate;
     private BigDecimal amount;

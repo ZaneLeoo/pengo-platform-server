@@ -78,6 +78,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService
             if (line.getLineNo() == null) line.setLineNo(order.getLines().indexOf(line) + 1);
             if (line.getReceivedQuantity() == null) line.setReceivedQuantity(java.math.BigDecimal.ZERO);
             if (line.getQualifiedQuantity() == null) line.setQualifiedQuantity(java.math.BigDecimal.ZERO);
+            if (line.getInboundQuantity() == null) line.setInboundQuantity(java.math.BigDecimal.ZERO);
             orderMapper.insertPurchaseOrderLine(line);
         }
     }

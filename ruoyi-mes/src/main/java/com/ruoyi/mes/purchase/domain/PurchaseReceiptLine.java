@@ -14,10 +14,16 @@ import lombok.EqualsAndHashCode;
 public class PurchaseReceiptLine extends BaseEntity {
     private Long id;
     private Long receiptId;
-    @NotNull(message = "采购订单明细不能为空")
-    private Long orderLineId;
     @NotNull(message = "到货明细行号不能为空")
     private Integer lineNo;
+    @NotNull(message = "来源采购订单不能为空")
+    private Long sourceOrderId;
+    @NotBlank(message = "来源采购订单编号不能为空")
+    private String sourceOrderCode;
+    @NotNull(message = "来源采购订单明细不能为空")
+    private Long sourceOrderLineId;
+    @NotNull(message = "来源采购订单明细行号不能为空")
+    private Integer sourceOrderLineNo;
     @NotNull(message = "到货物料不能为空")
     private Long materialId;
     @NotBlank(message = "物料编码不能为空")
@@ -39,6 +45,7 @@ public class PurchaseReceiptLine extends BaseEntity {
     @NotNull(message = "待检数量不能为空")
     @DecimalMin(value = "0.0", message = "待检数量不能小于0")
     private BigDecimal pendingQuantity;
+    private BigDecimal inboundQuantity;
     private String lotNo;
     private String productionDate;
     private String expiryDate;

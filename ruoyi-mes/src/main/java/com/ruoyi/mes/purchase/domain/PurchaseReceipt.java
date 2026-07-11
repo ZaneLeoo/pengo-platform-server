@@ -18,10 +18,6 @@ public class PurchaseReceipt extends BaseEntity {
     private Long id;
     @NotBlank(message = "到货单编号不能为空")
     private String receiptCode;
-    @NotNull(message = "采购订单不能为空")
-    private Long orderId;
-    @NotBlank(message = "采购订单编号不能为空")
-    private String orderCode;
     private String supplierCode;
     private String supplierName;
     @NotBlank(message = "到货日期不能为空")

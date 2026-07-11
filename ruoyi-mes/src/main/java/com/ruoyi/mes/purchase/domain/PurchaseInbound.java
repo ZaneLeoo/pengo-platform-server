@@ -18,10 +18,6 @@ public class PurchaseInbound extends BaseEntity {
     private Long id;
     @NotBlank(message = "入库单编号不能为空")
     private String inboundCode;
-    @NotNull(message = "到货单不能为空")
-    private Long receiptId;
-    @NotBlank(message = "到货单编号不能为空")
-    private String receiptCode;
     @NotBlank(message = "入库日期不能为空")
     private String inboundDate;
     @NotBlank(message = "入库仓库不能为空")
