@@ -41,6 +41,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         order by parent_id, order_num, category_id
     </select>
 
+    <select id="selectCategoryListForAgent" resultMap="MaterialCategoryResult">
+        <include refid="selectCategoryVo"/>
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (category_code like concat('%', #{keyword}, '%')
+                  OR category_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="parentId != null">
+                AND parent_id = #{parentId}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        order by parent_id, order_num, category_id
+    </select>
+
     <select id="selectCategoryById" parameterType="Long" resultMap="MaterialCategoryResult">
         <include refid="selectCategoryVo"/>
         where category_id = #{categoryId}

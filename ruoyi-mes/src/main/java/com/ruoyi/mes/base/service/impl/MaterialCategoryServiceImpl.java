@@ -36,6 +36,12 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
         return categoryMapper.selectCategoryList(category);
     }
 
+    /** 查询 Agent 工具使用的物料分类列表。 */
+    @Override
+    public List<MaterialCategory> selectCategoryListForAgent(String keyword, Long parentId, String status) {
+        return categoryMapper.selectCategoryListForAgent(keyword, parentId, status);
+    }
+
     /**
      * 根据分类ID查询物料分类。
      *

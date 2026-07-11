@@ -18,6 +18,9 @@ public interface IMaterialCategoryService {
      */
     List<MaterialCategory> selectCategoryList(MaterialCategory category);
 
+    /** 查询 Agent 工具使用的物料分类列表。 */
+    List<MaterialCategory> selectCategoryListForAgent(String keyword, Long parentId, String status);
+
     /**
      * 根据分类ID查询物料分类。
      *
