@@ -25,34 +25,34 @@ public class WarehouseController extends BaseController {
         this.warehouseService = warehouseService;
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:warehouse:list')")
+    @PreAuthorize("@ss.hasPermi('base:warehouse:list')")
     @GetMapping("/list")
     public TableDataInfo list(Warehouse query) {
         startPage();
         return getDataTable(warehouseService.selectList(query));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:warehouse:query')")
+    @PreAuthorize("@ss.hasPermi('base:warehouse:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(warehouseService.selectById(id));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:warehouse:add')")
+    @PreAuthorize("@ss.hasPermi('base:warehouse:add')")
     @PostMapping
     public AjaxResult add(@RequestBody Warehouse warehouse) {
         warehouse.setCreateBy(getUsername());
         return toAjax(warehouseService.insert(warehouse));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:warehouse:edit')")
+    @PreAuthorize("@ss.hasPermi('base:warehouse:edit')")
     @PutMapping
     public AjaxResult edit(@RequestBody Warehouse warehouse) {
         warehouse.setUpdateBy(getUsername());
         return toAjax(warehouseService.update(warehouse));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:warehouse:remove')")
+    @PreAuthorize("@ss.hasPermi('base:warehouse:remove')")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(warehouseService.deleteByIds(ids));

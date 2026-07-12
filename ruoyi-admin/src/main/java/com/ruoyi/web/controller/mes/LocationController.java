@@ -25,34 +25,34 @@ public class LocationController extends BaseController {
         this.locationService = locationService;
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:location:list')")
+    @PreAuthorize("@ss.hasPermi('base:location:list')")
     @GetMapping("/list")
     public TableDataInfo list(Location query) {
         startPage();
         return getDataTable(locationService.selectList(query));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:location:query')")
+    @PreAuthorize("@ss.hasPermi('base:location:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(locationService.selectById(id));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:location:add')")
+    @PreAuthorize("@ss.hasPermi('base:location:add')")
     @PostMapping
     public AjaxResult add(@RequestBody Location location) {
         location.setCreateBy(getUsername());
         return toAjax(locationService.insert(location));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:location:edit')")
+    @PreAuthorize("@ss.hasPermi('base:location:edit')")
     @PutMapping
     public AjaxResult edit(@RequestBody Location location) {
         location.setUpdateBy(getUsername());
         return toAjax(locationService.update(location));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:location:remove')")
+    @PreAuthorize("@ss.hasPermi('base:location:remove')")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(locationService.deleteByIds(ids));

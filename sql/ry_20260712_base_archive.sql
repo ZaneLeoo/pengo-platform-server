@@ -68,27 +68,27 @@ INSERT INTO sys_dict_data (dict_type, dict_label, dict_value, dict_sort, list_cl
 
 -- 5. 菜单
 INSERT INTO sys_menu (menu_name, parent_id, order_num, path, component, menu_type, visible, status, perms, icon, create_by, create_time) VALUES
-('供应商档案', 2004, 10, 'supplier', 'mes/base/supplier/index', 'C', '0', '0', 'mes:supplier:list', 'user', 'admin', NOW()),
-('仓库档案',   2004, 11, 'warehouse', 'mes/base/warehouse/index', 'C', '0', '0', 'mes:warehouse:list', 'home', 'admin', NOW()),
-('库位档案',   2004, 12, 'location', 'mes/base/location/index', 'C', '0', '0', 'mes:location:list', 'environment', 'admin', NOW());
+('供应商档案', 2004, 10, 'supplier', 'mes/base/supplier/index', 'C', '0', '0', 'base:supplier:list', 'user', 'admin', NOW()),
+('仓库档案',   2004, 11, 'warehouse', 'mes/base/warehouse/index', 'C', '0', '0', 'base:warehouse:list', 'home', 'admin', NOW()),
+('库位档案',   2004, 12, 'location', 'mes/base/location/index', 'C', '0', '0', 'base:location:list', 'environment', 'admin', NOW());
 
-SET @supplier_menu_id  = (SELECT menu_id FROM sys_menu WHERE perms = 'mes:supplier:list');
-SET @warehouse_menu_id = (SELECT menu_id FROM sys_menu WHERE perms = 'mes:warehouse:list');
-SET @location_menu_id  = (SELECT menu_id FROM sys_menu WHERE perms = 'mes:location:list');
+SET @supplier_menu_id  = (SELECT menu_id FROM sys_menu WHERE perms = 'base:supplier:list');
+SET @warehouse_menu_id = (SELECT menu_id FROM sys_menu WHERE perms = 'base:warehouse:list');
+SET @location_menu_id  = (SELECT menu_id FROM sys_menu WHERE perms = 'base:location:list');
 
 INSERT INTO sys_menu (menu_name, parent_id, order_num, menu_type, visible, status, perms, create_by, create_time) VALUES
 -- 供应商
-('供应商查询', @supplier_menu_id, 1, 'F', '0', '0', 'mes:supplier:query',  'admin', NOW()),
-('供应商新增', @supplier_menu_id, 2, 'F', '0', '0', 'mes:supplier:add',    'admin', NOW()),
-('供应商修改', @supplier_menu_id, 3, 'F', '0', '0', 'mes:supplier:edit',   'admin', NOW()),
-('供应商删除', @supplier_menu_id, 4, 'F', '0', '0', 'mes:supplier:remove', 'admin', NOW()),
+('供应商查询', @supplier_menu_id, 1, 'F', '0', '0', 'base:supplier:query',  'admin', NOW()),
+('供应商新增', @supplier_menu_id, 2, 'F', '0', '0', 'base:supplier:add',    'admin', NOW()),
+('供应商修改', @supplier_menu_id, 3, 'F', '0', '0', 'base:supplier:edit',   'admin', NOW()),
+('供应商删除', @supplier_menu_id, 4, 'F', '0', '0', 'base:supplier:remove', 'admin', NOW()),
 -- 仓库
-('仓库查询', @warehouse_menu_id, 1, 'F', '0', '0', 'mes:warehouse:query',  'admin', NOW()),
-('仓库新增', @warehouse_menu_id, 2, 'F', '0', '0', 'mes:warehouse:add',    'admin', NOW()),
-('仓库修改', @warehouse_menu_id, 3, 'F', '0', '0', 'mes:warehouse:edit',   'admin', NOW()),
-('仓库删除', @warehouse_menu_id, 4, 'F', '0', '0', 'mes:warehouse:remove', 'admin', NOW()),
+('仓库查询', @warehouse_menu_id, 1, 'F', '0', '0', 'base:warehouse:query',  'admin', NOW()),
+('仓库新增', @warehouse_menu_id, 2, 'F', '0', '0', 'base:warehouse:add',    'admin', NOW()),
+('仓库修改', @warehouse_menu_id, 3, 'F', '0', '0', 'base:warehouse:edit',   'admin', NOW()),
+('仓库删除', @warehouse_menu_id, 4, 'F', '0', '0', 'base:warehouse:remove', 'admin', NOW()),
 -- 库位
-('库位查询', @location_menu_id, 1, 'F', '0', '0', 'mes:location:query',  'admin', NOW()),
-('库位新增', @location_menu_id, 2, 'F', '0', '0', 'mes:location:add',    'admin', NOW()),
-('库位修改', @location_menu_id, 3, 'F', '0', '0', 'mes:location:edit',   'admin', NOW()),
-('库位删除', @location_menu_id, 4, 'F', '0', '0', 'mes:location:remove', 'admin', NOW());
+('库位查询', @location_menu_id, 1, 'F', '0', '0', 'base:location:query',  'admin', NOW()),
+('库位新增', @location_menu_id, 2, 'F', '0', '0', 'base:location:add',    'admin', NOW()),
+('库位修改', @location_menu_id, 3, 'F', '0', '0', 'base:location:edit',   'admin', NOW()),
+('库位删除', @location_menu_id, 4, 'F', '0', '0', 'base:location:remove', 'admin', NOW());

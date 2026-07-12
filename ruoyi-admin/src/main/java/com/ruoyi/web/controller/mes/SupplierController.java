@@ -25,34 +25,34 @@ public class SupplierController extends BaseController {
         this.supplierService = supplierService;
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:supplier:list')")
+    @PreAuthorize("@ss.hasPermi('base:supplier:list')")
     @GetMapping("/list")
     public TableDataInfo list(Supplier query) {
         startPage();
         return getDataTable(supplierService.selectList(query));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:supplier:query')")
+    @PreAuthorize("@ss.hasPermi('base:supplier:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(supplierService.selectById(id));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:supplier:add')")
+    @PreAuthorize("@ss.hasPermi('base:supplier:add')")
     @PostMapping
     public AjaxResult add(@RequestBody Supplier supplier) {
         supplier.setCreateBy(getUsername());
         return toAjax(supplierService.insert(supplier));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:supplier:edit')")
+    @PreAuthorize("@ss.hasPermi('base:supplier:edit')")
     @PutMapping
     public AjaxResult edit(@RequestBody Supplier supplier) {
         supplier.setUpdateBy(getUsername());
         return toAjax(supplierService.update(supplier));
     }
 
-    @PreAuthorize("@ss.hasPermi('mes:supplier:remove')")
+    @PreAuthorize("@ss.hasPermi('base:supplier:remove')")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(supplierService.deleteByIds(ids));
