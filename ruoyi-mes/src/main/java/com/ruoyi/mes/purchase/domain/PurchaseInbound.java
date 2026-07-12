@@ -22,7 +22,6 @@ public class PurchaseInbound extends BaseEntity {
     private String inboundCode;
     @NotBlank(message = "入库日期不能为空")
     private String inboundDate;
-    @NotBlank(message = "入库仓库不能为空")
     private String warehouseCode;
     private String warehouseName;
     @NotBlank(message = "入库单状态不能为空")
