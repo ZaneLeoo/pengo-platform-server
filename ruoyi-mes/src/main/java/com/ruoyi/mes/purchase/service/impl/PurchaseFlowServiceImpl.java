@@ -171,8 +171,19 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
         if (flowMapper.updateInboundStatus(id, APPROVED, DRAFT, operator) != 1) throw new ServiceException("入库单状态已变化，请刷新后重试");
     }
 
-    @Override public List<ReceiptReferenceLine> selectReceiptReferenceLines(String orderCode, String supplierName) { return flowMapper.selectReceiptReferenceLines(orderCode, supplierName); }
-    @Override public List<InboundReferenceLine> selectInboundReferenceLines(String receiptCode, String warehouseCode) { return flowMapper.selectInboundReferenceLines(receiptCode, warehouseCode); }
+    /** 查询可参照生成到货单的订单明细。 */
+    @Override
+    public List<ReceiptReferenceLine> selectReceiptReferenceLines(String orderCode, String supplierName, String materialCode)
+    {
+        return flowMapper.selectReceiptReferenceLines(orderCode, supplierName, materialCode);
+    }
+
+    /** 查询可参照生成入库单的已质检到货明细。 */
+    @Override
+    public List<InboundReferenceLine> selectInboundReferenceLines(String receiptCode, String warehouseCode, String materialCode)
+    {
+        return flowMapper.selectInboundReferenceLines(receiptCode, warehouseCode, materialCode);
+    }
 
     private PurchaseOrder requiredOrder(Long id) { PurchaseOrder order = orderMapper.selectPurchaseOrderById(id); if (order == null) throw new ServiceException("采购订单不存在"); return order; }
     private PurchaseReceipt requiredReceipt(Long id) { PurchaseReceipt receipt = receiptMapper.selectById(id); if (receipt == null) throw new ServiceException("送货单不存在"); return receipt; }

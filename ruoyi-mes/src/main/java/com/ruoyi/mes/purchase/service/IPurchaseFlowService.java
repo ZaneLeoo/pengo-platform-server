@@ -15,6 +15,6 @@ public interface IPurchaseFlowService {
     void uninspectReceipt(Long id, String operator);
     void approveInbound(Long id, String operator);
     void unapproveInbound(Long id, String operator);
-    List<ReceiptReferenceLine> selectReceiptReferenceLines(String orderCode, String supplierName);
-    List<InboundReferenceLine> selectInboundReferenceLines(String receiptCode, String warehouseCode);
+    List<ReceiptReferenceLine> selectReceiptReferenceLines(String orderCode, String supplierName, String materialCode);
+    List<InboundReferenceLine> selectInboundReferenceLines(String receiptCode, String warehouseCode, String materialCode);
 }

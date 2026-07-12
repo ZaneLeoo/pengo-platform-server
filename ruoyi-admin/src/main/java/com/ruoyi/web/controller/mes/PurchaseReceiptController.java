@@ -159,9 +159,10 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:reference')")
     @GetMapping("/reference/order-lines")
     public AjaxResult referenceOrders(@RequestParam(required = false) String orderCode,
-                                      @RequestParam(required = false) String supplierName)
+                                      @RequestParam(required = false) String supplierName,
+                                      @RequestParam(required = false) String materialCode)
     {
-        return success(flowService.selectReceiptReferenceLines(orderCode, supplierName));
+        return success(flowService.selectReceiptReferenceLines(orderCode, supplierName, materialCode));
     }
 
     /** 保存到货单所有明细。 */

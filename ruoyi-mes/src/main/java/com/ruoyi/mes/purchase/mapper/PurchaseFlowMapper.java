@@ -32,6 +32,11 @@ public interface PurchaseFlowMapper {
     int upsertInventoryBalance(@Param("transaction") InventoryTransaction transaction);
     int decreaseInventoryBalance(@Param("transaction") InventoryTransaction transaction);
     int insertInventoryTransaction(InventoryTransaction transaction);
-    List<ReceiptReferenceLine> selectReceiptReferenceLines(@Param("orderCode") String orderCode, @Param("supplierName") String supplierName);
-    List<InboundReferenceLine> selectInboundReferenceLines(@Param("receiptCode") String receiptCode, @Param("warehouseCode") String warehouseCode);
+    List<ReceiptReferenceLine> selectReceiptReferenceLines(@Param("orderCode") String orderCode,
+                                                            @Param("supplierName") String supplierName,
+                                                            @Param("materialCode") String materialCode);
+
+    List<InboundReferenceLine> selectInboundReferenceLines(@Param("receiptCode") String receiptCode,
+                                                            @Param("warehouseCode") String warehouseCode,
+                                                            @Param("materialCode") String materialCode);
 }

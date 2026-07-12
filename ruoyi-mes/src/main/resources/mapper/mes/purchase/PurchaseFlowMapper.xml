@@ -107,24 +107,26 @@
     values(#{transactionType},#{businessId},#{businessCode},#{businessLineId},#{materialId},#{materialCode},#{materialName},#{warehouseCode},#{locationCode},#{lotNo},#{unit},#{quantity},#{sourceReceiptLineId},#{sourceOrderLineId},#{createBy},now(),#{remark})
   </insert>
   <select id="selectReceiptReferenceLines" resultType="com.ruoyi.mes.purchase.domain.dto.ReceiptReferenceLine">
-    select po.id source_order_id, po.order_code source_order_code, pol.id source_order_line_id, pol.line_no source_order_line_no,
-      po.supplier_code, po.supplier_name, pol.material_id, pol.material_code, pol.material_name, pol.spec, pol.unit,
-      pol.order_quantity, pol.received_quantity, pol.order_quantity-pol.received_quantity remaining_quantity
+    select po.id as sourceOrderId, po.order_code as sourceOrderCode, pol.id as sourceOrderLineId, pol.line_no as sourceOrderLineNo,
+      po.supplier_code as supplierCode, po.supplier_name as supplierName, pol.material_id as materialId, pol.material_code as materialCode, pol.material_name as materialName, pol.spec as spec, pol.unit as unit,
+      pol.order_quantity as orderQuantity, pol.received_quantity as receivedQuantity, pol.order_quantity-pol.received_quantity as remainingQuantity
     from purchase_order po inner join purchase_order_line pol on pol.order_id=po.id
     where po.status='APPROVED' and pol.order_quantity&gt;pol.received_quantity
     <if test="orderCode != null and orderCode != ''">and po.order_code like concat('%',#{orderCode},'%')</if>
     <if test="supplierName != null and supplierName != ''">and po.supplier_name like concat('%',#{supplierName},'%')</if>
+    <if test="materialCode != null and materialCode != ''">and pol.material_code like concat('%',#{materialCode},'%')</if>
     order by po.id desc, pol.line_no
   </select>
   <select id="selectInboundReferenceLines" resultType="com.ruoyi.mes.purchase.domain.dto.InboundReferenceLine">
-    select r.id source_receipt_id, r.receipt_code source_receipt_code, rl.id source_receipt_line_id, rl.line_no source_receipt_line_no,
-      rl.source_order_id, rl.source_order_code, rl.source_order_line_id, rl.source_order_line_no,
-      rl.material_id, rl.material_code, rl.material_name, rl.spec, rl.unit, rl.warehouse_code, rl.warehouse_name, rl.location_code, rl.location_name, rl.lot_no,
-      rl.qualified_quantity, rl.inbound_quantity, rl.qualified_quantity-rl.inbound_quantity remaining_quantity
+    select r.id as sourceReceiptId, r.receipt_code as sourceReceiptCode, rl.id as sourceReceiptLineId, rl.line_no as sourceReceiptLineNo,
+      rl.source_order_id as sourceOrderId, rl.source_order_code as sourceOrderCode, rl.source_order_line_id as sourceOrderLineId, rl.source_order_line_no as sourceOrderLineNo,
+      rl.material_id as materialId, rl.material_code as materialCode, rl.material_name as materialName, rl.spec as spec, rl.unit as unit, rl.warehouse_code as warehouseCode, rl.warehouse_name as warehouseName, rl.location_code as locationCode, rl.location_name as locationName, rl.lot_no as lotNo,
+      rl.qualified_quantity as qualifiedQuantity, rl.inbound_quantity as inboundQuantity, rl.qualified_quantity-rl.inbound_quantity as remainingQuantity
     from purchase_receipt r inner join purchase_receipt_line rl on rl.receipt_id=r.id
     where r.status='APPROVED' and r.inspection_status in ('PASSED','PARTIAL') and rl.pending_quantity=0 and rl.qualified_quantity&gt;rl.inbound_quantity
     <if test="receiptCode != null and receiptCode != ''">and r.receipt_code like concat('%',#{receiptCode},'%')</if>
     <if test="warehouseCode != null and warehouseCode != ''">and rl.warehouse_code=#{warehouseCode}</if>
+    <if test="materialCode != null and materialCode != ''">and rl.material_code like concat('%',#{materialCode},'%')</if>
     order by r.id desc, rl.line_no
   </select>
 </mapper>

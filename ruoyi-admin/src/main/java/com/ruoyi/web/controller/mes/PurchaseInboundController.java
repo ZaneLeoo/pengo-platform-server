@@ -138,9 +138,10 @@ public class PurchaseInboundController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:reference')")
     @GetMapping("/reference/receipt-lines")
     public AjaxResult referenceReceipts(@RequestParam(required = false) String receiptCode,
-                                        @RequestParam(required = false) String warehouseCode)
+                                        @RequestParam(required = false) String warehouseCode,
+                                        @RequestParam(required = false) String materialCode)
     {
-        return success(flowService.selectInboundReferenceLines(receiptCode, warehouseCode));
+        return success(flowService.selectInboundReferenceLines(receiptCode, warehouseCode, materialCode));
     }
 
     /** 保存入库单所有明细。 */
