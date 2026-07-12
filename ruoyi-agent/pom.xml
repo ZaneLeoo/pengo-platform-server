@@ -22,6 +22,12 @@
             <artifactId>ruoyi-common</artifactId>
         </dependency>
 
+        <!-- 自动化业务需要调用 MES 主数据与单据服务 -->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-mes</artifactId>
+        </dependency>
+
         <!-- 测试支持 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

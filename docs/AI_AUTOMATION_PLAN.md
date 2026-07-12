@@ -114,3 +114,17 @@ Agent 指令应明确：
 5. 审批待办提醒（只提醒，不替代审批）。
 
 每项能力都先实现“准备/校验”工具，再实现用户确认后的执行接口。
+
+## 6. 第一项能力实施状态
+
+采购订单自动化已完成以下实现：
+
+- Dify 工具：`POST /agent/tools/purchase-orders/prepare`；
+- OpenAPI 文件：`ruoyi-admin/src/main/resources/openapi/agent-purchase-order-automation.yaml`；
+- 登录用户确认接口：`POST /agent/automation/purchase-orders`，要求 `mes:purchaseOrder:add` 权限；
+- agent-ui：识别工具返回的 `READY` 草稿，展示采购订单草稿卡片和确认弹窗；
+- 幂等记录：`agent_automation_action`，同一个确认请求不会重复创建订单；
+- 当前本地数据库已执行 `sql/ry_20260712_agent_automation.sql`。
+
+在 Dify 中导入 OpenAPI 后，需配置 `X-Agent-Tool-Key` 为服务端工具密钥，并在 Agent 指令中采用第 4 节的规则。
+确认创建按钮由 agent-ui 调用，不应被配置为 Dify 的写入工具。
