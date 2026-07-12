@@ -141,8 +141,6 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
         assertStatus(inbound.getStatus(), DRAFT, "入库单只有草稿状态可以审核");
         List<PurchaseInboundLine> lines = inboundMapper.selectLines(id);
         if (lines.isEmpty()) throw new ServiceException("入库单至少需要一条明细");
-        if (flowMapper.countInboundSourceWarehouses(id) > 1) throw new ServiceException("一张入库单只能包含同一仓库的送货明细");
-        if (flowMapper.countInboundHeaderWarehouseMismatch(id) > 0) throw new ServiceException("入库单仓库必须与来源送货明细一致");
         if (flowMapper.updateInboundStatus(id, DRAFT, APPROVED, operator) != 1) throw new ServiceException("入库单状态已变化，请刷新后重试");
         for (PurchaseInboundLine line : lines) {
             if (flowMapper.countValidInboundSource(line) != 1) throw new ServiceException("物料 " + line.getMaterialCode() + " 的来源送货明细无效");

@@ -19,8 +19,6 @@ public interface PurchaseFlowMapper {
     int countReceiptSourceSuppliers(@Param("receiptId") Long receiptId);
     int countReceiptHeaderSupplierMismatch(@Param("receiptId") Long receiptId);
     int countValidReceiptSource(@Param("line") PurchaseReceiptLine line);
-    int countInboundSourceWarehouses(@Param("inboundId") Long inboundId);
-    int countInboundHeaderWarehouseMismatch(@Param("inboundId") Long inboundId);
     int countValidInboundSource(@Param("line") PurchaseInboundLine line);
     int increaseOrderReceived(@Param("orderLineId") Long orderLineId, @Param("quantity") BigDecimal quantity);
     int increaseOrderQualified(@Param("orderLineId") Long orderLineId, @Param("quantity") BigDecimal quantity);
