@@ -37,7 +37,7 @@ public class BomImportController extends BaseController
     private BomOcrWorkflowService bomOcrWorkflowService;
 
     /** 查询 BOM OCR 导入任务列表。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomImport:list')")
+    @PreAuthorize("@ss.hasPermi('base:bomImport:list')")
     @GetMapping("/list")
     public TableDataInfo list(BomImportTask task)
     {
@@ -46,7 +46,7 @@ public class BomImportController extends BaseController
     }
 
     /** 获取 BOM OCR 导入草稿详情。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomImport:query')")
+    @PreAuthorize("@ss.hasPermi('base:bomImport:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id)
     {
@@ -54,7 +54,7 @@ public class BomImportController extends BaseController
     }
 
     /** 从 Dify/大模型结构化结果创建 BOM 导入草稿。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomImport:add')")
+    @PreAuthorize("@ss.hasPermi('base:bomImport:add')")
     @Log(title = "BOM OCR导入草稿", businessType = BusinessType.INSERT)
     @PostMapping("/draft")
     public AjaxResult createDraft(@RequestBody BomImportCreateRequest request)
@@ -63,7 +63,7 @@ public class BomImportController extends BaseController
     }
 
     /** 上传图纸并调用 BOM_OCR Dify 工作流创建导入草稿。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomImport:add')")
+    @PreAuthorize("@ss.hasPermi('base:bomImport:add')")
     @Log(title = "BOM OCR识别导入", businessType = BusinessType.INSERT)
     @PostMapping(value = "/recognize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public AjaxResult recognize(@RequestParam("file") MultipartFile file,
@@ -75,7 +75,7 @@ public class BomImportController extends BaseController
     }
 
     /** 保存人工修正后的 BOM 导入草稿。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomImport:edit')")
+    @PreAuthorize("@ss.hasPermi('base:bomImport:edit')")
     @Log(title = "BOM OCR导入草稿", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
     public AjaxResult updateDraft(@PathVariable Long id, @RequestBody BomImportDraft draft)
@@ -84,7 +84,7 @@ public class BomImportController extends BaseController
     }
 
     /** 校验 BOM 导入草稿。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomImport:query')")
+    @PreAuthorize("@ss.hasPermi('base:bomImport:query')")
     @PostMapping("/{id}/validate")
     public AjaxResult validate(@PathVariable Long id)
     {
@@ -92,7 +92,7 @@ public class BomImportController extends BaseController
     }
 
     /** 将 BOM OCR 导入草稿应用到指定 BOM 版本。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:add')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:add')")
     @Log(title = "BOM OCR导入正式BOM", businessType = BusinessType.INSERT)
     @PostMapping("/{id}/import")
     public AjaxResult importToBomVersion(@PathVariable Long id, @RequestBody BomImportApplyRequest request)
@@ -101,7 +101,7 @@ public class BomImportController extends BaseController
     }
 
     /** 删除 BOM OCR 导入任务。 */
-    @PreAuthorize("@ss.hasPermi('mes:bomImport:remove')")
+    @PreAuthorize("@ss.hasPermi('base:bomImport:remove')")
     @Log(title = "BOM OCR导入草稿", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

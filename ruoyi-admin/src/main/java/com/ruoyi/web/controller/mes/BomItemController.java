@@ -26,7 +26,7 @@ public class BomItemController extends BaseController {
     /**
      * 查询BOM子件明细列表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:list')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:list')")
     @GetMapping("/list")
     public TableDataInfo list(BomItem bomItem) {
         startPage();
@@ -36,7 +36,7 @@ public class BomItemController extends BaseController {
     /**
      * 获取BOM子件明细详情。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:query')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(bomItemService.selectBomItemById(id));
@@ -45,7 +45,7 @@ public class BomItemController extends BaseController {
     /**
      * 新增BOM子件明细。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:add')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:add')")
     @Log(title = "BOM子件明细", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BomItem bomItem) {
@@ -59,7 +59,7 @@ public class BomItemController extends BaseController {
     /**
      * 修改BOM子件明细。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:edit')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:edit')")
     @Log(title = "BOM子件明细", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BomItem bomItem) {
@@ -73,7 +73,7 @@ public class BomItemController extends BaseController {
     /**
      * 删除BOM子件明细。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:remove')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:remove')")
     @Log(title = "BOM子件明细", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
@@ -84,7 +84,7 @@ public class BomItemController extends BaseController {
      * 懒加载 BOM 树形子节点（按父件编码查询）。
      * parentItemCode 为空/不传时返回顶层子件。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:list')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:list')")
     @GetMapping("/children")
     public AjaxResult children(@RequestParam Long bomVersionId,
                                @RequestParam(required = false) String parentItemCode) {
@@ -96,7 +96,7 @@ public class BomItemController extends BaseController {
      * 跨BOM懒加载：按子件编码查找其BOM版本下的子件列表。
      * versionId传入则取指定版本，为空则取默认版本。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomItem:list')")
+    @PreAuthorize("@ss.hasPermi('base:bomItem:list')")
     @GetMapping("/childrenByComponent")
     public AjaxResult childrenByComponent(@RequestParam String componentItemCode,
                                           @RequestParam(required = false) Long bomVersionId) {

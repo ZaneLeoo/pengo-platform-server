@@ -16,7 +16,7 @@
     </resultMap>
 
     <select id="selectList" resultMap="Result">
-        select * from base_supplier
+        select * from supplier
         <where>
             <if test="supplierCode != null and supplierCode != ''">
                 and supplier_code like concat('%', #{supplierCode}, '%')
@@ -32,11 +32,11 @@
     </select>
 
     <select id="selectById" resultMap="Result">
-        select * from base_supplier where id = #{id}
+        select * from supplier where id = #{id}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into base_supplier(supplier_code, supplier_name, contact_person, contact_phone,
+        insert into supplier(supplier_code, supplier_name, contact_person, contact_phone,
                                    address, currency, tax_rate, status, remark,
                                    create_by, create_time)
         values (#{supplierCode}, #{supplierName}, #{contactPerson}, #{contactPhone},
@@ -45,7 +45,7 @@
     </insert>
 
     <update id="update">
-        update base_supplier
+        update supplier
         set supplier_code  = #{supplierCode},
             supplier_name  = #{supplierName},
             contact_person = #{contactPerson},
@@ -61,7 +61,7 @@
     </update>
 
     <delete id="deleteByIds">
-        delete from base_supplier where id in
+        delete from supplier where id in
         <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
     </delete>
 

@@ -26,7 +26,7 @@ public class BomVersionController extends BaseController {
     /**
      * 查询BOM版本列表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:list')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:list')")
     @GetMapping("/list")
     public TableDataInfo list(BomVersion bomVersion) {
         startPage();
@@ -36,7 +36,7 @@ public class BomVersionController extends BaseController {
     /**
      * 获取BOM版本详情。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:query')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(bomVersionService.selectBomVersionById(id));
@@ -45,7 +45,7 @@ public class BomVersionController extends BaseController {
     /**
      * BOM版本完整性检查。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:query')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:query')")
     @GetMapping("/{id}/check")
     public AjaxResult check(@PathVariable Long id) {
         return success(bomVersionService.checkBomVersion(id));
@@ -54,7 +54,7 @@ public class BomVersionController extends BaseController {
     /**
      * BOM版本差异对比。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:query')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:query')")
     @GetMapping("/compare")
     public AjaxResult compare(@RequestParam Long baseVersionId, @RequestParam Long targetVersionId) {
         return success(bomVersionService.compareBomVersion(baseVersionId, targetVersionId));
@@ -63,7 +63,7 @@ public class BomVersionController extends BaseController {
     /**
      * 新增BOM版本。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:add')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:add')")
     @Log(title = "BOM版本", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BomVersion bomVersion) {
@@ -77,7 +77,7 @@ public class BomVersionController extends BaseController {
     /**
      * 修改BOM版本。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:edit')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:edit')")
     @Log(title = "BOM版本", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BomVersion bomVersion) {
@@ -91,7 +91,7 @@ public class BomVersionController extends BaseController {
     /**
      * 删除BOM版本。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:remove')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:remove')")
     @Log(title = "BOM版本", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
@@ -101,7 +101,7 @@ public class BomVersionController extends BaseController {
     /**
      * 复制BOM版本及关联子件明细。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomVersion:add')")
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:add')")
     @Log(title = "BOM版本", businessType = BusinessType.INSERT)
     @PostMapping("/copy")
     public AjaxResult copy(@RequestBody java.util.Map<String, Object> params) {

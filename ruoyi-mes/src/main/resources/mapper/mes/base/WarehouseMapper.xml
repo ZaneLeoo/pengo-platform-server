@@ -13,7 +13,7 @@
     </resultMap>
 
     <select id="selectList" resultMap="Result">
-        select * from base_warehouse
+        select * from warehouse
         <where>
             <if test="warehouseCode != null and warehouseCode != ''">
                 and warehouse_code like concat('%', #{warehouseCode}, '%')
@@ -29,18 +29,18 @@
     </select>
 
     <select id="selectById" resultMap="Result">
-        select * from base_warehouse where id = #{id}
+        select * from warehouse where id = #{id}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into base_warehouse(warehouse_code, warehouse_name, address, manager,
+        insert into warehouse(warehouse_code, warehouse_name, address, manager,
                                     status, remark, create_by, create_time)
         values (#{warehouseCode}, #{warehouseName}, #{address}, #{manager},
                 #{status}, #{remark}, #{createBy}, now())
     </insert>
 
     <update id="update">
-        update base_warehouse
+        update warehouse
         set warehouse_code = #{warehouseCode},
             warehouse_name = #{warehouseName},
             address        = #{address},
@@ -53,7 +53,7 @@
     </update>
 
     <delete id="deleteByIds">
-        delete from base_warehouse where id in
+        delete from warehouse where id in
         <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
     </delete>
 

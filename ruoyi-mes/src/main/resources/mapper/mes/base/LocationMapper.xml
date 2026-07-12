@@ -14,7 +14,7 @@
     </resultMap>
 
     <select id="selectList" resultMap="Result">
-        select * from base_location
+        select * from location
         <where>
             <if test="locationCode != null and locationCode != ''">
                 and location_code like concat('%', #{locationCode}, '%')
@@ -33,11 +33,11 @@
     </select>
 
     <select id="selectById" resultMap="Result">
-        select * from base_location where id = #{id}
+        select * from location where id = #{id}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        insert into base_location(location_code, location_name,
+        insert into location(location_code, location_name,
                                    warehouse_id, warehouse_code, warehouse_name,
                                    status, remark, create_by, create_time)
         values (#{locationCode}, #{locationName},
@@ -46,7 +46,7 @@
     </insert>
 
     <update id="update">
-        update base_location
+        update location
         set location_code = #{locationCode},
             location_name = #{locationName},
             warehouse_id   = #{warehouseId},
@@ -60,7 +60,7 @@
     </update>
 
     <delete id="deleteByIds">
-        delete from base_location where id in
+        delete from location where id in
         <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
     </delete>
 

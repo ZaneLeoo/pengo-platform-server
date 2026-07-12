@@ -37,7 +37,7 @@ public class MaterialCategoryController extends BaseController {
     /**
      * 查询物料分类列表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:materialCategory:list')")
+    @PreAuthorize("@ss.hasPermi('base:materialCategory:list')")
     @GetMapping("/list")
     public AjaxResult list(MaterialCategory category) {
         List<MaterialCategory> list = categoryService.selectCategoryList(category);
@@ -48,7 +48,7 @@ public class MaterialCategoryController extends BaseController {
      * 导出物料分类。
      */
     @Log(title = "物料分类", businessType = BusinessType.EXPORT)
-    @PreAuthorize("@ss.hasPermi('mes:materialCategory:export')")
+    @PreAuthorize("@ss.hasPermi('base:materialCategory:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, MaterialCategory category) {
         List<MaterialCategory> list = categoryService.selectCategoryList(category);
@@ -59,7 +59,7 @@ public class MaterialCategoryController extends BaseController {
     /**
      * 获取物料分类详情。
      */
-    @PreAuthorize("@ss.hasPermi('mes:materialCategory:query')")
+    @PreAuthorize("@ss.hasPermi('base:materialCategory:query')")
     @GetMapping("/{categoryId}")
     public AjaxResult getInfo(@PathVariable Long categoryId) {
         return success(categoryService.selectCategoryById(categoryId));
@@ -68,7 +68,7 @@ public class MaterialCategoryController extends BaseController {
     /**
      * 新增物料分类。
      */
-    @PreAuthorize("@ss.hasPermi('mes:materialCategory:add')")
+    @PreAuthorize("@ss.hasPermi('base:materialCategory:add')")
     @Log(title = "物料分类", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody MaterialCategory category) {
@@ -82,7 +82,7 @@ public class MaterialCategoryController extends BaseController {
     /**
      * 修改物料分类。
      */
-    @PreAuthorize("@ss.hasPermi('mes:materialCategory:edit')")
+    @PreAuthorize("@ss.hasPermi('base:materialCategory:edit')")
     @Log(title = "物料分类", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody MaterialCategory category) {
@@ -96,7 +96,7 @@ public class MaterialCategoryController extends BaseController {
     /**
      * 删除物料分类。
      */
-    @PreAuthorize("@ss.hasPermi('mes:materialCategory:remove')")
+    @PreAuthorize("@ss.hasPermi('base:materialCategory:remove')")
     @Log(title = "物料分类", businessType = BusinessType.DELETE)
     @DeleteMapping("/{categoryId}")
     public AjaxResult remove(@PathVariable Long categoryId) {

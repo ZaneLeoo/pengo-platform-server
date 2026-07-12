@@ -38,7 +38,7 @@ public class MaterialController extends BaseController {
     /**
      * 查询物料列表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:material:list')")
+    @PreAuthorize("@ss.hasPermi('base:material:list')")
     @GetMapping("/list")
     public TableDataInfo list(Material material) {
         startPage();
@@ -50,7 +50,7 @@ public class MaterialController extends BaseController {
      * 导出物料列表。
      */
     @Log(title = "物料主数据", businessType = BusinessType.EXPORT)
-    @PreAuthorize("@ss.hasPermi('mes:material:export')")
+    @PreAuthorize("@ss.hasPermi('base:material:export')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, Material material) {
         List<Material> list = materialService.selectMaterialList(material);
@@ -61,7 +61,7 @@ public class MaterialController extends BaseController {
     /**
      * 获取物料详情。
      */
-    @PreAuthorize("@ss.hasPermi('mes:material:query')")
+    @PreAuthorize("@ss.hasPermi('base:material:query')")
     @GetMapping("/{materialId}")
     public AjaxResult getInfo(@PathVariable Long materialId) {
         return success(materialService.selectMaterialById(materialId));
@@ -70,7 +70,7 @@ public class MaterialController extends BaseController {
     /**
      * 新增物料。
      */
-    @PreAuthorize("@ss.hasPermi('mes:material:add')")
+    @PreAuthorize("@ss.hasPermi('base:material:add')")
     @Log(title = "物料主数据", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody Material material) {
@@ -84,7 +84,7 @@ public class MaterialController extends BaseController {
     /**
      * 修改物料。
      */
-    @PreAuthorize("@ss.hasPermi('mes:material:edit')")
+    @PreAuthorize("@ss.hasPermi('base:material:edit')")
     @Log(title = "物料主数据", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody Material material) {
@@ -98,7 +98,7 @@ public class MaterialController extends BaseController {
     /**
      * 删除物料。
      */
-    @PreAuthorize("@ss.hasPermi('mes:material:remove')")
+    @PreAuthorize("@ss.hasPermi('base:material:remove')")
     @Log(title = "物料主数据", businessType = BusinessType.DELETE)
     @DeleteMapping("/{materialIds}")
     public AjaxResult remove(@PathVariable Long[] materialIds) {

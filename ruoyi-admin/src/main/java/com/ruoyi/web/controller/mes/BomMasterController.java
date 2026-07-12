@@ -29,7 +29,7 @@ public class BomMasterController extends BaseController {
     /**
      * 查询BOM主表列表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomMaster:list')")
+    @PreAuthorize("@ss.hasPermi('base:bomMaster:list')")
     @GetMapping("/list")
     public TableDataInfo list(BomMaster bomMaster) {
         startPage();
@@ -39,7 +39,7 @@ public class BomMasterController extends BaseController {
     /**
      * 导出BOM主表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomMaster:export')")
+    @PreAuthorize("@ss.hasPermi('base:bomMaster:export')")
     @Log(title = "BOM主表", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BomMaster bomMaster) {
@@ -50,7 +50,7 @@ public class BomMasterController extends BaseController {
     /**
      * 获取BOM主表详情。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomMaster:query')")
+    @PreAuthorize("@ss.hasPermi('base:bomMaster:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(bomMasterService.selectBomMasterById(id));
@@ -59,7 +59,7 @@ public class BomMasterController extends BaseController {
     /**
      * 新增BOM主表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomMaster:add')")
+    @PreAuthorize("@ss.hasPermi('base:bomMaster:add')")
     @Log(title = "BOM主表", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody BomMaster bomMaster) {
@@ -73,7 +73,7 @@ public class BomMasterController extends BaseController {
     /**
      * 修改BOM主表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomMaster:edit')")
+    @PreAuthorize("@ss.hasPermi('base:bomMaster:edit')")
     @Log(title = "BOM主表", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody BomMaster bomMaster) {
@@ -87,7 +87,7 @@ public class BomMasterController extends BaseController {
     /**
      * 删除BOM主表。
      */
-    @PreAuthorize("@ss.hasPermi('mes:bomMaster:remove')")
+    @PreAuthorize("@ss.hasPermi('base:bomMaster:remove')")
     @Log(title = "BOM主表", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
