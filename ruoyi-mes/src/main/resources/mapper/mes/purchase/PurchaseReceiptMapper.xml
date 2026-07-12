@@ -11,6 +11,7 @@
         <result property="status" column="status"/>
         <result property="inspectionStatus" column="inspection_status"/>
         <result property="totalQuantity" column="total_quantity"/>
+        <result property="billType" column="bill_type"/>
         <result property="remark" column="remark"/>
     </resultMap>
 
@@ -34,11 +35,11 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into purchase_receipt(receipt_code, supplier_code, supplier_name,
                                      receipt_date, status, inspection_status,
-                                     total_quantity, remark,
+                                     total_quantity, bill_type, remark,
                                      create_by, create_time)
         values (#{receiptCode}, #{supplierCode}, #{supplierName},
                 #{receiptDate}, #{status}, #{inspectionStatus},
-                #{totalQuantity}, #{remark},
+                #{totalQuantity}, #{billType}, #{remark},
                 #{createBy}, now())
     </insert>
 
@@ -51,6 +52,7 @@
             status            = #{status},
             inspection_status = #{inspectionStatus},
             total_quantity    = #{totalQuantity},
+            bill_type         = #{billType},
             remark            = #{remark},
             update_by         = #{updateBy},
             update_time       = now()

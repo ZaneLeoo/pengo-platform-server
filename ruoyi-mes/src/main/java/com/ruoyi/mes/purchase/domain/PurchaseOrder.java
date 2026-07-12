@@ -6,6 +6,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import com.ruoyi.mes.common.enums.PurchaseOrderBillType;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +43,9 @@ public class PurchaseOrder extends BaseEntity {
     private BigDecimal totalAmount;
     @NotBlank(message = "币种不能为空")
     private String currency;
+
+    /** 单据类型：NORMAL */
+    private String billType;
     @Valid
     @NotEmpty(message = "采购订单至少需要一条明细")
     private List<PurchaseOrderLine> lines;

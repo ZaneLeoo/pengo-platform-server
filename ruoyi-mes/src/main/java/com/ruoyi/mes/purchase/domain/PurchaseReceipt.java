@@ -6,6 +6,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import com.ruoyi.mes.common.enums.PurchaseReceiptBillType;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,9 @@ public class PurchaseReceipt extends BaseEntity {
     private Date approvedTime;
     private String inspectionBy;
     private Date inspectionTime;
+    /** 单据类型：DIRECT / PURCHASE_ORDER */
+    private String billType;
+
     @NotNull(message = "到货总数量不能为空")
     @DecimalMin(value = "0.0", message = "到货总数量不能小于0")
     private BigDecimal totalQuantity;

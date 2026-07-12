@@ -13,6 +13,7 @@
         <result property="totalQuantity" column="total_quantity"/>
         <result property="totalAmount" column="total_amount"/>
         <result property="currency" column="currency"/>
+        <result property="billType" column="bill_type"/>
         <result property="remark" column="remark"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -44,7 +45,7 @@
     <sql id="orderColumns">
         select id, order_code, supplier_code, supplier_name, order_date,
                expected_date, status, total_quantity, total_amount,
-               currency, remark, create_by, create_time, update_by, update_time
+               currency, bill_type, remark, create_by, create_time, update_by, update_time
         from purchase_order
     </sql>
 
@@ -75,11 +76,11 @@
     <insert id="insertPurchaseOrder" useGeneratedKeys="true" keyProperty="id">
         insert into purchase_order(order_code, supplier_code, supplier_name,
                                    order_date, expected_date, status,
-                                   total_quantity, total_amount, currency,
+                                   total_quantity, total_amount, currency, bill_type,
                                    remark, create_by, create_time)
         values (#{orderCode}, #{supplierCode}, #{supplierName},
                 #{orderDate}, #{expectedDate}, #{status},
-                #{totalQuantity}, #{totalAmount}, #{currency},
+                #{totalQuantity}, #{totalAmount}, #{currency}, #{billType},
                 #{remark}, #{createBy}, now())
     </insert>
 
@@ -94,6 +95,7 @@
             total_quantity = #{totalQuantity},
             total_amount  = #{totalAmount},
             currency      = #{currency},
+            bill_type     = #{billType},
             remark        = #{remark},
             update_by     = #{updateBy},
             update_time   = now()
