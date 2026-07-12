@@ -101,9 +101,28 @@ public class PurchaseOrderAutomationService
         {
             return result(AutomationPreparationStatus.AMBIGUOUS, "存在多个可选的供应商或物料，请明确选择", List.of(), candidates, null);
         }
-        if (supplier == null || materials.size() != source.lines().size())
+        if (supplier == null)
         {
-            return result(AutomationPreparationStatus.INVALID, "未找到启用的供应商或物料，请检查编码或名称", List.of(), List.of(), null);
+            Supplier inactiveSupplier = findUniqueSupplier(source.supplierKeyword(), null);
+            if (inactiveSupplier != null)
+            {
+                return result(AutomationPreparationStatus.INVALID, "供应商 " + inactiveSupplier.getSupplierCode()
+                    + " 已停用，请选择启用供应商", List.of(), List.of(), null);
+            }
+            return result(AutomationPreparationStatus.INVALID, "未找到供应商：" + source.supplierKeyword(), List.of(), List.of(), null);
+        }
+        if (materials.size() != source.lines().size())
+        {
+            for (PurchaseOrderDraftLineRequest line : source.lines())
+            {
+                Material inactiveMaterial = findUniqueMaterial(line.materialKeyword(), null);
+                if (inactiveMaterial != null && !ACTIVE_MATERIAL_STATUS.equals(inactiveMaterial.getStatus()))
+                {
+                    return result(AutomationPreparationStatus.INVALID, "物料 " + inactiveMaterial.getMaterialCode()
+                        + " 已停用，请选择启用物料", List.of(), List.of(), null);
+                }
+            }
+            return result(AutomationPreparationStatus.INVALID, "未找到启用物料，请检查物料编码或名称", List.of(), List.of(), null);
         }
 
         Set<Long> materialIds = new LinkedHashSet<>();
@@ -218,10 +237,7 @@ public class PurchaseOrderAutomationService
 
     private Supplier resolveSupplier(String keyword, List<AutomationCandidate> candidates)
     {
-        Supplier query = new Supplier();
-        query.setStatus(ACTIVE_SUPPLIER_STATUS);
-        List<Supplier> matched = selectBest(keyword, supplierService.selectList(query), Supplier::getSupplierCode,
-            Supplier::getSupplierName);
+        List<Supplier> matched = selectSuppliers(keyword, ACTIVE_SUPPLIER_STATUS);
         if (matched.size() > 1)
         {
             candidates.add(new AutomationCandidate("supplier", keyword,
@@ -230,6 +246,21 @@ public class PurchaseOrderAutomationService
             return null;
         }
         return matched.isEmpty() ? null : matched.get(0);
+    }
+
+    /** 按关键词在指定状态范围内查询唯一供应商，不产生候选项副作用。 */
+    private Supplier findUniqueSupplier(String keyword, String status)
+    {
+        List<Supplier> matched = selectSuppliers(keyword, status);
+        return matched.size() == 1 ? matched.get(0) : null;
+    }
+
+    /** 查询并按编码、名称优先级匹配供应商。 */
+    private List<Supplier> selectSuppliers(String keyword, String status)
+    {
+        Supplier query = new Supplier();
+        query.setStatus(status);
+        return selectBest(keyword, supplierService.selectList(query), Supplier::getSupplierCode, Supplier::getSupplierName);
     }
 
     private Material resolveMaterial(String keyword, List<AutomationCandidate> candidates)
@@ -250,6 +281,16 @@ public class PurchaseOrderAutomationService
             return null;
         }
         return matched.isEmpty() ? null : matched.get(0);
+    }
+
+    /** 按关键词查询唯一物料，不产生候选项副作用。 */
+    private Material findUniqueMaterial(String keyword, String status)
+    {
+        if (StringUtils.isBlank(keyword)) return null;
+        List<Material> matched = selectBest(keyword,
+            materialService.selectMaterialListForAgent(keyword, null, null, status), Material::getMaterialCode,
+            Material::getMaterialName);
+        return matched.size() == 1 ? matched.get(0) : null;
     }
 
     private <T> List<T> selectBest(String keyword, List<T> source, java.util.function.Function<T, String> code,

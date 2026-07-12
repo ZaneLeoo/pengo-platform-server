@@ -138,7 +138,7 @@ public class AgentChatService
         }
         if (event.getObservation() != null && !event.getObservation().isBlank())
         {
-            data.put("output", parseStructuredValue(event.getObservation()));
+            data.put("output", normalizeToolOutput(event));
         }
         send(emitter, knowledgeEvent ? AgentStreamEventType.KNOWLEDGE : AgentStreamEventType.TOOL, data);
     }
@@ -248,6 +248,24 @@ public class AgentChatService
         return event.getTool();
     }
 
+    /**
+     * 解包 Dify 以工具名包裹的 observation，向前端输出稳定的工具原始响应。
+     *
+     * <p>Dify 某些模型会把同一个 JSON 响应重复拼接成字符串，本方法只解析第一个完整 JSON 值，
+     * 避免前端无法识别自动化草稿等结构化工具结果。</p>
+     */
+    private Object normalizeToolOutput(DifyStreamEvent event)
+    {
+        Object parsed = parseStructuredValue(event.getObservation());
+        if (parsed instanceof Map<?, ?> values && values.containsKey(event.getTool()))
+        {
+            Object nested = values.get(event.getTool());
+            if (nested instanceof String text) return parseStructuredValue(text);
+            return nested;
+        }
+        return parsed;
+    }
+
     /** 将工具输入和输出解析为 JSON；非 JSON 内容按字符串保留。 */
     private Object parseStructuredValue(String value)
     {
@@ -257,8 +275,44 @@ public class AgentChatService
         }
         catch (RuntimeException ignored)
         {
+            String firstJson = extractLeadingJsonValue(value);
+            if (firstJson != null)
+            {
+                try { return JSON.parse(firstJson); }
+                catch (RuntimeException ignoredAgain) { return value; }
+            }
             return value;
         }
+    }
+
+    /** 从 Dify 拼接的响应中截取第一个完整 JSON 对象或数组。 */
+    private String extractLeadingJsonValue(String value)
+    {
+        if (value == null) return null;
+        String text = value.trim();
+        if (text.isEmpty() || (text.charAt(0) != '{' && text.charAt(0) != '[')) return null;
+        int depth = 0;
+        boolean inString = false;
+        boolean escaped = false;
+        for (int index = 0; index < text.length(); index++)
+        {
+            char current = text.charAt(index);
+            if (inString)
+            {
+                if (escaped) escaped = false;
+                else if (current == '\\') escaped = true;
+                else if (current == '"') inString = false;
+                continue;
+            }
+            if (current == '"') inString = true;
+            else if (current == '{' || current == '[') depth++;
+            else if (current == '}' || current == ']')
+            {
+                depth--;
+                if (depth == 0) return text.substring(0, index + 1);
+            }
+        }
+        return null;
     }
 
     /** 提取 Dify 知识库工具输入中的查询文本。 */

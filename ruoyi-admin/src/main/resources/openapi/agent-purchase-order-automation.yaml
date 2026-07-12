@@ -16,10 +16,10 @@ paths:
       description: |
         用户要求建立采购订单时调用。允许传入不完整信息。
         不得编造供应商、物料、数量、单价或日期；应将用户提供的编码或名称放入对应 keyword 字段。
-        - NEED_INPUT：只向用户追问 missingFields；
-        - AMBIGUOUS：展示 candidates 供用户明确选择后再次调用；
-        - INVALID：说明 message 并请用户修正；
-        - READY：向用户概述 draft，要求确认；不要自行创建订单。
+        必须读取响应顶层 nextAction、issues 和 agentInstruction：
+        - ASK_USER：禁止用相同参数重试，向用户追问或要求修正 issues 中的字段；
+        - SELECT_CANDIDATE：展示 candidates，等待用户明确选择编码后再调用；
+        - SHOW_DRAFT：概述 draft，并等待 agent-ui 的确认按钮；不得自行创建订单。
       security:
         - AgentToolKey: []
       requestBody:
@@ -66,6 +66,7 @@ components:
   schemas:
     PurchaseOrderDraftRequest:
       type: object
+      required: [supplierKeyword, orderDate, lines]
       properties:
         supplierKeyword:
           type: string
@@ -89,6 +90,7 @@ components:
             $ref: '#/components/schemas/PurchaseOrderDraftLineRequest'
     PurchaseOrderDraftLineRequest:
       type: object
+      required: [materialKeyword, quantity, unitPrice]
       properties:
         materialKeyword:
           type: string
@@ -100,7 +102,7 @@ components:
         unitPrice:
           type: number
           minimum: 0
-          description: 含税单价，必须大于等于零。
+          description: 含税单价，必须大于等于零。字段名必须严格为 unitPrice；不要传中文字段名、taxPrice、price 或其他替代名称。
         plannedDate:
           type: string
           format: date
@@ -170,10 +172,40 @@ components:
           allOf:
             - $ref: '#/components/schemas/PurchaseOrderDraft'
           nullable: true
+    ToolIssue:
+      type: object
+      required: [code, field, message]
+      properties:
+        code:
+          type: string
+          description: 稳定的问题编码，例如 MISSING_REQUIRED_FIELD。
+        field:
+          type: string
+          description: 下一次调用必须使用的 Java 实体字段路径，例如 lines[0].unitPrice。
+        message:
+          type: string
+          description: 面向 Agent 的明确修正说明。
     PurchaseOrderPreparationResponse:
       type: object
-      required: [success, message, data]
+      required: [success, status, resultCode, nextAction, retryTool, agentInstruction, issues, message, data]
       properties:
         success: { type: boolean, example: true }
+        status: { $ref: '#/components/schemas/PreparationStatus' }
+        resultCode:
+          type: string
+          enum: [MISSING_REQUIRED_FIELDS, AMBIGUOUS_MASTER_DATA, BUSINESS_VALIDATION_FAILED, DRAFT_READY]
+        nextAction:
+          type: string
+          enum: [ASK_USER, SELECT_CANDIDATE, SHOW_DRAFT]
+          description: Agent 必须执行的下一步动作。
+        retryTool:
+          type: boolean
+          description: 当前参数是否允许立即重试；当前版本非 READY 情况均为 false。
+        agentInstruction:
+          type: string
+          description: Agent 必须遵循的执行指令。
+        issues:
+          type: array
+          items: { $ref: '#/components/schemas/ToolIssue' }
         message: { type: string }
         data: { $ref: '#/components/schemas/PreparationResult' }
