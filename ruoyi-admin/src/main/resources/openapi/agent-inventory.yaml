@@ -1,0 +1,244 @@
+openapi: 3.0.3
+info:
+  title: RuoYi Agent - 库存查询工具
+  version: 1.0.0
+  description: |
+    面向企业智能助手的 MES 库存只读工具。
+    余额工具用于查询“当前还有多少库存”；流水工具用于查询“库存为何发生变化”。
+    仅可读取数据，不能修改库存、审核单据或执行入库操作。每次最多返回 50 条。
+servers:
+  - url: http://host.docker.internal:8088
+paths:
+  /agent/tools/inventory/balances/query:
+    post:
+      operationId: queryInventoryBalances
+      summary: 查询当前库存余额
+      description: |
+        当用户询问物料当前库存、可用库存、某仓库库存或库存状态时调用。
+        返回“物料 + 仓库 + 库位 + 批次”维度的当前库存快照。
+        不用于解释库存增减原因；追溯变动应调用 queryInventoryTransactions。
+      security:
+        - AgentToolKey: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InventoryBalanceQueryRequest"
+            examples:
+              materialStock:
+                summary: 查询某物料的库存
+                value:
+                  materialCode: MAT-001
+                  pageNum: 1
+                  pageSize: 20
+      responses:
+        "200":
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryBalanceQueryResponse"
+        "401":
+          description: X-Agent-Tool-Key 缺失或无效
+        "422":
+          description: 请求字段校验失败，例如每页数量超过 50
+  /agent/tools/inventory/transactions/query:
+    post:
+      operationId: queryInventoryTransactions
+      summary: 查询库存变动流水
+      description: |
+        当用户询问库存为何增减、某物料最近入库记录、某单据导致的库存变化时调用。
+        当前流水包含采购入库 INBOUND 与采购入库弃审冲回 INBOUND_REVERSE。
+        不用于获取当前库存余额；当前库存应调用 queryInventoryBalances。
+      security:
+        - AgentToolKey: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InventoryTransactionQueryRequest"
+            examples:
+              inboundHistory:
+                summary: 查询近期采购入库流水
+                value:
+                  transactionType: INBOUND
+                  beginDate: "2026-07-01"
+                  endDate: "2026-07-31"
+                  pageNum: 1
+                  pageSize: 20
+      responses:
+        "200":
+          description: 查询成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryTransactionQueryResponse"
+        "401":
+          description: X-Agent-Tool-Key 缺失或无效
+        "422":
+          description: 请求字段校验失败，例如日期范围非法
+components:
+  securitySchemes:
+    AgentToolKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Tool-Key
+      description: Dify 服务端保存的 RuoYi Agent 工具密钥，不得暴露给浏览器或最终用户。
+  schemas:
+    PageRequest:
+      type: object
+      properties:
+        pageNum:
+          type: integer
+          minimum: 1
+          default: 1
+          description: 页码，从 1 开始。
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 20
+          description: 每页数量；最大 50，避免一次返回过多上下文。
+    InventoryBalanceQueryRequest:
+      allOf:
+        - $ref: "#/components/schemas/PageRequest"
+        - type: object
+          properties:
+            keyword:
+              type: string
+              maxLength: 100
+              description: 同时匹配物料编码、物料名称或仓库编码的关键词。
+            materialCode:
+              type: string
+              maxLength: 64
+              description: 物料编码；支持包含匹配。
+            warehouseCode:
+              type: string
+              maxLength: 64
+              description: 仓库编码；精确匹配。
+            status:
+              type: string
+              enum: [NORMAL, FROZEN, LOCKED]
+              description: 库存状态。NORMAL 正常、FROZEN 冻结、LOCKED 锁定。
+    InventoryTransactionQueryRequest:
+      allOf:
+        - $ref: "#/components/schemas/PageRequest"
+        - type: object
+          properties:
+            keyword:
+              type: string
+              maxLength: 100
+              description: 同时匹配物料编码、物料名称或业务单据编号的关键词。
+            materialCode:
+              type: string
+              maxLength: 64
+              description: 物料编码；支持包含匹配。
+            warehouseCode:
+              type: string
+              maxLength: 64
+              description: 仓库编码；精确匹配。
+            businessCode:
+              type: string
+              maxLength: 64
+              description: 业务单据编号；支持包含匹配。
+            transactionType:
+              type: string
+              enum: [INBOUND, INBOUND_REVERSE]
+              description: INBOUND 为采购入库；INBOUND_REVERSE 为采购入库弃审冲回。
+            beginDate:
+              type: string
+              format: date
+              description: 起始日期，含当天。
+            endDate:
+              type: string
+              format: date
+              description: 结束日期，含当天；不能早于 beginDate。
+    PageInfo:
+      type: object
+      required: [pageNum, pageSize, total, hasMore]
+      properties:
+        pageNum: { type: integer, description: 当前页码 }
+        pageSize: { type: integer, description: 当前页大小 }
+        total: { type: integer, format: int64, description: 匹配总记录数 }
+        hasMore: { type: boolean, description: 是否还有下一页 }
+    ToolMeta:
+      type: object
+      properties:
+        truncated: { type: boolean, description: 当前页后是否还有未返回记录 }
+    InventoryBalanceItem:
+      type: object
+      properties:
+        materialCode: { type: string, description: 物料编码 }
+        materialName: { type: string, description: 物料名称 }
+        warehouseCode: { type: string, description: 仓库编码 }
+        warehouseName:
+          { type: string, nullable: true, description: 仓库名称快照 }
+        locationCode: { type: string, nullable: true, description: 库位编码 }
+        locationName:
+          { type: string, nullable: true, description: 库位名称快照 }
+        lotNo: { type: string, description: 批次号；空字符串表示未区分批次 }
+        unit: { type: string, description: 计量单位 }
+        quantity: { type: number, format: double, description: 库存总数量 }
+        availableQuantity:
+          { type: number, format: double, description: 当前可用库存数量 }
+        lockedQuantity:
+          { type: number, format: double, description: 已锁定库存数量 }
+        status: { type: string, description: 库存状态 }
+        lastInboundDate:
+          {
+            type: string,
+            format: date,
+            nullable: true,
+            description: 最近入库日期,
+          }
+        lastUpdateTime:
+          { type: string, nullable: true, description: 最近库存变动时间 }
+    InventoryTransactionItem:
+      type: object
+      properties:
+        transactionType: { type: string, description: 库存流水类型编码 }
+        transactionTypeLabel:
+          { type: string, description: 库存流水类型中文名称 }
+        businessCode: { type: string, description: 触发流水的入库单编号 }
+        materialCode: { type: string, description: 物料编码 }
+        materialName: { type: string, description: 物料名称 }
+        warehouseCode: { type: string, description: 仓库编码 }
+        locationCode: { type: string, description: 库位编码 }
+        lotNo: { type: string, description: 批次号 }
+        unit: { type: string, description: 计量单位 }
+        quantity:
+          {
+            type: number,
+            format: double,
+            description: 变动数量；正数增加库存，负数冲回库存,
+          }
+        occurredTime:
+          { type: string, format: date-time, description: 流水发生时间 }
+        sourceReceiptCode:
+          { type: string, nullable: true, description: 来源到货单编号 }
+        sourceOrderCode:
+          { type: string, nullable: true, description: 来源采购订单编号 }
+    InventoryBalanceQueryResponse:
+      type: object
+      required: [success, message, data, page, meta]
+      properties:
+        success: { type: boolean, example: true }
+        message: { type: string, example: 查询成功 }
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/InventoryBalanceItem" }
+        page: { $ref: "#/components/schemas/PageInfo" }
+        meta: { $ref: "#/components/schemas/ToolMeta" }
+    InventoryTransactionQueryResponse:
+      type: object
+      required: [success, message, data, page, meta]
+      properties:
+        success: { type: boolean, example: true }
+        message: { type: string, example: 查询成功 }
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/InventoryTransactionItem" }
+        page: { $ref: "#/components/schemas/PageInfo" }
+        meta: { $ref: "#/components/schemas/ToolMeta" }

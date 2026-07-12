@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.purchase.mapper.InventoryAgentQueryMapper">
+  <sql id="balanceWhere">
+    <where>
+      <if test="query.keyword != null and query.keyword != ''">
+        and (b.material_code like concat('%', #{query.keyword}, '%')
+          or b.material_name like concat('%', #{query.keyword}, '%')
+          or b.warehouse_code like concat('%', #{query.keyword}, '%'))
+      </if>
+      <if test="query.materialCode != null and query.materialCode != ''">
+        and b.material_code like concat('%', #{query.materialCode}, '%')
+      </if>
+      <if test="query.warehouseCode != null and query.warehouseCode != ''">
+        and b.warehouse_code = #{query.warehouseCode}
+      </if>
+      <if test="query.status != null and query.status != ''">
+        and b.status = #{query.status}
+      </if>
+    </where>
+  </sql>
+
+  <select id="selectBalanceList" resultType="com.ruoyi.mes.purchase.domain.dto.InventoryBalanceToolItem">
+    select b.material_code as materialCode, b.material_name as materialName,
+      b.warehouse_code as warehouseCode, b.warehouse_name as warehouseName,
+      b.location_code as locationCode, b.location_name as locationName, b.lot_no as lotNo,
+      b.unit as unit, b.quantity as quantity, b.available_quantity as availableQuantity,
+      b.locked_quantity as lockedQuantity, b.status as status,
+      date_format(b.last_inbound_date, '%Y-%m-%d') as lastInboundDate,
+      date_format(b.last_update_time, '%Y-%m-%d %H:%i:%s') as lastUpdateTime
+    from inventory_balance b
+    <include refid="balanceWhere"/>
+    order by b.last_update_time desc, b.id desc
+    limit #{offset}, #{pageSize}
+  </select>
+
+  <select id="countBalances" resultType="long">
+    select count(1) from inventory_balance b
+    <include refid="balanceWhere"/>
+  </select>
+
+  <sql id="transactionWhere">
+    <where>
+      <if test="query.keyword != null and query.keyword != ''">
+        and (t.material_code like concat('%', #{query.keyword}, '%')
+          or t.material_name like concat('%', #{query.keyword}, '%')
+          or t.business_code like concat('%', #{query.keyword}, '%'))
+      </if>
+      <if test="query.materialCode != null and query.materialCode != ''">
+        and t.material_code like concat('%', #{query.materialCode}, '%')
+      </if>
+      <if test="query.warehouseCode != null and query.warehouseCode != ''">
+        and t.warehouse_code = #{query.warehouseCode}
+      </if>
+      <if test="query.businessCode != null and query.businessCode != ''">
+        and t.business_code like concat('%', #{query.businessCode}, '%')
+      </if>
+      <if test="query.transactionType != null and query.transactionType != ''">
+        and t.transaction_type = #{query.transactionType}
+      </if>
+      <if test="query.beginDate != null">
+        and t.create_time &gt;= #{query.beginDate}
+      </if>
+      <if test="query.endDate != null">
+        and t.create_time &lt; date_add(#{query.endDate}, interval 1 day)
+      </if>
+    </where>
+  </sql>
+
+  <select id="selectTransactionList" resultType="com.ruoyi.mes.purchase.domain.dto.InventoryTransactionToolItem">
+    select t.transaction_type as transactionType,
+      case t.transaction_type
+        when 'INBOUND' then '采购入库'
+        when 'INBOUND_REVERSE' then '采购入库弃审冲回'
+        else t.transaction_type
+      end as transactionTypeLabel,
+      t.business_code as businessCode, t.material_code as materialCode, t.material_name as materialName,
+      t.warehouse_code as warehouseCode, t.location_code as locationCode, t.lot_no as lotNo,
+      t.unit as unit, t.quantity as quantity, t.create_time as occurredTime,
+      r.receipt_code as sourceReceiptCode, po.order_code as sourceOrderCode
+    from inventory_transaction t
+      left join purchase_receipt_line rl on rl.id = t.source_receipt_line_id
+      left join purchase_receipt r on r.id = rl.receipt_id
+      left join purchase_order_line pol on pol.id = t.source_order_line_id
+      left join purchase_order po on po.id = pol.order_id
+    <include refid="transactionWhere"/>
+    order by t.create_time desc, t.id desc
+    limit #{offset}, #{pageSize}
+  </select>
+
+  <select id="countTransactions" resultType="long">
+    select count(1) from inventory_transaction t
+    <include refid="transactionWhere"/>
+  </select>
+</mapper>
