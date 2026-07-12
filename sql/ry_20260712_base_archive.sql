@@ -3,8 +3,8 @@
 -- ============================================
 
 -- 1. 供应商档案
-DROP TABLE IF EXISTS mes_supplier;
-CREATE TABLE mes_supplier (
+DROP TABLE IF EXISTS base_supplier;
+CREATE TABLE base_supplier (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     supplier_code VARCHAR(50) NOT NULL COMMENT '供应商编码',
     supplier_name VARCHAR(100) NOT NULL COMMENT '供应商名称',
@@ -21,8 +21,8 @@ CREATE TABLE mes_supplier (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='供应商档案';
 
 -- 2. 仓库档案
-DROP TABLE IF EXISTS mes_warehouse;
-CREATE TABLE mes_warehouse (
+DROP TABLE IF EXISTS base_warehouse;
+CREATE TABLE base_warehouse (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     warehouse_code VARCHAR(50) NOT NULL COMMENT '仓库编码',
     warehouse_name VARCHAR(100) NOT NULL COMMENT '仓库名称',
@@ -38,8 +38,8 @@ CREATE TABLE mes_warehouse (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='仓库档案';
 
 -- 3. 库位档案
-DROP TABLE IF EXISTS mes_location;
-CREATE TABLE mes_location (
+DROP TABLE IF EXISTS base_location;
+CREATE TABLE base_location (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     location_code VARCHAR(50) NOT NULL COMMENT '库位编码',
     location_name VARCHAR(100) NOT NULL COMMENT '库位名称',
