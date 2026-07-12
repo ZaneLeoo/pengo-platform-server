@@ -195,11 +195,22 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
         return ReceiptInspectionStatus.PARTIAL.getCode();
     }
     private InventoryTransaction buildTransaction(PurchaseInbound inbound, PurchaseInboundLine line, BigDecimal quantity, String type, String operator) {
-        InventoryTransaction transaction = new InventoryTransaction();
-        transaction.setTransactionType(type); transaction.setBusinessId(inbound.getId()); transaction.setBusinessCode(inbound.getInboundCode()); transaction.setBusinessLineId(line.getId());
-        transaction.setMaterialId(line.getMaterialId()); transaction.setMaterialCode(line.getMaterialCode()); transaction.setMaterialName(line.getMaterialName());
-        transaction.setWarehouseCode(line.getWarehouseCode()); transaction.setLocationCode(line.getLocationCode() == null ? "" : line.getLocationCode()); transaction.setLotNo(line.getLotNo() == null ? "" : line.getLotNo());
-        transaction.setUnit(line.getUnit()); transaction.setQuantity(quantity); transaction.setSourceReceiptLineId(line.getSourceReceiptLineId()); transaction.setSourceOrderLineId(line.getSourceOrderLineId()); transaction.setCreateBy(operator);
-        return transaction;
+        InventoryTransaction t = new InventoryTransaction();
+        t.setTransactionType(type);
+        t.setBusinessId(inbound.getId());
+        t.setBusinessCode(inbound.getInboundCode());
+        t.setBusinessLineId(line.getId());
+        t.setMaterialId(line.getMaterialId());
+        t.setMaterialCode(line.getMaterialCode());
+        t.setMaterialName(line.getMaterialName());
+        t.setWarehouseCode(line.getWarehouseCode());
+        t.setLocationCode(line.getLocationCode() == null ? "" : line.getLocationCode());
+        t.setLotNo(line.getLotNo() == null ? "" : line.getLotNo());
+        t.setUnit(line.getUnit());
+        t.setQuantity(quantity);
+        t.setSourceReceiptLineId(line.getSourceReceiptLineId());
+        t.setSourceOrderLineId(line.getSourceOrderLineId());
+        t.setCreateBy(operator);
+        return t;
     }
 }
