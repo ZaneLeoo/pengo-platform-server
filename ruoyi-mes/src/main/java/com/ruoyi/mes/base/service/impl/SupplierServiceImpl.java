@@ -18,6 +18,12 @@ public class SupplierServiceImpl implements ISupplierService {
     @Override
     public List<Supplier> selectList(Supplier q) { return mapper.selectList(q); }
 
+    /** 查询面向 AI 工具的供应商最小候选集。 */
+    @Override
+    public List<Supplier> selectListForAgent(String keyword, String status) {
+        return mapper.selectListForAgent(keyword, status);
+    }
+
     @Override
     public Supplier selectById(Long id) { return mapper.selectById(id); }
 

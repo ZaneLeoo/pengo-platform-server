@@ -35,6 +35,21 @@
         select * from supplier where id = #{id}
     </select>
 
+    <select id="selectListForAgent" resultMap="Result">
+        select * from supplier
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (supplier_code like concat('%', #{keyword}, '%')
+                     or supplier_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by supplier_code
+        limit 51
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into supplier(supplier_code, supplier_name, contact_person, contact_phone,
                                    address, currency, tax_rate, status, remark,

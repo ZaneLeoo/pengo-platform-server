@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: RuoYi Agent - 供应商查询工具
+  version: 1.0.0
+  description: |
+    面向企业智能助手的供应商只读查询工具。
+    可用于查询供应商档案，或在建立采购订单前帮助用户确认供应商。
+    默认只返回启用供应商，且不会暴露联系人电话、地址等非必要信息。
+servers:
+  - url: http://host.docker.internal:8088
+paths:
+  /agent/tools/suppliers/query:
+    post:
+      operationId: querySuppliers
+      summary: 查询供应商
+      description: |
+        当用户询问供应商信息、供应商是否存在，或需要确认采购订单供应商时调用。
+        keyword 同时匹配供应商编码和供应商名称。查询结果只用于回答或帮助用户选择，
+        不得根据查询结果自行创建、审核或修改采购单据。
+      security:
+        - AgentToolKey: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupplierQueryRequest'
+            examples:
+              byName:
+                summary: 按名称查询供应商
+                value:
+                  keyword: 鸿发电子
+              includeDisabled:
+                summary: 查询含停用供应商的全部候选
+                value:
+                  keyword: 上海
+                  includeDisabled: true
+      responses:
+        '200':
+          description: 查询成功。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupplierQueryResponse'
+        '401':
+          description: X-Agent-Tool-Key 缺失或无效。
+components:
+  securitySchemes:
+    AgentToolKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Tool-Key
+      description: Dify 服务端保存的 RuoYi Agent 工具密钥，不得暴露给浏览器或最终用户。
+  schemas:
+    SupplierQueryRequest:
+      type: object
+      properties:
+        keyword:
+          type: string
+          maxLength: 100
+          description: 供应商编码或名称关键词；为空时返回启用供应商列表。
+        includeDisabled:
+          type: boolean
+          default: false
+          description: 是否包含停用供应商；默认 false。
+    SupplierItem:
+      type: object
+      required: [id, code, name, status]
+      properties:
+        id: { type: integer, format: int64, description: 供应商主键 }
+        code: { type: string, description: 供应商编码 }
+        name: { type: string, description: 供应商名称 }
+        currency: { type: string, nullable: true, description: 默认币种 }
+        taxRate: { type: number, nullable: true, description: 默认税率百分比 }
+        status: { type: string, enum: [NORMAL, DISABLED], description: 档案状态 }
+    ToolMeta:
+      type: object
+      properties:
+        truncated: { type: boolean, description: 是否因最大 50 条限制而截断 }
+    SupplierQueryResponse:
+      type: object
+      required: [success, message, data, total, meta]
+      properties:
+        success: { type: boolean, example: true }
+        message: { type: string, example: 查询成功 }
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/SupplierItem' }
+        total: { type: integer, description: 匹配数量；超过限制时返回 51 表示至少还有更多。 }
+        meta: { $ref: '#/components/schemas/ToolMeta' }
