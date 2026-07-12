@@ -74,6 +74,7 @@ public class PurchaseOrderAutomationService
     {
         PurchaseOrderDraftRequest source = request == null
             ? new PurchaseOrderDraftRequest(null, null, null, null, List.of()) : request;
+        source = applyDefaults(source);
         List<String> missing = collectMissingFields(source);
         if (!missing.isEmpty())
         {
@@ -233,6 +234,15 @@ public class PurchaseOrderAutomationService
             }
         }
         return fields;
+    }
+
+    /** 补齐可以由系统安全推导的字段，避免向用户追问非必要信息。 */
+    private PurchaseOrderDraftRequest applyDefaults(PurchaseOrderDraftRequest request)
+    {
+        String orderDate = StringUtils.isBlank(request.orderDate())
+            ? LocalDate.now().format(DATE_FORMATTER) : request.orderDate().trim();
+        return new PurchaseOrderDraftRequest(request.supplierKeyword(), orderDate, request.expectedDate(),
+            request.remark(), request.lines());
     }
 
     private Supplier resolveSupplier(String keyword, List<AutomationCandidate> candidates)

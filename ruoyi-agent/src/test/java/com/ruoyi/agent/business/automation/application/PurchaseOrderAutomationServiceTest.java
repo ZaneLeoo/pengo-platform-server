@@ -22,6 +22,8 @@ import com.ruoyi.mes.base.service.ISupplierService;
 import com.ruoyi.mes.purchase.domain.PurchaseOrder;
 import com.ruoyi.mes.purchase.service.IPurchaseOrderService;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,6 +80,21 @@ class PurchaseOrderAutomationServiceTest
 
         assertThat(result.status()).isEqualTo(AutomationPreparationStatus.NEED_INPUT);
         assertThat(result.missingFields()).contains("第 1 行物料", "第 1 行采购数量", "第 1 行含税单价");
+    }
+
+    @Test
+    void shouldDefaultOrderDateToToday()
+    {
+        Supplier supplier = supplier("SUP001", "深圳鸿发电子科技有限公司", new BigDecimal("13"));
+        Material material = material(10L, "PCB-CTRL", "PCB控制板", "块");
+        when(supplierService.selectList(any())).thenReturn(List.of(supplier));
+        when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString())).thenReturn(List.of(material));
+
+        PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", null,
+            null, null, List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
+
+        assertThat(result.status()).isEqualTo(AutomationPreparationStatus.READY);
+        assertThat(result.draft().orderDate()).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
 
     @Test

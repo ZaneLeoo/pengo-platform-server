@@ -66,7 +66,7 @@ components:
   schemas:
     PurchaseOrderDraftRequest:
       type: object
-      required: [supplierKeyword, orderDate, lines]
+      required: [supplierKeyword, lines]
       properties:
         supplierKeyword:
           type: string
@@ -74,7 +74,7 @@ components:
         orderDate:
           type: string
           format: date
-          description: 订单日期，yyyy-MM-dd。
+          description: 订单日期，yyyy-MM-dd；可选。不传时后端默认使用当前日期，不要为此向用户追问。
         expectedDate:
           type: string
           format: date
