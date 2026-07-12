@@ -6,8 +6,6 @@
         <id property="id" column="id"/>
         <result property="inboundCode" column="inbound_code"/>
         <result property="inboundDate" column="inbound_date"/>
-        <result property="warehouseCode" column="warehouse_code"/>
-        <result property="warehouseName" column="warehouse_name"/>
         <result property="status" column="status"/>
         <result property="totalQuantity" column="total_quantity"/>
         <result property="billType" column="bill_type"/>
@@ -33,11 +31,9 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into purchase_inbound(inbound_code, inbound_date,
-                                     warehouse_code, warehouse_name,
                                      status, total_quantity, bill_type, remark,
                                      create_by, create_time)
         values (#{inboundCode}, #{inboundDate},
-                #{warehouseCode}, #{warehouseName},
                 #{status}, #{totalQuantity}, #{billType}, #{remark},
                 #{createBy}, now())
     </insert>
@@ -46,8 +42,6 @@
         update purchase_inbound
         set inbound_code  = #{inboundCode},
             inbound_date  = #{inboundDate},
-            warehouse_code = #{warehouseCode},
-            warehouse_name = #{warehouseName},
             status        = #{status},
             total_quantity = #{totalQuantity},
             bill_type      = #{billType},
