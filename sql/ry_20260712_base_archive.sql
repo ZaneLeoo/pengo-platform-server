@@ -11,6 +11,8 @@ CREATE TABLE base_supplier (
     contact_person VARCHAR(50) DEFAULT NULL COMMENT '联系人',
     contact_phone VARCHAR(30) DEFAULT NULL COMMENT '联系电话',
     address VARCHAR(200) DEFAULT NULL COMMENT '地址',
+    currency VARCHAR(10) DEFAULT 'CNY' COMMENT '币种',
+    tax_rate DECIMAL(5,2) DEFAULT NULL COMMENT '税率(%)',
     status VARCHAR(20) NOT NULL DEFAULT 'NORMAL' COMMENT '状态：NORMAL正常/DISABLED停用',
     remark VARCHAR(500) DEFAULT NULL COMMENT '备注',
     create_by VARCHAR(64) DEFAULT '' COMMENT '创建人',
