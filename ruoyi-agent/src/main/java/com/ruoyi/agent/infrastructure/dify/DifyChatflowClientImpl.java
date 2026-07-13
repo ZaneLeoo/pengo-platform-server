@@ -47,13 +47,13 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
     public void stream(DifyClientSettings settings, DifyChatRequest request, Consumer<DifyStreamEvent> consumer)
             throws IOException, InterruptedException {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("query", request.query());
-        body.put("inputs", request.inputs());
+        body.put("query", request.getQuery());
+        body.put("inputs", request.getInputs());
         body.put("response_mode", "streaming");
         body.put("auto_generate_name", false);
-        body.put("user", request.user());
-        if (request.conversationId() != null && !request.conversationId().isBlank()) {
-            body.put("conversation_id", request.conversationId());
+        body.put("user", request.getUser());
+        if (request.getConversationId() != null && !request.getConversationId().isBlank()) {
+            body.put("conversation_id", request.getConversationId());
         }
         HttpResponse<java.io.InputStream> response = httpClient.send(build(settings,
                 "/chat-messages", JSON.toJSONString(body)), HttpResponse.BodyHandlers.ofInputStream());
@@ -78,9 +78,9 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
 
     /** 构建统一鉴权和超时策略的 POST 请求。 */
     private HttpRequest build(DifyClientSettings settings, String path, String body) {
-        String baseUrl = settings.baseUrl().replaceAll("/+$", "");
+        String baseUrl = settings.getBaseUrl().replaceAll("/+$", "");
         return HttpRequest.newBuilder(URI.create(baseUrl + path)).timeout(REQUEST_TIMEOUT)
-                .header("Authorization", "Bearer " + settings.apiKey()).header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + settings.getApiKey()).header("Content-Type", "application/json")
                 .header("Accept", "text/event-stream").POST(HttpRequest.BodyPublishers.ofString(body)).build();
     }
 

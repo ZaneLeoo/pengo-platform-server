@@ -15,12 +15,12 @@ class AgentToolResultsTest {
         AgentToolResult<String> result = AgentToolResults.confirm(TestCode.DRAFT_READY,
                 "草稿已准备", "draft", "由前端展示确认卡片。");
 
-        assertEquals(AgentToolStatus.SUCCESS, result.status());
-        assertEquals(AgentToolNextAction.CONFIRM_ACTION, result.nextAction());
-        assertEquals("DRAFT_READY", result.resultCode());
-        assertFalse(result.retryable());
-        assertTrue(result.agentInstruction().contains("不要执行真实写操作"));
-        assertTrue(result.agentInstruction().contains("由前端展示确认卡片"));
+        assertEquals(AgentToolStatus.SUCCESS, result.getStatus());
+        assertEquals(AgentToolNextAction.CONFIRM_ACTION, result.getNextAction());
+        assertEquals("DRAFT_READY", result.getResultCode());
+        assertFalse(result.isRetryable());
+        assertTrue(result.getAgentInstruction().contains("不要执行真实写操作"));
+        assertTrue(result.getAgentInstruction().contains("由前端展示确认卡片"));
     }
 
     @Test
@@ -29,11 +29,11 @@ class AgentToolResultsTest {
         AgentToolResult<Void> result = AgentToolResults.needInput(TestCode.MISSING,
                 "信息不完整", List.of(issue), null);
 
-        assertEquals(AgentToolStatus.NEED_INPUT, result.status());
-        assertEquals(AgentToolNextAction.ASK_USER, result.nextAction());
-        assertEquals(List.of(issue), result.issues());
-        assertFalse(result.retryable());
-        assertNull(result.data());
+        assertEquals(AgentToolStatus.NEED_INPUT, result.getStatus());
+        assertEquals(AgentToolNextAction.ASK_USER, result.getNextAction());
+        assertEquals(List.of(issue), result.getIssues());
+        assertFalse(result.isRetryable());
+        assertNull(result.getData());
     }
 
     private enum TestCode implements AgentToolResultCode {

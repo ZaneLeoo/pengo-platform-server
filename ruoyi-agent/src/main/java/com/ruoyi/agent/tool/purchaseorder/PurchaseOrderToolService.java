@@ -29,41 +29,41 @@ public class PurchaseOrderToolService {
     /** 校验并准备采购订单草稿，绝不写入真实单据。 */
     public AgentToolResult<PurchaseOrderDraft> prepare(PurchaseOrderDraftRequest request) {
         PurchaseOrderPreparationResult result = automationService.prepare(request);
-        return switch (result.status()) {
+        return switch (result.getStatus()) {
             case NEED_INPUT -> AgentToolResults.needInput(PurchaseOrderToolResultCode.MISSING_REQUIRED_FIELDS,
-                    result.message(), issues(result), null);
+                    result.getMessage(), issues(result), null);
             case AMBIGUOUS -> AgentToolResults.ambiguous(PurchaseOrderToolResultCode.AMBIGUOUS_MASTER_DATA,
-                    result.message(), issues(result), null);
+                    result.getMessage(), issues(result), null);
             case INVALID -> AgentToolResults.rejected(PurchaseOrderToolResultCode.BUSINESS_VALIDATION_FAILED,
-                    result.message(), issues(result), null);
+                    result.getMessage(), issues(result), null);
             case READY -> AgentToolResults.confirm(PurchaseOrderToolResultCode.PURCHASE_ORDER_DRAFT_READY,
-                    result.message(), result.draft(), "由 agent-ui 展示采购订单确认卡片并等待用户确认。");
+                    result.getMessage(), result.getDraft(), "由 agent-ui 展示采购订单确认卡片并等待用户确认。");
         };
     }
 
     /** 把业务校验信息转换成字段路径明确的协议问题。 */
     private List<AgentToolIssue> issues(PurchaseOrderPreparationResult result) {
         List<AgentToolIssue> issues = new ArrayList<>();
-        result.missingFields().forEach(field -> issues.add(missingFieldIssue(field)));
-        result.candidates().forEach(candidate -> issues.add(candidateIssue(candidate)));
-        if (issues.isEmpty() && result.status().name().equals("INVALID")) {
-            issues.add(invalidIssue(result.message()));
+        result.getMissingFields().forEach(field -> issues.add(missingFieldIssue(field)));
+        result.getCandidates().forEach(candidate -> issues.add(candidateIssue(candidate)));
+        if (issues.isEmpty() && result.getStatus().name().equals("INVALID")) {
+            issues.add(invalidIssue(result.getMessage()));
         }
         return issues;
     }
 
     /** 转换需要用户选择的主数据候选项。 */
     private AgentToolIssue candidateIssue(AutomationCandidate candidate) {
-        String field = "supplier".equals(candidate.field()) ? "supplierKeyword" : "lines[].materialKeyword";
-        List<AgentToolCandidate> options = candidate.options().stream().map(this::toCandidate).toList();
+        String field = "supplier".equals(candidate.getField()) ? "supplierKeyword" : "lines[].materialKeyword";
+        List<AgentToolCandidate> options = candidate.getOptions().stream().map(this::toCandidate).toList();
         return new AgentToolIssue("AMBIGUOUS_MASTER_DATA", field, "存在多个候选项，请按编码明确选择",
                 "传入选中候选项的 code", options);
     }
 
     /** 转换候选项的展示字段。 */
     private AgentToolCandidate toCandidate(AutomationCandidateOption option) {
-        String description = String.join(" / ", nonBlank(option.spec(), option.model(), option.unit()));
-        return new AgentToolCandidate(option.code(), option.name(), description);
+        String description = String.join(" / ", nonBlank(option.getSpec(), option.getModel(), option.getUnit()));
+        return new AgentToolCandidate(option.getCode(), option.getName(), description);
     }
 
     /** 返回常见业务失败对应的实体字段。 */

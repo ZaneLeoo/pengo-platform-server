@@ -21,9 +21,9 @@ public class MaterialToolService {
     /** 查询物料并转换成适合模型消费的最小字段集合。 */
     public AgentToolResult<List<MaterialToolItem>> query(MaterialToolQuery request) {
         MaterialToolQuery query = request == null ? new MaterialToolQuery() : request;
-        String status = Boolean.FALSE.equals(query.includeDisabled()) ? "0" : null;
-        List<Material> matched = materialService.selectMaterialListForAgent(query.keyword(), query.categoryId(),
-                query.materialType(), status);
+        String status = Boolean.FALSE.equals(query.getIncludeDisabled()) ? "0" : null;
+        List<Material> matched = materialService.selectMaterialListForAgent(query.getKeyword(), query.getCategoryId(),
+                query.getMaterialType(), status);
         boolean truncated = matched.size() > MAX_RESULT_SIZE;
         List<MaterialToolItem> data = matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
         AgentToolMeta meta = AgentToolMeta.collection(matched.size(), truncated);

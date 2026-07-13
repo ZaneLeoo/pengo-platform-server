@@ -27,8 +27,8 @@ public class InventoryAssistantQueryServiceImpl implements IInventoryAssistantQu
     /** 查询指定条件下的当前库存余额。 */
     @Override
     public InventoryToolPage<InventoryBalanceToolItem> queryBalances(InventoryBalanceQuery query) {
-        int pageNum = resolvePageNum(query.pageNum());
-        int pageSize = resolvePageSize(query.pageSize());
+        int pageNum = resolvePageNum(query.getPageNum());
+        int pageSize = resolvePageSize(query.getPageSize());
         long total = inventoryQueryMapper.countBalances(query);
         List<InventoryBalanceToolItem> data = total == 0
                 ? List.of()
@@ -40,8 +40,8 @@ public class InventoryAssistantQueryServiceImpl implements IInventoryAssistantQu
     @Override
     public InventoryToolPage<InventoryTransactionToolItem> queryTransactions(InventoryTransactionQuery query) {
         validateDateRange(query);
-        int pageNum = resolvePageNum(query.pageNum());
-        int pageSize = resolvePageSize(query.pageSize());
+        int pageNum = resolvePageNum(query.getPageNum());
+        int pageSize = resolvePageSize(query.getPageSize());
         long total = inventoryQueryMapper.countTransactions(query);
         List<InventoryTransactionToolItem> data = total == 0
                 ? List.of()
@@ -51,7 +51,8 @@ public class InventoryAssistantQueryServiceImpl implements IInventoryAssistantQu
 
     /** 校验流水查询日期范围。 */
     private void validateDateRange(InventoryTransactionQuery query) {
-        if (query.beginDate() != null && query.endDate() != null && query.beginDate().isAfter(query.endDate())) {
+        if (query.getBeginDate() != null && query.getEndDate() != null
+                && query.getBeginDate().isAfter(query.getEndDate())) {
             throw new ServiceException("开始日期不能晚于结束日期");
         }
     }

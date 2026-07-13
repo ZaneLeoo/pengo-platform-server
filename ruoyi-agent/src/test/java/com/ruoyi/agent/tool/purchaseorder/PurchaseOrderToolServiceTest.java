@@ -33,10 +33,10 @@ class PurchaseOrderToolServiceTest {
 
         AgentToolResult<PurchaseOrderDraft> result = toolService.prepare(request);
 
-        assertEquals(AgentToolStatus.SUCCESS, result.status());
-        assertEquals(AgentToolNextAction.CONFIRM_ACTION, result.nextAction());
-        assertEquals("PURCHASE_ORDER_DRAFT_READY", result.resultCode());
-        assertSame(draft, result.data());
+        assertEquals(AgentToolStatus.SUCCESS, result.getStatus());
+        assertEquals(AgentToolNextAction.CONFIRM_ACTION, result.getNextAction());
+        assertEquals("PURCHASE_ORDER_DRAFT_READY", result.getResultCode());
+        assertSame(draft, result.getData());
     }
 
     @Test
@@ -49,8 +49,8 @@ class PurchaseOrderToolServiceTest {
 
         AgentToolResult<PurchaseOrderDraft> result = toolService.prepare(null);
 
-        assertEquals(AgentToolStatus.NEED_INPUT, result.status());
-        assertEquals("lines[0].unitPrice", result.issues().get(0).field());
-        assertTrue(result.agentInstruction().contains("不要用相同参数重试"));
+        assertEquals(AgentToolStatus.NEED_INPUT, result.getStatus());
+        assertEquals("lines[0].unitPrice", result.getIssues().get(0).getField());
+        assertTrue(result.getAgentInstruction().contains("不要用相同参数重试"));
     }
 }

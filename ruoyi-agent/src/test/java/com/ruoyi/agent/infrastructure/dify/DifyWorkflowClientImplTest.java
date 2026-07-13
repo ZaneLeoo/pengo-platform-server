@@ -54,8 +54,8 @@ class DifyWorkflowClientImplTest {
                 new DifyFileUploadRequest("bom.png", "image/png", "abc".getBytes(StandardCharsets.UTF_8),
                         "ruoyi-user-1"));
 
-        assertEquals("file-1", result.id());
-        assertEquals("png", result.extension());
+        assertEquals("file-1", result.getId());
+        assertEquals("png", result.getExtension());
     }
 
     @Test
@@ -77,10 +77,10 @@ class DifyWorkflowClientImplTest {
                 new DifyClientSettings(baseUrl, "secret"),
                 new DifyWorkflowRunRequest(Map.of("query", "识别BOM"), "ruoyi-user-1"));
 
-        assertEquals("task-1", result.taskId());
-        assertEquals("run-1", result.workflowRunId());
-        assertEquals("succeeded", result.status());
-        assertTrue(String.valueOf(result.outputs().get("result")).contains("version"));
+        assertEquals("task-1", result.getTaskId());
+        assertEquals("run-1", result.getWorkflowRunId());
+        assertEquals("succeeded", result.getStatus());
+        assertTrue(String.valueOf(result.getOutputs().get("result")).contains("version"));
     }
 
     @Test
@@ -106,9 +106,9 @@ class DifyWorkflowClientImplTest {
                 new DifyClientSettings(baseUrl, "secret"), new DifyWorkflowRunRequest(Map.of("query", "识别BOM"),
                         "ruoyi-user-1"));
 
-        assertEquals("task-2", result.taskId());
-        assertEquals("run-2", result.workflowRunId());
-        assertEquals("succeeded", result.status());
-        assertTrue(String.valueOf(result.outputs().get("result")).contains("version"));
+        assertEquals("task-2", result.getTaskId());
+        assertEquals("run-2", result.getWorkflowRunId());
+        assertEquals("succeeded", result.getStatus());
+        assertTrue(String.valueOf(result.getOutputs().get("result")).contains("version"));
     }
 }

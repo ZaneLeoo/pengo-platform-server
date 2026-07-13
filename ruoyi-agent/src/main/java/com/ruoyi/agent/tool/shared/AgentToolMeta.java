@@ -1,7 +1,18 @@
 package com.ruoyi.agent.tool.shared;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /** Agent 工具结果的数量、截断和分页信息。 */
-public record AgentToolMeta(Long total, Boolean truncated, AgentToolPage page) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AgentToolMeta {
+    private Long total;
+    private Boolean truncated;
+    private AgentToolPage page;
+
     /** 创建非分页查询的元数据。 */
     public static AgentToolMeta collection(long total, boolean truncated) {
         return new AgentToolMeta(total, truncated, null);

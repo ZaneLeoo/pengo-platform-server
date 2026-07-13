@@ -132,38 +132,40 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
 
     @Override
     public PurchaseQuoteCompareResult compare(PurchaseQuoteCompareRequest request) {
-        if (request == null || request.lines() == null || request.lines().isEmpty())
+        if (request == null || request.getLines() == null || request.getLines().isEmpty())
             return new PurchaseQuoteCompareResult(NEED_INPUT, "MISSING_REQUIRED_FIELDS", "ASK_USER",
                     "缺少报价比较明细，必须传 lines 数组。", List.of("lines"), List.of(), List.of());
-        String currency = defaultCurrency(request.currency());
-        String basis = StringUtils.isBlank(request.priceBasis()) ? "TAX_INCLUDED" : request.priceBasis().trim();
+        String currency = defaultCurrency(request.getCurrency());
+        String basis = StringUtils.isBlank(request.getPriceBasis()) ? "TAX_INCLUDED" : request.getPriceBasis().trim();
         if (!"TAX_INCLUDED".equals(basis) && !TAX_EXCLUDED_BASIS.equals(basis))
             return invalid("priceBasis 必须是 TAX_INCLUDED 或 TAX_EXCLUDED。", "priceBasis");
-        String strategy = StringUtils.isBlank(request.strategy()) ? LOWEST_VALID_PRICE : request.strategy().trim();
+        String strategy = StringUtils.isBlank(request.getStrategy())
+                ? LOWEST_VALID_PRICE
+                : request.getStrategy().trim();
         if (!LOWEST_VALID_PRICE.equals(strategy))
             return invalid("strategy 当前只支持 LOWEST_VALID_PRICE。", "strategy");
 
         List<PurchaseQuoteRecommendation> recommendations = new ArrayList<>();
         List<PurchaseQuoteCandidate> allCandidates = new ArrayList<>();
-        for (int index = 0; index < request.lines().size(); index++) {
-            PurchaseQuoteCompareLineRequest line = request.lines().get(index);
+        for (int index = 0; index < request.getLines().size(); index++) {
+            PurchaseQuoteCompareLineRequest line = request.getLines().get(index);
             String prefix = "lines[" + index + "].";
-            if (line == null || StringUtils.isBlank(line.materialCode()))
+            if (line == null || StringUtils.isBlank(line.getMaterialCode()))
                 return needInput(prefix + "materialCode", "缺少物料编码，必须传 materialCode。");
-            if (!positive(line.quantity()))
+            if (!positive(line.getQuantity()))
                 return needInput(prefix + "quantity", "采购数量必须大于0，必须传 quantity。");
             LocalDate asOfDate = LocalDate.now();
-            if (StringUtils.isNotBlank(line.requiredDate()) && !isDate(line.requiredDate()))
+            if (StringUtils.isNotBlank(line.getRequiredDate()) && !isDate(line.getRequiredDate()))
                 return invalid("requiredDate 格式必须是 yyyy-MM-dd。", prefix + "requiredDate");
-            Material material = materialService.selectMaterialListForAgent(line.materialCode().trim(), null, null,
+            Material material = materialService.selectMaterialListForAgent(line.getMaterialCode().trim(), null, null,
                     ACTIVE_MATERIAL_STATUS).stream()
-                    .filter(item -> line.materialCode().trim().equalsIgnoreCase(item.getMaterialCode()))
+                    .filter(item -> line.getMaterialCode().trim().equalsIgnoreCase(item.getMaterialCode()))
                     .findFirst().orElse(null);
             if (material == null)
                 return new PurchaseQuoteCompareResult(INVALID, "MATERIAL_NOT_AVAILABLE", "ASK_USER",
-                        "未找到启用物料：" + line.materialCode(), List.of(prefix + "materialCode"), List.of(), List.of());
+                        "未找到启用物料：" + line.getMaterialCode(), List.of(prefix + "materialCode"), List.of(), List.of());
             List<PurchaseQuoteCandidate> candidates = quoteMapper.selectCandidates(material.getMaterialCode(),
-                    line.quantity(), currency, asOfDate.toString());
+                    line.getQuantity(), currency, asOfDate.toString());
             if (candidates.isEmpty())
                 return new PurchaseQuoteCompareResult(NO_CANDIDATE, "NO_VALID_QUOTE", "ASK_USER",
                         "物料 " + material.getMaterialCode() + " 当前没有满足数量、币种和有效期条件的报价。",
@@ -172,15 +174,16 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
             PurchaseQuoteCandidate selected = candidates.get(0);
             BigDecimal comparisonPrice = TAX_EXCLUDED_BASIS.equals(basis)
                     ? taxExcludedPrice(selected)
-                    : selected.comparableUnitPrice();
-            BigDecimal orderUnitPrice = selected.comparableUnitPrice();
-            BigDecimal amount = orderUnitPrice.multiply(line.quantity()).setScale(2, RoundingMode.HALF_UP);
+                    : selected.getComparableUnitPrice();
+            BigDecimal orderUnitPrice = selected.getComparableUnitPrice();
+            BigDecimal amount = orderUnitPrice.multiply(line.getQuantity()).setScale(2, RoundingMode.HALF_UP);
             recommendations.add(new PurchaseQuoteRecommendation(material.getMaterialCode(), material.getMaterialName(),
-                    scale(line.quantity()), selected.supplierId(), selected.supplierCode(),
-                    selected.supplierName(), selected.quoteId(), selected.quoteLineId(), selected.quoteCode(),
-                    scale(selected.unitPrice()), scale(orderUnitPrice), scale(selected.taxRate()),
-                    selected.taxIncluded(), selected.currency(),
-                    scale(comparisonPrice), amount, selected.leadTimeDays(), selected.expireDate(),
+                    scale(line.getQuantity()), selected.getSupplierId(), selected.getSupplierCode(),
+                    selected.getSupplierName(), selected.getQuoteId(), selected.getQuoteLineId(),
+                    selected.getQuoteCode(),
+                    scale(selected.getUnitPrice()), scale(orderUnitPrice), scale(selected.getTaxRate()),
+                    selected.isTaxIncluded(), selected.getCurrency(),
+                    scale(comparisonPrice), amount, selected.getLeadTimeDays(), selected.getExpireDate(),
                     "当前有效报价中按" + (TAX_EXCLUDED_BASIS.equals(basis) ? "未税" : "含税") + "可比单价最低"));
         }
         return new PurchaseQuoteCompareResult(READY, "QUOTE_MATCHED", "SHOW_RECOMMENDATION",
@@ -269,11 +272,11 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
     }
 
     private BigDecimal taxExcludedPrice(PurchaseQuoteCandidate candidate) {
-        if (!candidate.taxIncluded())
-            return candidate.unitPrice();
-        BigDecimal divisor = BigDecimal.ONE.add(candidate.taxRate().divide(BigDecimal.valueOf(100), 8,
+        if (!candidate.isTaxIncluded())
+            return candidate.getUnitPrice();
+        BigDecimal divisor = BigDecimal.ONE.add(candidate.getTaxRate().divide(BigDecimal.valueOf(100), 8,
                 RoundingMode.HALF_UP));
-        return candidate.unitPrice().divide(divisor, 6, RoundingMode.HALF_UP);
+        return candidate.getUnitPrice().divide(divisor, 6, RoundingMode.HALF_UP);
     }
 
     private PurchaseQuoteCompareResult needInput(String field, String message) {

@@ -1,5 +1,9 @@
 package com.ruoyi.web.service.mes;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.ruoyi.agent.application.DifyAppConfigService;
@@ -36,12 +40,12 @@ public class BomOcrWorkflowService {
     private static final String DEFAULT_FILE_VARIABLE = "image";
     private static final String DEFAULT_QUERY = "识别这份 BOM 图纸并返回系统约定的 JSON";
 
-    private final DifyAppConfigService difyAppConfigService;
-    private final DifyWorkflowClient workflowClient;
-    private final IBomImportService bomImportService;
-    private final BomOcrWorkflowResultParser resultParser;
-    private final ServerConfig serverConfig;
-    private final Executor taskExecutor;
+    private DifyAppConfigService difyAppConfigService;
+    private DifyWorkflowClient workflowClient;
+    private IBomImportService bomImportService;
+    private BomOcrWorkflowResultParser resultParser;
+    private ServerConfig serverConfig;
+    private Executor taskExecutor;
 
     public BomOcrWorkflowService(DifyAppConfigService difyAppConfigService, DifyWorkflowClient workflowClient,
             IBomImportService bomImportService, BomOcrWorkflowResultParser resultParser, ServerConfig serverConfig,
@@ -83,13 +87,13 @@ public class BomOcrWorkflowService {
             DifyClientSettings settings = difyAppConfigService.requireSettings(DifyAppCode.BOM_OCR.getCode());
             String difyUser = "ruoyi-user-" + userId;
             DifyFileUploadResult uploadResult = workflowClient.uploadFile(settings, new DifyFileUploadRequest(
-                    file.originalFilename(), file.contentType(), file.content(), difyUser));
+                    file.getOriginalFilename(), file.getContentType(), file.getContent(), difyUser));
             Map<String, Object> inputs = buildInputs(file, uploadResult, fileVariable, query, inputsJson);
             log.debug("BOM OCR Dify workflow inputs: {}", JSON.toJSONString(inputs));
             DifyWorkflowRunResult runResult = workflowClient.runStreaming(settings,
                     new DifyWorkflowRunRequest(inputs, difyUser));
             requireWorkflowSucceeded(runResult);
-            BomOcrResult ocrResult = resultParser.parse(runResult.outputs());
+            BomOcrResult ocrResult = resultParser.parse(runResult.getOutputs());
             bomImportService.completeRecognition(draftId, createRequest(file, localFileName, fileUrl, ocrResult),
                     username);
         } catch (Exception e) {
@@ -125,9 +129,9 @@ public class BomOcrWorkflowService {
 
     private Map<String, Object> fileObject(OcrFile file, DifyFileUploadResult uploadResult) {
         Map<String, Object> value = new LinkedHashMap<>();
-        value.put("type", file.difyFileType());
+        value.put("type", file.getDifyFileType());
         value.put("transfer_method", "local_file");
-        value.put("upload_file_id", uploadResult.id());
+        value.put("upload_file_id", uploadResult.getId());
         return value;
     }
 
@@ -135,19 +139,20 @@ public class BomOcrWorkflowService {
         if (runResult == null) {
             throw new ServiceException("Dify 工作流无返回");
         }
-        if (runResult.status() != null && !"succeeded".equals(runResult.status())) {
-            throw new ServiceException("Dify 工作流执行失败：" + (runResult.error() == null
-                    ? runResult.status()
-                    : runResult.error()));
+        if (runResult.getStatus() != null && !"succeeded".equals(runResult.getStatus())) {
+            throw new ServiceException("Dify 工作流执行失败：" + (runResult.getError() == null
+                    ? runResult.getStatus()
+                    : runResult.getError()));
         }
     }
 
     private BomImportCreateRequest createRequest(OcrFile file, String localFileName, String fileUrl,
             BomOcrResult result) {
         BomImportCreateRequest request = new BomImportCreateRequest();
-        request.setFileName(StringUtils.isBlank(file.originalFilename()) ? localFileName : file.originalFilename());
+        request.setFileName(
+                StringUtils.isBlank(file.getOriginalFilename()) ? localFileName : file.getOriginalFilename());
         request.setFileUrl(fileUrl);
-        request.setFileType(file.difyFileType());
+        request.setFileType(file.getDifyFileType());
         request.setResult(result);
         return request;
     }
@@ -167,6 +172,14 @@ public class BomOcrWorkflowService {
         return StringUtils.isBlank(file.getContentType()) ? "application/octet-stream" : file.getContentType();
     }
 
-    private record OcrFile(String originalFilename, String contentType, String difyFileType, byte[] content) {
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class OcrFile {
+        private String originalFilename;
+        private String contentType;
+        private String difyFileType;
+        private byte[] content;
+
     }
 }

@@ -1,5 +1,8 @@
 package com.ruoyi.web.service.agent;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -30,9 +33,9 @@ public class AgentToolMetadataRegistry {
     private static final String OPENAPI_YML_PATTERN = "classpath*:openapi/*.yml";
     private static final String EXTRA_METADATA_PATTERN = "classpath*:agent-tool-metadata.yaml";
 
-    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-    private final Map<String, ToolMetadata> definitions = new ConcurrentHashMap<>();
-    private final PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
+    private ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+    private Map<String, ToolMetadata> definitions = new ConcurrentHashMap<>();
+    private PathMatchingResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
     /** 应用启动时加载所有工具元数据。 */
     @PostConstruct
@@ -116,7 +119,7 @@ public class AgentToolMetadataRegistry {
         ToolMetadata previous = definitions.putIfAbsent(operationId, metadata);
         if (previous != null) {
             log.error("Duplicate agent tool operationId '{}' in {} and {}", operationId,
-                    previous.source(), source);
+                    previous.getSource(), source);
         }
     }
 
@@ -125,11 +128,19 @@ public class AgentToolMetadataRegistry {
     }
 
     /** 工具展示元数据。 */
-    public record ToolMetadata(String operationId, String label, String description, String source) {
-        public ToolMetadata {
-            label = label == null ? "" : label.trim();
-            description = description == null ? "" : description.trim();
-            source = source == null ? "" : source.trim();
+    @Data
+    @NoArgsConstructor
+    public static class ToolMetadata {
+        private String operationId;
+        private String label;
+        private String description;
+        private String source;
+
+        public ToolMetadata(String operationId, String label, String description, String source) {
+            this.operationId = operationId;
+            this.label = label == null ? "" : label.trim();
+            this.description = description == null ? "" : description.trim();
+            this.source = source == null ? "" : source.trim();
         }
     }
 }

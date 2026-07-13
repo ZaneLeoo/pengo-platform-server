@@ -83,21 +83,22 @@ public class PurchaseOrderAutomationService {
         if (!missing.isEmpty()) {
             return result(AutomationPreparationStatus.NEED_INPUT, "还需要补充采购订单信息", missing, List.of(), null);
         }
-        if (!isDate(source.orderDate())
-                || (StringUtils.isNotBlank(source.expectedDate()) && !isDate(source.expectedDate()))) {
+        if (!isDate(source.getOrderDate())
+                || (StringUtils.isNotBlank(source.getExpectedDate()) && !isDate(source.getExpectedDate()))) {
             return result(AutomationPreparationStatus.INVALID, "订单日期或预计到货日期格式应为 yyyy-MM-dd", List.of(), List.of(),
                     null);
         }
-        if (StringUtils.isNotBlank(source.expectedDate()) && LocalDate.parse(source.expectedDate(), DATE_FORMATTER)
-                .isBefore(LocalDate.parse(source.orderDate(), DATE_FORMATTER))) {
+        if (StringUtils.isNotBlank(source.getExpectedDate())
+                && LocalDate.parse(source.getExpectedDate(), DATE_FORMATTER)
+                        .isBefore(LocalDate.parse(source.getOrderDate(), DATE_FORMATTER))) {
             return result(AutomationPreparationStatus.INVALID, "预计到货日期不能早于订单日期", List.of(), List.of(), null);
         }
 
         List<AutomationCandidate> candidates = new ArrayList<>();
-        Supplier supplier = resolveSupplier(source.supplierKeyword(), candidates);
+        Supplier supplier = resolveSupplier(source.getSupplierKeyword(), candidates);
         List<Material> materials = new ArrayList<>();
-        for (PurchaseOrderDraftLineRequest line : source.lines()) {
-            Material material = resolveMaterial(line.materialKeyword(), candidates);
+        for (PurchaseOrderDraftLineRequest line : source.getLines()) {
+            Material material = resolveMaterial(line.getMaterialKeyword(), candidates);
             if (material != null)
                 materials.add(material);
         }
@@ -105,17 +106,17 @@ public class PurchaseOrderAutomationService {
             return result(AutomationPreparationStatus.AMBIGUOUS, "存在多个可选的供应商或物料，请明确选择", List.of(), candidates, null);
         }
         if (supplier == null) {
-            Supplier inactiveSupplier = findUniqueSupplier(source.supplierKeyword(), null);
+            Supplier inactiveSupplier = findUniqueSupplier(source.getSupplierKeyword(), null);
             if (inactiveSupplier != null) {
                 return result(AutomationPreparationStatus.INVALID, "供应商 " + inactiveSupplier.getSupplierCode()
                         + " 已停用，请选择启用供应商", List.of(), List.of(), null);
             }
-            return result(AutomationPreparationStatus.INVALID, "未找到供应商：" + source.supplierKeyword(), List.of(),
+            return result(AutomationPreparationStatus.INVALID, "未找到供应商：" + source.getSupplierKeyword(), List.of(),
                     List.of(), null);
         }
-        if (materials.size() != source.lines().size()) {
-            for (PurchaseOrderDraftLineRequest line : source.lines()) {
-                Material inactiveMaterial = findUniqueMaterial(line.materialKeyword(), null);
+        if (materials.size() != source.getLines().size()) {
+            for (PurchaseOrderDraftLineRequest line : source.getLines()) {
+                Material inactiveMaterial = findUniqueMaterial(line.getMaterialKeyword(), null);
                 if (inactiveMaterial != null && !ACTIVE_MATERIAL_STATUS.equals(inactiveMaterial.getStatus())) {
                     return result(AutomationPreparationStatus.INVALID, "物料 " + inactiveMaterial.getMaterialCode()
                             + " 已停用，请选择启用物料", List.of(), List.of(), null);
@@ -129,24 +130,25 @@ public class PurchaseOrderAutomationService {
         BigDecimal totalQuantity = BigDecimal.ZERO;
         BigDecimal totalAmount = BigDecimal.ZERO;
         BigDecimal taxRate = supplier.getTaxRate() == null ? BigDecimal.ZERO : supplier.getTaxRate();
-        for (int index = 0; index < source.lines().size(); index++) {
-            PurchaseOrderDraftLineRequest input = source.lines().get(index);
-            if (!isPositive(input.quantity())) {
+        for (int index = 0; index < source.getLines().size(); index++) {
+            PurchaseOrderDraftLineRequest input = source.getLines().get(index);
+            if (!isPositive(input.getQuantity())) {
                 return result(AutomationPreparationStatus.NEED_INPUT, "第 " + (index + 1) + " 行缺少大于 0 的采购数量",
                         List.of("第 " + (index + 1) + " 行采购数量"), List.of(), null);
             }
-            if (input.unitPrice() == null || input.unitPrice().compareTo(BigDecimal.ZERO) < 0) {
+            if (input.getUnitPrice() == null || input.getUnitPrice().compareTo(BigDecimal.ZERO) < 0) {
                 return result(AutomationPreparationStatus.NEED_INPUT, "第 " + (index + 1) + " 行缺少有效的含税单价",
                         List.of("第 " + (index + 1) + " 行含税单价"), List.of(), null);
             }
-            if (input.quoteId() != null || input.quoteLineId() != null) {
-                if (!quoteService.validateSelection(input.quoteId(), input.quoteLineId(), supplier.getSupplierCode(),
-                        materials.get(index).getMaterialCode(), input.quantity(), input.unitPrice()))
+            if (input.getQuoteId() != null || input.getQuoteLineId() != null) {
+                if (!quoteService.validateSelection(input.getQuoteId(), input.getQuoteLineId(),
+                        supplier.getSupplierCode(),
+                        materials.get(index).getMaterialCode(), input.getQuantity(), input.getUnitPrice()))
                     return result(AutomationPreparationStatus.INVALID, "第 " + (index + 1)
                             + " 行引用的供应商报价已失效、数量不匹配或单价不一致，请重新比较报价",
                             List.of(), List.of(), null);
             }
-            if (StringUtils.isNotBlank(input.plannedDate()) && !isDate(input.plannedDate())) {
+            if (StringUtils.isNotBlank(input.getPlannedDate()) && !isDate(input.getPlannedDate())) {
                 return result(AutomationPreparationStatus.INVALID, "第 " + (index + 1) + " 行计划到货日期格式应为 yyyy-MM-dd",
                         List.of(), List.of(), null);
             }
@@ -155,19 +157,20 @@ public class PurchaseOrderAutomationService {
                 return result(AutomationPreparationStatus.INVALID, "采购明细中不能重复出现同一物料：" + material.getMaterialCode(),
                         List.of(), List.of(), null);
             }
-            BigDecimal quantity = scale(input.quantity());
-            BigDecimal unitPrice = scale(input.unitPrice());
+            BigDecimal quantity = scale(input.getQuantity());
+            BigDecimal unitPrice = scale(input.getUnitPrice());
             BigDecimal amount = quantity.multiply(unitPrice).setScale(2, RoundingMode.HALF_UP);
             lines.add(new PurchaseOrderDraftLine(index + 1, material.getMaterialId(), material.getMaterialCode(),
                     material.getMaterialName(), material.getSpec(), material.getModel(), material.getUnit(), quantity,
-                    unitPrice, taxRate, amount, blankToNull(input.plannedDate()), input.quoteId(), input.quoteLineId(),
-                    StringUtils.isBlank(input.priceSource()) ? "MANUAL" : input.priceSource()));
+                    unitPrice, taxRate, amount, blankToNull(input.getPlannedDate()), input.getQuoteId(),
+                    input.getQuoteLineId(),
+                    StringUtils.isBlank(input.getPriceSource()) ? "MANUAL" : input.getPriceSource()));
             totalQuantity = totalQuantity.add(quantity);
             totalAmount = totalAmount.add(amount);
         }
         PurchaseOrderDraft draft = new PurchaseOrderDraft(supplier.getSupplierCode(), supplier.getSupplierName(),
-                defaultCurrency(supplier.getCurrency()), source.orderDate(), blankToNull(source.expectedDate()),
-                blankToNull(source.remark()), scale(totalQuantity), totalAmount.setScale(2, RoundingMode.HALF_UP),
+                defaultCurrency(supplier.getCurrency()), source.getOrderDate(), blankToNull(source.getExpectedDate()),
+                blankToNull(source.getRemark()), scale(totalQuantity), totalAmount.setScale(2, RoundingMode.HALF_UP),
                 lines);
         return result(AutomationPreparationStatus.READY, "采购订单草稿已准备，请由用户确认创建", List.of(), List.of(), draft);
     }
@@ -176,10 +179,10 @@ public class PurchaseOrderAutomationService {
     @Transactional(rollbackFor = Exception.class)
     public CreatePurchaseOrderDraftResult createDraft(CreatePurchaseOrderDraftRequest request, Long userId,
             String username) {
-        if (request == null || StringUtils.isBlank(request.requestId()) || request.draft() == null) {
+        if (request == null || StringUtils.isBlank(request.getRequestId()) || request.getDraft() == null) {
             throw new ServiceException("确认创建时缺少草稿或请求标识");
         }
-        String actionKey = normalizeActionKey(request.requestId());
+        String actionKey = normalizeActionKey(request.getRequestId());
         synchronized ((ACTION_TYPE + ':' + actionKey).intern()) {
             AutomationAction existed = actionMapper.selectByActionKey(actionKey);
             if (existed != null) {
@@ -190,9 +193,9 @@ public class PurchaseOrderAutomationService {
                 }
                 throw new ServiceException("该采购订单正在创建，请勿重复提交");
             }
-            PurchaseOrderPreparationResult prepared = prepare(toPreparationRequest(request.draft()));
-            if (prepared.status() != AutomationPreparationStatus.READY) {
-                throw new ServiceException("采购订单草稿尚不可创建：" + prepared.message());
+            PurchaseOrderPreparationResult prepared = prepare(toPreparationRequest(request.getDraft()));
+            if (prepared.getStatus() != AutomationPreparationStatus.READY) {
+                throw new ServiceException("采购订单草稿尚不可创建：" + prepared.getMessage());
             }
             AutomationAction action = new AutomationAction();
             action.setActionKey(actionKey);
@@ -201,7 +204,7 @@ public class PurchaseOrderAutomationService {
             action.setStatus(ACTION_STATUS_PROCESSING);
             actionMapper.insert(action);
 
-            PurchaseOrder order = toPurchaseOrder(prepared.draft(), actionKey, username);
+            PurchaseOrder order = toPurchaseOrder(prepared.getDraft(), actionKey, username);
             purchaseOrderService.insertPurchaseOrder(order);
             actionMapper.complete(actionKey, order.getId(), order.getOrderCode());
             return new CreatePurchaseOrderDraftResult(order.getId(), order.getOrderCode(), false);
@@ -210,25 +213,25 @@ public class PurchaseOrderAutomationService {
 
     private List<String> collectMissingFields(PurchaseOrderDraftRequest request) {
         List<String> fields = new ArrayList<>();
-        if (StringUtils.isBlank(request.supplierKeyword()))
+        if (StringUtils.isBlank(request.getSupplierKeyword()))
             fields.add("供应商");
-        if (StringUtils.isBlank(request.orderDate()))
+        if (StringUtils.isBlank(request.getOrderDate()))
             fields.add("订单日期");
-        if (request.lines() == null || request.lines().isEmpty())
+        if (request.getLines() == null || request.getLines().isEmpty())
             fields.add("采购明细");
-        if (request.lines() != null) {
-            for (int index = 0; index < request.lines().size(); index++) {
-                PurchaseOrderDraftLineRequest line = request.lines().get(index);
+        if (request.getLines() != null) {
+            for (int index = 0; index < request.getLines().size(); index++) {
+                PurchaseOrderDraftLineRequest line = request.getLines().get(index);
                 String prefix = "第 " + (index + 1) + " 行";
                 if (line == null) {
                     fields.add(prefix + "采购明细");
                     continue;
                 }
-                if (StringUtils.isBlank(line.materialKeyword()))
+                if (StringUtils.isBlank(line.getMaterialKeyword()))
                     fields.add(prefix + "物料");
-                if (!isPositive(line.quantity()))
+                if (!isPositive(line.getQuantity()))
                     fields.add(prefix + "采购数量");
-                if (line.unitPrice() == null || line.unitPrice().compareTo(BigDecimal.ZERO) < 0)
+                if (line.getUnitPrice() == null || line.getUnitPrice().compareTo(BigDecimal.ZERO) < 0)
                     fields.add(prefix + "含税单价");
             }
         }
@@ -237,11 +240,11 @@ public class PurchaseOrderAutomationService {
 
     /** 补齐可以由系统安全推导的字段，避免向用户追问非必要信息。 */
     private PurchaseOrderDraftRequest applyDefaults(PurchaseOrderDraftRequest request) {
-        String orderDate = StringUtils.isBlank(request.orderDate())
+        String orderDate = StringUtils.isBlank(request.getOrderDate())
                 ? LocalDate.now().format(DATE_FORMATTER)
-                : request.orderDate().trim();
-        return new PurchaseOrderDraftRequest(request.supplierKeyword(), orderDate, request.expectedDate(),
-                request.remark(), request.lines());
+                : request.getOrderDate().trim();
+        return new PurchaseOrderDraftRequest(request.getSupplierKeyword(), orderDate, request.getExpectedDate(),
+                request.getRemark(), request.getLines());
     }
 
     private Supplier resolveSupplier(String keyword, List<AutomationCandidate> candidates) {
@@ -313,32 +316,32 @@ public class PurchaseOrderAutomationService {
     }
 
     private PurchaseOrderDraftRequest toPreparationRequest(PurchaseOrderDraft draft) {
-        List<PurchaseOrderDraftLineRequest> lines = draft.lines() == null
+        List<PurchaseOrderDraftLineRequest> lines = draft.getLines() == null
                 ? List.of()
-                : draft.lines().stream()
-                        .map(line -> new PurchaseOrderDraftLineRequest(line.materialCode(), line.quantity(),
-                                line.unitPrice(), line.plannedDate(),
-                                line.quoteId(), line.quoteLineId(), line.priceSource()))
+                : draft.getLines().stream()
+                        .map(line -> new PurchaseOrderDraftLineRequest(line.getMaterialCode(), line.getQuantity(),
+                                line.getUnitPrice(), line.getPlannedDate(),
+                                line.getQuoteId(), line.getQuoteLineId(), line.getPriceSource()))
                         .collect(Collectors.toList());
-        return new PurchaseOrderDraftRequest(draft.supplierCode(), draft.orderDate(), draft.expectedDate(),
-                draft.remark(), lines);
+        return new PurchaseOrderDraftRequest(draft.getSupplierCode(), draft.getOrderDate(), draft.getExpectedDate(),
+                draft.getRemark(), lines);
     }
 
     private PurchaseOrder toPurchaseOrder(PurchaseOrderDraft draft, String actionKey, String username) {
         PurchaseOrder order = new PurchaseOrder();
         order.setOrderCode(generateOrderCode(actionKey));
-        order.setSupplierCode(draft.supplierCode());
-        order.setSupplierName(draft.supplierName());
-        order.setOrderDate(draft.orderDate());
-        order.setExpectedDate(draft.expectedDate());
+        order.setSupplierCode(draft.getSupplierCode());
+        order.setSupplierName(draft.getSupplierName());
+        order.setOrderDate(draft.getOrderDate());
+        order.setExpectedDate(draft.getExpectedDate());
         order.setStatus(PurchaseDocumentStatus.DRAFT.getCode());
-        order.setCurrency(draft.currency());
+        order.setCurrency(draft.getCurrency());
         order.setBillType(PurchaseOrderBillType.NORMAL.getCode());
-        order.setTotalQuantity(draft.totalQuantity());
-        order.setTotalAmount(draft.totalAmount());
-        order.setRemark(draft.remark());
+        order.setTotalQuantity(draft.getTotalQuantity());
+        order.setTotalAmount(draft.getTotalAmount());
+        order.setRemark(draft.getRemark());
         order.setCreateBy(username);
-        List<PurchaseOrderLine> lines = draft.lines().stream()
+        List<PurchaseOrderLine> lines = draft.getLines().stream()
                 .map(line -> toPurchaseOrderLine(line, username)).collect(Collectors.toList());
         order.setLines(lines);
         return order;
@@ -346,21 +349,21 @@ public class PurchaseOrderAutomationService {
 
     private PurchaseOrderLine toPurchaseOrderLine(PurchaseOrderDraftLine line, String username) {
         PurchaseOrderLine target = new PurchaseOrderLine();
-        target.setLineNo(line.lineNo());
-        target.setMaterialId(line.materialId());
-        target.setMaterialCode(line.materialCode());
-        target.setMaterialName(line.materialName());
-        target.setSpec(line.spec());
-        target.setModel(line.model());
-        target.setUnit(line.unit());
-        target.setOrderQuantity(line.quantity());
-        target.setUnitPrice(line.unitPrice());
-        target.setTaxRate(line.taxRate());
-        target.setAmount(line.amount());
-        target.setPlannedDate(line.plannedDate());
-        target.setQuoteId(line.quoteId());
-        target.setQuoteLineId(line.quoteLineId());
-        target.setPriceSource(line.priceSource());
+        target.setLineNo(line.getLineNo());
+        target.setMaterialId(line.getMaterialId());
+        target.setMaterialCode(line.getMaterialCode());
+        target.setMaterialName(line.getMaterialName());
+        target.setSpec(line.getSpec());
+        target.setModel(line.getModel());
+        target.setUnit(line.getUnit());
+        target.setOrderQuantity(line.getQuantity());
+        target.setUnitPrice(line.getUnitPrice());
+        target.setTaxRate(line.getTaxRate());
+        target.setAmount(line.getAmount());
+        target.setPlannedDate(line.getPlannedDate());
+        target.setQuoteId(line.getQuoteId());
+        target.setQuoteLineId(line.getQuoteLineId());
+        target.setPriceSource(line.getPriceSource());
         target.setCreateBy(username);
         return target;
     }

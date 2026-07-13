@@ -22,8 +22,8 @@ public class SupplierToolService {
     /** 查询供应商并限制模型上下文中的返回数量。 */
     public AgentToolResult<List<SupplierToolItem>> query(SupplierToolQuery request) {
         SupplierToolQuery query = request == null ? new SupplierToolQuery(null, false) : request;
-        String status = query.includeDisabled() ? null : ACTIVE_STATUS;
-        List<Supplier> matched = supplierService.selectListForAgent(query.keyword(), status);
+        String status = query.getIncludeDisabled() ? null : ACTIVE_STATUS;
+        List<Supplier> matched = supplierService.selectListForAgent(query.getKeyword(), status);
         List<SupplierToolItem> data = matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
         AgentToolMeta meta = AgentToolMeta.collection(matched.size(), matched.size() > MAX_RESULT_SIZE);
         if (data.isEmpty()) {

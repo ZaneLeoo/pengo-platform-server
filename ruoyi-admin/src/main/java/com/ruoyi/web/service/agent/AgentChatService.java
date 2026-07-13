@@ -246,7 +246,7 @@ public class AgentChatService {
     private String resolveToolLabel(DifyStreamEvent event) {
         AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(event.getTool());
         if (metadata != null)
-            return metadata.label();
+            return metadata.getLabel();
         Object label = event.getToolLabels().get(event.getTool());
         if (label instanceof Map<?, ?> labels) {
             Object zh = labels.get("zh_Hans");
@@ -264,13 +264,13 @@ public class AgentChatService {
         AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(toolName);
         return metadata == null
                 ? (fallback == null || fallback.isBlank() ? toolName : fallback)
-                : metadata.label();
+                : metadata.getLabel();
     }
 
     /** 返回 OpenAPI 或非 OpenAPI 配置中的工具描述。 */
     private String resolveToolDescription(String toolName) {
         AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(toolName);
-        return metadata == null ? "" : metadata.description();
+        return metadata == null ? "" : metadata.getDescription();
     }
 
     /** Dify zh_Hans 必须是实际中文名称，不能是 operationId 回退值。 */

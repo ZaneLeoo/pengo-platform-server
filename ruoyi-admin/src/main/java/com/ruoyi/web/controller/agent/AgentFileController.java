@@ -31,12 +31,12 @@ public class AgentFileController extends BaseController {
             response.sendError(HttpStatus.NOT_FOUND.value(), "文件不存在或已过期");
             return;
         }
-        response.setContentType(file.mediaType());
-        response.setContentLengthLong(file.size());
-        ContentDisposition disposition = file.browserPreview()
-                ? ContentDisposition.inline().filename(file.name(), StandardCharsets.UTF_8).build()
-                : ContentDisposition.attachment().filename(file.name(), StandardCharsets.UTF_8).build();
+        response.setContentType(file.getMediaType());
+        response.setContentLengthLong(file.getSize());
+        ContentDisposition disposition = file.isBrowserPreview()
+                ? ContentDisposition.inline().filename(file.getName(), StandardCharsets.UTF_8).build()
+                : ContentDisposition.attachment().filename(file.getName(), StandardCharsets.UTF_8).build();
         response.setHeader("Content-Disposition", disposition.toString());
-        Files.copy(file.path(), response.getOutputStream());
+        Files.copy(file.getPath(), response.getOutputStream());
     }
 }

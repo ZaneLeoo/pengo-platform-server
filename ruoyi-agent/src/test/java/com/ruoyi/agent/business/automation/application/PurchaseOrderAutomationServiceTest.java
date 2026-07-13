@@ -67,11 +67,11 @@ class PurchaseOrderAutomationServiceTest {
                 "2026-07-20", "生产补料", List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", new BigDecimal("2"),
                         new BigDecimal("25.50"), "2026-07-20"))));
 
-        assertThat(result.status()).isEqualTo(AutomationPreparationStatus.READY);
-        assertThat(result.draft().supplierName()).isEqualTo("深圳鸿发电子科技有限公司");
-        assertThat(result.draft().totalAmount()).isEqualByComparingTo("51.00");
-        assertThat(result.draft().lines().get(0).materialId()).isEqualTo(10L);
-        assertThat(result.draft().lines().get(0).taxRate()).isEqualByComparingTo("13");
+        assertThat(result.getStatus()).isEqualTo(AutomationPreparationStatus.READY);
+        assertThat(result.getDraft().getSupplierName()).isEqualTo("深圳鸿发电子科技有限公司");
+        assertThat(result.getDraft().getTotalAmount()).isEqualByComparingTo("51.00");
+        assertThat(result.getDraft().getLines().get(0).getMaterialId()).isEqualTo(10L);
+        assertThat(result.getDraft().getLines().get(0).getTaxRate()).isEqualByComparingTo("13");
     }
 
     @Test
@@ -79,8 +79,8 @@ class PurchaseOrderAutomationServiceTest {
         PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", "2026-07-12",
                 null, null, List.of(new PurchaseOrderDraftLineRequest("", null, null, null))));
 
-        assertThat(result.status()).isEqualTo(AutomationPreparationStatus.NEED_INPUT);
-        assertThat(result.missingFields()).contains("第 1 行物料", "第 1 行采购数量", "第 1 行含税单价");
+        assertThat(result.getStatus()).isEqualTo(AutomationPreparationStatus.NEED_INPUT);
+        assertThat(result.getMissingFields()).contains("第 1 行物料", "第 1 行采购数量", "第 1 行含税单价");
     }
 
     @Test
@@ -95,8 +95,9 @@ class PurchaseOrderAutomationServiceTest {
                 null, null,
                 List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
 
-        assertThat(result.status()).isEqualTo(AutomationPreparationStatus.READY);
-        assertThat(result.draft().orderDate()).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
+        assertThat(result.getStatus()).isEqualTo(AutomationPreparationStatus.READY);
+        assertThat(result.getDraft().getOrderDate())
+                .isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
 
     @Test
@@ -117,17 +118,17 @@ class PurchaseOrderAutomationServiceTest {
                 null, null,
                 List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
         CreatePurchaseOrderDraftResult created = service.createDraft(
-                new CreatePurchaseOrderDraftRequest("request-001", prepared.draft()), 1L, "admin");
+                new CreatePurchaseOrderDraftRequest("request-001", prepared.getDraft()), 1L, "admin");
 
         ArgumentCaptor<PurchaseOrder> orderCaptor = ArgumentCaptor.forClass(PurchaseOrder.class);
         verify(purchaseOrderService).insertPurchaseOrder(orderCaptor.capture());
-        assertThat(created.duplicated()).isFalse();
-        assertThat(created.orderId()).isEqualTo(99L);
+        assertThat(created.isDuplicated()).isFalse();
+        assertThat(created.getOrderId()).isEqualTo(99L);
         assertThat(orderCaptor.getValue().getStatus()).isEqualTo("DRAFT");
         assertThat(orderCaptor.getValue().getCreateBy()).isEqualTo("admin");
         assertThat(orderCaptor.getValue().getLines().get(0).getMaterialName()).isEqualTo("PCB控制板");
         assertThat(orderCaptor.getValue().getLines().get(0).getCreateBy()).isEqualTo("admin");
-        verify(actionMapper).complete("request-001", 99L, created.orderCode());
+        verify(actionMapper).complete("request-001", 99L, created.getOrderCode());
     }
 
     private Supplier supplier(String code, String name, BigDecimal taxRate) {

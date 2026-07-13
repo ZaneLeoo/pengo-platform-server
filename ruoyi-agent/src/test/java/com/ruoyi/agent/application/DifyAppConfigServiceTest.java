@@ -21,8 +21,8 @@ class DifyAppConfigServiceTest {
 
         DifyClientSettings settings = service.findSettings("AGENT_CHAT");
 
-        assertEquals(DifyAppConfigService.DEFAULT_API_BASE_URL, settings.baseUrl());
-        assertEquals("secret", settings.apiKey());
+        assertEquals(DifyAppConfigService.DEFAULT_API_BASE_URL, settings.getBaseUrl());
+        assertEquals("secret", settings.getApiKey());
     }
 
     @Test

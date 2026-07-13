@@ -70,9 +70,9 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient {
     private DifyWorkflowRunResult runWorkflow(DifyClientSettings settings, DifyWorkflowRunRequest request,
             String responseMode) throws IOException, InterruptedException {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("inputs", request.inputs());
+        body.put("inputs", request.getInputs());
         body.put("response_mode", responseMode);
-        body.put("user", request.user());
+        body.put("user", request.getUser());
         String requestJson = JSON.toJSONString(body);
         log.debug("Dify workflow request: {}", requestJson);
         HttpResponse<String> response = httpClient.send(jsonRequest(settings, "/workflows/run", requestJson),
@@ -141,14 +141,14 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient {
 
     private HttpRequest uploadRequest(DifyClientSettings settings, DifyFileUploadRequest request, String boundary) {
         return HttpRequest.newBuilder(uri(settings, "/files/upload")).timeout(REQUEST_TIMEOUT)
-                .header("Authorization", "Bearer " + settings.apiKey())
+                .header("Authorization", "Bearer " + settings.getApiKey())
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
                 .POST(HttpRequest.BodyPublishers.ofByteArrays(multipartBody(request, boundary))).build();
     }
 
     private List<byte[]> multipartBody(DifyFileUploadRequest request, String boundary) {
         List<byte[]> parts = new ArrayList<>();
-        addTextPart(parts, boundary, "user", request.user());
+        addTextPart(parts, boundary, "user", request.getUser());
         addFilePart(parts, boundary, request);
         parts.add(("--" + boundary + "--" + CRLF).getBytes(StandardCharsets.UTF_8));
         return parts;
@@ -164,21 +164,21 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient {
 
     private void addFilePart(List<byte[]> parts, String boundary, DifyFileUploadRequest request) {
         parts.add(("--" + boundary + CRLF).getBytes(StandardCharsets.UTF_8));
-        parts.add(("Content-Disposition: form-data; name=\"file\"; filename=\"" + escape(request.filename()) + "\""
+        parts.add(("Content-Disposition: form-data; name=\"file\"; filename=\"" + escape(request.getFilename()) + "\""
                 + CRLF).getBytes(StandardCharsets.UTF_8));
-        parts.add(("Content-Type: " + request.contentType() + CRLF + CRLF).getBytes(StandardCharsets.UTF_8));
-        parts.add(request.content());
+        parts.add(("Content-Type: " + request.getContentType() + CRLF + CRLF).getBytes(StandardCharsets.UTF_8));
+        parts.add(request.getContent());
         parts.add(CRLF.getBytes(StandardCharsets.UTF_8));
     }
 
     private HttpRequest jsonRequest(DifyClientSettings settings, String path, String body) {
         return HttpRequest.newBuilder(uri(settings, path)).timeout(REQUEST_TIMEOUT)
-                .header("Authorization", "Bearer " + settings.apiKey()).header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + settings.getApiKey()).header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(body)).build();
     }
 
     private URI uri(DifyClientSettings settings, String path) {
-        return URI.create(settings.baseUrl().replaceAll("/+$", "") + path);
+        return URI.create(settings.getBaseUrl().replaceAll("/+$", "") + path);
     }
 
     private String escape(String value) {

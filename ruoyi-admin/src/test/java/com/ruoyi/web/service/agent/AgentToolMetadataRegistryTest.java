@@ -14,11 +14,11 @@ class AgentToolMetadataRegistryTest {
 
         AgentToolMetadataRegistry.ToolMetadata material = registry.find("queryMaterials");
         assertNotNull(material);
-        assertEquals("查询物料", material.label());
-        assertEquals("根据物料编码、名称、规格、分类或物料类型查询物料。", material.description());
+        assertEquals("查询物料", material.getLabel());
+        assertEquals("根据物料编码、名称、规格、分类或物料类型查询物料。", material.getDescription());
 
         AgentToolMetadataRegistry.ToolMetadata chart = registry.find("bar_chart");
         assertNotNull(chart);
-        assertEquals("生成柱状图", chart.label());
+        assertEquals("生成柱状图", chart.getLabel());
     }
 }

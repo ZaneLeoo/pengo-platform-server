@@ -20,9 +20,9 @@ public class MaterialCategoryToolService {
     /** 查询分类并转换成适合模型消费的层级信息。 */
     public AgentToolResult<List<MaterialCategoryToolItem>> query(MaterialCategoryToolQuery request) {
         MaterialCategoryToolQuery query = request == null ? new MaterialCategoryToolQuery() : request;
-        String status = Boolean.FALSE.equals(query.includeDisabled()) ? "0" : null;
-        List<MaterialCategoryToolItem> data = categoryService.selectCategoryListForAgent(query.keyword(),
-                query.parentId(), status).stream().map(this::toItem).toList();
+        String status = Boolean.FALSE.equals(query.getIncludeDisabled()) ? "0" : null;
+        List<MaterialCategoryToolItem> data = categoryService.selectCategoryListForAgent(query.getKeyword(),
+                query.getParentId(), status).stream().map(this::toItem).toList();
         AgentToolMeta meta = AgentToolMeta.collection(data.size(), false);
         if (data.isEmpty()) {
             return AgentToolResults.noResult(MaterialCategoryToolResultCode.MATERIAL_CATEGORY_NOT_FOUND,

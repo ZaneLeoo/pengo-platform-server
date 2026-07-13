@@ -46,11 +46,12 @@ public class InventoryToolService {
             InventoryToolResultCode successCode,
             InventoryToolResultCode emptyCode,
             String subject) {
-        AgentToolMeta meta = AgentToolMeta.page(page.pageNum(), page.pageSize(), page.total(), page.hasMore());
-        if (page.data().isEmpty()) {
+        AgentToolMeta meta = AgentToolMeta.page(page.getPageNum(), page.getPageSize(), page.getTotal(),
+                page.isHasMore());
+        if (page.getData().isEmpty()) {
             return AgentToolResults.noResult(emptyCode, "未找到符合条件的" + subject,
-                    page.data(), meta);
+                    page.getData(), meta);
         }
-        return AgentToolResults.success(successCode, subject + "查询成功", page.data(), meta);
+        return AgentToolResults.success(successCode, subject + "查询成功", page.getData(), meta);
     }
 }

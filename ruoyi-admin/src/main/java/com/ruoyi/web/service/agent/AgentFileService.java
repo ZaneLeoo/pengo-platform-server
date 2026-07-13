@@ -1,5 +1,9 @@
 package com.ruoyi.web.service.agent;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
@@ -43,8 +47,8 @@ public class AgentFileService {
     private static final long MAX_FILE_BYTES = 50L * 1024 * 1024;
     private static final Duration DOWNLOAD_TIMEOUT = Duration.ofMinutes(3);
 
-    private final RedisCache redisCache;
-    private final HttpClient httpClient;
+    private RedisCache redisCache;
+    private HttpClient httpClient;
 
     public AgentFileService(RedisCache redisCache) {
         this.redisCache = redisCache;
@@ -161,7 +165,7 @@ public class AgentFileService {
         if (url.isBlank()) {
             throw new IOException("Dify 文件缺少下载地址");
         }
-        URI targetUri = resolveDifyFileUri(settings.baseUrl(), url);
+        URI targetUri = resolveDifyFileUri(settings.getBaseUrl(), url);
         String extension = normalizeExtension(text(first(descriptor, "extension")));
         String sourceName = text(first(descriptor, "filename", "name"));
         if (extension.isBlank()) {
@@ -227,7 +231,7 @@ public class AgentFileService {
 
     private void download(DifyClientSettings settings, URI uri, Path target) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(uri).timeout(DOWNLOAD_TIMEOUT)
-                .header("Authorization", "Bearer " + settings.apiKey()).GET().build();
+                .header("Authorization", "Bearer " + settings.getApiKey()).GET().build();
         HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(target));
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             Files.deleteIfExists(target);
@@ -447,15 +451,24 @@ public class AgentFileService {
 
     /** 流式文件上下文。 */
     public static final class StreamContext {
-        private final Map<String, String> nameByFileId = new LinkedHashMap<>();
-        private final Map<String, String> nameByTool = new LinkedHashMap<>();
-        private final Map<String, String> toolByFileId = new LinkedHashMap<>();
-        private final Map<String, Map<String, Object>> pendingFiles = new LinkedHashMap<>();
+        private Map<String, String> nameByFileId = new LinkedHashMap<>();
+        private Map<String, String> nameByTool = new LinkedHashMap<>();
+        private Map<String, String> toolByFileId = new LinkedHashMap<>();
+        private Map<String, Map<String, Object>> pendingFiles = new LinkedHashMap<>();
         private List<Map<String, Object>> materializedFiles = Collections.emptyList();
         private boolean materialized;
     }
 
     /** 文件下载所需的本地资源信息。 */
-    public record StoredFile(Path path, String name, String mediaType, boolean browserPreview, long size) {
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StoredFile {
+        private Path path;
+        private String name;
+        private String mediaType;
+        private boolean browserPreview;
+        private long size;
+
     }
 }
