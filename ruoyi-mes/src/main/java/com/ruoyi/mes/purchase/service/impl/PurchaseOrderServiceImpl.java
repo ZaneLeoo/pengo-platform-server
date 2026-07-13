@@ -79,6 +79,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService
             if (line.getReceivedQuantity() == null) line.setReceivedQuantity(java.math.BigDecimal.ZERO);
             if (line.getQualifiedQuantity() == null) line.setQualifiedQuantity(java.math.BigDecimal.ZERO);
             if (line.getInboundQuantity() == null) line.setInboundQuantity(java.math.BigDecimal.ZERO);
+            if (com.ruoyi.common.utils.StringUtils.isBlank(line.getPriceSource())) line.setPriceSource("MANUAL");
             orderMapper.insertPurchaseOrderLine(line);
         }
     }

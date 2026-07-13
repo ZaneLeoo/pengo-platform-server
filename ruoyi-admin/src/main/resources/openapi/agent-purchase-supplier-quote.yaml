@@ -1,0 +1,156 @@
+openapi: 3.0.3
+info:
+  title: RuoYi Agent - 供应商报价比较工具
+  version: 1.0.0
+  description: |
+    面向 Dify Agent 的供应商报价只读比较工具。
+    只比较启用供应商、已审核报价、当前有效期内、数量阶梯匹配且币种一致的报价。
+    默认按含税可比单价选择最低报价，不会创建、审核或修改采购订单。
+servers:
+  - url: http://host.docker.internal:8088
+paths:
+  /agent/tools/purchase-quotes/compare:
+    post:
+      operationId: comparePurchaseSupplierQuotes
+      summary: 比较供应商当前有效报价
+      description: |
+        当用户要求按最低价选择供应商，或希望比较多个供应商报价时调用。
+        必须使用系统真实物料编码，不要把中文字段名转换为请求字段。
+        先读取顶层 status、resultCode、nextAction、issues 和 agentInstruction：
+        - READY：展示推荐供应商、价格、有效期、交期和候选项，等待用户确认；
+        - NEED_INPUT：根据 issues.field 向用户补充 materialCode 或 quantity，禁止相同参数重试；
+        - NO_CANDIDATE：告知当前没有有效报价，询问是否手工指定供应商和价格；
+        - INVALID：根据 issues 修正字段后再调用。
+        比较成功后仍需调用采购订单准备工具，不能直接创建采购订单。
+      security:
+        - AgentToolKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseQuoteCompareRequest'
+            example:
+              lines:
+                - materialCode: lamppost
+                  quantity: 10
+                  requiredDate: '2026-07-20'
+              currency: CNY
+              priceBasis: TAX_INCLUDED
+              strategy: LOWEST_VALID_PRICE
+      responses:
+        '200':
+          description: 报价比较结果。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PurchaseQuoteCompareResponse'
+        '401':
+          description: X-Agent-Tool-Key 缺失或无效。
+components:
+  securitySchemes:
+    AgentToolKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Tool-Key
+      description: Dify 服务端保存的 RuoYi Agent 工具密钥，不得暴露给浏览器或最终用户。
+  schemas:
+    PurchaseQuoteCompareRequest:
+      type: object
+      required: [lines]
+      properties:
+        lines:
+          type: array
+          minItems: 1
+          maxItems: 50
+          description: 需要比较报价的物料明细。
+          items:
+            $ref: '#/components/schemas/PurchaseQuoteCompareLineRequest'
+        currency:
+          type: string
+          default: CNY
+          description: 比较币种；不同币种不会自动换算，默认 CNY。
+        priceBasis:
+          type: string
+          enum: [TAX_INCLUDED, TAX_EXCLUDED]
+          default: TAX_INCLUDED
+          description: 价格比较口径。TAX_INCLUDED 为含税可比价，TAX_EXCLUDED 为未税可比价。
+        strategy:
+          type: string
+          enum: [LOWEST_VALID_PRICE]
+          default: LOWEST_VALID_PRICE
+          description: 推荐策略。第一版只支持当前有效报价中的最低可比价。
+    PurchaseQuoteCompareLineRequest:
+      type: object
+      required: [materialCode, quantity]
+      properties:
+        materialCode:
+          type: string
+          description: 物料编码，必须使用系统真实编码，例如 lamppost；不得传 materialName 或中文别名。
+        quantity:
+          type: number
+          minimum: 0.000001
+          description: 采购数量，必须大于 0。
+        requiredDate:
+          type: string
+          format: date
+          nullable: true
+          description: 期望到货日期，可选；仅用于上下文，报价有效性按当前日期判断。
+    PurchaseQuoteCandidate:
+      type: object
+      properties:
+        materialCode: { type: string }
+        supplierCode: { type: string }
+        supplierName: { type: string }
+        quoteId: { type: integer, format: int64 }
+        quoteLineId: { type: integer, format: int64 }
+        quoteCode: { type: string }
+        unitPrice: { type: number, description: 报价原始单价 }
+        orderUnitPrice: { type: number, description: 创建采购订单时应传给 unitPrice 的可比单价，始终按含税采购订单口径返回 }
+        taxRate: { type: number, description: 税率百分比 }
+        taxIncluded: { type: boolean }
+        currency: { type: string }
+        comparableUnitPrice: { type: number, description: 含税可比单价 }
+        totalAmount: { type: number, description: 原始报价单价乘以采购数量 }
+        leadTimeDays: { type: integer }
+        expireDate: { type: string, format: date, nullable: true }
+    PurchaseQuoteRecommendation:
+      allOf:
+        - $ref: '#/components/schemas/PurchaseQuoteCandidate'
+        - type: object
+          properties:
+            materialName: { type: string }
+            quantity: { type: number }
+            supplierId: { type: integer, format: int64 }
+            reason: { type: string }
+    PurchaseQuoteCompareResult:
+      type: object
+      properties:
+        status: { type: string, enum: [READY, NEED_INPUT, NO_CANDIDATE, INVALID] }
+        resultCode: { type: string, enum: [QUOTE_MATCHED, MISSING_REQUIRED_FIELDS, NO_VALID_QUOTE, INVALID_ARGUMENT, MATERIAL_NOT_AVAILABLE] }
+        nextAction: { type: string, enum: [SHOW_RECOMMENDATION, ASK_USER] }
+        message: { type: string }
+        issues:
+          type: array
+          items: { type: string }
+        recommendations:
+          type: array
+          items: { $ref: '#/components/schemas/PurchaseQuoteRecommendation' }
+        candidates:
+          type: array
+          items: { $ref: '#/components/schemas/PurchaseQuoteCandidate' }
+    PurchaseQuoteCompareResponse:
+      type: object
+      required: [success, status, resultCode, nextAction, retryTool, agentInstruction, issues, data]
+      properties:
+        success: { type: boolean }
+        status: { type: string }
+        resultCode: { type: string }
+        nextAction: { type: string }
+        retryTool: { type: boolean, example: false }
+        agentInstruction: { type: string }
+        issues:
+          type: array
+          items: { type: string }
+        message: { type: string }
+        data: { $ref: '#/components/schemas/PurchaseQuoteCompareResult' }

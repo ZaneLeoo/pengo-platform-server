@@ -36,4 +36,10 @@ public class PurchaseOrderLine extends BaseEntity {
     private BigDecimal taxRate;
     private BigDecimal amount;
     private String plannedDate;
+    /** 使用的供应商报价主表ID，仅用于追溯，不在普通录入界面展示。 */
+    private Long quoteId;
+    /** 使用的供应商报价明细ID，仅用于追溯，不在普通录入界面展示。 */
+    private Long quoteLineId;
+    /** 价格来源：MANUAL 或 QUOTE。 */
+    private String priceSource;
 }

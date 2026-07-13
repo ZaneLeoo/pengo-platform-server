@@ -23,6 +23,7 @@ import com.ruoyi.mes.common.enums.PurchaseOrderBillType;
 import com.ruoyi.mes.purchase.domain.PurchaseOrder;
 import com.ruoyi.mes.purchase.domain.PurchaseOrderLine;
 import com.ruoyi.mes.purchase.service.IPurchaseOrderService;
+import com.ruoyi.mes.purchase.service.IPurchaseSupplierQuoteService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -58,15 +59,18 @@ public class PurchaseOrderAutomationService
     private final IMaterialService materialService;
     private final IPurchaseOrderService purchaseOrderService;
     private final AutomationActionMapper actionMapper;
+    private final IPurchaseSupplierQuoteService quoteService;
 
     public PurchaseOrderAutomationService(ISupplierService supplierService, IMaterialService materialService,
                                           IPurchaseOrderService purchaseOrderService,
-                                          AutomationActionMapper actionMapper)
+                                          AutomationActionMapper actionMapper,
+                                          IPurchaseSupplierQuoteService quoteService)
     {
         this.supplierService = supplierService;
         this.materialService = materialService;
         this.purchaseOrderService = purchaseOrderService;
         this.actionMapper = actionMapper;
+        this.quoteService = quoteService;
     }
 
     /** 根据不完整自然语言提取结果准备可确认的采购订单草稿。 */
@@ -144,6 +148,14 @@ public class PurchaseOrderAutomationService
                 return result(AutomationPreparationStatus.NEED_INPUT, "第 " + (index + 1) + " 行缺少有效的含税单价",
                     List.of("第 " + (index + 1) + " 行含税单价"), List.of(), null);
             }
+            if (input.quoteId() != null || input.quoteLineId() != null)
+            {
+                if (!quoteService.validateSelection(input.quoteId(), input.quoteLineId(), supplier.getSupplierCode(),
+                    materials.get(index).getMaterialCode(), input.quantity(), input.unitPrice()))
+                    return result(AutomationPreparationStatus.INVALID, "第 " + (index + 1)
+                        + " 行引用的供应商报价已失效、数量不匹配或单价不一致，请重新比较报价",
+                        List.of(), List.of(), null);
+            }
             if (StringUtils.isNotBlank(input.plannedDate()) && !isDate(input.plannedDate()))
             {
                 return result(AutomationPreparationStatus.INVALID, "第 " + (index + 1) + " 行计划到货日期格式应为 yyyy-MM-dd",
@@ -160,7 +172,8 @@ public class PurchaseOrderAutomationService
             BigDecimal amount = quantity.multiply(unitPrice).setScale(2, RoundingMode.HALF_UP);
             lines.add(new PurchaseOrderDraftLine(index + 1, material.getMaterialId(), material.getMaterialCode(),
                 material.getMaterialName(), material.getSpec(), material.getModel(), material.getUnit(), quantity,
-                unitPrice, taxRate, amount, blankToNull(input.plannedDate())));
+                unitPrice, taxRate, amount, blankToNull(input.plannedDate()), input.quoteId(), input.quoteLineId(),
+                StringUtils.isBlank(input.priceSource()) ? "MANUAL" : input.priceSource()));
             totalQuantity = totalQuantity.add(quantity);
             totalAmount = totalAmount.add(amount);
         }
@@ -318,7 +331,8 @@ public class PurchaseOrderAutomationService
     private PurchaseOrderDraftRequest toPreparationRequest(PurchaseOrderDraft draft)
     {
         List<PurchaseOrderDraftLineRequest> lines = draft.lines() == null ? List.of() : draft.lines().stream()
-            .map(line -> new PurchaseOrderDraftLineRequest(line.materialCode(), line.quantity(), line.unitPrice(), line.plannedDate()))
+            .map(line -> new PurchaseOrderDraftLineRequest(line.materialCode(), line.quantity(), line.unitPrice(), line.plannedDate(),
+                line.quoteId(), line.quoteLineId(), line.priceSource()))
             .collect(Collectors.toList());
         return new PurchaseOrderDraftRequest(draft.supplierCode(), draft.orderDate(), draft.expectedDate(), draft.remark(), lines);
     }
@@ -359,6 +373,9 @@ public class PurchaseOrderAutomationService
         target.setTaxRate(line.taxRate());
         target.setAmount(line.amount());
         target.setPlannedDate(line.plannedDate());
+        target.setQuoteId(line.quoteId());
+        target.setQuoteLineId(line.quoteLineId());
+        target.setPriceSource(line.priceSource());
         target.setCreateBy(username);
         return target;
     }

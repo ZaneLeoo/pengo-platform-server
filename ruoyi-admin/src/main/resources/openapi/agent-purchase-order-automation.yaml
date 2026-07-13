@@ -107,6 +107,19 @@ components:
           type: string
           format: date
           description: 该行计划到货日期，可选。
+        quoteId:
+          type: integer
+          format: int64
+          description: 可选，供应商报价主表ID；由 purchase-quotes/compare 返回，传入后后端会重新校验报价有效性。
+        quoteLineId:
+          type: integer
+          format: int64
+          description: 可选，供应商报价明细ID；必须与 quoteId 一起传入。
+        priceSource:
+          type: string
+          enum: [MANUAL, QUOTE]
+          default: MANUAL
+          description: 价格来源。使用报价推荐时传 QUOTE。
     PreparationStatus:
       type: string
       enum: [NEED_INPUT, AMBIGUOUS, INVALID, READY]
@@ -142,6 +155,9 @@ components:
         taxRate: { type: number, description: 由供应商档案带出 }
         amount: { type: number, description: 后端计算的行金额 }
         plannedDate: { type: string, format: date, nullable: true }
+        quoteId: { type: integer, format: int64, nullable: true, description: 使用的报价主表ID }
+        quoteLineId: { type: integer, format: int64, nullable: true, description: 使用的报价明细ID }
+        priceSource: { type: string, enum: [MANUAL, QUOTE] }
     PurchaseOrderDraft:
       type: object
       properties:

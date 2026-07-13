@@ -15,6 +15,9 @@ public record PurchaseOrderDraftLine(
     BigDecimal unitPrice,
     BigDecimal taxRate,
     BigDecimal amount,
-    String plannedDate)
+    String plannedDate,
+    Long quoteId,
+    Long quoteLineId,
+    String priceSource)
 {
 }

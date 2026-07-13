@@ -39,6 +39,9 @@
         <result property="taxRate" column="tax_rate"/>
         <result property="amount" column="amount"/>
         <result property="plannedDate" column="planned_date"/>
+        <result property="quoteId" column="quote_id"/>
+        <result property="quoteLineId" column="quote_line_id"/>
+        <result property="priceSource" column="price_source"/>
         <result property="remark" column="remark"/>
     </resultMap>
 
@@ -127,7 +130,7 @@
                                         order_quantity, received_quantity,
                                         qualified_quantity, inbound_quantity,
                                         unit_price, tax_rate, amount,
-                                        planned_date, remark,
+                                        planned_date, quote_id, quote_line_id, price_source, remark,
                                         create_by, create_time)
         values (#{orderId}, #{lineNo},
                 #{materialId}, #{materialCode}, #{materialName},
@@ -135,7 +138,7 @@
                 #{orderQuantity}, #{receivedQuantity},
                 #{qualifiedQuantity}, #{inboundQuantity},
                 #{unitPrice}, #{taxRate}, #{amount},
-                #{plannedDate}, #{remark},
+                #{plannedDate}, #{quoteId}, #{quoteLineId}, #{priceSource}, #{remark},
                 #{createBy}, now())
     </insert>
 
@@ -149,6 +152,9 @@
             tax_rate       = #{taxRate},
             amount         = #{amount},
             planned_date   = #{plannedDate},
+            quote_id      = #{quoteId},
+            quote_line_id = #{quoteLineId},
+            price_source  = #{priceSource},
             remark         = #{remark},
             update_by      = #{updateBy},
             update_time    = now()

@@ -7,6 +7,15 @@ public record PurchaseOrderDraftLineRequest(
     String materialKeyword,
     BigDecimal quantity,
     BigDecimal unitPrice,
-    String plannedDate)
+    String plannedDate,
+    Long quoteId,
+    Long quoteLineId,
+    String priceSource)
 {
+    /** 兼容未使用供应商报价的普通采购订单草稿请求。 */
+    public PurchaseOrderDraftLineRequest(String materialKeyword, BigDecimal quantity, BigDecimal unitPrice,
+                                         String plannedDate)
+    {
+        this(materialKeyword, quantity, unitPrice, plannedDate, null, null, "MANUAL");
+    }
 }

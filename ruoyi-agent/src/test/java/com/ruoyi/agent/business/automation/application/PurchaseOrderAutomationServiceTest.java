@@ -21,6 +21,7 @@ import com.ruoyi.mes.base.service.IMaterialService;
 import com.ruoyi.mes.base.service.ISupplierService;
 import com.ruoyi.mes.purchase.domain.PurchaseOrder;
 import com.ruoyi.mes.purchase.service.IPurchaseOrderService;
+import com.ruoyi.mes.purchase.service.IPurchaseSupplierQuoteService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,13 +45,16 @@ class PurchaseOrderAutomationServiceTest
     private IPurchaseOrderService purchaseOrderService;
     @Mock
     private AutomationActionMapper actionMapper;
+    @Mock
+    private IPurchaseSupplierQuoteService quoteService;
 
     private PurchaseOrderAutomationService service;
 
     @BeforeEach
     void setUp()
     {
-        service = new PurchaseOrderAutomationService(supplierService, materialService, purchaseOrderService, actionMapper);
+        service = new PurchaseOrderAutomationService(supplierService, materialService, purchaseOrderService, actionMapper,
+            quoteService);
     }
 
     @Test

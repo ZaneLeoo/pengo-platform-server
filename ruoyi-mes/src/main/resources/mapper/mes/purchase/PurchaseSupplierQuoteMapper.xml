@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.purchase.mapper.PurchaseSupplierQuoteMapper">
+
+    <resultMap id="QuoteResult" type="com.ruoyi.mes.purchase.domain.PurchaseSupplierQuote">
+        <id property="id" column="id"/>
+        <result property="quoteCode" column="quote_code"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="supplierCode" column="supplier_code"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="quoteDate" column="quote_date"/>
+        <result property="currency" column="currency"/>
+        <result property="taxIncluded" column="tax_included"/>
+        <result property="status" column="status"/>
+        <result property="effectiveDate" column="effective_date"/>
+        <result property="expireDate" column="expire_date"/>
+        <result property="sourceType" column="source_type"/>
+        <result property="sourceReference" column="source_reference"/>
+        <result property="approvedBy" column="approved_by"/>
+        <result property="approvedTime" column="approved_time"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="LineResult" type="com.ruoyi.mes.purchase.domain.PurchaseSupplierQuoteLine">
+        <id property="id" column="id"/>
+        <result property="quoteId" column="quote_id"/>
+        <result property="lineNo" column="line_no"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="spec" column="spec"/>
+        <result property="unit" column="unit"/>
+        <result property="minOrderQuantity" column="min_order_quantity"/>
+        <result property="minQuantity" column="min_quantity"/>
+        <result property="maxQuantity" column="max_quantity"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="taxRate" column="tax_rate"/>
+        <result property="leadTimeDays" column="lead_time_days"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="quoteColumns">
+        select id, quote_code, supplier_id, supplier_code, supplier_name, quote_date,
+               currency, tax_included, status, effective_date, expire_date,
+               source_type, source_reference, approved_by, approved_time, remark,
+               create_by, create_time, update_by, update_time
+        from purchase_supplier_quote
+    </sql>
+
+    <select id="selectList" resultMap="QuoteResult">
+        <include refid="quoteColumns"/>
+        <where>
+            <if test="quoteCode != null and quoteCode != ''">and quote_code like concat('%', #{quoteCode}, '%')</if>
+            <if test="supplierCode != null and supplierCode != ''">and supplier_code like concat('%', #{supplierCode}, '%')</if>
+            <if test="supplierName != null and supplierName != ''">and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            <if test="currency != null and currency != ''">and currency = #{currency}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultMap="QuoteResult">
+        <include refid="quoteColumns"/> where id = #{id}
+    </select>
+
+    <select id="selectByCode" resultMap="QuoteResult">
+        <include refid="quoteColumns"/> where quote_code = #{quoteCode}
+    </select>
+
+    <select id="selectLinesByQuoteId" resultMap="LineResult">
+        select id, quote_id, line_no, material_id, material_code, material_name,
+               spec, unit, min_order_quantity, min_quantity, max_quantity,
+               unit_price, tax_rate, lead_time_days, remark,
+               create_by, create_time, update_by, update_time
+        from purchase_supplier_quote_line
+        where quote_id = #{quoteId}
+        order by line_no
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into purchase_supplier_quote(
+            quote_code, supplier_id, supplier_code, supplier_name, quote_date,
+            currency, tax_included, status, effective_date, expire_date,
+            source_type, source_reference, remark, create_by, create_time)
+        values (
+            #{quoteCode}, #{supplierId}, #{supplierCode}, #{supplierName}, #{quoteDate},
+            #{currency}, #{taxIncluded}, #{status}, #{effectiveDate}, #{expireDate},
+            #{sourceType}, #{sourceReference}, #{remark}, #{createBy}, now())
+    </insert>
+
+    <update id="update">
+        update purchase_supplier_quote
+        set quote_code = #{quoteCode}, supplier_id = #{supplierId},
+            supplier_code = #{supplierCode}, supplier_name = #{supplierName},
+            quote_date = #{quoteDate}, currency = #{currency},
+            tax_included = #{taxIncluded}, effective_date = #{effectiveDate},
+            expire_date = #{expireDate}, source_type = #{sourceType},
+            source_reference = #{sourceReference}, remark = #{remark},
+            update_by = #{updateBy}, update_time = now()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteByIds">
+        delete from purchase_supplier_quote where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <delete id="deleteLinesByQuoteIds">
+        delete from purchase_supplier_quote_line where quote_id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <insert id="insertLine" useGeneratedKeys="true" keyProperty="id">
+        insert into purchase_supplier_quote_line(
+            quote_id, line_no, material_id, material_code, material_name, spec, unit,
+            min_order_quantity, min_quantity, max_quantity, unit_price, tax_rate,
+            lead_time_days, remark, create_by, create_time)
+        values (
+            #{quoteId}, #{lineNo}, #{materialId}, #{materialCode}, #{materialName}, #{spec}, #{unit},
+            #{minOrderQuantity}, #{minQuantity}, #{maxQuantity}, #{unitPrice}, #{taxRate},
+            #{leadTimeDays}, #{remark}, #{createBy}, now())
+    </insert>
+
+    <select id="selectCandidates" resultType="com.ruoyi.mes.purchase.domain.dto.PurchaseQuoteCandidate">
+        select ql.material_code as materialCode,
+               q.supplier_id as supplierId,
+               q.supplier_code as supplierCode,
+               q.supplier_name as supplierName,
+               q.id as quoteId,
+               ql.id as quoteLineId,
+               q.quote_code as quoteCode,
+               ql.unit_price as unitPrice,
+               ql.tax_rate as taxRate,
+               case when q.tax_included = 'Y' then true else false end as taxIncluded,
+               q.currency as currency,
+               case when q.tax_included = 'Y' then ql.unit_price
+                    else ql.unit_price * (1 + ql.tax_rate / 100) end as comparableUnitPrice,
+               ql.unit_price * #{quantity} as totalAmount,
+               ql.lead_time_days as leadTimeDays,
+               q.expire_date as expireDate
+        from purchase_supplier_quote q
+        inner join purchase_supplier_quote_line ql on ql.quote_id = q.id
+        inner join supplier s on s.id = q.supplier_id
+        where q.status = 'APPROVED'
+          and s.status = 'NORMAL'
+          and q.currency = #{currency}
+          and ql.material_code = #{materialCode}
+          and ql.min_order_quantity &lt;= #{quantity}
+          and (ql.min_quantity is null or ql.min_quantity &lt;= #{quantity})
+          and (ql.max_quantity is null or ql.max_quantity &gt;= #{quantity})
+          and q.effective_date &lt;= #{requiredDate}
+          and (q.expire_date is null or q.expire_date &gt;= #{requiredDate})
+        order by comparableUnitPrice asc, ql.lead_time_days asc, q.quote_date desc, q.id desc
+        limit 50
+    </select>
+
+    <update id="updateStatus">
+        update purchase_supplier_quote
+        set status = #{targetStatus},
+            approved_by = case when #{targetStatus} = 'APPROVED' then #{operator} else approved_by end,
+            approved_time = case when #{targetStatus} = 'APPROVED' then now() else approved_time end,
+            update_by = #{operator}, update_time = now()
+        where id = #{id} and status = #{sourceStatus}
+    </update>
+</mapper>
