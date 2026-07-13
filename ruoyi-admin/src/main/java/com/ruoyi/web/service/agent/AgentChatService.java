@@ -4,7 +4,6 @@ import com.ruoyi.agent.api.AgentChatRequest;
 import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.domain.enums.DifyAppCode;
 import com.ruoyi.agent.domain.enums.AgentStreamEventType;
-import com.ruoyi.agent.domain.enums.AgentToolMetadata;
 import com.ruoyi.agent.infrastructure.dify.DifyChatflowClient;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyChatRequest;
@@ -29,15 +28,21 @@ public class AgentChatService
     private final DifyChatflowClient difyClient;
     private final DifyAppConfigService configService;
     private final KnowledgeBaseService knowledgeBaseService;
+    private final AgentToolMetadataRegistry toolMetadataRegistry;
+    private final AgentFileService fileService;
     private final Executor executor;
 
     public AgentChatService(DifyChatflowClient difyClient, DifyAppConfigService configService,
         KnowledgeBaseService knowledgeBaseService,
+        AgentToolMetadataRegistry toolMetadataRegistry,
+        AgentFileService fileService,
         @Qualifier("threadPoolTaskExecutor") Executor executor)
     {
         this.difyClient = difyClient;
         this.configService = configService;
         this.knowledgeBaseService = knowledgeBaseService;
+        this.toolMetadataRegistry = toolMetadataRegistry;
+        this.fileService = fileService;
         this.executor = executor;
     }
 
@@ -56,8 +61,13 @@ public class AgentChatService
             DifyClientSettings settings = configService.requireSettings(DifyAppCode.AGENT_SUPERVISOR.getCode());
             DifyChatRequest difyRequest = new DifyChatRequest(request.getQuery(), request.getInputs(),
                 request.getDifyConversationId(), "ruoyi-user-" + userId);
-            difyClient.stream(settings, difyRequest, event -> forwardEvent(emitter, event));
-            send(emitter, AgentStreamEventType.DONE, Map.of());
+            AgentFileService.StreamContext fileContext = fileService.newStreamContext();
+            difyClient.stream(settings, difyRequest,
+                event -> forwardEvent(emitter, event, settings, userId, fileContext));
+            List<Map<String, Object>> files = fileService.materializedFiles(fileContext);
+            Map<String, Object> doneData = new LinkedHashMap<>();
+            if (!files.isEmpty()) doneData.put("files", files);
+            send(emitter, AgentStreamEventType.DONE, doneData);
             emitter.complete();
         }
         catch (InterruptedException e)
@@ -75,8 +85,10 @@ public class AgentChatService
         }
     }
 
-    private void forwardEvent(SseEmitter emitter, DifyStreamEvent event)
+    private void forwardEvent(SseEmitter emitter, DifyStreamEvent event, DifyClientSettings settings,
+        Long userId, AgentFileService.StreamContext fileContext)
     {
+        fileService.capture(event, fileContext);
         if ("agent_thought".equals(event.getEvent()))
         {
             forwardToolEvent(emitter, event);
@@ -90,12 +102,24 @@ public class AgentChatService
             }
             return;
         }
+        if ("message_file".equals(event.getEvent()))
+        {
+            return;
+        }
         if ("message_end".equals(event.getEvent()))
         {
+            List<Map<String, Object>> files = fileService.materialize(settings, event, userId, fileContext);
             Map<String, Object> data = new LinkedHashMap<>();
             if (event.getConversationId() != null) data.put("conversationId", event.getConversationId());
             if (event.getTaskId() != null) data.put("taskId", event.getTaskId());
+            // 文件同时放入 metadata 作为兼容兜底，前端优先处理独立 file 事件并按 resourceId 去重。
+            if (!files.isEmpty()) data.put("files", files);
             send(emitter, AgentStreamEventType.METADATA, data);
+            for (Map<String, Object> file : files)
+            {
+                send(emitter, AgentStreamEventType.FILE, file);
+            }
+            return;
         }
         if ("error".equals(event.getEvent())) throw new ServiceException(safeMessage(event));
     }
@@ -121,8 +145,8 @@ public class AgentChatService
             knowledgeEvent ? knowledgeBaseService.resolveName(event.getTool()) : resolveToolLabel(event));
         if (!knowledgeEvent)
         {
-            AgentToolMetadata metadata = AgentToolMetadata.fromOperationId(event.getTool());
-            if (!metadata.getDescription().isBlank()) data.put("toolDescription", metadata.getDescription());
+            String description = resolveToolDescription(event.getTool());
+            if (!description.isBlank()) data.put("toolDescription", description);
         }
         if (event.getPosition() != null) data.put("position", event.getPosition());
         if (event.getToolInput() != null && !event.getToolInput().isBlank())
@@ -163,6 +187,8 @@ public class AgentChatService
             data.put("callId", event.getId() + "-" + toolName);
             data.put("toolName", toolName);
             data.put("toolLabel", resolveToolLabel(toolName, toolName));
+            String description = resolveToolDescription(toolName);
+            if (!description.isBlank()) data.put("toolDescription", description);
             data.put("chartType", chartType);
             if (event.getPosition() != null) data.put("position", event.getPosition());
             JSONObject toolInput = nestedObject(inputs, toolName);
@@ -241,31 +267,54 @@ public class AgentChatService
         return parseObject(normalized.trim());
     }
 
-    /** 优先返回当前语言的工具展示名称。 */
+    /** 优先使用 OpenAPI 元数据，再使用 Dify 的有效本地化标签。 */
     private String resolveToolLabel(DifyStreamEvent event)
     {
+        AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(event.getTool());
+        if (metadata != null) return metadata.label();
         Object label = event.getToolLabels().get(event.getTool());
         if (label instanceof Map<?, ?> labels)
         {
             Object zh = labels.get("zh_Hans");
-            if (isMeaningfulLabel(zh, event.getTool())) return zh.toString();
+            if (isMeaningfulChineseLabel(zh, event.getTool())) return zh.toString().trim();
             Object en = labels.get("en_US");
-            if (isMeaningfulLabel(en, event.getTool())) return en.toString();
+            if (isMeaningfulLabel(en, event.getTool())) return en.toString().trim();
         }
         return resolveToolLabel(event.getTool(), event.getTool());
     }
 
-    /** 优先使用 Dify 标签，Dify 回退为 operationId 时使用本地工具注册表。 */
+    /** 解析无 Dify 事件上下文的工具名称，主要用于图表插件。 */
     private String resolveToolLabel(String toolName, String fallback)
     {
-        AgentToolMetadata metadata = AgentToolMetadata.fromOperationId(toolName);
-        return metadata == AgentToolMetadata.UNKNOWN
-            ? (fallback == null || fallback.isBlank() ? toolName : fallback) : metadata.getLabel();
+        AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(toolName);
+        return metadata == null
+            ? (fallback == null || fallback.isBlank() ? toolName : fallback) : metadata.label();
+    }
+
+    /** 返回 OpenAPI 或非 OpenAPI 配置中的工具描述。 */
+    private String resolveToolDescription(String toolName)
+    {
+        AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(toolName);
+        return metadata == null ? "" : metadata.description();
+    }
+
+    /** Dify zh_Hans 必须是实际中文名称，不能是 operationId 回退值。 */
+    private boolean isMeaningfulChineseLabel(Object value, String toolName)
+    {
+        if (!isMeaningfulLabel(value, toolName)) return false;
+        return value.toString().codePoints().anyMatch(this::isChineseCodePoint);
     }
 
     private boolean isMeaningfulLabel(Object value, String toolName)
     {
-        return value != null && !value.toString().isBlank() && !value.toString().equals(toolName);
+        return value != null && !value.toString().isBlank()
+            && !value.toString().trim().equalsIgnoreCase(toolName);
+    }
+
+    private boolean isChineseCodePoint(int codePoint)
+    {
+        return (codePoint >= 0x4E00 && codePoint <= 0x9FFF)
+            || (codePoint >= 0x3400 && codePoint <= 0x4DBF);
     }
 
     /**

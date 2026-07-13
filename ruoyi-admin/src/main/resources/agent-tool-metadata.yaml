@@ -1,0 +1,26 @@
+# 非 OpenAPI 工具的展示元数据。operationId 必须与 Dify 工具名一致。
+tools:
+  - operationId: bar_chart
+    label: 生成柱状图
+    description: 根据业务数据生成柱状图。
+  - operationId: line_chart
+    label: 生成折线图
+    description: 根据业务数据生成折线图。
+  - operationId: pie_chart
+    label: 生成饼图
+    description: 根据业务数据生成饼图。
+  - operationId: jina_search
+    label: 联网搜索
+    description: 联网搜索实时信息。
+  - operationId: md_to_xlsx
+    label: 生成 Excel 表格
+    description: 将 Markdown 内容转换为 Excel 表格文件。
+  - operationId: md_to_docx
+    label: 生成 Word 文档
+    description: 将 Markdown 内容转换为 Word 文档文件。
+  - operationId: md_to_pdf
+    label: 生成 PDF 文档
+    description: 将 Markdown 内容转换为 PDF 文档文件。
+  - operationId: md_to_pptx
+    label: 生成 PowerPoint 演示文稿
+    description: 将 Markdown 内容转换为 PowerPoint 演示文稿文件。

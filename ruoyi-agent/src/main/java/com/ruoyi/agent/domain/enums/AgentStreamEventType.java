@@ -11,6 +11,7 @@ public enum AgentStreamEventType
     TOOL("tool"),
     KNOWLEDGE("knowledge"),
     CHART("chart"),
+    FILE("file"),
     DONE("done"),
     ERROR("error");
 
