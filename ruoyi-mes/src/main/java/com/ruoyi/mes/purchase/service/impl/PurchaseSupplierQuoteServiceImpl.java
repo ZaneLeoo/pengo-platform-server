@@ -182,14 +182,15 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
                     List.of(), List.of(), allCandidates);
             allCandidates.addAll(candidates);
             PurchaseQuoteCandidate selected = candidates.get(0);
-            BigDecimal comparablePrice = TAX_EXCLUDED_BASIS.equals(basis)
+            BigDecimal comparisonPrice = TAX_EXCLUDED_BASIS.equals(basis)
                 ? taxExcludedPrice(selected) : selected.comparableUnitPrice();
-            BigDecimal amount = comparablePrice.multiply(line.quantity()).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal orderUnitPrice = selected.comparableUnitPrice();
+            BigDecimal amount = orderUnitPrice.multiply(line.quantity()).setScale(2, RoundingMode.HALF_UP);
             recommendations.add(new PurchaseQuoteRecommendation(material.getMaterialCode(), material.getMaterialName(),
                 scale(line.quantity()), selected.supplierId(), selected.supplierCode(),
                 selected.supplierName(), selected.quoteId(), selected.quoteLineId(), selected.quoteCode(),
-                scale(selected.unitPrice()), scale(comparablePrice), scale(selected.taxRate()), selected.taxIncluded(), selected.currency(),
-                scale(comparablePrice), amount, selected.leadTimeDays(), selected.expireDate(),
+                scale(selected.unitPrice()), scale(orderUnitPrice), scale(selected.taxRate()), selected.taxIncluded(), selected.currency(),
+                scale(comparisonPrice), amount, selected.leadTimeDays(), selected.expireDate(),
                 "当前有效报价中按" + (TAX_EXCLUDED_BASIS.equals(basis) ? "未税" : "含税") + "可比单价最低"));
         }
         return new PurchaseQuoteCompareResult(READY, "QUOTE_MATCHED", "SHOW_RECOMMENDATION",
