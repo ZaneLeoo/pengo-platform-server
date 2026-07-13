@@ -1,5 +1,5 @@
--- 供应商报价菜单与权限，依赖采购订单菜单已存在。
-set @purchase_menu_id := (select menu_id from sys_menu where menu_type='C' and perms='mes:purchaseOrder:list' limit 1);
+-- 供应商报价菜单与权限，依赖采购管理目录已存在。
+set @purchase_menu_id := (select menu_id from sys_menu where menu_type='M' and menu_name='采购管理' limit 1);
 
 insert into sys_menu(menu_name,parent_id,order_num,path,component,is_frame,is_cache,menu_type,visible,status,perms,icon,create_by,create_time,remark)
 select '供应商报价',@purchase_menu_id,16,'purchaseQuote','mes/purchase/quote',0,0,'C','0','0','mes:purchaseQuote:list','dollar','admin',sysdate(),'供应商报价维护与 AI 选价'
