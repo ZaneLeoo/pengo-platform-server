@@ -21,20 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 /** Dify 应用配置控制器。 */
 @RestController
 @RequestMapping("/agent/difyApps")
-public class DifyAppConfigController extends BaseController
-{
+public class DifyAppConfigController extends BaseController {
     private final DifyAppConfigService configService;
 
-    public DifyAppConfigController(DifyAppConfigService configService)
-    {
+    public DifyAppConfigController(DifyAppConfigService configService) {
         this.configService = configService;
     }
 
     /** 查询 Dify 应用配置列表。 */
     @PreAuthorize("@ss.hasPermi('agent:difyApp:list')")
     @GetMapping("/list")
-    public TableDataInfo list(DifyAppConfig config)
-    {
+    public TableDataInfo list(DifyAppConfig config) {
         startPage();
         List<DifyAppConfig> list = configService.selectDifyAppConfigList(config);
         list.forEach(this::maskApiKey);
@@ -44,8 +41,7 @@ public class DifyAppConfigController extends BaseController
     /** 获取 Dify 应用配置详情。 */
     @PreAuthorize("@ss.hasPermi('agent:difyApp:query')")
     @GetMapping("/{id}")
-    public AjaxResult getInfo(@PathVariable Long id)
-    {
+    public AjaxResult getInfo(@PathVariable Long id) {
         DifyAppConfig config = configService.selectDifyAppConfigById(id);
         maskApiKey(config);
         return success(config);
@@ -55,8 +51,7 @@ public class DifyAppConfigController extends BaseController
     @PreAuthorize("@ss.hasPermi('agent:difyApp:add')")
     @Log(title = "Dify应用配置", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody DifyAppConfig config)
-    {
+    public AjaxResult add(@RequestBody DifyAppConfig config) {
         config.setCreateBy(getUsername());
         return toAjax(configService.insertDifyAppConfig(config));
     }
@@ -65,8 +60,7 @@ public class DifyAppConfigController extends BaseController
     @PreAuthorize("@ss.hasPermi('agent:difyApp:edit')")
     @Log(title = "Dify应用配置", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody DifyAppConfig config)
-    {
+    public AjaxResult edit(@RequestBody DifyAppConfig config) {
         config.setUpdateBy(getUsername());
         return toAjax(configService.updateDifyAppConfig(config));
     }
@@ -75,15 +69,12 @@ public class DifyAppConfigController extends BaseController
     @PreAuthorize("@ss.hasPermi('agent:difyApp:remove')")
     @Log(title = "Dify应用配置", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(configService.deleteDifyAppConfigByIds(ids));
     }
 
-    private void maskApiKey(DifyAppConfig config)
-    {
-        if (config != null && config.getApiKey() != null && !config.getApiKey().isBlank())
-        {
+    private void maskApiKey(DifyAppConfig config) {
+        if (config != null && config.getApiKey() != null && !config.getApiKey().isBlank()) {
             config.setApiKey(DifyAppConfigService.MASKED_API_KEY);
         }
     }

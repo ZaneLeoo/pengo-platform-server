@@ -5,8 +5,7 @@ import lombok.Data;
 
 /** AI 自动化动作幂等记录。 */
 @Data
-public class AutomationAction
-{
+public class AutomationAction {
     private Long id;
     private String actionKey;
     private String actionType;

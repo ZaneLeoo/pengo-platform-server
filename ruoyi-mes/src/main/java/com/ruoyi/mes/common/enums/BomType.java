@@ -6,9 +6,7 @@ package com.ruoyi.mes.common.enums;
  * @author ruoyi
  */
 public enum BomType {
-    MANUFACTURING("MANUFACTURING", "生产BOM"),
-    TRIAL("TRIAL", "试制BOM"),
-    REWORK("REWORK", "返工BOM");
+    MANUFACTURING("MANUFACTURING", "生产BOM"), TRIAL("TRIAL", "试制BOM"), REWORK("REWORK", "返工BOM");
 
     private final String code;
     private final String label;

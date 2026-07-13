@@ -18,65 +18,56 @@ import org.springframework.stereotype.Service;
 
 /** 采购订单自动化业务的 Agent 工具适配层。 */
 @Service
-public class PurchaseOrderToolService
-{
+public class PurchaseOrderToolService {
     private static final Pattern LINE_NUMBER_PATTERN = Pattern.compile("第\\s*(\\d+)\\s*行");
     private final PurchaseOrderAutomationService automationService;
 
-    public PurchaseOrderToolService(PurchaseOrderAutomationService automationService)
-    {
+    public PurchaseOrderToolService(PurchaseOrderAutomationService automationService) {
         this.automationService = automationService;
     }
 
     /** 校验并准备采购订单草稿，绝不写入真实单据。 */
-    public AgentToolResult<PurchaseOrderDraft> prepare(PurchaseOrderDraftRequest request)
-    {
+    public AgentToolResult<PurchaseOrderDraft> prepare(PurchaseOrderDraftRequest request) {
         PurchaseOrderPreparationResult result = automationService.prepare(request);
-        return switch (result.status())
-        {
+        return switch (result.status()) {
             case NEED_INPUT -> AgentToolResults.needInput(PurchaseOrderToolResultCode.MISSING_REQUIRED_FIELDS,
-                result.message(), issues(result), null);
+                    result.message(), issues(result), null);
             case AMBIGUOUS -> AgentToolResults.ambiguous(PurchaseOrderToolResultCode.AMBIGUOUS_MASTER_DATA,
-                result.message(), issues(result), null);
+                    result.message(), issues(result), null);
             case INVALID -> AgentToolResults.rejected(PurchaseOrderToolResultCode.BUSINESS_VALIDATION_FAILED,
-                result.message(), issues(result), null);
+                    result.message(), issues(result), null);
             case READY -> AgentToolResults.confirm(PurchaseOrderToolResultCode.PURCHASE_ORDER_DRAFT_READY,
-                result.message(), result.draft(), "由 agent-ui 展示采购订单确认卡片并等待用户确认。");
+                    result.message(), result.draft(), "由 agent-ui 展示采购订单确认卡片并等待用户确认。");
         };
     }
 
     /** 把业务校验信息转换成字段路径明确的协议问题。 */
-    private List<AgentToolIssue> issues(PurchaseOrderPreparationResult result)
-    {
+    private List<AgentToolIssue> issues(PurchaseOrderPreparationResult result) {
         List<AgentToolIssue> issues = new ArrayList<>();
         result.missingFields().forEach(field -> issues.add(missingFieldIssue(field)));
         result.candidates().forEach(candidate -> issues.add(candidateIssue(candidate)));
-        if (issues.isEmpty() && result.status().name().equals("INVALID"))
-        {
+        if (issues.isEmpty() && result.status().name().equals("INVALID")) {
             issues.add(invalidIssue(result.message()));
         }
         return issues;
     }
 
     /** 转换需要用户选择的主数据候选项。 */
-    private AgentToolIssue candidateIssue(AutomationCandidate candidate)
-    {
+    private AgentToolIssue candidateIssue(AutomationCandidate candidate) {
         String field = "supplier".equals(candidate.field()) ? "supplierKeyword" : "lines[].materialKeyword";
         List<AgentToolCandidate> options = candidate.options().stream().map(this::toCandidate).toList();
         return new AgentToolIssue("AMBIGUOUS_MASTER_DATA", field, "存在多个候选项，请按编码明确选择",
-            "传入选中候选项的 code", options);
+                "传入选中候选项的 code", options);
     }
 
     /** 转换候选项的展示字段。 */
-    private AgentToolCandidate toCandidate(AutomationCandidateOption option)
-    {
+    private AgentToolCandidate toCandidate(AutomationCandidateOption option) {
         String description = String.join(" / ", nonBlank(option.spec(), option.model(), option.unit()));
         return new AgentToolCandidate(option.code(), option.name(), description);
     }
 
     /** 返回常见业务失败对应的实体字段。 */
-    private AgentToolIssue invalidIssue(String message)
-    {
+    private AgentToolIssue invalidIssue(String message) {
         if (message.startsWith("供应商"))
             return AgentToolIssue.of("SUPPLIER_DISABLED", "supplierKeyword", message, "启用供应商编码或名称");
         if (message.startsWith("物料") || message.startsWith("未找到启用物料"))
@@ -87,8 +78,7 @@ public class PurchaseOrderToolService
     }
 
     /** 将业务中文字段映射为下一次工具调用使用的 Java 字段路径。 */
-    private AgentToolIssue missingFieldIssue(String label)
-    {
+    private AgentToolIssue missingFieldIssue(String label) {
         if ("供应商".equals(label))
             return AgentToolIssue.of("MISSING_REQUIRED_FIELD", "supplierKeyword", "缺少供应商", "供应商编码或名称");
         if ("订单日期".equals(label))
@@ -107,15 +97,13 @@ public class PurchaseOrderToolService
     }
 
     /** 提取业务标签中的明细行号。 */
-    private int parseLineNumber(String label)
-    {
+    private int parseLineNumber(String label) {
         Matcher matcher = LINE_NUMBER_PATTERN.matcher(label);
         return matcher.find() ? Integer.parseInt(matcher.group(1)) : -1;
     }
 
     /** 过滤空白候选描述。 */
-    private List<String> nonBlank(String... values)
-    {
+    private List<String> nonBlank(String... values) {
         return java.util.Arrays.stream(values).filter(value -> value != null && !value.isBlank()).toList();
     }
 }

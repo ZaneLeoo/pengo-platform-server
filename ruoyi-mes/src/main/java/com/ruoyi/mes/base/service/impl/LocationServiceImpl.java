@@ -16,17 +16,27 @@ public class LocationServiceImpl implements ILocationService {
     }
 
     @Override
-    public List<Location> selectList(Location q) { return mapper.selectList(q); }
+    public List<Location> selectList(Location q) {
+        return mapper.selectList(q);
+    }
 
     @Override
-    public Location selectById(Long id) { return mapper.selectById(id); }
+    public Location selectById(Long id) {
+        return mapper.selectById(id);
+    }
 
     @Override
-    public int insert(Location o) { return mapper.insert(o); }
+    public int insert(Location o) {
+        return mapper.insert(o);
+    }
 
     @Override
-    public int update(Location o) { return mapper.update(o); }
+    public int update(Location o) {
+        return mapper.update(o);
+    }
 
     @Override
-    public int deleteByIds(Long[] ids) { return mapper.deleteByIds(ids); }
+    public int deleteByIds(Long[] ids) {
+        return mapper.deleteByIds(ids);
+    }
 }

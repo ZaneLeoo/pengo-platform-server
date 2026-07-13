@@ -4,8 +4,7 @@ import com.ruoyi.agent.domain.AgentMessage;
 import java.util.List;
 
 /** Agent 消息数据访问。 */
-public interface AgentMessageMapper
-{
+public interface AgentMessageMapper {
     /** 新增消息。 */
     int insert(AgentMessage message);
     /** 更新消息。 */

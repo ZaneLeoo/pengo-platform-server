@@ -67,7 +67,8 @@ public class BomItemServiceImpl implements IBomItemService {
     /**
      * 准备默认值与派生字段。
      *
-     * @param bomItem BOM明细
+     * @param bomItem
+     *            BOM明细
      */
     private void prepareDefaults(BomItem bomItem) {
         if (bomItem.getFixedLossQty() == null) {

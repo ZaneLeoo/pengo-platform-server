@@ -6,11 +6,8 @@ package com.ruoyi.mes.common.enums;
  * @author ruoyi
  */
 public enum SupplyType {
-    PUSH("PUSH", "推式领料"),
-    STOCK_BACKFLUSH("STOCK_BACKFLUSH", "入库倒冲"),
-    PROCESS_BACKFLUSH("PROCESS_BACKFLUSH", "工序倒冲"),
-    VIRTUAL("VIRTUAL", "虚拟件"),
-    DIRECT("DIRECT", "直接供应");
+    PUSH("PUSH", "推式领料"), STOCK_BACKFLUSH("STOCK_BACKFLUSH", "入库倒冲"), PROCESS_BACKFLUSH("PROCESS_BACKFLUSH",
+            "工序倒冲"), VIRTUAL("VIRTUAL", "虚拟件"), DIRECT("DIRECT", "直接供应");
 
     private final String code;
     private final String label;

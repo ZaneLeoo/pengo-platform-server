@@ -6,9 +6,7 @@ package com.ruoyi.mes.common.enums;
  * @author ruoyi
  */
 public enum BomVersionStatus {
-    DRAFT("DRAFT", "草稿"),
-    EFFECTIVE("EFFECTIVE", "生效"),
-    FROZEN("FROZEN", "冻结");
+    DRAFT("DRAFT", "草稿"), EFFECTIVE("EFFECTIVE", "生效"), FROZEN("FROZEN", "冻结");
 
     private final String code;
     private final String label;

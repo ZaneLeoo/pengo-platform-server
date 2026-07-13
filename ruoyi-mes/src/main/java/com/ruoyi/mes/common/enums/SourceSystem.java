@@ -6,11 +6,7 @@ package com.ruoyi.mes.common.enums;
  * @author ruoyi
  */
 public enum SourceSystem {
-    MANUAL("MANUAL", "手工"),
-    EXCEL("EXCEL", "Excel"),
-    U8("U8", "U8"),
-    U9C("U9C", "U9C"),
-    AI_IMPORT("AI_IMPORT", "AI导入");
+    MANUAL("MANUAL", "手工"), EXCEL("EXCEL", "Excel"), U8("U8", "U8"), U9C("U9C", "U9C"), AI_IMPORT("AI_IMPORT", "AI导入");
 
     private final String code;
     private final String label;

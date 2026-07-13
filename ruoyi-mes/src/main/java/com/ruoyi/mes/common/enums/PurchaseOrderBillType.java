@@ -7,19 +7,16 @@ public enum PurchaseOrderBillType {
     private final String code;
     private final String label;
 
-    PurchaseOrderBillType(String code, String label)
-    {
+    PurchaseOrderBillType(String code, String label) {
         this.code = code;
         this.label = label;
     }
 
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
-    public String getLabel()
-    {
+    public String getLabel() {
         return label;
     }
 }

@@ -15,12 +15,11 @@ import com.ruoyi.common.enums.DataSourceType;
  *
  * @author ruoyi
  */
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface DataSource
-{
+public @interface DataSource {
     /**
      * 切换数据源名称
      */

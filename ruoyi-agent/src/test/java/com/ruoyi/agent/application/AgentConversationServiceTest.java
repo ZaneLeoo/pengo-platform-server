@@ -9,15 +9,13 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class AgentConversationServiceTest
-{
+class AgentConversationServiceTest {
     @Test
-    void shouldCreateOwnedConversationWithDefaultState()
-    {
+    void shouldCreateOwnedConversationWithDefaultState() {
         FakeConversationMapper conversationMapper = new FakeConversationMapper();
         AgentMessageMapper messageMapper = new EmptyMessageMapper();
         AgentConversationService service = new AgentConversationService(conversationMapper, messageMapper,
-            new ConversationTitlePolicy());
+                new ConversationTitlePolicy());
 
         AgentConversation created = service.create(12L, "  请   分析销售数据  ", "admin");
 
@@ -28,22 +26,42 @@ class AgentConversationServiceTest
         assertEquals(12L, conversationMapper.saved.getUserId());
     }
 
-    private static class FakeConversationMapper implements AgentConversationMapper
-    {
+    private static class FakeConversationMapper implements AgentConversationMapper {
         private AgentConversation saved;
-        public int insert(AgentConversation value) { saved = value; value.setId(7L); return 1; }
-        public List<AgentConversation> selectByUserId(Long userId) { return Collections.emptyList(); }
-        public AgentConversation selectOwned(Long id, Long userId) { return null; }
-        public int update(AgentConversation value) { return 1; }
-        public int deleteOwned(Long id, Long userId) { return 1; }
+        public int insert(AgentConversation value) {
+            saved = value;
+            value.setId(7L);
+            return 1;
+        }
+        public List<AgentConversation> selectByUserId(Long userId) {
+            return Collections.emptyList();
+        }
+        public AgentConversation selectOwned(Long id, Long userId) {
+            return null;
+        }
+        public int update(AgentConversation value) {
+            return 1;
+        }
+        public int deleteOwned(Long id, Long userId) {
+            return 1;
+        }
     }
 
-    private static class EmptyMessageMapper implements AgentMessageMapper
-    {
-        public int insert(AgentMessage value) { return 1; }
-        public int update(AgentMessage value) { return 1; }
-        public AgentMessage selectById(Long id) { return null; }
-        public List<AgentMessage> selectByConversationId(Long id) { return Collections.emptyList(); }
-        public int deleteByConversationId(Long id) { return 0; }
+    private static class EmptyMessageMapper implements AgentMessageMapper {
+        public int insert(AgentMessage value) {
+            return 1;
+        }
+        public int update(AgentMessage value) {
+            return 1;
+        }
+        public AgentMessage selectById(Long id) {
+            return null;
+        }
+        public List<AgentMessage> selectByConversationId(Long id) {
+            return Collections.emptyList();
+        }
+        public int deleteByConversationId(Long id) {
+            return 0;
+        }
     }
 }

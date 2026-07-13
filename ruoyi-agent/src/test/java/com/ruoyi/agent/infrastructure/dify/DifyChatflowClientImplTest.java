@@ -16,35 +16,32 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class DifyChatflowClientImplTest
-{
+class DifyChatflowClientImplTest {
     private HttpServer server;
     private String baseUrl;
 
     @BeforeEach
-    void start() throws Exception
-    {
+    void start() throws Exception {
         server = HttpServer.create(new InetSocketAddress(0), 0);
         baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
         server.start();
     }
 
     @AfterEach
-    void stop()
-    {
+    void stop() {
         server.stop(0);
     }
 
     @Test
-    void shouldSendStreamingRequestAndConsumeEvents() throws Exception
-    {
+    void shouldSendStreamingRequestAndConsumeEvents() throws Exception {
         server.createContext("/chat-messages", exchange -> {
             assertEquals("Bearer secret", exchange.getRequestHeaders().getFirst("Authorization"));
-            Map<String, Object> body = JSON.parseObject(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            Map<String, Object> body = JSON
+                    .parseObject(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             assertEquals("streaming", body.get("response_mode"));
             assertEquals(Boolean.FALSE, body.get("auto_generate_name"));
             byte[] response = ("data: {\"event\":\"message\",\"answer\":\"你好\",\"task_id\":\"task-1\"}\n\n"
-                + "event: ping\n\n").getBytes(StandardCharsets.UTF_8);
+                    + "event: ping\n\n").getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().add("Content-Type", "text/event-stream");
             exchange.sendResponseHeaders(200, response.length);
             exchange.getResponseBody().write(response);
@@ -53,7 +50,7 @@ class DifyChatflowClientImplTest
         List<DifyStreamEvent> events = new ArrayList<>();
 
         new DifyChatflowClientImpl().stream(new DifyClientSettings(baseUrl, "secret"),
-            new DifyChatRequest("你好", Map.of("scene", "sales"), null, "ruoyi-user-1"), events::add);
+                new DifyChatRequest("你好", Map.of("scene", "sales"), null, "ruoyi-user-1"), events::add);
 
         assertEquals(1, events.size());
         assertEquals("你好", events.get(0).getAnswer());
@@ -61,11 +58,10 @@ class DifyChatflowClientImplTest
     }
 
     @Test
-    void shouldRecordEveryRawSseLineBeforeParsing() throws Exception
-    {
+    void shouldRecordEveryRawSseLineBeforeParsing() throws Exception {
         server.createContext("/chat-messages", exchange -> {
             byte[] response = ("data: {\"event\":\"message\",\"answer\":\"你好\"}\n\n"
-                + "event: ping\n\n").getBytes(StandardCharsets.UTF_8);
+                    + "event: ping\n\n").getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(200, response.length);
             exchange.getResponseBody().write(response);
             exchange.close();
@@ -73,21 +69,21 @@ class DifyChatflowClientImplTest
         List<String> rawLines = new ArrayList<>();
         DifyRawEventLogger rawEventLogger = new DifyRawEventLogger(rawLines::add, () -> true);
         DifyChatflowClientImpl client = new DifyChatflowClientImpl(
-            java.net.http.HttpClient.newHttpClient(), new DifySseParser(), rawEventLogger);
+                java.net.http.HttpClient.newHttpClient(), new DifySseParser(), rawEventLogger);
         List<DifyStreamEvent> events = new ArrayList<>();
 
         client.stream(new DifyClientSettings(baseUrl, "secret"),
-            new DifyChatRequest("你好", Map.of(), null, "ruoyi-user-1"), events::add);
+                new DifyChatRequest("你好", Map.of(), null, "ruoyi-user-1"), events::add);
 
         assertEquals(List.of("data: {\"event\":\"message\",\"answer\":\"你好\"}", "event: ping"), rawLines);
         assertEquals(1, events.size());
     }
 
     @Test
-    void shouldCallStopEndpoint() throws Exception
-    {
+    void shouldCallStopEndpoint() throws Exception {
         server.createContext("/chat-messages/task-1/stop", exchange -> {
-            assertTrue(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8).contains("ruoyi-user-1"));
+            assertTrue(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8)
+                    .contains("ruoyi-user-1"));
             exchange.sendResponseHeaders(200, -1);
             exchange.close();
         });

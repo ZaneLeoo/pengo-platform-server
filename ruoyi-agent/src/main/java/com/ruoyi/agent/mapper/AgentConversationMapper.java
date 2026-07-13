@@ -5,8 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 /** Agent 会话数据访问。 */
-public interface AgentConversationMapper
-{
+public interface AgentConversationMapper {
     /** 新增会话。 */
     int insert(AgentConversation conversation);
     /** 查询用户会话列表。 */

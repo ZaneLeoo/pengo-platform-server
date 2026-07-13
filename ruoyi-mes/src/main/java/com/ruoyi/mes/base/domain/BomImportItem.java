@@ -4,8 +4,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import java.math.BigDecimal;
 
 /** BOM OCR 导入草稿明细。 */
-public class BomImportItem extends BaseEntity
-{
+public class BomImportItem extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /** 草稿明细 ID。 */
@@ -71,66 +70,150 @@ public class BomImportItem extends BaseEntity
     /** 行级问题描述，便于前端表格直接展示。 */
     private String issueMessage;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Long getImportId() { return importId; }
-    public void setImportId(Long importId) { this.importId = importId; }
+    public Long getImportId() {
+        return importId;
+    }
+    public void setImportId(Long importId) {
+        this.importId = importId;
+    }
 
-    public Integer getLineNo() { return lineNo; }
-    public void setLineNo(Integer lineNo) { this.lineNo = lineNo; }
+    public Integer getLineNo() {
+        return lineNo;
+    }
+    public void setLineNo(Integer lineNo) {
+        this.lineNo = lineNo;
+    }
 
-    public String getComponentCodeCandidate() { return componentCodeCandidate; }
-    public void setComponentCodeCandidate(String componentCodeCandidate) { this.componentCodeCandidate = componentCodeCandidate; }
+    public String getComponentCodeCandidate() {
+        return componentCodeCandidate;
+    }
+    public void setComponentCodeCandidate(String componentCodeCandidate) {
+        this.componentCodeCandidate = componentCodeCandidate;
+    }
 
-    public String getDrawingNo() { return drawingNo; }
-    public void setDrawingNo(String drawingNo) { this.drawingNo = drawingNo; }
+    public String getDrawingNo() {
+        return drawingNo;
+    }
+    public void setDrawingNo(String drawingNo) {
+        this.drawingNo = drawingNo;
+    }
 
-    public String getItemName() { return itemName; }
-    public void setItemName(String itemName) { this.itemName = itemName; }
+    public String getItemName() {
+        return itemName;
+    }
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
 
-    public BigDecimal getQuantity() { return quantity; }
-    public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
+    }
 
-    public String getSpec() { return spec; }
-    public void setSpec(String spec) { this.spec = spec; }
+    public String getSpec() {
+        return spec;
+    }
+    public void setSpec(String spec) {
+        this.spec = spec;
+    }
 
-    public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public String getUnit() {
+        return unit;
+    }
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
-    public String getItemType() { return itemType; }
-    public void setItemType(String itemType) { this.itemType = itemType; }
+    public String getItemType() {
+        return itemType;
+    }
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
 
-    public BigDecimal getUnitWeight() { return unitWeight; }
-    public void setUnitWeight(BigDecimal unitWeight) { this.unitWeight = unitWeight; }
+    public BigDecimal getUnitWeight() {
+        return unitWeight;
+    }
+    public void setUnitWeight(BigDecimal unitWeight) {
+        this.unitWeight = unitWeight;
+    }
 
-    public BigDecimal getTotalWeight() { return totalWeight; }
-    public void setTotalWeight(BigDecimal totalWeight) { this.totalWeight = totalWeight; }
+    public BigDecimal getTotalWeight() {
+        return totalWeight;
+    }
+    public void setTotalWeight(BigDecimal totalWeight) {
+        this.totalWeight = totalWeight;
+    }
 
-    public String getRemark() { return remark; }
-    public void setRemark(String remark) { this.remark = remark; }
+    public String getRemark() {
+        return remark;
+    }
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
 
-    public String getRawText() { return rawText; }
-    public void setRawText(String rawText) { this.rawText = rawText; }
+    public String getRawText() {
+        return rawText;
+    }
+    public void setRawText(String rawText) {
+        this.rawText = rawText;
+    }
 
-    public BigDecimal getConfidence() { return confidence; }
-    public void setConfidence(BigDecimal confidence) { this.confidence = confidence; }
+    public BigDecimal getConfidence() {
+        return confidence;
+    }
+    public void setConfidence(BigDecimal confidence) {
+        this.confidence = confidence;
+    }
 
-    public Long getMatchedMaterialId() { return matchedMaterialId; }
-    public void setMatchedMaterialId(Long matchedMaterialId) { this.matchedMaterialId = matchedMaterialId; }
+    public Long getMatchedMaterialId() {
+        return matchedMaterialId;
+    }
+    public void setMatchedMaterialId(Long matchedMaterialId) {
+        this.matchedMaterialId = matchedMaterialId;
+    }
 
-    public String getMatchedMaterialCode() { return matchedMaterialCode; }
-    public void setMatchedMaterialCode(String matchedMaterialCode) { this.matchedMaterialCode = matchedMaterialCode; }
+    public String getMatchedMaterialCode() {
+        return matchedMaterialCode;
+    }
+    public void setMatchedMaterialCode(String matchedMaterialCode) {
+        this.matchedMaterialCode = matchedMaterialCode;
+    }
 
-    public String getMatchedMaterialName() { return matchedMaterialName; }
-    public void setMatchedMaterialName(String matchedMaterialName) { this.matchedMaterialName = matchedMaterialName; }
+    public String getMatchedMaterialName() {
+        return matchedMaterialName;
+    }
+    public void setMatchedMaterialName(String matchedMaterialName) {
+        this.matchedMaterialName = matchedMaterialName;
+    }
 
-    public String getMatchStatus() { return matchStatus; }
-    public void setMatchStatus(String matchStatus) { this.matchStatus = matchStatus; }
+    public String getMatchStatus() {
+        return matchStatus;
+    }
+    public void setMatchStatus(String matchStatus) {
+        this.matchStatus = matchStatus;
+    }
 
-    public String getRiskLevel() { return riskLevel; }
-    public void setRiskLevel(String riskLevel) { this.riskLevel = riskLevel; }
+    public String getRiskLevel() {
+        return riskLevel;
+    }
+    public void setRiskLevel(String riskLevel) {
+        this.riskLevel = riskLevel;
+    }
 
-    public String getIssueMessage() { return issueMessage; }
-    public void setIssueMessage(String issueMessage) { this.issueMessage = issueMessage; }
+    public String getIssueMessage() {
+        return issueMessage;
+    }
+    public void setIssueMessage(String issueMessage) {
+        this.issueMessage = issueMessage;
+    }
 }

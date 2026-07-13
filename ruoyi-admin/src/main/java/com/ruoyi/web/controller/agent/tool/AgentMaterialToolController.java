@@ -13,19 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 /** Dify 物料查询工具 HTTP 入口。 */
 @RestController
 @RequestMapping("/agent/tools/materials")
-public class AgentMaterialToolController
-{
+public class AgentMaterialToolController {
     private final MaterialToolService toolService;
 
-    public AgentMaterialToolController(MaterialToolService toolService)
-    {
+    public AgentMaterialToolController(MaterialToolService toolService) {
         this.toolService = toolService;
     }
 
     /** 查询物料。 */
     @PostMapping("/query")
-    public AgentToolResult<List<MaterialToolItem>> query(@RequestBody(required = false) MaterialToolQuery request)
-    {
+    public AgentToolResult<List<MaterialToolItem>> query(@RequestBody(required = false) MaterialToolQuery request) {
         return toolService.query(request);
     }
 }

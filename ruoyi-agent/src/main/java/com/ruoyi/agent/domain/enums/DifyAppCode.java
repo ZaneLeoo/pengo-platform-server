@@ -1,8 +1,7 @@
 package com.ruoyi.agent.domain.enums;
 
 /** Dify 应用编码。 */
-public enum DifyAppCode
-{
+public enum DifyAppCode {
     /** 企业智能助手 Dify 应用。 */
     AGENT_SUPERVISOR("AGENT_SUPERVISOR"),
 
@@ -11,8 +10,12 @@ public enum DifyAppCode
 
     private final String code;
 
-    DifyAppCode(String code) { this.code = code; }
+    DifyAppCode(String code) {
+        this.code = code;
+    }
 
     /** 返回配置表中的应用编码。 */
-    public String getCode() { return code; }
+    public String getCode() {
+        return code;
+    }
 }

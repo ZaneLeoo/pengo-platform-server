@@ -7,7 +7,6 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ruoyi.agent.business.automation.domain.AutomationAction;
 import com.ruoyi.agent.business.automation.domain.AutomationPreparationStatus;
 import com.ruoyi.agent.business.automation.domain.CreatePurchaseOrderDraftRequest;
 import com.ruoyi.agent.business.automation.domain.CreatePurchaseOrderDraftResult;
@@ -35,8 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 /** 采购订单自动化服务的核心业务规则测试。 */
 @ExtendWith(MockitoExtension.class)
-class PurchaseOrderAutomationServiceTest
-{
+class PurchaseOrderAutomationServiceTest {
     @Mock
     private ISupplierService supplierService;
     @Mock
@@ -51,23 +49,23 @@ class PurchaseOrderAutomationServiceTest
     private PurchaseOrderAutomationService service;
 
     @BeforeEach
-    void setUp()
-    {
-        service = new PurchaseOrderAutomationService(supplierService, materialService, purchaseOrderService, actionMapper,
-            quoteService);
+    void setUp() {
+        service = new PurchaseOrderAutomationService(supplierService, materialService, purchaseOrderService,
+                actionMapper,
+                quoteService);
     }
 
     @Test
-    void shouldPrepareNormalizedDraftFromMasterData()
-    {
+    void shouldPrepareNormalizedDraftFromMasterData() {
         Supplier supplier = supplier("SUP001", "深圳鸿发电子科技有限公司", new BigDecimal("13"));
         Material material = material(10L, "PCB-CTRL", "PCB控制板", "块");
         when(supplierService.selectList(any())).thenReturn(List.of(supplier));
-        when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString())).thenReturn(List.of(material));
+        when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString()))
+                .thenReturn(List.of(material));
 
         PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", "2026-07-12",
-            "2026-07-20", "生产补料", List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", new BigDecimal("2"),
-                new BigDecimal("25.50"), "2026-07-20"))));
+                "2026-07-20", "生产补料", List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", new BigDecimal("2"),
+                        new BigDecimal("25.50"), "2026-07-20"))));
 
         assertThat(result.status()).isEqualTo(AutomationPreparationStatus.READY);
         assertThat(result.draft().supplierName()).isEqualTo("深圳鸿发电子科技有限公司");
@@ -77,37 +75,37 @@ class PurchaseOrderAutomationServiceTest
     }
 
     @Test
-    void shouldRequestMissingLineFieldsInsteadOfGuessing()
-    {
+    void shouldRequestMissingLineFieldsInsteadOfGuessing() {
         PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", "2026-07-12",
-            null, null, List.of(new PurchaseOrderDraftLineRequest("", null, null, null))));
+                null, null, List.of(new PurchaseOrderDraftLineRequest("", null, null, null))));
 
         assertThat(result.status()).isEqualTo(AutomationPreparationStatus.NEED_INPUT);
         assertThat(result.missingFields()).contains("第 1 行物料", "第 1 行采购数量", "第 1 行含税单价");
     }
 
     @Test
-    void shouldDefaultOrderDateToToday()
-    {
+    void shouldDefaultOrderDateToToday() {
         Supplier supplier = supplier("SUP001", "深圳鸿发电子科技有限公司", new BigDecimal("13"));
         Material material = material(10L, "PCB-CTRL", "PCB控制板", "块");
         when(supplierService.selectList(any())).thenReturn(List.of(supplier));
-        when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString())).thenReturn(List.of(material));
+        when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString()))
+                .thenReturn(List.of(material));
 
         PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", null,
-            null, null, List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
+                null, null,
+                List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
 
         assertThat(result.status()).isEqualTo(AutomationPreparationStatus.READY);
         assertThat(result.draft().orderDate()).isEqualTo(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE));
     }
 
     @Test
-    void shouldCreateDraftOnceAndReuseCompletedAction()
-    {
+    void shouldCreateDraftOnceAndReuseCompletedAction() {
         Supplier supplier = supplier("SUP001", "深圳鸿发电子科技有限公司", new BigDecimal("13"));
         Material material = material(10L, "PCB-CTRL", "PCB控制板", "块");
         when(supplierService.selectList(any())).thenReturn(List.of(supplier));
-        when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString())).thenReturn(List.of(material));
+        when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString()))
+                .thenReturn(List.of(material));
         when(actionMapper.selectByActionKey("request-001")).thenReturn(null);
         doAnswer(invocation -> {
             PurchaseOrder order = invocation.getArgument(0);
@@ -116,9 +114,10 @@ class PurchaseOrderAutomationServiceTest
         }).when(purchaseOrderService).insertPurchaseOrder(any(PurchaseOrder.class));
 
         PurchaseOrderPreparationResult prepared = service.prepare(new PurchaseOrderDraftRequest("SUP001", "2026-07-12",
-            null, null, List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
+                null, null,
+                List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
         CreatePurchaseOrderDraftResult created = service.createDraft(
-            new CreatePurchaseOrderDraftRequest("request-001", prepared.draft()), 1L, "admin");
+                new CreatePurchaseOrderDraftRequest("request-001", prepared.draft()), 1L, "admin");
 
         ArgumentCaptor<PurchaseOrder> orderCaptor = ArgumentCaptor.forClass(PurchaseOrder.class);
         verify(purchaseOrderService).insertPurchaseOrder(orderCaptor.capture());
@@ -131,8 +130,7 @@ class PurchaseOrderAutomationServiceTest
         verify(actionMapper).complete("request-001", 99L, created.orderCode());
     }
 
-    private Supplier supplier(String code, String name, BigDecimal taxRate)
-    {
+    private Supplier supplier(String code, String name, BigDecimal taxRate) {
         Supplier value = new Supplier();
         value.setId(1L);
         value.setSupplierCode(code);
@@ -143,8 +141,7 @@ class PurchaseOrderAutomationServiceTest
         return value;
     }
 
-    private Material material(Long id, String code, String name, String unit)
-    {
+    private Material material(Long id, String code, String name, String unit) {
         Material value = new Material();
         value.setMaterialId(id);
         value.setMaterialCode(code);

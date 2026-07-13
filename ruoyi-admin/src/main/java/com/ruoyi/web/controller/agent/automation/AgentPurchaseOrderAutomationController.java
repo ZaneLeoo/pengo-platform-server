@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 /** 当前登录用户确认后的 AI 采购业务写入口。 */
 @RestController
 @RequestMapping("/agent/automation/purchase-orders")
-public class AgentPurchaseOrderAutomationController extends BaseController
-{
+public class AgentPurchaseOrderAutomationController extends BaseController {
     private final PurchaseOrderAutomationService automationService;
 
-    public AgentPurchaseOrderAutomationController(PurchaseOrderAutomationService automationService)
-    {
+    public AgentPurchaseOrderAutomationController(PurchaseOrderAutomationService automationService) {
         this.automationService = automationService;
     }
 
@@ -29,8 +27,7 @@ public class AgentPurchaseOrderAutomationController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseOrder:add')")
     @Log(title = "AI 创建采购订单草稿", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult createPurchaseOrderDraft(@RequestBody CreatePurchaseOrderDraftRequest request)
-    {
+    public AjaxResult createPurchaseOrderDraft(@RequestBody CreatePurchaseOrderDraftRequest request) {
         CreatePurchaseOrderDraftResult result = automationService.createDraft(request, getUserId(), getUsername());
         return success(result);
     }

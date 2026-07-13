@@ -6,9 +6,7 @@ package com.ruoyi.mes.common.enums;
  * @author ruoyi
  */
 public enum BomApproveStatus {
-    PENDING("PENDING", "待审核"),
-    APPROVED("APPROVED", "已审核"),
-    REJECTED("REJECTED", "已驳回");
+    PENDING("PENDING", "待审核"), APPROVED("APPROVED", "已审核"), REJECTED("REJECTED", "已驳回");
 
     private final String code;
     private final String label;

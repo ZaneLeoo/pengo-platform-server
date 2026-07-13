@@ -12,11 +12,9 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class DifyAppConfigServiceTest
-{
+class DifyAppConfigServiceTest {
     @Test
-    void shouldResolveEnabledConfigToSettings()
-    {
+    void shouldResolveEnabledConfigToSettings() {
         FakeMapper mapper = new FakeMapper();
         mapper.config = config("AGENT_CHAT", "", "secret", "Y");
         DifyAppConfigService service = new DifyAppConfigService(mapper);
@@ -28,8 +26,7 @@ class DifyAppConfigServiceTest
     }
 
     @Test
-    void shouldIgnoreMissingDisabledOrBlankKeyConfig()
-    {
+    void shouldIgnoreMissingDisabledOrBlankKeyConfig() {
         FakeMapper mapper = new FakeMapper();
         DifyAppConfigService service = new DifyAppConfigService(mapper);
         assertNull(service.findSettings("BOM_OCR"));
@@ -42,8 +39,7 @@ class DifyAppConfigServiceTest
     }
 
     @Test
-    void shouldPreserveMaskedApiKeyWhenUpdating()
-    {
+    void shouldPreserveMaskedApiKeyWhenUpdating() {
         FakeMapper mapper = new FakeMapper();
         mapper.config = config("AGENT_CHAT", "https://old.example/v1", "old-secret", "Y");
         mapper.config.setId(9L);
@@ -60,15 +56,13 @@ class DifyAppConfigServiceTest
     }
 
     @Test
-    void shouldRequireValidConfig()
-    {
+    void shouldRequireValidConfig() {
         DifyAppConfigService service = new DifyAppConfigService(new FakeMapper());
 
         assertThrows(ServiceException.class, () -> service.requireSettings("BOM_OCR"));
     }
 
-    private static DifyAppConfig config(String code, String baseUrl, String apiKey, String enabled)
-    {
+    private static DifyAppConfig config(String code, String baseUrl, String apiKey, String enabled) {
         DifyAppConfig config = new DifyAppConfig();
         config.setAppCode(code);
         config.setApiBaseUrl(baseUrl);
@@ -77,16 +71,28 @@ class DifyAppConfigServiceTest
         return config;
     }
 
-    private static class FakeMapper implements DifyAppConfigMapper
-    {
+    private static class FakeMapper implements DifyAppConfigMapper {
         private DifyAppConfig config;
         private DifyAppConfig updated;
 
-        public List<DifyAppConfig> selectDifyAppConfigList(DifyAppConfig value) { return Collections.emptyList(); }
-        public DifyAppConfig selectDifyAppConfigById(Long id) { return config; }
-        public DifyAppConfig selectDifyAppConfigByCode(String appCode) { return config; }
-        public int insertDifyAppConfig(DifyAppConfig value) { return 1; }
-        public int updateDifyAppConfig(DifyAppConfig value) { updated = value; return 1; }
-        public int deleteDifyAppConfigByIds(Long[] ids) { return 1; }
+        public List<DifyAppConfig> selectDifyAppConfigList(DifyAppConfig value) {
+            return Collections.emptyList();
+        }
+        public DifyAppConfig selectDifyAppConfigById(Long id) {
+            return config;
+        }
+        public DifyAppConfig selectDifyAppConfigByCode(String appCode) {
+            return config;
+        }
+        public int insertDifyAppConfig(DifyAppConfig value) {
+            return 1;
+        }
+        public int updateDifyAppConfig(DifyAppConfig value) {
+            updated = value;
+            return 1;
+        }
+        public int deleteDifyAppConfigByIds(Long[] ids) {
+            return 1;
+        }
     }
 }

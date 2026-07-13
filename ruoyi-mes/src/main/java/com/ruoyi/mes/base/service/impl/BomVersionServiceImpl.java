@@ -49,7 +49,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
     @Override
     public boolean checkVersionCodeUnique(BomVersion bomVersion) {
         Long id = bomVersion.getId() == null ? 0L : bomVersion.getId();
-        BomVersion info = bomVersionMapper.selectBomVersionByCode(bomVersion.getBomMasterId(), bomVersion.getVersionCode());
+        BomVersion info = bomVersionMapper.selectBomVersionByCode(bomVersion.getBomMasterId(),
+                bomVersion.getVersionCode());
         return StringUtils.isNull(info) || info.getId().equals(id);
     }
 
@@ -132,7 +133,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
             BomItem targetItem = entry.getValue();
             BomItem baseItem = baseItems.get(entry.getKey());
             if (baseItem == null) {
-                result.addDifference(buildCompareItem("ADD", targetItem, "component", "子件", null, targetItem.getComponentItemCode()));
+                result.addDifference(buildCompareItem("ADD", targetItem, "component", "子件", null,
+                        targetItem.getComponentItemCode()));
             } else {
                 appendChangedFields(result, baseItem, targetItem);
             }
@@ -140,7 +142,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
         for (Map.Entry<String, BomItem> entry : baseItems.entrySet()) {
             if (!targetItems.containsKey(entry.getKey())) {
                 BomItem baseItem = entry.getValue();
-                result.addDifference(buildCompareItem("DELETE", baseItem, "component", "子件", baseItem.getComponentItemCode(), null));
+                result.addDifference(
+                        buildCompareItem("DELETE", baseItem, "component", "子件", baseItem.getComponentItemCode(), null));
             }
         }
         return result;
@@ -149,7 +152,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
     /**
      * 校验生效失效日期。
      *
-     * @param bomVersion BOM版本
+     * @param bomVersion
+     *            BOM版本
      */
     private void validateDateRange(BomVersion bomVersion) {
         if (bomVersion.getEffectiveDate() != null && bomVersion.getExpireDate() != null
@@ -216,14 +220,14 @@ public class BomVersionServiceImpl implements IBomVersionService {
     }
 
     private void addChangeIfNeeded(BomVersionCompareResult result, BomItem baseItem, BomItem targetItem,
-                                   String fieldName, String fieldLabel, String baseValue, String targetValue) {
+            String fieldName, String fieldLabel, String baseValue, String targetValue) {
         if (!Objects.equals(baseValue, targetValue)) {
             result.addDifference(buildCompareItem("CHANGE", targetItem, fieldName, fieldLabel, baseValue, targetValue));
         }
     }
 
     private BomVersionCompareItem buildCompareItem(String diffType, BomItem item, String fieldName,
-                                                   String fieldLabel, String baseValue, String targetValue) {
+            String fieldLabel, String baseValue, String targetValue) {
         BomVersionCompareItem compareItem = new BomVersionCompareItem();
         compareItem.setDiffType(diffType);
         compareItem.setParentItemCode(item.getParentItemCode());
@@ -251,7 +255,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
     /**
      * 保证同一BOM主表只有一个默认版本。
      *
-     * @param bomVersion BOM版本
+     * @param bomVersion
+     *            BOM版本
      */
     private void resetOtherDefaults(BomVersion bomVersion) {
         if (Integer.valueOf(1).equals(bomVersion.getDefaultFlag())) {
@@ -267,7 +272,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
     /**
      * 获取用于默认版本校验的完整版本信息。
      *
-     * @param bomVersion BOM版本
+     * @param bomVersion
+     *            BOM版本
      * @return 完整BOM版本
      */
     private BomVersion resolveVersionForDefault(BomVersion bomVersion) {
@@ -292,7 +298,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void copyBomVersion(Long sourceVersionId, String targetVersionCode, String targetVersionName, String createBy) {
+    public void copyBomVersion(Long sourceVersionId, String targetVersionCode, String targetVersionName,
+            String createBy) {
         if (sourceVersionId == null || StringUtils.isEmpty(targetVersionCode)) {
             throw new ServiceException("源版本ID和目标版本号不能为空");
         }
@@ -303,7 +310,8 @@ public class BomVersionServiceImpl implements IBomVersionService {
         }
 
         // 校验唯一性
-        BomVersion checkVersion = bomVersionMapper.selectBomVersionByCode(sourceVersion.getBomMasterId(), targetVersionCode);
+        BomVersion checkVersion = bomVersionMapper.selectBomVersionByCode(sourceVersion.getBomMasterId(),
+                targetVersionCode);
         if (checkVersion != null) {
             throw new ServiceException("版本号'" + targetVersionCode + "'已存在");
         }

@@ -27,15 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 /** 采购到货单控制器。 */
 @RestController
 @RequestMapping("/mes/purchase/receipt")
-public class PurchaseReceiptController extends BaseController
-{
+public class PurchaseReceiptController extends BaseController {
     private static final String DRAFT = PurchaseDocumentStatus.DRAFT.getCode();
 
     private final PurchaseReceiptMapper receiptMapper;
     private final IPurchaseFlowService flowService;
 
-    public PurchaseReceiptController(PurchaseReceiptMapper receiptMapper, IPurchaseFlowService flowService)
-    {
+    public PurchaseReceiptController(PurchaseReceiptMapper receiptMapper, IPurchaseFlowService flowService) {
         this.receiptMapper = receiptMapper;
         this.flowService = flowService;
     }
@@ -43,8 +41,7 @@ public class PurchaseReceiptController extends BaseController
     /** 查询到货单列表。 */
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:list')")
     @GetMapping("/list")
-    public TableDataInfo list(PurchaseReceipt query)
-    {
+    public TableDataInfo list(PurchaseReceipt query) {
         startPage();
         return getDataTable(receiptMapper.selectList(query));
     }
@@ -52,11 +49,9 @@ public class PurchaseReceiptController extends BaseController
     /** 查询到货单及其明细。 */
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:query')")
     @GetMapping("/{id}")
-    public AjaxResult getInfo(@PathVariable Long id)
-    {
+    public AjaxResult getInfo(@PathVariable Long id) {
         PurchaseReceipt receipt = receiptMapper.selectById(id);
-        if (receipt != null)
-        {
+        if (receipt != null) {
             receipt.setLines(receiptMapper.selectLines(id));
         }
         return success(receipt);
@@ -66,8 +61,7 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:add')")
     @Log(title = "采购到货单", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@Valid @RequestBody PurchaseReceipt receipt)
-    {
+    public AjaxResult add(@Valid @RequestBody PurchaseReceipt receipt) {
         receipt.setCreateBy(getUsername());
         receiptMapper.insert(receipt);
         saveLines(receipt);
@@ -79,15 +73,12 @@ public class PurchaseReceiptController extends BaseController
     @Log(title = "采购到货单", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     @PutMapping
-    public AjaxResult edit(@Valid @RequestBody PurchaseReceipt receipt)
-    {
+    public AjaxResult edit(@Valid @RequestBody PurchaseReceipt receipt) {
         PurchaseReceipt existing = receiptMapper.selectById(receipt.getId());
-        if (existing == null)
-        {
+        if (existing == null) {
             return error("到货单不存在");
         }
-        if (!DRAFT.equals(existing.getStatus()))
-        {
+        if (!DRAFT.equals(existing.getStatus())) {
             return error("已审核到货单不允许编辑");
         }
         receipt.setUpdateBy(getUsername());
@@ -101,13 +92,10 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:remove')")
     @Log(title = "采购到货单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        for (Long id : ids)
-        {
+    public AjaxResult remove(@PathVariable Long[] ids) {
+        for (Long id : ids) {
             PurchaseReceipt existing = receiptMapper.selectById(id);
-            if (existing != null && !DRAFT.equals(existing.getStatus()))
-            {
+            if (existing != null && !DRAFT.equals(existing.getStatus())) {
                 return error("已审核到货单不允许删除");
             }
         }
@@ -119,8 +107,7 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:approve')")
     @Log(title = "采购到货单审核", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/approve")
-    public AjaxResult approve(@PathVariable Long id)
-    {
+    public AjaxResult approve(@PathVariable Long id) {
         flowService.approveReceipt(id, getUsername());
         return success();
     }
@@ -129,8 +116,7 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:unapprove')")
     @Log(title = "采购到货单弃审", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/unapprove")
-    public AjaxResult unapprove(@PathVariable Long id)
-    {
+    public AjaxResult unapprove(@PathVariable Long id) {
         flowService.unapproveReceipt(id, getUsername());
         return success();
     }
@@ -139,8 +125,7 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:inspect')")
     @Log(title = "采购到货单质检", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/inspect")
-    public AjaxResult inspect(@PathVariable Long id, @Valid @RequestBody InspectionRequest request)
-    {
+    public AjaxResult inspect(@PathVariable Long id, @Valid @RequestBody InspectionRequest request) {
         flowService.inspectReceipt(id, request, getUsername());
         return success();
     }
@@ -149,8 +134,7 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:inspect')")
     @Log(title = "采购到货单反质检", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/uninspect")
-    public AjaxResult uninspect(@PathVariable Long id)
-    {
+    public AjaxResult uninspect(@PathVariable Long id) {
         flowService.uninspectReceipt(id, getUsername());
         return success();
     }
@@ -159,15 +143,13 @@ public class PurchaseReceiptController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:reference')")
     @GetMapping("/reference/order-lines")
     public AjaxResult referenceOrders(@RequestParam(required = false) String orderCode,
-                                      @RequestParam(required = false) String supplierName,
-                                      @RequestParam(required = false) String materialCode)
-    {
+            @RequestParam(required = false) String supplierName,
+            @RequestParam(required = false) String materialCode) {
         return success(flowService.selectReceiptReferenceLines(orderCode, supplierName, materialCode));
     }
 
     /** 保存到货单所有明细。 */
-    private void saveLines(PurchaseReceipt receipt)
-    {
+    private void saveLines(PurchaseReceipt receipt) {
         receipt.getLines().forEach(line -> {
             line.setReceiptId(receipt.getId());
             line.setCreateBy(getUsername());

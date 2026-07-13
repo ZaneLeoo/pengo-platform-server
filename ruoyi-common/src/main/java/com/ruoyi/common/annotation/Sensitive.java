@@ -15,10 +15,9 @@ import com.ruoyi.common.enums.DesensitizedType;
  * @author ruoyi
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ElementType.FIELD, ElementType.METHOD})
 @JacksonAnnotationsInside
 @JsonSerialize(using = SensitiveJsonSerializer.class)
-public @interface Sensitive
-{
+public @interface Sensitive {
     DesensitizedType desensitizedType();
 }

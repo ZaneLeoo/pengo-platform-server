@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** BOM OCR 大模型结构化结果。 */
-public class BomOcrResult
-{
+public class BomOcrResult {
     /** 协议版本，例如 1.0。 */
     private String version;
 
@@ -18,15 +17,31 @@ public class BomOcrResult
     /** 识别或结构化过程中发现的问题。 */
     private List<BomOcrIssue> issues = new ArrayList<>();
 
-    public String getVersion() { return version; }
-    public void setVersion(String version) { this.version = version; }
+    public String getVersion() {
+        return version;
+    }
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
-    public BomOcrDocument getDocument() { return document; }
-    public void setDocument(BomOcrDocument document) { this.document = document; }
+    public BomOcrDocument getDocument() {
+        return document;
+    }
+    public void setDocument(BomOcrDocument document) {
+        this.document = document;
+    }
 
-    public List<BomOcrItem> getItems() { return items; }
-    public void setItems(List<BomOcrItem> items) { this.items = items; }
+    public List<BomOcrItem> getItems() {
+        return items;
+    }
+    public void setItems(List<BomOcrItem> items) {
+        this.items = items;
+    }
 
-    public List<BomOcrIssue> getIssues() { return issues; }
-    public void setIssues(List<BomOcrIssue> issues) { this.issues = issues; }
+    public List<BomOcrIssue> getIssues() {
+        return issues;
+    }
+    public void setIssues(List<BomOcrIssue> issues) {
+        this.issues = issues;
+    }
 }

@@ -3,8 +3,7 @@ package com.ruoyi.agent.domain;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /** Dify 应用配置。 */
-public class DifyAppConfig extends BaseEntity
-{
+public class DifyAppConfig extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /** 配置 ID。 */
@@ -28,24 +27,52 @@ public class DifyAppConfig extends BaseEntity
     /** 是否启用：Y 启用，N 停用。 */
     private String enabled;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getAppCode() { return appCode; }
-    public void setAppCode(String appCode) { this.appCode = appCode; }
+    public String getAppCode() {
+        return appCode;
+    }
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
 
-    public String getAppName() { return appName; }
-    public void setAppName(String appName) { this.appName = appName; }
+    public String getAppName() {
+        return appName;
+    }
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
 
-    public String getAppType() { return appType; }
-    public void setAppType(String appType) { this.appType = appType; }
+    public String getAppType() {
+        return appType;
+    }
+    public void setAppType(String appType) {
+        this.appType = appType;
+    }
 
-    public String getApiBaseUrl() { return apiBaseUrl; }
-    public void setApiBaseUrl(String apiBaseUrl) { this.apiBaseUrl = apiBaseUrl; }
+    public String getApiBaseUrl() {
+        return apiBaseUrl;
+    }
+    public void setApiBaseUrl(String apiBaseUrl) {
+        this.apiBaseUrl = apiBaseUrl;
+    }
 
-    public String getApiKey() { return apiKey; }
-    public void setApiKey(String apiKey) { this.apiKey = apiKey; }
+    public String getApiKey() {
+        return apiKey;
+    }
+    public void setApiKey(String apiKey) {
+        this.apiKey = apiKey;
+    }
 
-    public String getEnabled() { return enabled; }
-    public void setEnabled(String enabled) { this.enabled = enabled; }
+    public String getEnabled() {
+        return enabled;
+    }
+    public void setEnabled(String enabled) {
+        this.enabled = enabled;
+    }
 }

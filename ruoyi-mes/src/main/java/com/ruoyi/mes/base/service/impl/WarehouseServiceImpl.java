@@ -16,17 +16,27 @@ public class WarehouseServiceImpl implements IWarehouseService {
     }
 
     @Override
-    public List<Warehouse> selectList(Warehouse q) { return mapper.selectList(q); }
+    public List<Warehouse> selectList(Warehouse q) {
+        return mapper.selectList(q);
+    }
 
     @Override
-    public Warehouse selectById(Long id) { return mapper.selectById(id); }
+    public Warehouse selectById(Long id) {
+        return mapper.selectById(id);
+    }
 
     @Override
-    public int insert(Warehouse o) { return mapper.insert(o); }
+    public int insert(Warehouse o) {
+        return mapper.insert(o);
+    }
 
     @Override
-    public int update(Warehouse o) { return mapper.update(o); }
+    public int update(Warehouse o) {
+        return mapper.update(o);
+    }
 
     @Override
-    public int deleteByIds(Long[] ids) { return mapper.deleteByIds(ids); }
+    public int deleteByIds(Long[] ids) {
+        return mapper.deleteByIds(ids);
+    }
 }

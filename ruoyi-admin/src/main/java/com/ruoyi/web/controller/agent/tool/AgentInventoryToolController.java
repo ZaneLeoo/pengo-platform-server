@@ -16,28 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 /** Dify 库存查询工具 HTTP 入口。 */
 @RestController
 @RequestMapping("/agent/tools/inventory")
-public class AgentInventoryToolController
-{
+public class AgentInventoryToolController {
     private final InventoryToolService toolService;
 
-    public AgentInventoryToolController(InventoryToolService toolService)
-    {
+    public AgentInventoryToolController(InventoryToolService toolService) {
         this.toolService = toolService;
     }
 
     /** 查询当前库存余额。 */
     @PostMapping("/balances/query")
     public AgentToolResult<List<InventoryBalanceToolItem>> queryBalances(
-        @Valid @RequestBody(required = false) InventoryBalanceQuery request)
-    {
+            @Valid @RequestBody(required = false) InventoryBalanceQuery request) {
         return toolService.queryBalances(request);
     }
 
     /** 查询库存变动流水。 */
     @PostMapping("/transactions/query")
     public AgentToolResult<List<InventoryTransactionToolItem>> queryTransactions(
-        @Valid @RequestBody(required = false) InventoryTransactionQuery request)
-    {
+            @Valid @RequestBody(required = false) InventoryTransactionQuery request) {
         return toolService.queryTransactions(request);
     }
 }

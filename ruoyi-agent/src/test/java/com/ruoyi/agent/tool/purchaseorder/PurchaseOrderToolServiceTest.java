@@ -19,18 +19,16 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** 采购订单工具适配协议测试。 */
-class PurchaseOrderToolServiceTest
-{
+class PurchaseOrderToolServiceTest {
     @Test
-    void readyDraftShouldPreserveLegacyDataAndRequireConfirmation()
-    {
+    void readyDraftShouldPreserveLegacyDataAndRequireConfirmation() {
         PurchaseOrderAutomationService automationService = mock(PurchaseOrderAutomationService.class);
         PurchaseOrderToolService toolService = new PurchaseOrderToolService(automationService);
         PurchaseOrderDraftRequest request = mock(PurchaseOrderDraftRequest.class);
         PurchaseOrderDraft draft = new PurchaseOrderDraft("SUP001", "测试供应商", "CNY", "2026-07-13",
-            null, null, BigDecimal.ONE, BigDecimal.TEN, List.of());
+                null, null, BigDecimal.ONE, BigDecimal.TEN, List.of());
         PurchaseOrderPreparationResult prepared = new PurchaseOrderPreparationResult(
-            AutomationPreparationStatus.READY, "采购订单草稿已准备", List.of(), List.of(), draft);
+                AutomationPreparationStatus.READY, "采购订单草稿已准备", List.of(), List.of(), draft);
         when(automationService.prepare(request)).thenReturn(prepared);
 
         AgentToolResult<PurchaseOrderDraft> result = toolService.prepare(request);
@@ -42,12 +40,11 @@ class PurchaseOrderToolServiceTest
     }
 
     @Test
-    void missingFieldShouldExposeJavaFieldPath()
-    {
+    void missingFieldShouldExposeJavaFieldPath() {
         PurchaseOrderAutomationService automationService = mock(PurchaseOrderAutomationService.class);
         PurchaseOrderToolService toolService = new PurchaseOrderToolService(automationService);
         PurchaseOrderPreparationResult prepared = new PurchaseOrderPreparationResult(
-            AutomationPreparationStatus.NEED_INPUT, "信息不完整", List.of("第 1 行含税单价"), List.of(), null);
+                AutomationPreparationStatus.NEED_INPUT, "信息不完整", List.of("第 1 行含税单价"), List.of(), null);
         when(automationService.prepare(null)).thenReturn(prepared);
 
         AgentToolResult<PurchaseOrderDraft> result = toolService.prepare(null);

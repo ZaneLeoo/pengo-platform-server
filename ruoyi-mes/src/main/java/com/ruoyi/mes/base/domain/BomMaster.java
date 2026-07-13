@@ -55,42 +55,86 @@ public class BomMaster extends BaseEntity {
     /** 外部ID */
     private String sourceId;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @NotBlank(message = "BOM编码不能为空")
     @Size(max = 64, message = "BOM编码长度不能超过64个字符")
-    public String getBomCode() { return bomCode; }
-    public void setBomCode(String bomCode) { this.bomCode = bomCode; }
+    public String getBomCode() {
+        return bomCode;
+    }
+    public void setBomCode(String bomCode) {
+        this.bomCode = bomCode;
+    }
 
-    public Long getParentItemId() { return parentItemId; }
-    public void setParentItemId(Long parentItemId) { this.parentItemId = parentItemId; }
+    public Long getParentItemId() {
+        return parentItemId;
+    }
+    public void setParentItemId(Long parentItemId) {
+        this.parentItemId = parentItemId;
+    }
 
     @NotBlank(message = "母件编码不能为空")
-    public String getParentItemCode() { return parentItemCode; }
-    public void setParentItemCode(String parentItemCode) { this.parentItemCode = parentItemCode; }
+    public String getParentItemCode() {
+        return parentItemCode;
+    }
+    public void setParentItemCode(String parentItemCode) {
+        this.parentItemCode = parentItemCode;
+    }
 
     @NotBlank(message = "母件名称不能为空")
-    public String getParentItemName() { return parentItemName; }
-    public void setParentItemName(String parentItemName) { this.parentItemName = parentItemName; }
+    public String getParentItemName() {
+        return parentItemName;
+    }
+    public void setParentItemName(String parentItemName) {
+        this.parentItemName = parentItemName;
+    }
 
-    public String getParentItemSpec() { return parentItemSpec; }
-    public void setParentItemSpec(String parentItemSpec) { this.parentItemSpec = parentItemSpec; }
+    public String getParentItemSpec() {
+        return parentItemSpec;
+    }
+    public void setParentItemSpec(String parentItemSpec) {
+        this.parentItemSpec = parentItemSpec;
+    }
 
-    public String getParentItemUnit() { return parentItemUnit; }
-    public void setParentItemUnit(String parentItemUnit) { this.parentItemUnit = parentItemUnit; }
+    public String getParentItemUnit() {
+        return parentItemUnit;
+    }
+    public void setParentItemUnit(String parentItemUnit) {
+        this.parentItemUnit = parentItemUnit;
+    }
 
     @NotBlank(message = "BOM类型不能为空")
-    public String getBomType() { return bomType; }
-    public void setBomType(String bomType) { this.bomType = bomType; }
+    public String getBomType() {
+        return bomType;
+    }
+    public void setBomType(String bomType) {
+        this.bomType = bomType;
+    }
 
     @NotBlank(message = "状态不能为空")
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-    public String getSourceSystem() { return sourceSystem; }
-    public void setSourceSystem(String sourceSystem) { this.sourceSystem = sourceSystem; }
+    public String getSourceSystem() {
+        return sourceSystem;
+    }
+    public void setSourceSystem(String sourceSystem) {
+        this.sourceSystem = sourceSystem;
+    }
 
-    public String getSourceId() { return sourceId; }
-    public void setSourceId(String sourceId) { this.sourceId = sourceId; }
+    public String getSourceId() {
+        return sourceId;
+    }
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
 }

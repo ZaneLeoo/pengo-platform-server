@@ -28,7 +28,8 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 查询物料分类列表。
      *
-     * @param category 物料分类
+     * @param category
+     *            物料分类
      * @return 物料分类集合
      */
     @Override
@@ -45,7 +46,8 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 根据分类ID查询物料分类。
      *
-     * @param categoryId 分类ID
+     * @param categoryId
+     *            分类ID
      * @return 物料分类
      */
     @Override
@@ -56,7 +58,8 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 校验分类编码是否唯一。
      *
-     * @param category 物料分类
+     * @param category
+     *            物料分类
      * @return true 唯一
      */
     @Override
@@ -69,7 +72,8 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 新增物料分类。
      *
-     * @param category 物料分类
+     * @param category
+     *            物料分类
      * @return 结果
      */
     @Override
@@ -81,7 +85,8 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 修改物料分类。
      *
-     * @param category 物料分类
+     * @param category
+     *            物料分类
      * @return 结果
      */
     @Override
@@ -93,7 +98,8 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 删除物料分类。
      *
-     * @param categoryId 分类ID
+     * @param categoryId
+     *            分类ID
      * @return 结果
      */
     @Override
@@ -110,7 +116,8 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 填充祖级路径。
      *
-     * @param category 物料分类
+     * @param category
+     *            物料分类
      */
     private void fillAncestors(MaterialCategory category) {
         if (StringUtils.isNull(category.getParentId()) || category.getParentId() == 0L) {

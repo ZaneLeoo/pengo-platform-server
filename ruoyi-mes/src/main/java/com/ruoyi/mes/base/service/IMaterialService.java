@@ -13,7 +13,8 @@ public interface IMaterialService {
     /**
      * 查询物料列表。
      *
-     * @param material 物料
+     * @param material
+     *            物料
      * @return 物料集合
      */
     List<Material> selectMaterialList(Material material);
@@ -24,7 +25,8 @@ public interface IMaterialService {
     /**
      * 根据物料ID查询物料。
      *
-     * @param materialId 物料ID
+     * @param materialId
+     *            物料ID
      * @return 物料
      */
     Material selectMaterialById(Long materialId);
@@ -32,7 +34,8 @@ public interface IMaterialService {
     /**
      * 校验物料编码是否唯一。
      *
-     * @param material 物料
+     * @param material
+     *            物料
      * @return true 唯一
      */
     boolean checkMaterialCodeUnique(Material material);
@@ -40,7 +43,8 @@ public interface IMaterialService {
     /**
      * 新增物料。
      *
-     * @param material 物料
+     * @param material
+     *            物料
      * @return 结果
      */
     int insertMaterial(Material material);
@@ -48,7 +52,8 @@ public interface IMaterialService {
     /**
      * 修改物料。
      *
-     * @param material 物料
+     * @param material
+     *            物料
      * @return 结果
      */
     int updateMaterial(Material material);
@@ -56,7 +61,8 @@ public interface IMaterialService {
     /**
      * 批量删除物料。
      *
-     * @param materialIds 物料ID数组
+     * @param materialIds
+     *            物料ID数组
      * @return 结果
      */
     int deleteMaterialByIds(Long[] materialIds);

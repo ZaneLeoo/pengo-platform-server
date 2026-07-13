@@ -5,8 +5,7 @@ import com.ruoyi.mes.purchase.domain.PurchaseOrderLine;
 import java.util.List;
 
 /** 采购订单数据访问接口。 */
-public interface PurchaseOrderMapper
-{
+public interface PurchaseOrderMapper {
     List<PurchaseOrder> selectPurchaseOrderList(PurchaseOrder order);
     PurchaseOrder selectPurchaseOrderById(Long id);
     PurchaseOrder selectPurchaseOrderByCode(String orderCode);

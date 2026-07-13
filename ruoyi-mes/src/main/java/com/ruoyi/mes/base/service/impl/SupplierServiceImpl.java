@@ -16,7 +16,9 @@ public class SupplierServiceImpl implements ISupplierService {
     }
 
     @Override
-    public List<Supplier> selectList(Supplier q) { return mapper.selectList(q); }
+    public List<Supplier> selectList(Supplier q) {
+        return mapper.selectList(q);
+    }
 
     /** 查询面向 AI 工具的供应商最小候选集。 */
     @Override
@@ -25,14 +27,22 @@ public class SupplierServiceImpl implements ISupplierService {
     }
 
     @Override
-    public Supplier selectById(Long id) { return mapper.selectById(id); }
+    public Supplier selectById(Long id) {
+        return mapper.selectById(id);
+    }
 
     @Override
-    public int insert(Supplier o) { return mapper.insert(o); }
+    public int insert(Supplier o) {
+        return mapper.insert(o);
+    }
 
     @Override
-    public int update(Supplier o) { return mapper.update(o); }
+    public int update(Supplier o) {
+        return mapper.update(o);
+    }
 
     @Override
-    public int deleteByIds(Long[] ids) { return mapper.deleteByIds(ids); }
+    public int deleteByIds(Long[] ids) {
+        return mapper.deleteByIds(ids);
+    }
 }

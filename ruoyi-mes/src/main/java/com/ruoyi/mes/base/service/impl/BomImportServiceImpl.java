@@ -36,8 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /** BOM OCR 导入草稿服务实现。 */
 @Service
-public class BomImportServiceImpl implements IBomImportService
-{
+public class BomImportServiceImpl implements IBomImportService {
     private static final String STATUS_PROCESSING = "processing";
     private static final String STATUS_RECOGNIZED = "recognized";
     private static final String STATUS_VALIDATED = "validated";
@@ -48,7 +47,7 @@ public class BomImportServiceImpl implements IBomImportService
     private static final String RISK_ERROR = "error";
     private static final String MATCH_MISSING = "missing";
     private static final Pattern TYPE_REMARK_PATTERN = Pattern.compile(
-        "^\\s*类型\\s*[:：]\\s*([^;；]+?)\\s*(?:[;；]\\s*(?:原备注|备注)\\s*[:：]\\s*(.*))?\\s*$");
+            "^\\s*类型\\s*[:：]\\s*([^;；]+?)\\s*(?:[;；]\\s*(?:原备注|备注)\\s*[:：]\\s*(.*))?\\s*$");
 
     @Autowired
     private BomImportTaskMapper taskMapper;
@@ -66,24 +65,20 @@ public class BomImportServiceImpl implements IBomImportService
     private MaterialMapper materialMapper;
 
     @Override
-    public List<BomImportTask> selectBomImportTaskList(BomImportTask task)
-    {
+    public List<BomImportTask> selectBomImportTaskList(BomImportTask task) {
         return taskMapper.selectBomImportTaskList(task);
     }
 
     @Override
-    public BomImportDraft selectBomImportDraftById(Long id)
-    {
+    public BomImportDraft selectBomImportDraftById(Long id) {
         BomImportTask task = requireTask(id);
         return toDraft(task, loadItems(id));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BomImportDraft createProcessingDraft(BomImportCreateRequest request, String username)
-    {
-        if (request == null)
-        {
+    public BomImportDraft createProcessingDraft(BomImportCreateRequest request, String username) {
+        if (request == null) {
             throw new ServiceException("识别任务不能为空");
         }
         BomImportTask task = new BomImportTask();
@@ -98,10 +93,8 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BomImportDraft createDraft(BomImportCreateRequest request, String username)
-    {
-        if (request == null || request.getResult() == null)
-        {
+    public BomImportDraft createDraft(BomImportCreateRequest request, String username) {
+        if (request == null || request.getResult() == null) {
             throw new ServiceException("识别结果不能为空");
         }
         BomOcrResult result = request.getResult();
@@ -109,8 +102,7 @@ public class BomImportServiceImpl implements IBomImportService
 
         BomImportTask task = toTask(request, result, issues, username);
         taskMapper.insertBomImportTask(task);
-        for (BomOcrItem source : safeItems(result.getItems()))
-        {
+        for (BomOcrItem source : safeItems(result.getItems())) {
             BomImportItem item = toImportItem(task.getId(), source, username);
             itemMapper.insertBomImportItem(item);
         }
@@ -119,11 +111,9 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BomImportDraft completeRecognition(Long id, BomImportCreateRequest request, String username)
-    {
+    public BomImportDraft completeRecognition(Long id, BomImportCreateRequest request, String username) {
         requireTask(id);
-        if (request == null || request.getResult() == null)
-        {
+        if (request == null || request.getResult() == null) {
             throw new ServiceException("识别结果不能为空");
         }
         BomOcrResult result = request.getResult();
@@ -131,9 +121,8 @@ public class BomImportServiceImpl implements IBomImportService
 
         BomImportTask task = toTask(id, request, result, issues, username);
         taskMapper.updateBomImportTask(task);
-        itemMapper.deleteBomImportItemByImportIds(new Long[] {id});
-        for (BomOcrItem source : safeItems(result.getItems()))
-        {
+        itemMapper.deleteBomImportItemByImportIds(new Long[]{id});
+        for (BomOcrItem source : safeItems(result.getItems())) {
             BomImportItem item = toImportItem(id, source, username);
             itemMapper.insertBomImportItem(item);
         }
@@ -142,8 +131,7 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void markRecognitionFailed(Long id, String errorMessage, String username)
-    {
+    public void markRecognitionFailed(Long id, String errorMessage, String username) {
         requireTask(id);
         BomImportTask task = new BomImportTask();
         task.setId(id);
@@ -155,17 +143,15 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BomImportDraft updateDraft(Long id, BomImportDraft draft, String username)
-    {
+    public BomImportDraft updateDraft(Long id, BomImportDraft draft, String username) {
         requireTask(id);
         BomOcrResult result = toOcrResult(draft);
         List<BomOcrIssue> issues = validator.validate(result);
 
         BomImportTask task = toTask(id, draft, issues, username);
         taskMapper.updateBomImportTask(task);
-        itemMapper.deleteBomImportItemByImportIds(new Long[] {id});
-        for (BomImportDraftItem source : safeDraftItems(draft.getItems()))
-        {
+        itemMapper.deleteBomImportItemByImportIds(new Long[]{id});
+        for (BomImportDraftItem source : safeDraftItems(draft.getItems())) {
             BomImportItem item = toImportItem(id, source, username);
             itemMapper.insertBomImportItem(item);
         }
@@ -174,8 +160,7 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<BomOcrIssue> validateDraft(Long id, String username)
-    {
+    public List<BomOcrIssue> validateDraft(Long id, String username) {
         BomImportDraft draft = selectBomImportDraftById(id);
         List<BomOcrIssue> issues = validator.validate(toOcrResult(draft));
         BomImportTask task = new BomImportTask();
@@ -189,10 +174,8 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BomImportApplyResult importToBomVersion(Long id, Long bomVersionId, String username)
-    {
-        if (bomVersionId == null)
-        {
+    public BomImportApplyResult importToBomVersion(Long id, Long bomVersionId, String username) {
+        if (bomVersionId == null) {
             throw new ServiceException("目标 BOM 版本不能为空");
         }
         BomImportDraft draft = selectBomImportDraftById(id);
@@ -203,21 +186,17 @@ public class BomImportServiceImpl implements IBomImportService
         BomItem query = new BomItem();
         query.setBomVersionId(bomVersionId);
         Set<Integer> usedLineNos = new HashSet<>();
-        for (BomItem existing : bomItemService.selectBomItemList(query))
-        {
-            if (existing.getLineNo() != null)
-            {
+        for (BomItem existing : bomItemService.selectBomItemList(query)) {
+            if (existing.getLineNo() != null) {
                 usedLineNos.add(existing.getLineNo());
             }
         }
 
         int importedCount = 0;
-        for (BomImportDraftItem draftItem : safeDraftItems(draft.getItems()))
-        {
+        for (BomImportDraftItem draftItem : safeDraftItems(draft.getItems())) {
             Material material = resolveMaterial(draftItem);
             String skipReason = resolveImportSkipReason(draftItem, material);
-            if (StringUtils.isNotBlank(skipReason))
-            {
+            if (StringUtils.isNotBlank(skipReason)) {
                 result.addSkippedItem(draftItem.getLineNo(), draftItem.getItemName(), skipReason);
                 continue;
             }
@@ -240,65 +219,55 @@ public class BomImportServiceImpl implements IBomImportService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int deleteBomImportTaskByIds(Long[] ids)
-    {
+    public int deleteBomImportTaskByIds(Long[] ids) {
         itemMapper.deleteBomImportItemByImportIds(ids);
         return taskMapper.deleteBomImportTaskByIds(ids);
     }
 
-    private Material resolveMaterial(BomImportDraftItem item)
-    {
-        if (item == null)
-        {
+    private Material resolveMaterial(BomImportDraftItem item) {
+        if (item == null) {
             return null;
         }
-        if (StringUtils.isNotBlank(item.getComponentCodeCandidate()))
-        {
+        if (StringUtils.isNotBlank(item.getComponentCodeCandidate())) {
             Material material = materialMapper.selectMaterialByCode(item.getComponentCodeCandidate().trim());
-            if (material != null)
-            {
+            if (material != null) {
                 return material;
             }
         }
-        if (StringUtils.isNotBlank(item.getDrawingNo()))
-        {
+        if (StringUtils.isNotBlank(item.getDrawingNo())) {
             Material query = new Material();
             query.setMaterialCode(item.getDrawingNo().trim());
             List<Material> list = materialMapper.selectMaterialList(query);
-            if (list != null && !list.isEmpty())
-            {
+            if (list != null && !list.isEmpty()) {
                 return list.get(0);
             }
         }
         return null;
     }
 
-    private String resolveImportSkipReason(BomImportDraftItem item, Material material)
-    {
-        if (item == null)
-        {
+    private String resolveImportSkipReason(BomImportDraftItem item, Material material) {
+        if (item == null) {
             return "明细为空";
         }
-        if (item.getQuantity() == null || item.getQuantity().compareTo(BigDecimal.ZERO) <= 0)
-        {
+        if (item.getQuantity() == null || item.getQuantity().compareTo(BigDecimal.ZERO) <= 0) {
             return "数量为空或小于等于 0";
         }
-        if (material == null)
-        {
+        if (material == null) {
             return "未匹配到系统物料";
         }
         return "";
     }
 
-    private BomItem toBomItem(Long bomVersionId, BomImportDraftItem source, Material material, String username)
-    {
+    private BomItem toBomItem(Long bomVersionId, BomImportDraftItem source, Material material, String username) {
         BomItem bomItem = new BomItem();
         bomItem.setBomVersionId(bomVersionId);
         bomItem.setComponentItemId(material.getMaterialId());
         bomItem.setComponentItemCode(material.getMaterialCode());
         bomItem.setComponentItemName(material.getMaterialName());
-        bomItem.setComponentItemSpec(StringUtils.isNotBlank(material.getSpec()) ? material.getSpec() : source.getSpec());
-        bomItem.setComponentItemUnit(StringUtils.isNotBlank(material.getUnit()) ? material.getUnit() : source.getUnit());
+        bomItem.setComponentItemSpec(
+                StringUtils.isNotBlank(material.getSpec()) ? material.getSpec() : source.getSpec());
+        bomItem.setComponentItemUnit(
+                StringUtils.isNotBlank(material.getUnit()) ? material.getUnit() : source.getUnit());
         bomItem.setComponentAttribute(source.getItemType());
         bomItem.setComponentQty(source.getQuantity());
         bomItem.setFixedLossQty(BigDecimal.ZERO);
@@ -312,35 +281,30 @@ public class BomImportServiceImpl implements IBomImportService
         return bomItem;
     }
 
-    private Integer resolveLineNo(Integer preferredLineNo, Set<Integer> usedLineNos)
-    {
+    private Integer resolveLineNo(Integer preferredLineNo, Set<Integer> usedLineNos) {
         int lineNo = preferredLineNo == null || preferredLineNo <= 0 ? 10 : preferredLineNo;
-        while (usedLineNos.contains(lineNo))
-        {
+        while (usedLineNos.contains(lineNo)) {
             lineNo += 10;
         }
         return lineNo;
     }
 
-    private BomImportTask requireTask(Long id)
-    {
+    private BomImportTask requireTask(Long id) {
         BomImportTask task = taskMapper.selectBomImportTaskById(id);
-        if (task == null)
-        {
+        if (task == null) {
             throw new ServiceException("未找到 BOM 导入草稿");
         }
         return task;
     }
 
-    private List<BomImportItem> loadItems(Long importId)
-    {
+    private List<BomImportItem> loadItems(Long importId) {
         BomImportItem query = new BomImportItem();
         query.setImportId(importId);
         return itemMapper.selectBomImportItemList(query);
     }
 
-    private BomImportTask toTask(BomImportCreateRequest request, BomOcrResult result, List<BomOcrIssue> issues, String username)
-    {
+    private BomImportTask toTask(BomImportCreateRequest request, BomOcrResult result, List<BomOcrIssue> issues,
+            String username) {
         BomImportTask task = fillTaskDocument(new BomImportTask(), result.getDocument());
         task.setFileName(request.getFileName());
         task.setFileUrl(request.getFileUrl());
@@ -353,8 +317,7 @@ public class BomImportServiceImpl implements IBomImportService
     }
 
     private BomImportTask toTask(Long id, BomImportCreateRequest request, BomOcrResult result,
-        List<BomOcrIssue> issues, String username)
-    {
+            List<BomOcrIssue> issues, String username) {
         BomImportTask task = fillTaskDocument(new BomImportTask(), result.getDocument());
         task.setId(id);
         task.setFileName(request.getFileName());
@@ -368,8 +331,7 @@ public class BomImportServiceImpl implements IBomImportService
         return task;
     }
 
-    private BomImportTask toTask(Long id, BomImportDraft draft, List<BomOcrIssue> issues, String username)
-    {
+    private BomImportTask toTask(Long id, BomImportDraft draft, List<BomOcrIssue> issues, String username) {
         BomImportTask task = fillTaskDocument(new BomImportTask(), draft.getDocument());
         task.setId(id);
         task.setFileName(draft.getFileName());
@@ -381,9 +343,9 @@ public class BomImportServiceImpl implements IBomImportService
         return task;
     }
 
-    private BomImportTask fillTaskDocument(BomImportTask task, BomOcrDocument document)
-    {
-        if (document == null) return task;
+    private BomImportTask fillTaskDocument(BomImportTask task, BomOcrDocument document) {
+        if (document == null)
+            return task;
         task.setTitle(document.getTitle());
         task.setParentNameCandidate(document.getParentNameCandidate());
         task.setParentCodeCandidate(document.getParentCodeCandidate());
@@ -397,8 +359,7 @@ public class BomImportServiceImpl implements IBomImportService
         return task;
     }
 
-    private BomImportItem toImportItem(Long importId, BomOcrItem source, String username)
-    {
+    private BomImportItem toImportItem(Long importId, BomOcrItem source, String username) {
         BomImportItem item = new BomImportItem();
         item.setImportId(importId);
         item.setLineNo(source.getLineNo());
@@ -422,33 +383,26 @@ public class BomImportServiceImpl implements IBomImportService
         return item;
     }
 
-    private String resolveItemType(BomOcrItem source, RemarkParts remarkParts)
-    {
-        if (StringUtils.isNotBlank(source.getItemType()))
-        {
+    private String resolveItemType(BomOcrItem source, RemarkParts remarkParts) {
+        if (StringUtils.isNotBlank(source.getItemType())) {
             return source.getItemType().trim();
         }
         return remarkParts.matched ? remarkParts.itemType : source.getItemType();
     }
 
-    private String resolveRemark(BomOcrItem source, RemarkParts remarkParts)
-    {
-        if (remarkParts.matched)
-        {
+    private String resolveRemark(BomOcrItem source, RemarkParts remarkParts) {
+        if (remarkParts.matched) {
             return remarkParts.remark;
         }
         return source.getRemark();
     }
 
-    private RemarkParts parseTypedRemark(String remark)
-    {
-        if (StringUtils.isBlank(remark))
-        {
+    private RemarkParts parseTypedRemark(String remark) {
+        if (StringUtils.isBlank(remark)) {
             return RemarkParts.unmatched();
         }
         Matcher matcher = TYPE_REMARK_PATTERN.matcher(remark);
-        if (!matcher.matches())
-        {
+        if (!matcher.matches()) {
             return RemarkParts.unmatched();
         }
         String itemType = StringUtils.trimToEmpty(matcher.group(1));
@@ -456,27 +410,23 @@ public class BomImportServiceImpl implements IBomImportService
         return new RemarkParts(true, itemType, originalRemark);
     }
 
-    private static class RemarkParts
-    {
+    private static class RemarkParts {
         private final boolean matched;
         private final String itemType;
         private final String remark;
 
-        private RemarkParts(boolean matched, String itemType, String remark)
-        {
+        private RemarkParts(boolean matched, String itemType, String remark) {
             this.matched = matched;
             this.itemType = itemType;
             this.remark = remark;
         }
 
-        private static RemarkParts unmatched()
-        {
+        private static RemarkParts unmatched() {
             return new RemarkParts(false, "", "");
         }
     }
 
-    private BomImportItem toImportItem(Long importId, BomImportDraftItem source, String username)
-    {
+    private BomImportItem toImportItem(Long importId, BomImportDraftItem source, String username) {
         BomImportItem item = new BomImportItem();
         item.setImportId(importId);
         item.setLineNo(source.getLineNo());
@@ -502,8 +452,7 @@ public class BomImportServiceImpl implements IBomImportService
         return item;
     }
 
-    private BomImportDraft toDraft(BomImportTask task, List<BomImportItem> items)
-    {
+    private BomImportDraft toDraft(BomImportTask task, List<BomImportItem> items) {
         BomImportDraft draft = new BomImportDraft();
         draft.setId(task.getId());
         draft.setStatus(task.getStatus());
@@ -519,8 +468,7 @@ public class BomImportServiceImpl implements IBomImportService
         return draft;
     }
 
-    private BomOcrDocument toDocument(BomImportTask task)
-    {
+    private BomOcrDocument toDocument(BomImportTask task) {
         BomOcrDocument document = new BomOcrDocument();
         document.setTitle(task.getTitle());
         document.setParentNameCandidate(task.getParentNameCandidate());
@@ -535,8 +483,7 @@ public class BomImportServiceImpl implements IBomImportService
         return document;
     }
 
-    private BomImportDraftItem toDraftItem(BomImportItem source)
-    {
+    private BomImportDraftItem toDraftItem(BomImportItem source) {
         BomImportDraftItem item = new BomImportDraftItem();
         item.setId(source.getId());
         item.setLineNo(source.getLineNo());
@@ -561,14 +508,12 @@ public class BomImportServiceImpl implements IBomImportService
         return item;
     }
 
-    private BomOcrResult toOcrResult(BomImportDraft draft)
-    {
+    private BomOcrResult toOcrResult(BomImportDraft draft) {
         BomOcrResult result = new BomOcrResult();
         result.setVersion("1.0");
         result.setDocument(draft.getDocument());
         List<BomOcrItem> items = new ArrayList<>();
-        for (BomImportDraftItem draftItem : safeDraftItems(draft.getItems()))
-        {
+        for (BomImportDraftItem draftItem : safeDraftItems(draft.getItems())) {
             BomOcrItem item = new BomOcrItem();
             item.setLineNo(draftItem.getLineNo());
             item.setComponentCodeCandidate(draftItem.getComponentCodeCandidate());
@@ -589,55 +534,52 @@ public class BomImportServiceImpl implements IBomImportService
         return result;
     }
 
-    private List<BomOcrIssue> mergeIssues(List<BomOcrIssue> rawIssues, List<BomOcrIssue> validationIssues)
-    {
+    private List<BomOcrIssue> mergeIssues(List<BomOcrIssue> rawIssues, List<BomOcrIssue> validationIssues) {
         List<BomOcrIssue> merged = new ArrayList<>();
-        if (rawIssues != null) merged.addAll(rawIssues);
-        if (validationIssues != null) merged.addAll(validationIssues);
+        if (rawIssues != null)
+            merged.addAll(rawIssues);
+        if (validationIssues != null)
+            merged.addAll(validationIssues);
         return merged;
     }
 
-    private List<BomOcrIssue> parseIssues(String value)
-    {
-        if (StringUtils.isBlank(value)) return new ArrayList<>();
+    private List<BomOcrIssue> parseIssues(String value) {
+        if (StringUtils.isBlank(value))
+            return new ArrayList<>();
         return JSON.parseArray(value, BomOcrIssue.class);
     }
 
-    private Map<String, Object> parseExtraFields(String value)
-    {
-        if (StringUtils.isBlank(value)) return new LinkedHashMap<>();
-        return JSON.parseObject(value, new TypeReference<Map<String, Object>>() {});
+    private Map<String, Object> parseExtraFields(String value) {
+        if (StringUtils.isBlank(value))
+            return new LinkedHashMap<>();
+        return JSON.parseObject(value, new TypeReference<Map<String, Object>>() {
+        });
     }
 
-    private List<BomOcrItem> safeItems(List<BomOcrItem> items)
-    {
+    private List<BomOcrItem> safeItems(List<BomOcrItem> items) {
         return items == null ? new ArrayList<>() : items;
     }
 
-    private List<BomImportDraftItem> safeDraftItems(List<BomImportDraftItem> items)
-    {
+    private List<BomImportDraftItem> safeDraftItems(List<BomImportDraftItem> items) {
         return items == null ? new ArrayList<>() : items;
     }
 
-    private String resolveRiskLevel(BomOcrItem item)
-    {
-        if (StringUtils.isBlank(item.getItemName()) || item.getQuantity() == null)
-        {
+    private String resolveRiskLevel(BomOcrItem item) {
+        if (StringUtils.isBlank(item.getItemName()) || item.getQuantity() == null) {
             return RISK_ERROR;
         }
-        if (StringUtils.isBlank(item.getComponentCodeCandidate()) && StringUtils.isBlank(item.getDrawingNo()))
-        {
+        if (StringUtils.isBlank(item.getComponentCodeCandidate()) && StringUtils.isBlank(item.getDrawingNo())) {
             return RISK_WARNING;
         }
         return RISK_OK;
     }
 
-    private String resolveIssueMessage(BomOcrItem item)
-    {
-        if (StringUtils.isBlank(item.getItemName())) return "缺少子件名称";
-        if (item.getQuantity() == null) return "缺少子件数量";
-        if (StringUtils.isBlank(item.getComponentCodeCandidate()) && StringUtils.isBlank(item.getDrawingNo()))
-        {
+    private String resolveIssueMessage(BomOcrItem item) {
+        if (StringUtils.isBlank(item.getItemName()))
+            return "缺少子件名称";
+        if (item.getQuantity() == null)
+            return "缺少子件数量";
+        if (StringUtils.isBlank(item.getComponentCodeCandidate()) && StringUtils.isBlank(item.getDrawingNo())) {
             return "缺少子件编码候选和图号";
         }
         return "";

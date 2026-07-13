@@ -12,20 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 /** Dify 供应商报价比较工具 HTTP 入口。 */
 @RestController
 @RequestMapping("/agent/tools/purchase-quotes")
-public class AgentPurchaseQuoteToolController
-{
+public class AgentPurchaseQuoteToolController {
     private final PurchaseQuoteToolService toolService;
 
-    public AgentPurchaseQuoteToolController(PurchaseQuoteToolService toolService)
-    {
+    public AgentPurchaseQuoteToolController(PurchaseQuoteToolService toolService) {
         this.toolService = toolService;
     }
 
     /** 比较有效供应商报价。 */
     @PostMapping("/compare")
     public AgentToolResult<PurchaseQuoteCompareResult> compare(
-        @RequestBody(required = false) PurchaseQuoteCompareRequest request)
-    {
+            @RequestBody(required = false) PurchaseQuoteCompareRequest request) {
         return toolService.compare(request);
     }
 }

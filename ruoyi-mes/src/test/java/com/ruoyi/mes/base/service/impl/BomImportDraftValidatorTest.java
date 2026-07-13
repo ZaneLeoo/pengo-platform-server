@@ -10,13 +10,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class BomImportDraftValidatorTest
-{
+class BomImportDraftValidatorTest {
     private final BomImportDraftValidator validator = new BomImportDraftValidator();
 
     @Test
-    void shouldWarnWhenOnlyPartialRowsAreRecognized()
-    {
+    void shouldWarnWhenOnlyPartialRowsAreRecognized() {
         BomOcrResult result = new BomOcrResult();
         BomOcrDocument document = new BomOcrDocument();
         document.setParentNameCandidate("1588");
@@ -33,8 +31,7 @@ class BomImportDraftValidatorTest
     }
 
     @Test
-    void shouldReportInvalidItemFields()
-    {
+    void shouldReportInvalidItemFields() {
         BomOcrResult result = new BomOcrResult();
         BomOcrDocument document = new BomOcrDocument();
         document.setParentNameCandidate("1588");
@@ -57,8 +54,7 @@ class BomImportDraftValidatorTest
         assertTrue(issues.stream().anyMatch(issue -> "INVALID_QUANTITY".equals(issue.getCode())));
     }
 
-    private BomOcrItem validItem(int lineNo)
-    {
+    private BomOcrItem validItem(int lineNo) {
         BomOcrItem item = new BomOcrItem();
         item.setLineNo(lineNo);
         item.setItemName("内六角螺钉");

@@ -4,8 +4,7 @@ import java.math.BigDecimal;
 
 /** AI 比较报价的物料与数量条件。 */
 public record PurchaseQuoteCompareLineRequest(
-    String materialCode,
-    BigDecimal quantity,
-    String requiredDate)
-{
+        String materialCode,
+        BigDecimal quantity,
+        String requiredDate) {
 }

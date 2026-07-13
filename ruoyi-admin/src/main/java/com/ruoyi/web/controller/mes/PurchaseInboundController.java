@@ -26,15 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 /** 采购入库单控制器。 */
 @RestController
 @RequestMapping("/mes/purchase/inbound")
-public class PurchaseInboundController extends BaseController
-{
+public class PurchaseInboundController extends BaseController {
     private static final String DRAFT = PurchaseDocumentStatus.DRAFT.getCode();
 
     private final PurchaseInboundMapper inboundMapper;
     private final IPurchaseFlowService flowService;
 
-    public PurchaseInboundController(PurchaseInboundMapper inboundMapper, IPurchaseFlowService flowService)
-    {
+    public PurchaseInboundController(PurchaseInboundMapper inboundMapper, IPurchaseFlowService flowService) {
         this.inboundMapper = inboundMapper;
         this.flowService = flowService;
     }
@@ -42,8 +40,7 @@ public class PurchaseInboundController extends BaseController
     /** 查询入库单列表。 */
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:list')")
     @GetMapping("/list")
-    public TableDataInfo list(PurchaseInbound query)
-    {
+    public TableDataInfo list(PurchaseInbound query) {
         startPage();
         return getDataTable(inboundMapper.selectList(query));
     }
@@ -51,11 +48,9 @@ public class PurchaseInboundController extends BaseController
     /** 查询入库单及其明细。 */
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:query')")
     @GetMapping("/{id}")
-    public AjaxResult getInfo(@PathVariable Long id)
-    {
+    public AjaxResult getInfo(@PathVariable Long id) {
         PurchaseInbound inbound = inboundMapper.selectById(id);
-        if (inbound != null)
-        {
+        if (inbound != null) {
             inbound.setLines(inboundMapper.selectLines(id));
         }
         return success(inbound);
@@ -65,8 +60,7 @@ public class PurchaseInboundController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:add')")
     @Log(title = "采购入库单", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@Valid @RequestBody PurchaseInbound inbound)
-    {
+    public AjaxResult add(@Valid @RequestBody PurchaseInbound inbound) {
         inbound.setCreateBy(getUsername());
         inboundMapper.insert(inbound);
         saveLines(inbound);
@@ -78,15 +72,12 @@ public class PurchaseInboundController extends BaseController
     @Log(title = "采购入库单", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     @PutMapping
-    public AjaxResult edit(@Valid @RequestBody PurchaseInbound inbound)
-    {
+    public AjaxResult edit(@Valid @RequestBody PurchaseInbound inbound) {
         PurchaseInbound existing = inboundMapper.selectById(inbound.getId());
-        if (existing == null)
-        {
+        if (existing == null) {
             return error("入库单不存在");
         }
-        if (!DRAFT.equals(existing.getStatus()))
-        {
+        if (!DRAFT.equals(existing.getStatus())) {
             return error("已审核入库单不允许编辑");
         }
         inbound.setUpdateBy(getUsername());
@@ -100,13 +91,10 @@ public class PurchaseInboundController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:remove')")
     @Log(title = "采购入库单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
-        for (Long id : ids)
-        {
+    public AjaxResult remove(@PathVariable Long[] ids) {
+        for (Long id : ids) {
             PurchaseInbound existing = inboundMapper.selectById(id);
-            if (existing != null && !DRAFT.equals(existing.getStatus()))
-            {
+            if (existing != null && !DRAFT.equals(existing.getStatus())) {
                 return error("已审核入库单不允许删除");
             }
         }
@@ -118,8 +106,7 @@ public class PurchaseInboundController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:approve')")
     @Log(title = "采购入库单审核", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/approve")
-    public AjaxResult approve(@PathVariable Long id)
-    {
+    public AjaxResult approve(@PathVariable Long id) {
         flowService.approveInbound(id, getUsername());
         return success();
     }
@@ -128,8 +115,7 @@ public class PurchaseInboundController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:unapprove')")
     @Log(title = "采购入库单弃审", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/unapprove")
-    public AjaxResult unapprove(@PathVariable Long id)
-    {
+    public AjaxResult unapprove(@PathVariable Long id) {
         flowService.unapproveInbound(id, getUsername());
         return success();
     }
@@ -138,15 +124,13 @@ public class PurchaseInboundController extends BaseController
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:reference')")
     @GetMapping("/reference/receipt-lines")
     public AjaxResult referenceReceipts(@RequestParam(required = false) String receiptCode,
-                                        @RequestParam(required = false) String warehouseCode,
-                                        @RequestParam(required = false) String materialCode)
-    {
+            @RequestParam(required = false) String warehouseCode,
+            @RequestParam(required = false) String materialCode) {
         return success(flowService.selectInboundReferenceLines(receiptCode, warehouseCode, materialCode));
     }
 
     /** 保存入库单所有明细。 */
-    private void saveLines(PurchaseInbound inbound)
-    {
+    private void saveLines(PurchaseInbound inbound) {
         inbound.getLines().forEach(line -> {
             line.setInboundId(inbound.getId());
             line.setCreateBy(getUsername());

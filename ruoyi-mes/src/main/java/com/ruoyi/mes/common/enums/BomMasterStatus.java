@@ -6,8 +6,7 @@ package com.ruoyi.mes.common.enums;
  * @author ruoyi
  */
 public enum BomMasterStatus {
-    ENABLED("ENABLED", "启用"),
-    DISABLED("DISABLED", "停用");
+    ENABLED("ENABLED", "启用"), DISABLED("DISABLED", "停用");
 
     private final String code;
     private final String label;

@@ -23,10 +23,14 @@ public interface IBomVersionService {
     /**
      * 复制BOM版本及子件明细。
      *
-     * @param sourceVersionId 源版本ID
-     * @param targetVersionCode 新版本号
-     * @param targetVersionName 新版本名称
-     * @param createBy 创建者
+     * @param sourceVersionId
+     *            源版本ID
+     * @param targetVersionCode
+     *            新版本号
+     * @param targetVersionName
+     *            新版本名称
+     * @param createBy
+     *            创建者
      */
     void copyBomVersion(Long sourceVersionId, String targetVersionCode, String targetVersionName, String createBy);
 }

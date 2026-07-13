@@ -6,8 +6,7 @@ import lombok.Data;
 
 /** 提供给 AI 的库存流水精简数据。 */
 @Data
-public class InventoryTransactionToolItem
-{
+public class InventoryTransactionToolItem {
     private String transactionType;
     private String transactionTypeLabel;
     private String businessCode;

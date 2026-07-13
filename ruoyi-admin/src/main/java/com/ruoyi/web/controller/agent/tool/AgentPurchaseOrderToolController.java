@@ -12,20 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 /** Dify 采购订单草稿准备工具 HTTP 入口。 */
 @RestController
 @RequestMapping("/agent/tools/purchase-orders")
-public class AgentPurchaseOrderToolController
-{
+public class AgentPurchaseOrderToolController {
     private final PurchaseOrderToolService toolService;
 
-    public AgentPurchaseOrderToolController(PurchaseOrderToolService toolService)
-    {
+    public AgentPurchaseOrderToolController(PurchaseOrderToolService toolService) {
         this.toolService = toolService;
     }
 
     /** 校验并准备采购订单草稿，不执行写操作。 */
     @PostMapping("/prepare")
     public AgentToolResult<PurchaseOrderDraft> prepare(
-        @RequestBody(required = false) PurchaseOrderDraftRequest request)
-    {
+            @RequestBody(required = false) PurchaseOrderDraftRequest request) {
         return toolService.prepare(request);
     }
 }

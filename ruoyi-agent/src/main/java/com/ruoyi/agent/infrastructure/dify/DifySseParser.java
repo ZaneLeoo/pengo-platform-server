@@ -9,42 +9,35 @@ import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
  * 解析 Dify Chatflow 的 SSE data 行。
  */
 @org.springframework.stereotype.Component
-public class DifySseParser
-{
+public class DifySseParser {
     private static final String DATA_PREFIX = "data:";
     private static final String PING_LINE = "event: ping";
 
     /**
      * 解析单个 SSE 行。
      *
-     * @param line SSE 原始行
+     * @param line
+     *            SSE 原始行
      * @return 可识别的 Dify 事件；空行、ping 和非 data 行返回空
      */
-    public Optional<DifyStreamEvent> parseDataLine(String line)
-    {
-        if (line == null || line.isBlank() || PING_LINE.equals(line.trim()))
-        {
+    public Optional<DifyStreamEvent> parseDataLine(String line) {
+        if (line == null || line.isBlank() || PING_LINE.equals(line.trim())) {
             return Optional.empty();
         }
         String trimmed = line.trim();
-        if (!trimmed.startsWith(DATA_PREFIX))
-        {
+        if (!trimmed.startsWith(DATA_PREFIX)) {
             return Optional.empty();
         }
 
         String payload = trimmed.substring(DATA_PREFIX.length()).trim();
-        try
-        {
+        try {
             return Optional.of(toEvent(JSON.parseObject(payload)));
-        }
-        catch (RuntimeException exception)
-        {
+        } catch (RuntimeException exception) {
             return Optional.of(parseError(exception));
         }
     }
 
-    private DifyStreamEvent toEvent(JSONObject json)
-    {
+    private DifyStreamEvent toEvent(JSONObject json) {
         DifyStreamEvent event = new DifyStreamEvent();
         event.setEvent(json.getString("event"));
         event.setTaskId(json.getString("task_id"));
@@ -69,8 +62,7 @@ public class DifySseParser
         return event;
     }
 
-    private DifyStreamEvent parseError(RuntimeException exception)
-    {
+    private DifyStreamEvent parseError(RuntimeException exception) {
         DifyStreamEvent event = new DifyStreamEvent();
         event.setEvent("error");
         event.setCode("parse_error");

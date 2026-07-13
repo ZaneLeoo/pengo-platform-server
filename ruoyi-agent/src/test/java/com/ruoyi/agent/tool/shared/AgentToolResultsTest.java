@@ -9,13 +9,11 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** Agent 工具协议工厂测试。 */
-class AgentToolResultsTest
-{
+class AgentToolResultsTest {
     @Test
-    void confirmResultShouldRequireFrontendConfirmation()
-    {
+    void confirmResultShouldRequireFrontendConfirmation() {
         AgentToolResult<String> result = AgentToolResults.confirm(TestCode.DRAFT_READY,
-            "草稿已准备", "draft", "由前端展示确认卡片。");
+                "草稿已准备", "draft", "由前端展示确认卡片。");
 
         assertEquals(AgentToolStatus.SUCCESS, result.status());
         assertEquals(AgentToolNextAction.CONFIRM_ACTION, result.nextAction());
@@ -26,11 +24,10 @@ class AgentToolResultsTest
     }
 
     @Test
-    void needInputShouldExposeIssuesAndForbidBlindRetry()
-    {
+    void needInputShouldExposeIssuesAndForbidBlindRetry() {
         AgentToolIssue issue = AgentToolIssue.of("MISSING", "lines[0].quantity", "缺少数量", "大于 0");
         AgentToolResult<Void> result = AgentToolResults.needInput(TestCode.MISSING,
-            "信息不完整", List.of(issue), null);
+                "信息不完整", List.of(issue), null);
 
         assertEquals(AgentToolStatus.NEED_INPUT, result.status());
         assertEquals(AgentToolNextAction.ASK_USER, result.nextAction());
@@ -39,14 +36,11 @@ class AgentToolResultsTest
         assertNull(result.data());
     }
 
-    private enum TestCode implements AgentToolResultCode
-    {
-        DRAFT_READY,
-        MISSING;
+    private enum TestCode implements AgentToolResultCode {
+        DRAFT_READY, MISSING;
 
         @Override
-        public String code()
-        {
+        public String code() {
             return name();
         }
     }

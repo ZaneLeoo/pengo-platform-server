@@ -49,65 +49,149 @@ public class BomVersion extends BaseEntity {
     private String closeBy;
     private Date closeTime;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @NotNull(message = "BOM主表ID不能为空")
-    public Long getBomMasterId() { return bomMasterId; }
-    public void setBomMasterId(Long bomMasterId) { this.bomMasterId = bomMasterId; }
+    public Long getBomMasterId() {
+        return bomMasterId;
+    }
+    public void setBomMasterId(Long bomMasterId) {
+        this.bomMasterId = bomMasterId;
+    }
 
     @NotBlank(message = "版本号不能为空")
-    public String getVersionCode() { return versionCode; }
-    public void setVersionCode(String versionCode) { this.versionCode = versionCode; }
+    public String getVersionCode() {
+        return versionCode;
+    }
+    public void setVersionCode(String versionCode) {
+        this.versionCode = versionCode;
+    }
 
-    public String getVersionName() { return versionName; }
-    public void setVersionName(String versionName) { this.versionName = versionName; }
+    public String getVersionName() {
+        return versionName;
+    }
+    public void setVersionName(String versionName) {
+        this.versionName = versionName;
+    }
 
-    public String getVersionDesc() { return versionDesc; }
-    public void setVersionDesc(String versionDesc) { this.versionDesc = versionDesc; }
+    public String getVersionDesc() {
+        return versionDesc;
+    }
+    public void setVersionDesc(String versionDesc) {
+        this.versionDesc = versionDesc;
+    }
 
     @NotNull(message = "基准数量不能为空")
-    public BigDecimal getBaseQty() { return baseQty; }
-    public void setBaseQty(BigDecimal baseQty) { this.baseQty = baseQty; }
+    public BigDecimal getBaseQty() {
+        return baseQty;
+    }
+    public void setBaseQty(BigDecimal baseQty) {
+        this.baseQty = baseQty;
+    }
 
     @NotBlank(message = "用途不能为空")
-    public String getUsageType() { return usageType; }
-    public void setUsageType(String usageType) { this.usageType = usageType; }
+    public String getUsageType() {
+        return usageType;
+    }
+    public void setUsageType(String usageType) {
+        this.usageType = usageType;
+    }
 
-    public Date getEffectiveDate() { return effectiveDate; }
-    public void setEffectiveDate(Date effectiveDate) { this.effectiveDate = effectiveDate; }
+    public Date getEffectiveDate() {
+        return effectiveDate;
+    }
+    public void setEffectiveDate(Date effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
 
-    public Date getExpireDate() { return expireDate; }
-    public void setExpireDate(Date expireDate) { this.expireDate = expireDate; }
+    public Date getExpireDate() {
+        return expireDate;
+    }
+    public void setExpireDate(Date expireDate) {
+        this.expireDate = expireDate;
+    }
 
     @NotBlank(message = "版本状态不能为空")
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     @NotBlank(message = "审批状态不能为空")
-    public String getApproveStatus() { return approveStatus; }
-    public void setApproveStatus(String approveStatus) { this.approveStatus = approveStatus; }
+    public String getApproveStatus() {
+        return approveStatus;
+    }
+    public void setApproveStatus(String approveStatus) {
+        this.approveStatus = approveStatus;
+    }
 
     @NotNull(message = "是否默认不能为空")
-    public Integer getDefaultFlag() { return defaultFlag; }
-    public void setDefaultFlag(Integer defaultFlag) { this.defaultFlag = defaultFlag; }
+    public Integer getDefaultFlag() {
+        return defaultFlag;
+    }
+    public void setDefaultFlag(Integer defaultFlag) {
+        this.defaultFlag = defaultFlag;
+    }
 
-    public String getDefaultRoutingCode() { return defaultRoutingCode; }
-    public void setDefaultRoutingCode(String defaultRoutingCode) { this.defaultRoutingCode = defaultRoutingCode; }
-    public String getDefaultRoutingName() { return defaultRoutingName; }
-    public void setDefaultRoutingName(String defaultRoutingName) { this.defaultRoutingName = defaultRoutingName; }
-    public Long getDefaultRoutingVersionId() { return defaultRoutingVersionId; }
-    public void setDefaultRoutingVersionId(Long defaultRoutingVersionId) { this.defaultRoutingVersionId = defaultRoutingVersionId; }
-    public String getSourceSystem() { return sourceSystem; }
-    public void setSourceSystem(String sourceSystem) { this.sourceSystem = sourceSystem; }
-    public String getSourceId() { return sourceId; }
-    public void setSourceId(String sourceId) { this.sourceId = sourceId; }
-    public String getCheckBy() { return checkBy; }
-    public void setCheckBy(String checkBy) { this.checkBy = checkBy; }
-    public Date getCheckTime() { return checkTime; }
-    public void setCheckTime(Date checkTime) { this.checkTime = checkTime; }
-    public String getCloseBy() { return closeBy; }
-    public void setCloseBy(String closeBy) { this.closeBy = closeBy; }
-    public Date getCloseTime() { return closeTime; }
-    public void setCloseTime(Date closeTime) { this.closeTime = closeTime; }
+    public String getDefaultRoutingCode() {
+        return defaultRoutingCode;
+    }
+    public void setDefaultRoutingCode(String defaultRoutingCode) {
+        this.defaultRoutingCode = defaultRoutingCode;
+    }
+    public String getDefaultRoutingName() {
+        return defaultRoutingName;
+    }
+    public void setDefaultRoutingName(String defaultRoutingName) {
+        this.defaultRoutingName = defaultRoutingName;
+    }
+    public Long getDefaultRoutingVersionId() {
+        return defaultRoutingVersionId;
+    }
+    public void setDefaultRoutingVersionId(Long defaultRoutingVersionId) {
+        this.defaultRoutingVersionId = defaultRoutingVersionId;
+    }
+    public String getSourceSystem() {
+        return sourceSystem;
+    }
+    public void setSourceSystem(String sourceSystem) {
+        this.sourceSystem = sourceSystem;
+    }
+    public String getSourceId() {
+        return sourceId;
+    }
+    public void setSourceId(String sourceId) {
+        this.sourceId = sourceId;
+    }
+    public String getCheckBy() {
+        return checkBy;
+    }
+    public void setCheckBy(String checkBy) {
+        this.checkBy = checkBy;
+    }
+    public Date getCheckTime() {
+        return checkTime;
+    }
+    public void setCheckTime(Date checkTime) {
+        this.checkTime = checkTime;
+    }
+    public String getCloseBy() {
+        return closeBy;
+    }
+    public void setCloseBy(String closeBy) {
+        this.closeBy = closeBy;
+    }
+    public Date getCloseTime() {
+        return closeTime;
+    }
+    public void setCloseTime(Date closeTime) {
+        this.closeTime = closeTime;
+    }
 }

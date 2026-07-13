@@ -6,8 +6,7 @@ import lombok.Data;
 
 /** 基础 Dify 聊天请求。 */
 @Data
-public class AgentChatRequest
-{
+public class AgentChatRequest {
     @NotBlank(message = "消息不能为空")
     private String query;
 

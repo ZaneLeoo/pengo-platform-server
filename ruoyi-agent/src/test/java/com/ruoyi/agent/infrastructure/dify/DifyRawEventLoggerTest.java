@@ -8,11 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class DifyRawEventLoggerTest
-{
+class DifyRawEventLoggerTest {
     @Test
-    void shouldLogRawEventWhenDebugIsEnabled()
-    {
+    void shouldLogRawEventWhenDebugIsEnabled() {
         List<String> logs = new ArrayList<>();
         DifyRawEventLogger logger = new DifyRawEventLogger(logs::add, () -> true);
 
@@ -22,8 +20,7 @@ class DifyRawEventLoggerTest
     }
 
     @Test
-    void shouldIgnoreBlankLinesAndDisabledDebug()
-    {
+    void shouldIgnoreBlankLinesAndDisabledDebug() {
         List<String> logs = new ArrayList<>();
         DifyRawEventLogger enabledLogger = new DifyRawEventLogger(logs::add, () -> true);
         DifyRawEventLogger disabledLogger = new DifyRawEventLogger(logs::add, () -> false);
@@ -35,8 +32,7 @@ class DifyRawEventLoggerTest
     }
 
     @Test
-    void shouldMaskSecretsAndLargeBase64Content()
-    {
+    void shouldMaskSecretsAndLargeBase64Content() {
         List<String> logs = new ArrayList<>();
         DifyRawEventLogger logger = new DifyRawEventLogger(logs::add, () -> true);
         String base64 = "A".repeat(300);
@@ -52,8 +48,7 @@ class DifyRawEventLoggerTest
     }
 
     @Test
-    void shouldTruncateEventLongerThanLimit()
-    {
+    void shouldTruncateEventLongerThanLimit() {
         List<String> logs = new ArrayList<>();
         DifyRawEventLogger logger = new DifyRawEventLogger(logs::add, () -> true);
 

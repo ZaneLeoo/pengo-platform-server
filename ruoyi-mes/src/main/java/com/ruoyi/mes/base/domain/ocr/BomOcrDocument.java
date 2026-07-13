@@ -7,8 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** BOM 图纸标题区识别结果。 */
-public class BomOcrDocument
-{
+public class BomOcrDocument {
     /** 图纸标题。 */
     @JSONField(alternateNames = {"documentTitle", "bomTitle", "标题"})
     private String title;
@@ -51,33 +50,73 @@ public class BomOcrDocument
     /** 其他标题区字段，例如设计编号、出厂编号、日期、设计人等。 */
     private Map<String, Object> extraFields = new LinkedHashMap<>();
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getParentNameCandidate() { return parentNameCandidate; }
-    public void setParentNameCandidate(String parentNameCandidate) { this.parentNameCandidate = parentNameCandidate; }
+    public String getParentNameCandidate() {
+        return parentNameCandidate;
+    }
+    public void setParentNameCandidate(String parentNameCandidate) {
+        this.parentNameCandidate = parentNameCandidate;
+    }
 
-    public String getParentCodeCandidate() { return parentCodeCandidate; }
-    public void setParentCodeCandidate(String parentCodeCandidate) { this.parentCodeCandidate = parentCodeCandidate; }
+    public String getParentCodeCandidate() {
+        return parentCodeCandidate;
+    }
+    public void setParentCodeCandidate(String parentCodeCandidate) {
+        this.parentCodeCandidate = parentCodeCandidate;
+    }
 
-    public String getProductModel() { return productModel; }
-    public void setProductModel(String productModel) { this.productModel = productModel; }
+    public String getProductModel() {
+        return productModel;
+    }
+    public void setProductModel(String productModel) {
+        this.productModel = productModel;
+    }
 
-    public String getDrawingNo() { return drawingNo; }
-    public void setDrawingNo(String drawingNo) { this.drawingNo = drawingNo; }
+    public String getDrawingNo() {
+        return drawingNo;
+    }
+    public void setDrawingNo(String drawingNo) {
+        this.drawingNo = drawingNo;
+    }
 
-    public String getRevision() { return revision; }
-    public void setRevision(String revision) { this.revision = revision; }
+    public String getRevision() {
+        return revision;
+    }
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
 
-    public BigDecimal getBaseQtyCandidate() { return baseQtyCandidate; }
-    public void setBaseQtyCandidate(BigDecimal baseQtyCandidate) { this.baseQtyCandidate = baseQtyCandidate; }
+    public BigDecimal getBaseQtyCandidate() {
+        return baseQtyCandidate;
+    }
+    public void setBaseQtyCandidate(BigDecimal baseQtyCandidate) {
+        this.baseQtyCandidate = baseQtyCandidate;
+    }
 
-    public Integer getTotalRows() { return totalRows; }
-    public void setTotalRows(Integer totalRows) { this.totalRows = totalRows; }
+    public Integer getTotalRows() {
+        return totalRows;
+    }
+    public void setTotalRows(Integer totalRows) {
+        this.totalRows = totalRows;
+    }
 
-    public BigDecimal getUnitWeight() { return unitWeight; }
-    public void setUnitWeight(BigDecimal unitWeight) { this.unitWeight = unitWeight; }
+    public BigDecimal getUnitWeight() {
+        return unitWeight;
+    }
+    public void setUnitWeight(BigDecimal unitWeight) {
+        this.unitWeight = unitWeight;
+    }
 
-    public Map<String, Object> getExtraFields() { return extraFields; }
-    public void setExtraFields(Map<String, Object> extraFields) { this.extraFields = extraFields; }
+    public Map<String, Object> getExtraFields() {
+        return extraFields;
+    }
+    public void setExtraFields(Map<String, Object> extraFields) {
+        this.extraFields = extraFields;
+    }
 }

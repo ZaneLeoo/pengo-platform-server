@@ -4,8 +4,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import java.math.BigDecimal;
 
 /** BOM OCR 导入任务。 */
-public class BomImportTask extends BaseEntity
-{
+public class BomImportTask extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /** 导入任务 ID。 */
@@ -62,57 +61,129 @@ public class BomImportTask extends BaseEntity
     /** 错误信息。 */
     private String errorMessage;
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getFileName() { return fileName; }
-    public void setFileName(String fileName) { this.fileName = fileName; }
+    public String getFileName() {
+        return fileName;
+    }
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
 
-    public String getFileUrl() { return fileUrl; }
-    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
+    public String getFileUrl() {
+        return fileUrl;
+    }
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
 
-    public String getFileType() { return fileType; }
-    public void setFileType(String fileType) { this.fileType = fileType; }
+    public String getFileType() {
+        return fileType;
+    }
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getParentNameCandidate() { return parentNameCandidate; }
-    public void setParentNameCandidate(String parentNameCandidate) { this.parentNameCandidate = parentNameCandidate; }
+    public String getParentNameCandidate() {
+        return parentNameCandidate;
+    }
+    public void setParentNameCandidate(String parentNameCandidate) {
+        this.parentNameCandidate = parentNameCandidate;
+    }
 
-    public String getParentCodeCandidate() { return parentCodeCandidate; }
-    public void setParentCodeCandidate(String parentCodeCandidate) { this.parentCodeCandidate = parentCodeCandidate; }
+    public String getParentCodeCandidate() {
+        return parentCodeCandidate;
+    }
+    public void setParentCodeCandidate(String parentCodeCandidate) {
+        this.parentCodeCandidate = parentCodeCandidate;
+    }
 
-    public String getProductModel() { return productModel; }
-    public void setProductModel(String productModel) { this.productModel = productModel; }
+    public String getProductModel() {
+        return productModel;
+    }
+    public void setProductModel(String productModel) {
+        this.productModel = productModel;
+    }
 
-    public String getDrawingNo() { return drawingNo; }
-    public void setDrawingNo(String drawingNo) { this.drawingNo = drawingNo; }
+    public String getDrawingNo() {
+        return drawingNo;
+    }
+    public void setDrawingNo(String drawingNo) {
+        this.drawingNo = drawingNo;
+    }
 
-    public String getRevision() { return revision; }
-    public void setRevision(String revision) { this.revision = revision; }
+    public String getRevision() {
+        return revision;
+    }
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
 
-    public BigDecimal getBaseQtyCandidate() { return baseQtyCandidate; }
-    public void setBaseQtyCandidate(BigDecimal baseQtyCandidate) { this.baseQtyCandidate = baseQtyCandidate; }
+    public BigDecimal getBaseQtyCandidate() {
+        return baseQtyCandidate;
+    }
+    public void setBaseQtyCandidate(BigDecimal baseQtyCandidate) {
+        this.baseQtyCandidate = baseQtyCandidate;
+    }
 
-    public Integer getTotalRows() { return totalRows; }
-    public void setTotalRows(Integer totalRows) { this.totalRows = totalRows; }
+    public Integer getTotalRows() {
+        return totalRows;
+    }
+    public void setTotalRows(Integer totalRows) {
+        this.totalRows = totalRows;
+    }
 
-    public BigDecimal getUnitWeight() { return unitWeight; }
-    public void setUnitWeight(BigDecimal unitWeight) { this.unitWeight = unitWeight; }
+    public BigDecimal getUnitWeight() {
+        return unitWeight;
+    }
+    public void setUnitWeight(BigDecimal unitWeight) {
+        this.unitWeight = unitWeight;
+    }
 
-    public String getRawResultJson() { return rawResultJson; }
-    public void setRawResultJson(String rawResultJson) { this.rawResultJson = rawResultJson; }
+    public String getRawResultJson() {
+        return rawResultJson;
+    }
+    public void setRawResultJson(String rawResultJson) {
+        this.rawResultJson = rawResultJson;
+    }
 
-    public String getExtraFieldsJson() { return extraFieldsJson; }
-    public void setExtraFieldsJson(String extraFieldsJson) { this.extraFieldsJson = extraFieldsJson; }
+    public String getExtraFieldsJson() {
+        return extraFieldsJson;
+    }
+    public void setExtraFieldsJson(String extraFieldsJson) {
+        this.extraFieldsJson = extraFieldsJson;
+    }
 
-    public String getIssuesJson() { return issuesJson; }
-    public void setIssuesJson(String issuesJson) { this.issuesJson = issuesJson; }
+    public String getIssuesJson() {
+        return issuesJson;
+    }
+    public void setIssuesJson(String issuesJson) {
+        this.issuesJson = issuesJson;
+    }
 
-    public String getErrorMessage() { return errorMessage; }
-    public void setErrorMessage(String errorMessage) { this.errorMessage = errorMessage; }
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

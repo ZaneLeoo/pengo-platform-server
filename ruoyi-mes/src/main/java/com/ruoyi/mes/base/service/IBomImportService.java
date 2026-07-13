@@ -8,8 +8,7 @@ import com.ruoyi.mes.base.domain.ocr.BomOcrIssue;
 import java.util.List;
 
 /** BOM OCR 导入草稿服务。 */
-public interface IBomImportService
-{
+public interface IBomImportService {
     List<BomImportTask> selectBomImportTaskList(BomImportTask task);
     BomImportDraft selectBomImportDraftById(Long id);
     BomImportDraft createProcessingDraft(BomImportCreateRequest request, String username);

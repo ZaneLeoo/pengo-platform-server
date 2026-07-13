@@ -5,8 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 /** Dify 应用配置数据访问。 */
-public interface DifyAppConfigMapper
-{
+public interface DifyAppConfigMapper {
     /** 查询配置列表。 */
     List<DifyAppConfig> selectDifyAppConfigList(DifyAppConfig config);
 

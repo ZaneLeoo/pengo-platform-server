@@ -7,8 +7,7 @@ import com.ruoyi.mes.purchase.domain.dto.InventoryTransactionQuery;
 import com.ruoyi.mes.purchase.domain.dto.InventoryTransactionToolItem;
 
 /** 面向 AI 助手的库存只读查询服务。 */
-public interface IInventoryAssistantQueryService
-{
+public interface IInventoryAssistantQueryService {
     InventoryToolPage<InventoryBalanceToolItem> queryBalances(InventoryBalanceQuery query);
 
     InventoryToolPage<InventoryTransactionToolItem> queryTransactions(InventoryTransactionQuery query);

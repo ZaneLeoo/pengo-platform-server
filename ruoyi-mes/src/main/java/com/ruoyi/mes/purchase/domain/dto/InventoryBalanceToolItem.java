@@ -5,8 +5,7 @@ import lombok.Data;
 
 /** 提供给 AI 的库存余额精简数据。 */
 @Data
-public class InventoryBalanceToolItem
-{
+public class InventoryBalanceToolItem {
     private String materialCode;
     private String materialName;
     private String warehouseCode;

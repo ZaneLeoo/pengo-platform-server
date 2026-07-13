@@ -7,8 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 /** 供应商报价数据访问接口。 */
-public interface PurchaseSupplierQuoteMapper
-{
+public interface PurchaseSupplierQuoteMapper {
     List<PurchaseSupplierQuote> selectList(PurchaseSupplierQuote query);
 
     PurchaseSupplierQuote selectById(Long id);
@@ -28,10 +27,10 @@ public interface PurchaseSupplierQuoteMapper
     int insertLine(PurchaseSupplierQuoteLine line);
 
     List<PurchaseQuoteCandidate> selectCandidates(@Param("materialCode") String materialCode,
-                                                  @Param("quantity") java.math.BigDecimal quantity,
-                                                  @Param("currency") String currency,
-                                                  @Param("requiredDate") String requiredDate);
+            @Param("quantity") java.math.BigDecimal quantity,
+            @Param("currency") String currency,
+            @Param("requiredDate") String requiredDate);
 
     int updateStatus(@Param("id") Long id, @Param("sourceStatus") String sourceStatus,
-                     @Param("targetStatus") String targetStatus, @Param("operator") String operator);
+            @Param("targetStatus") String targetStatus, @Param("operator") String operator);
 }
