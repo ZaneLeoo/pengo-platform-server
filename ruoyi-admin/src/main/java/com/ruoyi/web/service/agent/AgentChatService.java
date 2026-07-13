@@ -4,6 +4,7 @@ import com.ruoyi.agent.api.AgentChatRequest;
 import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.domain.enums.DifyAppCode;
 import com.ruoyi.agent.domain.enums.AgentStreamEventType;
+import com.ruoyi.agent.domain.enums.AgentToolMetadata;
 import com.ruoyi.agent.infrastructure.dify.DifyChatflowClient;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyChatRequest;
@@ -118,6 +119,11 @@ public class AgentChatService
         data.put(knowledgeEvent ? "datasetId" : "toolName", event.getTool());
         data.put(knowledgeEvent ? "datasetLabel" : "toolLabel",
             knowledgeEvent ? knowledgeBaseService.resolveName(event.getTool()) : resolveToolLabel(event));
+        if (!knowledgeEvent)
+        {
+            AgentToolMetadata metadata = AgentToolMetadata.fromOperationId(event.getTool());
+            if (!metadata.getDescription().isBlank()) data.put("toolDescription", metadata.getDescription());
+        }
         if (event.getPosition() != null) data.put("position", event.getPosition());
         if (event.getToolInput() != null && !event.getToolInput().isBlank())
         {
@@ -156,6 +162,7 @@ public class AgentChatService
             data.put("phase", outputs == null ? "started" : "finished");
             data.put("callId", event.getId() + "-" + toolName);
             data.put("toolName", toolName);
+            data.put("toolLabel", resolveToolLabel(toolName, toolName));
             data.put("chartType", chartType);
             if (event.getPosition() != null) data.put("position", event.getPosition());
             JSONObject toolInput = nestedObject(inputs, toolName);
@@ -241,11 +248,24 @@ public class AgentChatService
         if (label instanceof Map<?, ?> labels)
         {
             Object zh = labels.get("zh_Hans");
-            if (zh != null && !zh.toString().isBlank()) return zh.toString();
+            if (isMeaningfulLabel(zh, event.getTool())) return zh.toString();
             Object en = labels.get("en_US");
-            if (en != null && !en.toString().isBlank()) return en.toString();
+            if (isMeaningfulLabel(en, event.getTool())) return en.toString();
         }
-        return event.getTool();
+        return resolveToolLabel(event.getTool(), event.getTool());
+    }
+
+    /** 优先使用 Dify 标签，Dify 回退为 operationId 时使用本地工具注册表。 */
+    private String resolveToolLabel(String toolName, String fallback)
+    {
+        AgentToolMetadata metadata = AgentToolMetadata.fromOperationId(toolName);
+        return metadata == AgentToolMetadata.UNKNOWN
+            ? (fallback == null || fallback.isBlank() ? toolName : fallback) : metadata.getLabel();
+    }
+
+    private boolean isMeaningfulLabel(Object value, String toolName)
+    {
+        return value != null && !value.toString().isBlank() && !value.toString().equals(toolName);
     }
 
     /**
