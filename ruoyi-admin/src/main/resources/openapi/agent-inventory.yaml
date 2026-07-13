@@ -166,7 +166,9 @@ components:
     ToolMeta:
       type: object
       properties:
+        total: { type: integer, format: int64, description: 匹配总记录数 }
         truncated: { type: boolean, description: 当前页后是否还有未返回记录 }
+        page: { $ref: '#/components/schemas/PageInfo' }
     InventoryBalanceItem:
       type: object
       properties:
@@ -222,23 +224,31 @@ components:
           { type: string, nullable: true, description: 来源采购订单编号 }
     InventoryBalanceQueryResponse:
       type: object
-      required: [success, message, data, page, meta]
+      required: [status, resultCode, message, nextAction, retryable, agentInstruction, issues, data]
       properties:
-        success: { type: boolean, example: true }
+        status: { type: string, enum: [SUCCESS, NO_RESULT, FAILED] }
+        resultCode: { type: string, enum: [INVENTORY_BALANCE_QUERY_SUCCESS, INVENTORY_BALANCE_NOT_FOUND, TOOL_UNAUTHORIZED] }
         message: { type: string, example: 查询成功 }
+        nextAction: { type: string, enum: [CONTINUE, ASK_USER, STOP] }
+        retryable: { type: boolean }
+        agentInstruction: { type: string }
+        issues: { type: array, items: { type: object } }
         data:
           type: array
           items: { $ref: "#/components/schemas/InventoryBalanceItem" }
-        page: { $ref: "#/components/schemas/PageInfo" }
         meta: { $ref: "#/components/schemas/ToolMeta" }
     InventoryTransactionQueryResponse:
       type: object
-      required: [success, message, data, page, meta]
+      required: [status, resultCode, message, nextAction, retryable, agentInstruction, issues, data]
       properties:
-        success: { type: boolean, example: true }
+        status: { type: string, enum: [SUCCESS, NO_RESULT, FAILED] }
+        resultCode: { type: string, enum: [INVENTORY_TRANSACTION_QUERY_SUCCESS, INVENTORY_TRANSACTION_NOT_FOUND, TOOL_UNAUTHORIZED] }
         message: { type: string, example: 查询成功 }
+        nextAction: { type: string, enum: [CONTINUE, ASK_USER, STOP] }
+        retryable: { type: boolean }
+        agentInstruction: { type: string }
+        issues: { type: array, items: { type: object } }
         data:
           type: array
           items: { $ref: "#/components/schemas/InventoryTransactionItem" }
-        page: { $ref: "#/components/schemas/PageInfo" }
         meta: { $ref: "#/components/schemas/ToolMeta" }

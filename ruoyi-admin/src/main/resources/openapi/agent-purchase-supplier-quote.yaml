@@ -128,7 +128,7 @@ components:
       properties:
         status: { type: string, enum: [READY, NEED_INPUT, NO_CANDIDATE, INVALID] }
         resultCode: { type: string, enum: [QUOTE_MATCHED, MISSING_REQUIRED_FIELDS, NO_VALID_QUOTE, INVALID_ARGUMENT, MATERIAL_NOT_AVAILABLE] }
-        nextAction: { type: string, enum: [SHOW_RECOMMENDATION, ASK_USER] }
+        nextAction: { type: string, description: MES 内部结果，仅作为 data 的业务信息。 }
         message: { type: string }
         issues:
           type: array
@@ -141,16 +141,22 @@ components:
           items: { $ref: '#/components/schemas/PurchaseQuoteCandidate' }
     PurchaseQuoteCompareResponse:
       type: object
-      required: [success, status, resultCode, nextAction, retryTool, agentInstruction, issues, data]
+      required: [status, resultCode, nextAction, retryable, agentInstruction, issues, message, data]
       properties:
-        success: { type: boolean }
-        status: { type: string }
+        status: { type: string, enum: [SUCCESS, NEED_INPUT, NO_RESULT, REJECTED, FAILED] }
         resultCode: { type: string }
-        nextAction: { type: string }
-        retryTool: { type: boolean, example: false }
+        nextAction: { type: string, enum: [PRESENT_RESULT, ASK_USER, STOP] }
+        retryable: { type: boolean, example: false }
         agentInstruction: { type: string }
         issues:
           type: array
-          items: { type: string }
+          items:
+            type: object
+            properties:
+              code: { type: string }
+              field: { type: string }
+              message: { type: string }
+              expected: { type: string }
+              candidates: { type: array, items: { type: object } }
         message: { type: string }
         data: { $ref: '#/components/schemas/PurchaseQuoteCompareResult' }

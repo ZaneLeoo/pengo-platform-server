@@ -16,10 +16,10 @@ paths:
       description: |
         用户要求建立采购订单时调用。允许传入不完整信息。
         不得编造供应商、物料、数量、单价或日期；应将用户提供的编码或名称放入对应 keyword 字段。
-        必须读取响应顶层 nextAction、issues 和 agentInstruction：
+        必须读取响应顶层 status、nextAction、issues 和 agentInstruction：
         - ASK_USER：禁止用相同参数重试，向用户追问或要求修正 issues 中的字段；
         - SELECT_CANDIDATE：展示 candidates，等待用户明确选择编码后再调用；
-        - SHOW_DRAFT：概述 draft，并等待 agent-ui 的确认按钮；不得自行创建订单。
+        - CONFIRM_ACTION：概述 data.draft，并等待 agent-ui 的确认按钮；不得自行创建订单。
       security:
         - AgentToolKey: []
       requestBody:
@@ -120,26 +120,6 @@ components:
           enum: [MANUAL, QUOTE]
           default: MANUAL
           description: 价格来源。使用报价推荐时传 QUOTE。
-    PreparationStatus:
-      type: string
-      enum: [NEED_INPUT, AMBIGUOUS, INVALID, READY]
-    CandidateOption:
-      type: object
-      properties:
-        id: { type: integer, format: int64, description: 主数据ID，仅用于展示，不可作为创建时的信任依据。 }
-        code: { type: string, description: 主数据编码 }
-        name: { type: string, description: 主数据名称 }
-        spec: { type: string, nullable: true, description: 物料规格 }
-        model: { type: string, nullable: true, description: 物料型号 }
-        unit: { type: string, nullable: true, description: 物料单位 }
-    Candidate:
-      type: object
-      properties:
-        field: { type: string, enum: [supplier, material], description: 需要消歧的字段 }
-        keyword: { type: string, description: 原始匹配关键词 }
-        options:
-          type: array
-          items: { $ref: '#/components/schemas/CandidateOption' }
     PurchaseOrderDraftLine:
       type: object
       properties:
@@ -172,22 +152,6 @@ components:
         lines:
           type: array
           items: { $ref: '#/components/schemas/PurchaseOrderDraftLine' }
-    PreparationResult:
-      type: object
-      required: [status, message, missingFields, candidates]
-      properties:
-        status: { $ref: '#/components/schemas/PreparationStatus' }
-        message: { type: string }
-        missingFields:
-          type: array
-          items: { type: string }
-        candidates:
-          type: array
-          items: { $ref: '#/components/schemas/Candidate' }
-        draft:
-          allOf:
-            - $ref: '#/components/schemas/PurchaseOrderDraft'
-          nullable: true
     ToolIssue:
       type: object
       required: [code, field, message]
@@ -201,20 +165,33 @@ components:
         message:
           type: string
           description: 面向 Agent 的明确修正说明。
+        expected:
+          type: string
+          description: 字段期望格式或业务含义。
+        candidates:
+          type: array
+          items:
+            type: object
+            properties:
+              value: { type: string, description: 再次调用时使用的候选值。 }
+              label: { type: string, description: 候选展示名称。 }
+              description: { type: string, description: 候选补充信息。 }
     PurchaseOrderPreparationResponse:
       type: object
-      required: [success, status, resultCode, nextAction, retryTool, agentInstruction, issues, message, data]
+      required: [status, resultCode, nextAction, retryable, agentInstruction, issues, message, data]
       properties:
-        success: { type: boolean, example: true }
-        status: { $ref: '#/components/schemas/PreparationStatus' }
+        status:
+          type: string
+          enum: [SUCCESS, NEED_INPUT, AMBIGUOUS, REJECTED, FAILED]
+          description: 工具协议唯一状态；SUCCESS 且 nextAction=CONFIRM_ACTION 时 data 为采购订单草稿。
         resultCode:
           type: string
-          enum: [MISSING_REQUIRED_FIELDS, AMBIGUOUS_MASTER_DATA, BUSINESS_VALIDATION_FAILED, DRAFT_READY]
+          enum: [MISSING_REQUIRED_FIELDS, AMBIGUOUS_MASTER_DATA, BUSINESS_VALIDATION_FAILED, PURCHASE_ORDER_DRAFT_READY]
         nextAction:
           type: string
-          enum: [ASK_USER, SELECT_CANDIDATE, SHOW_DRAFT]
+          enum: [ASK_USER, SELECT_CANDIDATE, CONFIRM_ACTION, STOP]
           description: Agent 必须执行的下一步动作。
-        retryTool:
+        retryable:
           type: boolean
           description: 当前参数是否允许立即重试；当前版本非 READY 情况均为 false。
         agentInstruction:
@@ -224,4 +201,8 @@ components:
           type: array
           items: { $ref: '#/components/schemas/ToolIssue' }
         message: { type: string }
-        data: { $ref: '#/components/schemas/PreparationResult' }
+        data:
+          allOf:
+            - $ref: '#/components/schemas/PurchaseOrderDraft'
+          nullable: true
+          description: 仅草稿准备成功时返回；其他状态通过 issues 表达缺失、歧义或业务错误。

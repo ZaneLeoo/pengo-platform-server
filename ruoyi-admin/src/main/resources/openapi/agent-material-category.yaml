@@ -51,10 +51,15 @@ components:
           description: 是否包含停用分类
     CategoryQueryResponse:
       type: object
+      required: [status, resultCode, message, nextAction, retryable, agentInstruction, issues, data]
       properties:
-        success: { type: boolean }
+        status: { type: string, enum: [SUCCESS, NO_RESULT, FAILED] }
+        resultCode: { type: string, enum: [MATERIAL_CATEGORY_QUERY_SUCCESS, MATERIAL_CATEGORY_NOT_FOUND, TOOL_UNAUTHORIZED] }
         message: { type: string }
-        total: { type: integer }
+        nextAction: { type: string, enum: [CONTINUE, ASK_USER, STOP] }
+        retryable: { type: boolean }
+        agentInstruction: { type: string }
+        issues: { type: array, items: { type: object } }
         data:
           type: array
           items:
@@ -67,3 +72,9 @@ components:
               ancestors: { type: string, nullable: true }
               level: { type: integer }
               status: { type: string }
+        meta:
+          type: object
+          nullable: true
+          properties:
+            total: { type: integer, format: int64 }
+            truncated: { type: boolean }
