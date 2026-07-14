@@ -148,7 +148,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE bi.bom_version_id = #{bomVersionId}
         <choose>
             <when test="parentItemCode == null or parentItemCode == ''">
-                AND (bi.parent_item_code IS NULL OR bi.parent_item_code = '')
+                <!-- 顶层查询：一个版本的明细行本身就是该母件的直接子件。 -->
             </when>
             <otherwise>
                 AND bi.parent_item_code = #{parentItemCode}

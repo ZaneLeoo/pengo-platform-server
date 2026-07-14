@@ -18,6 +18,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="materialVersion" column="material_version"/>
         <result property="sourceType" column="source_type"/>
         <result property="lotControlFlag" column="lot_control_flag"/>
+        <result property="shelfLifeControlFlag" column="shelf_life_control_flag"/>
+        <result property="shelfLifeDays" column="shelf_life_days"/>
+        <result property="expiryWarningDays" column="expiry_warning_days"/>
         <result property="snControlFlag" column="sn_control_flag"/>
         <result property="inspectionFlag" column="inspection_flag"/>
         <result property="safeStock" column="safe_stock"/>
@@ -34,7 +37,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <sql id="selectMaterialVo">
         select m.material_id, m.material_code, m.material_name, m.material_type, m.category_id,
                c.category_name, m.spec, m.model, m.unit, m.drawing_no, m.material_version,
-               m.source_type, m.lot_control_flag, m.sn_control_flag, m.inspection_flag, m.safe_stock,
+               m.source_type, m.lot_control_flag, m.shelf_life_control_flag, m.shelf_life_days,
+               m.expiry_warning_days, m.sn_control_flag, m.inspection_flag, m.safe_stock,
                m.default_bom_id, m.default_route_id, m.status, m.create_by, m.create_time,
                m.update_by, m.update_time, m.remark
         from material m
@@ -102,11 +106,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <insert id="insertMaterial" parameterType="Material" useGeneratedKeys="true" keyProperty="materialId">
         insert into material(
             material_code, material_name, material_type, category_id, spec, model, unit, drawing_no,
-            material_version, source_type, lot_control_flag, sn_control_flag, inspection_flag,
+            material_version, source_type, lot_control_flag, shelf_life_control_flag, shelf_life_days,
+            expiry_warning_days, sn_control_flag, inspection_flag,
             safe_stock, default_bom_id, default_route_id, status, remark, create_by, create_time
         ) values (
             #{materialCode}, #{materialName}, #{materialType}, #{categoryId}, #{spec}, #{model}, #{unit}, #{drawingNo},
-            #{materialVersion}, #{sourceType}, #{lotControlFlag}, #{snControlFlag}, #{inspectionFlag},
+            #{materialVersion}, #{sourceType}, #{lotControlFlag}, #{shelfLifeControlFlag}, #{shelfLifeDays},
+            #{expiryWarningDays}, #{snControlFlag}, #{inspectionFlag},
             #{safeStock}, #{defaultBomId}, #{defaultRouteId}, #{status}, #{remark}, #{createBy}, sysdate()
         )
     </insert>
@@ -125,6 +131,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="materialVersion != null">material_version = #{materialVersion},</if>
             <if test="sourceType != null and sourceType != ''">source_type = #{sourceType},</if>
             <if test="lotControlFlag != null and lotControlFlag != ''">lot_control_flag = #{lotControlFlag},</if>
+            <if test="shelfLifeControlFlag != null and shelfLifeControlFlag != ''">shelf_life_control_flag = #{shelfLifeControlFlag},</if>
+            shelf_life_days = #{shelfLifeDays},
+            expiry_warning_days = #{expiryWarningDays},
             <if test="snControlFlag != null and snControlFlag != ''">sn_control_flag = #{snControlFlag},</if>
             <if test="inspectionFlag != null and inspectionFlag != ''">inspection_flag = #{inspectionFlag},</if>
             <if test="safeStock != null">safe_stock = #{safeStock},</if>

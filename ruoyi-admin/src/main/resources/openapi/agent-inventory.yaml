@@ -16,6 +16,8 @@ paths:
       description: |
         当用户询问物料当前库存、可用库存、某仓库库存或库存状态时调用。
         返回“物料 + 仓库 + 库位 + 批次”维度的当前库存快照。
+        也用于回答临期、即将过期和已过期库存问题。查询“未来 N 天过期”时传 expiresWithinDays；
+        查询效期分类时传 expiryStatus。效期状态根据当前日期动态计算。
         不用于解释库存增减原因；追溯变动应调用 queryInventoryTransactions。
       security:
         - AgentToolKey: []
@@ -122,6 +124,15 @@ components:
               type: string
               enum: [NORMAL, FROZEN, LOCKED]
               description: 库存状态。NORMAL 正常、FROZEN 冻结、LOCKED 锁定。
+            expiryStatus:
+              type: string
+              enum: [VALID, EXPIRING, EXPIRED]
+              description: 效期状态。VALID 在预警期外，EXPIRING 已进入物料预警天数，EXPIRED 已过期。
+            expiresWithinDays:
+              type: integer
+              minimum: 0
+              maximum: 3650
+              description: 查询从今天起 N 天内到期且尚未过期的库存；例如用户问“未来30天快过期”时传30。
     InventoryTransactionQueryRequest:
       allOf:
         - $ref: "#/components/schemas/PageRequest"
@@ -181,6 +192,13 @@ components:
         locationName:
           { type: string, nullable: true, description: 库位名称快照 }
         lotNo: { type: string, description: 批次号；空字符串表示未区分批次 }
+        productionDate: { type: string, format: date, nullable: true, description: 该库存批次的生产日期 }
+        expiryDate: { type: string, format: date, nullable: true, description: 该库存批次的有效期 }
+        remainingShelfLifeDays: { type: integer, nullable: true, description: 距有效期剩余天数；负数表示已过期 }
+        expiryStatus:
+          type: string
+          enum: [UNMANAGED, VALID, EXPIRING, EXPIRED]
+          description: 动态效期状态；UNMANAGED 表示该库存没有有效期。
         unit: { type: string, description: 计量单位 }
         quantity: { type: number, format: double, description: 库存总数量 }
         availableQuantity:

@@ -25,6 +25,10 @@ public class InventoryBalance extends BaseEntity {
     private String locationCode;
     private String locationName;
     private String lotNo;
+    private String productionDate;
+    private String expiryDate;
+    private Integer remainingShelfLifeDays;
+    private String expiryStatus;
     @NotBlank(message = "计量单位不能为空")
     private String unit;
     @NotNull(message = "库存数量不能为空")

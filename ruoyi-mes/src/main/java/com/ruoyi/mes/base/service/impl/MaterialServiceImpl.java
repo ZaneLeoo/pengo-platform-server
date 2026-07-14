@@ -1,6 +1,7 @@
 package com.ruoyi.mes.base.service.impl;
 
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.mes.base.domain.Material;
 import com.ruoyi.mes.base.mapper.MaterialMapper;
 import com.ruoyi.mes.base.service.IMaterialService;
@@ -74,6 +75,7 @@ public class MaterialServiceImpl implements IMaterialService {
      */
     @Override
     public int insertMaterial(Material material) {
+        validateShelfLife(material);
         return materialMapper.insertMaterial(material);
     }
 
@@ -86,6 +88,7 @@ public class MaterialServiceImpl implements IMaterialService {
      */
     @Override
     public int updateMaterial(Material material) {
+        validateShelfLife(material);
         return materialMapper.updateMaterial(material);
     }
 
@@ -99,5 +102,24 @@ public class MaterialServiceImpl implements IMaterialService {
     @Override
     public int deleteMaterialByIds(Long[] materialIds) {
         return materialMapper.deleteMaterialByIds(materialIds);
+    }
+
+    /** 校验物料保质期配置。 */
+    private void validateShelfLife(Material material) {
+        if (!"Y".equals(material.getShelfLifeControlFlag())) {
+            material.setShelfLifeControlFlag("N");
+            material.setShelfLifeDays(null);
+            material.setExpiryWarningDays(null);
+            return;
+        }
+        if (!"Y".equals(material.getLotControlFlag())) {
+            throw new ServiceException("启用保质期管理的物料必须同时启用批次管理");
+        }
+        if (material.getShelfLifeDays() == null || material.getShelfLifeDays() <= 0) {
+            throw new ServiceException("启用保质期管理后必须填写大于0的保质期天数");
+        }
+        if (material.getExpiryWarningDays() == null) {
+            material.setExpiryWarningDays(30);
+        }
     }
 }

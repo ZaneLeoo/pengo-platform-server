@@ -17,6 +17,10 @@ public class ReceiptReferenceLine {
     private String materialName;
     private String spec;
     private String unit;
+    private String lotControlFlag;
+    private String shelfLifeControlFlag;
+    private Integer shelfLifeDays;
+    private Integer expiryWarningDays;
     private BigDecimal orderQuantity;
     private BigDecimal receivedQuantity;
     private BigDecimal remainingQuantity;

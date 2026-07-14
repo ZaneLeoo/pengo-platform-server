@@ -17,6 +17,20 @@
       <if test="query.status != null and query.status != ''">
         and b.status = #{query.status}
       </if>
+      <if test="query.expiryStatus != null and query.expiryStatus == 'EXPIRED'">
+        and b.expiry_date is not null and b.expiry_date &lt; curdate()
+      </if>
+      <if test="query.expiryStatus != null and query.expiryStatus == 'EXPIRING'">
+        and b.expiry_date is not null and b.expiry_date &gt;= curdate()
+        and b.expiry_date &lt;= date_add(curdate(), interval coalesce(m.expiry_warning_days, 30) day)
+      </if>
+      <if test="query.expiryStatus != null and query.expiryStatus == 'VALID'">
+        and (b.expiry_date is null or b.expiry_date &gt; date_add(curdate(), interval coalesce(m.expiry_warning_days, 30) day))
+      </if>
+      <if test="query.expiresWithinDays != null">
+        and b.expiry_date is not null and b.expiry_date &gt;= curdate()
+        and b.expiry_date &lt;= date_add(curdate(), interval #{query.expiresWithinDays} day)
+      </if>
     </where>
   </sql>
 
@@ -24,11 +38,19 @@
     select b.material_code as materialCode, b.material_name as materialName,
       b.warehouse_code as warehouseCode, b.warehouse_name as warehouseName,
       b.location_code as locationCode, b.location_name as locationName, b.lot_no as lotNo,
+      date_format(b.production_date, '%Y-%m-%d') as productionDate,
+      date_format(b.expiry_date, '%Y-%m-%d') as expiryDate,
+      case when b.expiry_date is null then null else datediff(b.expiry_date, curdate()) end as remainingShelfLifeDays,
+      case when b.expiry_date is null then 'UNMANAGED'
+        when b.expiry_date &lt; curdate() then 'EXPIRED'
+        when b.expiry_date &lt;= date_add(curdate(), interval coalesce(m.expiry_warning_days, 30) day) then 'EXPIRING'
+        else 'VALID' end as expiryStatus,
       b.unit as unit, b.quantity as quantity, b.available_quantity as availableQuantity,
       b.locked_quantity as lockedQuantity, b.status as status,
       date_format(b.last_inbound_date, '%Y-%m-%d') as lastInboundDate,
       date_format(b.last_update_time, '%Y-%m-%d %H:%i:%s') as lastUpdateTime
     from inventory_balance b
+      left join material m on m.material_id = b.material_id
     <include refid="balanceWhere"/>
     order by b.last_update_time desc, b.id desc
     limit #{offset}, #{pageSize}
@@ -36,6 +58,7 @@
 
   <select id="countBalances" resultType="long">
     select count(1) from inventory_balance b
+      left join material m on m.material_id = b.material_id
     <include refid="balanceWhere"/>
   </select>
 

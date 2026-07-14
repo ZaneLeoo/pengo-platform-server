@@ -24,7 +24,7 @@ public class InventoryToolService {
     /** 查询库存余额。 */
     public AgentToolResult<List<InventoryBalanceToolItem>> queryBalances(InventoryBalanceQuery request) {
         InventoryBalanceQuery query = request == null
-                ? new InventoryBalanceQuery(null, null, null, null, null, null)
+                ? new InventoryBalanceQuery(null, null, null, null, null, null, null, null)
                 : request;
         return pageResult(inventoryQueryService.queryBalances(query),
                 InventoryToolResultCode.INVENTORY_BALANCE_QUERY_SUCCESS,

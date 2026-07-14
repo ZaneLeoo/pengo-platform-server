@@ -17,6 +17,8 @@ public class InventoryTransaction {
     private String warehouseCode;
     private String locationCode;
     private String lotNo;
+    private String productionDate;
+    private String expiryDate;
     private String unit;
     private BigDecimal quantity;
     private Long sourceReceiptLineId;

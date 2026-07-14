@@ -267,6 +267,8 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
         t.setWarehouseCode(line.getWarehouseCode());
         t.setLocationCode(line.getLocationCode() == null ? "" : line.getLocationCode());
         t.setLotNo(line.getLotNo() == null ? "" : line.getLotNo());
+        t.setProductionDate(line.getProductionDate());
+        t.setExpiryDate(line.getExpiryDate());
         t.setUnit(line.getUnit());
         t.setQuantity(quantity);
         t.setSourceReceiptLineId(line.getSourceReceiptLineId());

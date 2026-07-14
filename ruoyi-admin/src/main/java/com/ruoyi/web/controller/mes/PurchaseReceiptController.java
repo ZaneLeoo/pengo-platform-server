@@ -10,6 +10,7 @@ import com.ruoyi.mes.purchase.domain.PurchaseReceipt;
 import com.ruoyi.mes.purchase.domain.dto.InspectionRequest;
 import com.ruoyi.mes.purchase.mapper.PurchaseReceiptMapper;
 import com.ruoyi.mes.purchase.service.IPurchaseFlowService;
+import com.ruoyi.mes.purchase.service.ShelfLifeService;
 import jakarta.validation.Valid;
 import java.util.Arrays;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,10 +33,13 @@ public class PurchaseReceiptController extends BaseController {
 
     private final PurchaseReceiptMapper receiptMapper;
     private final IPurchaseFlowService flowService;
+    private final ShelfLifeService shelfLifeService;
 
-    public PurchaseReceiptController(PurchaseReceiptMapper receiptMapper, IPurchaseFlowService flowService) {
+    public PurchaseReceiptController(PurchaseReceiptMapper receiptMapper, IPurchaseFlowService flowService,
+            ShelfLifeService shelfLifeService) {
         this.receiptMapper = receiptMapper;
         this.flowService = flowService;
+        this.shelfLifeService = shelfLifeService;
     }
 
     /** 查询到货单列表。 */
@@ -151,6 +155,7 @@ public class PurchaseReceiptController extends BaseController {
     /** 保存到货单所有明细。 */
     private void saveLines(PurchaseReceipt receipt) {
         receipt.getLines().forEach(line -> {
+            shelfLifeService.prepareReceiptLine(line);
             line.setReceiptId(receipt.getId());
             line.setCreateBy(getUsername());
             receiptMapper.insertLine(line);

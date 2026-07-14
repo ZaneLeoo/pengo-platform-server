@@ -38,8 +38,8 @@ public class MaterialCategory extends BaseEntity {
     @Excel(name = "显示顺序")
     private Integer orderNum;
 
-    /** 状态（0正常 1停用） */
-    @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
+    /** 状态（字典类型：sys_normal_disable） */
+    @Excel(name = "状态", dictType = "sys_normal_disable")
     private String status;
 
     public Long getCategoryId() {

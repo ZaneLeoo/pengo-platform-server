@@ -45,6 +45,8 @@ public class PurchaseInboundLine extends BaseEntity {
     @DecimalMin(value = "0.000001", message = "入库数量必须大于0")
     private BigDecimal inboundQuantity;
     private String lotNo;
+    private String productionDate;
+    private String expiryDate;
     @NotBlank(message = "仓库编码不能为空")
     private String warehouseCode;
     private String warehouseName;

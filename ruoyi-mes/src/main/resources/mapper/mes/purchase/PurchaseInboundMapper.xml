@@ -69,7 +69,7 @@
                                           source_order_id, source_order_code,
                                           source_order_line_id, source_order_line_no,
                                           material_id, material_code, material_name,
-                                          spec, unit, inbound_quantity, lot_no,
+                                          spec, unit, inbound_quantity, lot_no, production_date, expiry_date,
                                           warehouse_code, location_code,
                                           remark, create_by, create_time)
         values (#{inboundId}, #{lineNo},
@@ -78,7 +78,7 @@
                 #{sourceOrderId}, #{sourceOrderCode},
                 #{sourceOrderLineId}, #{sourceOrderLineNo},
                 #{materialId}, #{materialCode}, #{materialName},
-                #{spec}, #{unit}, #{inboundQuantity}, #{lotNo},
+                #{spec}, #{unit}, #{inboundQuantity}, #{lotNo}, #{productionDate}, #{expiryDate},
                 #{warehouseCode}, #{locationCode},
                 #{remark}, #{createBy}, now())
     </insert>

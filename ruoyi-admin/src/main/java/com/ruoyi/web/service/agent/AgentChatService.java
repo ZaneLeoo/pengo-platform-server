@@ -27,19 +27,19 @@ public class AgentChatService {
     private final DifyChatflowClient difyClient;
     private final DifyAppConfigService configService;
     private final KnowledgeBaseService knowledgeBaseService;
-    private final AgentToolMetadataRegistry toolMetadataRegistry;
+    private final AgentToolDisplayResolver toolDisplayResolver;
     private final AgentFileService fileService;
     private final Executor executor;
 
     public AgentChatService(DifyChatflowClient difyClient, DifyAppConfigService configService,
             KnowledgeBaseService knowledgeBaseService,
-            AgentToolMetadataRegistry toolMetadataRegistry,
+            AgentToolDisplayResolver toolDisplayResolver,
             AgentFileService fileService,
             @Qualifier("threadPoolTaskExecutor") Executor executor) {
         this.difyClient = difyClient;
         this.configService = configService;
         this.knowledgeBaseService = knowledgeBaseService;
-        this.toolMetadataRegistry = toolMetadataRegistry;
+        this.toolDisplayResolver = toolDisplayResolver;
         this.fileService = fileService;
         this.executor = executor;
     }
@@ -126,9 +126,9 @@ public class AgentChatService {
         data.put("callId", event.getId());
         data.put(knowledgeEvent ? "datasetId" : "toolName", event.getTool());
         data.put(knowledgeEvent ? "datasetLabel" : "toolLabel",
-                knowledgeEvent ? knowledgeBaseService.resolveName(event.getTool()) : resolveToolLabel(event));
+                knowledgeEvent ? knowledgeBaseService.resolveName(event.getTool()) : toolDisplayResolver.resolveLabel(event));
         if (!knowledgeEvent) {
-            String description = resolveToolDescription(event.getTool());
+            String description = toolDisplayResolver.resolveDescription(event.getTool());
             if (!description.isBlank())
                 data.put("toolDescription", description);
         }
@@ -164,8 +164,8 @@ public class AgentChatService {
             data.put("phase", outputs == null ? "started" : "finished");
             data.put("callId", event.getId() + "-" + toolName);
             data.put("toolName", toolName);
-            data.put("toolLabel", resolveToolLabel(toolName, toolName));
-            String description = resolveToolDescription(toolName);
+            data.put("toolLabel", toolDisplayResolver.resolveSingleLabel(toolName));
+            String description = toolDisplayResolver.resolveDescription(toolName);
             if (!description.isBlank())
                 data.put("toolDescription", description);
             data.put("chartType", chartType);
@@ -240,54 +240,6 @@ public class AgentChatService {
                 normalized = normalized.substring(0, end);
         }
         return parseObject(normalized.trim());
-    }
-
-    /** 优先使用 OpenAPI 元数据，再使用 Dify 的有效本地化标签。 */
-    private String resolveToolLabel(DifyStreamEvent event) {
-        AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(event.getTool());
-        if (metadata != null)
-            return metadata.getLabel();
-        Object label = event.getToolLabels().get(event.getTool());
-        if (label instanceof Map<?, ?> labels) {
-            Object zh = labels.get("zh_Hans");
-            if (isMeaningfulChineseLabel(zh, event.getTool()))
-                return zh.toString().trim();
-            Object en = labels.get("en_US");
-            if (isMeaningfulLabel(en, event.getTool()))
-                return en.toString().trim();
-        }
-        return resolveToolLabel(event.getTool(), event.getTool());
-    }
-
-    /** 解析无 Dify 事件上下文的工具名称，主要用于图表插件。 */
-    private String resolveToolLabel(String toolName, String fallback) {
-        AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(toolName);
-        return metadata == null
-                ? (fallback == null || fallback.isBlank() ? toolName : fallback)
-                : metadata.getLabel();
-    }
-
-    /** 返回 OpenAPI 或非 OpenAPI 配置中的工具描述。 */
-    private String resolveToolDescription(String toolName) {
-        AgentToolMetadataRegistry.ToolMetadata metadata = toolMetadataRegistry.find(toolName);
-        return metadata == null ? "" : metadata.getDescription();
-    }
-
-    /** Dify zh_Hans 必须是实际中文名称，不能是 operationId 回退值。 */
-    private boolean isMeaningfulChineseLabel(Object value, String toolName) {
-        if (!isMeaningfulLabel(value, toolName))
-            return false;
-        return value.toString().codePoints().anyMatch(this::isChineseCodePoint);
-    }
-
-    private boolean isMeaningfulLabel(Object value, String toolName) {
-        return value != null && !value.toString().isBlank()
-                && !value.toString().trim().equalsIgnoreCase(toolName);
-    }
-
-    private boolean isChineseCodePoint(int codePoint) {
-        return (codePoint >= 0x4E00 && codePoint <= 0x9FFF)
-                || (codePoint >= 0x3400 && codePoint <= 0x4DBF);
     }
 
     /**

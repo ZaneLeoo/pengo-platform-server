@@ -161,19 +161,22 @@
 
     <insert id="upsertInventoryBalance">
         insert into inventory_balance(material_id, material_code, material_name,
-                                      warehouse_code, location_code, lot_no,
+                                      warehouse_code, location_code, lot_no, production_date, expiry_date,
                                       unit, quantity, available_quantity,
                                       locked_quantity, status,
                                       last_inbound_date, last_update_time,
                                       create_by, create_time)
         values (#{transaction.materialId}, #{transaction.materialCode}, #{transaction.materialName},
                 #{transaction.warehouseCode}, #{transaction.locationCode}, #{transaction.lotNo},
+                #{transaction.productionDate}, #{transaction.expiryDate},
                 #{transaction.unit}, #{transaction.quantity}, #{transaction.quantity},
                 0, 'NORMAL',
                 curdate(), now(),
                 #{transaction.createBy}, now())
         on duplicate key update quantity           = quantity + values(quantity),
                                 available_quantity = available_quantity + values(available_quantity),
+                                production_date     = values(production_date),
+                                expiry_date         = values(expiry_date),
                                 last_inbound_date  = curdate(),
                                 last_update_time   = now(),
                                 update_by          = values(create_by),
@@ -225,11 +228,16 @@
                pol.material_name                               as materialName,
                pol.spec                                        as spec,
                pol.unit                                        as unit,
+               m.lot_control_flag                              as lotControlFlag,
+               m.shelf_life_control_flag                       as shelfLifeControlFlag,
+               m.shelf_life_days                               as shelfLifeDays,
+               m.expiry_warning_days                           as expiryWarningDays,
                pol.order_quantity                              as orderQuantity,
                pol.received_quantity                           as receivedQuantity,
                pol.order_quantity - pol.received_quantity      as remainingQuantity
         from purchase_order po
                  inner join purchase_order_line pol on pol.order_id = po.id
+                 inner join material m on m.material_id = pol.material_id
         where po.status = 'APPROVED'
           and pol.order_quantity &gt; pol.received_quantity
         <if test="orderCode != null and orderCode != ''">
@@ -264,6 +272,8 @@
                rl.location_code                            as locationCode,
                rl.location_name                            as locationName,
                rl.lot_no                                   as lotNo,
+               date_format(rl.production_date, '%Y-%m-%d') as productionDate,
+               date_format(rl.expiry_date, '%Y-%m-%d')     as expiryDate,
                rl.qualified_quantity                       as qualifiedQuantity,
                rl.inbound_quantity                         as inboundQuantity,
                rl.qualified_quantity - rl.inbound_quantity as remainingQuantity

@@ -3,6 +3,7 @@ package com.ruoyi.mes.base.domain;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -67,6 +68,18 @@ public class Material extends BaseEntity {
     /** 是否批次管理 */
     @Excel(name = "批次管理", readConverterExp = "Y=是,N=否")
     private String lotControlFlag;
+
+    /** 是否启用保质期管理 */
+    @Excel(name = "保质期管理", readConverterExp = "Y=是,N=否")
+    private String shelfLifeControlFlag;
+
+    /** 默认保质期天数 */
+    @Excel(name = "保质期天数")
+    private Integer shelfLifeDays;
+
+    /** 到期预警天数 */
+    @Excel(name = "到期预警天数")
+    private Integer expiryWarningDays;
 
     /** 是否序列号管理 */
     @Excel(name = "序列号管理", readConverterExp = "Y=是,N=否")
@@ -199,6 +212,32 @@ public class Material extends BaseEntity {
 
     public void setLotControlFlag(String lotControlFlag) {
         this.lotControlFlag = lotControlFlag;
+    }
+
+    public String getShelfLifeControlFlag() {
+        return shelfLifeControlFlag;
+    }
+
+    public void setShelfLifeControlFlag(String shelfLifeControlFlag) {
+        this.shelfLifeControlFlag = shelfLifeControlFlag;
+    }
+
+    @Min(value = 1, message = "保质期天数必须大于0")
+    public Integer getShelfLifeDays() {
+        return shelfLifeDays;
+    }
+
+    public void setShelfLifeDays(Integer shelfLifeDays) {
+        this.shelfLifeDays = shelfLifeDays;
+    }
+
+    @Min(value = 0, message = "到期预警天数不能小于0")
+    public Integer getExpiryWarningDays() {
+        return expiryWarningDays;
+    }
+
+    public void setExpiryWarningDays(Integer expiryWarningDays) {
+        this.expiryWarningDays = expiryWarningDays;
     }
 
     public String getSnControlFlag() {

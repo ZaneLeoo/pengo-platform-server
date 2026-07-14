@@ -24,6 +24,8 @@ public class InboundReferenceLine {
     private String locationCode;
     private String locationName;
     private String lotNo;
+    private String productionDate;
+    private String expiryDate;
     private BigDecimal qualifiedQuantity;
     private BigDecimal inboundQuantity;
     private BigDecimal remainingQuantity;

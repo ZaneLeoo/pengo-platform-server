@@ -13,6 +13,10 @@ public class InventoryBalanceToolItem {
     private String locationCode;
     private String locationName;
     private String lotNo;
+    private String productionDate;
+    private String expiryDate;
+    private Integer remainingShelfLifeDays;
+    private String expiryStatus;
     private String unit;
     private BigDecimal quantity;
     private BigDecimal availableQuantity;

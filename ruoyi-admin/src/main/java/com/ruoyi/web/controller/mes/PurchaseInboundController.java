@@ -9,6 +9,7 @@ import com.ruoyi.mes.common.enums.PurchaseDocumentStatus;
 import com.ruoyi.mes.purchase.domain.PurchaseInbound;
 import com.ruoyi.mes.purchase.mapper.PurchaseInboundMapper;
 import com.ruoyi.mes.purchase.service.IPurchaseFlowService;
+import com.ruoyi.mes.purchase.service.ShelfLifeService;
 import jakarta.validation.Valid;
 import java.util.Arrays;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,10 +32,13 @@ public class PurchaseInboundController extends BaseController {
 
     private final PurchaseInboundMapper inboundMapper;
     private final IPurchaseFlowService flowService;
+    private final ShelfLifeService shelfLifeService;
 
-    public PurchaseInboundController(PurchaseInboundMapper inboundMapper, IPurchaseFlowService flowService) {
+    public PurchaseInboundController(PurchaseInboundMapper inboundMapper, IPurchaseFlowService flowService,
+            ShelfLifeService shelfLifeService) {
         this.inboundMapper = inboundMapper;
         this.flowService = flowService;
+        this.shelfLifeService = shelfLifeService;
     }
 
     /** 查询入库单列表。 */
@@ -132,6 +136,7 @@ public class PurchaseInboundController extends BaseController {
     /** 保存入库单所有明细。 */
     private void saveLines(PurchaseInbound inbound) {
         inbound.getLines().forEach(line -> {
+            shelfLifeService.validateInboundLine(line);
             line.setInboundId(inbound.getId());
             line.setCreateBy(getUsername());
             inboundMapper.insertLine(line);
