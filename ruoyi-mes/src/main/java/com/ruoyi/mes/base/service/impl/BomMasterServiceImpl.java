@@ -32,6 +32,11 @@ public class BomMasterServiceImpl implements IBomMasterService {
     }
 
     @Override
+    public List<BomMaster> selectBomMasterListForAgent(String keyword, String bomType, String status) {
+        return bomMasterMapper.selectBomMasterListForAgent(keyword, bomType, status);
+    }
+
+    @Override
     public BomMaster selectBomMasterById(Long id) {
         return bomMasterMapper.selectBomMasterById(id);
     }

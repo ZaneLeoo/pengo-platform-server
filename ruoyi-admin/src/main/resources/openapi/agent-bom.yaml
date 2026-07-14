@@ -1,0 +1,204 @@
+openapi: 3.0.3
+info:
+  title: RuoYi Agent - BOM查询工具
+  version: 1.0.0
+  description: 查询MES中的BOM、版本和直接子件，只读工具。先使用queryBoms确认BOM及版本，再使用getBomStructure查询子件。
+servers:
+  - url: http://host.docker.internal:8088
+paths:
+  /agent/tools/boms/query:
+    post:
+      operationId: queryBoms
+      summary: 查询BOM和版本
+      description: 根据BOM编码、母件物料编码或母件名称查询BOM是否存在，并返回每个BOM的全部版本摘要。不要使用此工具查询子件。
+      security:
+        - AgentToolKey: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BomQueryRequest'
+      responses:
+        '200':
+          description: BOM查询结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BomQueryResponse'
+        '401':
+          description: 工具鉴权失败
+  /agent/tools/boms/structure:
+    post:
+      operationId: getBomStructure
+      summary: 查询BOM版本子件
+      description: 查询指定BOM版本的直接子件。优先传queryBoms返回的bomId和versionId；未传版本时自动选择默认版本，只有一个版本时自动选择该版本，无法唯一确定时返回候选项要求用户选择。
+      security:
+        - AgentToolKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BomStructureRequest'
+      responses:
+        '200':
+          description: BOM结构查询结果
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BomStructureResponse'
+        '401':
+          description: 工具鉴权失败
+components:
+  securitySchemes:
+    AgentToolKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Tool-Key
+  schemas:
+    BomQueryRequest:
+      type: object
+      properties:
+        keyword:
+          type: string
+          description: BOM编码、母件物料编码或母件名称关键词
+        bomType:
+          type: string
+          description: BOM类型，例如MAKE
+        includeDisabled:
+          type: boolean
+          default: false
+          description: 是否包含非ACTIVE状态的BOM
+    BomStructureRequest:
+      type: object
+      description: bomId、bomCode、parentItemCode至少提供一个。versionId和versionCode可选。
+      properties:
+        bomId:
+          type: integer
+          format: int64
+          description: BOM主键ID，优先使用queryBoms返回的id
+        bomCode:
+          type: string
+          description: 完整BOM编码
+        parentItemCode:
+          type: string
+          description: 完整母件物料编码
+        versionId:
+          type: integer
+          format: int64
+          description: BOM版本主键ID，优先使用queryBoms返回的versions.id
+        versionCode:
+          type: string
+          description: BOM版本号，例如V1
+    BomVersion:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        code: { type: string }
+        name: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        baseQuantity: { type: number }
+        usageType: { type: string }
+        effectiveDate: { type: string, format: date-time, nullable: true }
+        expireDate: { type: string, format: date-time, nullable: true }
+        status: { type: string }
+        approvalStatus: { type: string }
+        defaultVersion: { type: boolean }
+    BomSummary:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        code: { type: string }
+        parentMaterialId: { type: integer, format: int64, nullable: true }
+        parentMaterialCode: { type: string }
+        parentMaterialName: { type: string }
+        parentMaterialSpec: { type: string, nullable: true }
+        parentMaterialUnit: { type: string, nullable: true }
+        type: { type: string }
+        status: { type: string }
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/BomVersion'
+    BomComponent:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        lineNumber: { type: integer }
+        materialId: { type: integer, format: int64, nullable: true }
+        materialCode: { type: string }
+        materialName: { type: string }
+        specification: { type: string, nullable: true }
+        unit: { type: string, nullable: true }
+        attribute: { type: string, nullable: true }
+        quantity: { type: number }
+        fixedLossQuantity: { type: number, nullable: true }
+        variableLossRate: { type: number, nullable: true }
+        supplyType: { type: string }
+        virtualComponent: { type: boolean }
+        mrpExpand: { type: boolean }
+        hasChildBom: { type: boolean }
+        childBomVersionId: { type: integer, format: int64, nullable: true }
+    ToolIssue:
+      type: object
+      properties:
+        code: { type: string }
+        field: { type: string }
+        message: { type: string }
+        expected: { type: string }
+        candidates:
+          type: array
+          items:
+            type: object
+            properties:
+              value: { type: string }
+              label: { type: string }
+              description: { type: string }
+    BomQueryResponse:
+      type: object
+      properties:
+        status: { type: string }
+        resultCode: { type: string }
+        message: { type: string }
+        nextAction: { type: string }
+        retryable: { type: boolean }
+        agentInstruction: { type: string }
+        issues: { type: array, items: { $ref: '#/components/schemas/ToolIssue' } }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BomSummary'
+        meta:
+          type: object
+          nullable: true
+    BomStructureResponse:
+      type: object
+      properties:
+        status: { type: string }
+        resultCode: { type: string }
+        message: { type: string }
+        nextAction: { type: string }
+        retryable: { type: boolean }
+        agentInstruction: { type: string }
+        issues: { type: array, items: { $ref: '#/components/schemas/ToolIssue' } }
+        data:
+          type: object
+          nullable: true
+          properties:
+            bomId: { type: integer, format: int64 }
+            bomCode: { type: string }
+            parentMaterialCode: { type: string }
+            parentMaterialName: { type: string }
+            parentMaterialSpec: { type: string, nullable: true }
+            parentMaterialUnit: { type: string, nullable: true }
+            bomType: { type: string }
+            bomStatus: { type: string }
+            version: { $ref: '#/components/schemas/BomVersion' }
+            components:
+              type: array
+              items:
+                $ref: '#/components/schemas/BomComponent'
+        meta:
+          type: object
+          nullable: true

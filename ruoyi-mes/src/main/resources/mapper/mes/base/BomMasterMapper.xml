@@ -33,6 +33,19 @@
         </where>
         order by create_time desc
     </select>
+    <select id="selectBomMasterListForAgent" resultMap="BomMasterResult">
+        <include refid="selectBomMasterVo"/>
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (bom_code like concat('%', #{keyword}, '%')
+                    or parent_item_code like concat('%', #{keyword}, '%')
+                    or parent_item_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="bomType != null and bomType != ''">and bom_type = #{bomType}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+        </where>
+        order by create_time desc, id desc
+    </select>
     <select id="selectBomMasterById" parameterType="Long" resultMap="BomMasterResult">
         <include refid="selectBomMasterVo"/> where id = #{id}
     </select>

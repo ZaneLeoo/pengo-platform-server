@@ -17,6 +17,10 @@ class AgentToolMetadataRegistryTest {
         assertEquals("查询物料", material.getLabel());
         assertEquals("根据物料编码、名称、规格、分类或物料类型查询物料。", material.getDescription());
 
+        AgentToolMetadataRegistry.ToolMetadata bom = registry.find("queryBoms");
+        assertNotNull(bom);
+        assertEquals("查询BOM和版本", bom.getLabel());
+
         AgentToolMetadataRegistry.ToolMetadata chart = registry.find("bar_chart");
         assertNotNull(chart);
         assertEquals("生成柱状图", chart.getLabel());
