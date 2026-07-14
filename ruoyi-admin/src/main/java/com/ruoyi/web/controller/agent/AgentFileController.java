@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.agent;
 
 import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.web.service.agent.AgentFileService;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +9,7 @@ import java.nio.file.Files;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,5 +40,17 @@ public class AgentFileController extends BaseController {
                 : ContentDisposition.attachment().filename(file.getName(), StandardCharsets.UTF_8).build();
         response.setHeader("Content-Disposition", disposition.toString());
         Files.copy(file.getPath(), response.getOutputStream());
+    }
+
+    /** 查询当前用户持久化的生成文件。 */
+    @GetMapping
+    public AjaxResult list() {
+        return success(fileService.listOwned(getUserId()));
+    }
+
+    /** 删除当前用户拥有的生成文件。 */
+    @DeleteMapping("/{resourceId}")
+    public AjaxResult delete(@PathVariable String resourceId) throws IOException {
+        return toAjax(fileService.deleteOwned(resourceId, getUserId(), getUsername()));
     }
 }

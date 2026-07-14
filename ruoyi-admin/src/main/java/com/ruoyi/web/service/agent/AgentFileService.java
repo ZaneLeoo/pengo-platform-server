@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import com.alibaba.fastjson2.JSON;
+import com.ruoyi.agent.api.AgentFileView;
+import com.ruoyi.agent.domain.AgentFile;
+import com.ruoyi.agent.domain.enums.AgentFileStatus;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
-import com.ruoyi.common.config.RuoYiConfig;
-import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.agent.mapper.AgentFileMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,9 +18,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -26,32 +28,31 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * Agent 生成文件的临时持久化与安全访问服务。
+ * Agent 生成文件的持久化与安全访问服务。
  *
  * <p>
- * 文件内容保存到 RuoYi profile 同级的本地 Agent 文件目录，Redis 只保存用户归属、文件名和过期时间等元数据。
- * 浏览器只能拿到不可猜测的 resourceId，不能直接访问 Dify 的签名地址或 API Key。
+ * 文件内容由 AgentFileStorage 保存，文件元数据保存到数据库。 浏览器只能拿到不可猜测的 resourceId，不能直接访问 Dify
+ * 的签名地址或 API Key。
  * </p>
  */
 @Service
 public class AgentFileService {
     private static final Logger log = LoggerFactory.getLogger(AgentFileService.class);
-    private static final String CACHE_PREFIX = "agent:file:";
-    private static final int RESOURCE_TTL_HOURS = 24;
     private static final long MAX_FILE_BYTES = 50L * 1024 * 1024;
     private static final Duration DOWNLOAD_TIMEOUT = Duration.ofMinutes(3);
 
-    private RedisCache redisCache;
-    private HttpClient httpClient;
+    private final AgentFileMapper fileMapper;
+    private final AgentFileStorage fileStorage;
+    private final HttpClient httpClient;
 
-    public AgentFileService(RedisCache redisCache) {
-        this.redisCache = redisCache;
+    public AgentFileService(AgentFileMapper fileMapper, AgentFileStorage fileStorage) {
+        this.fileMapper = fileMapper;
+        this.fileStorage = fileStorage;
         this.httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build();
     }
 
@@ -145,17 +146,43 @@ public class AgentFileService {
             return null;
         }
 
-        Map<String, Object> metadata = redisCache.getCacheObject(CACHE_PREFIX + resourceId);
-        if (metadata == null || !String.valueOf(userId).equals(text(metadata.get("userId")))) {
+        AgentFile metadata = fileMapper.selectOwned(resourceId, userId);
+        if (metadata == null) {
             return null;
         }
-        Path storageRoot = storageRoot();
-        Path file = storageRoot.resolve(text(metadata.get("relativePath"))).normalize();
-        if (!file.startsWith(storageRoot) || !Files.isRegularFile(file)) {
+        Path file = fileStorage.resolve(metadata.getRelativePath());
+        if (file == null) {
             return null;
         }
-        return new StoredFile(file, text(metadata.get("name")), text(metadata.get("mediaType")),
-                "browser".equals(text(metadata.get("preview"))), number(metadata.get("size")));
+        return new StoredFile(file, metadata.getFileName(), metadata.getMediaType(),
+                "BROWSER".equals(metadata.getPreviewMode()), metadata.getFileSize());
+    }
+
+    /** 查询当前用户持久化的全部可用文件。 */
+    public List<AgentFileView> listOwned(Long userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        return fileMapper.selectByUserId(userId).stream().map(this::toView).toList();
+    }
+
+    /** 删除当前用户拥有的文件内容并标记数据库记录。 */
+    public boolean deleteOwned(String resourceId, Long userId, String operator) throws IOException {
+        AgentFile file = fileMapper.selectOwned(resourceId, userId);
+        if (file == null) {
+            return false;
+        }
+        if (fileMapper.markDeleted(resourceId, userId, operator) == 0) {
+            return false;
+        }
+        fileStorage.delete(file.getRelativePath());
+        return true;
+    }
+
+    private AgentFileView toView(AgentFile file) {
+        return new AgentFileView(file.getResourceId(), file.getFileName(), file.getExtension(), file.getMediaType(),
+                file.getFileKind(), file.getFileSize(), "/agent/files/" + file.getResourceId(),
+                "BROWSER".equals(file.getPreviewMode()) ? "browser" : "download", file.getCreateTime());
     }
 
     private Map<String, Object> store(DifyClientSettings settings, Map<String, Object> descriptor,
@@ -174,35 +201,26 @@ public class AgentFileService {
         String name = normalizeFilename(filenameHint, sourceName, extension);
         String mediaType = resolveMediaType(text(first(descriptor, "mime_type", "mimeType")), extension);
         String resourceId = UUID.randomUUID().toString();
-        Path storageRoot = storageRoot();
-        Path directory = storageRoot.resolve("outputs").resolve(LocalDate.now().toString());
-        Files.createDirectories(directory);
-        Path target = directory.resolve(resourceId + extension);
-        Path temporary = Files.createTempFile(directory, resourceId, ".part");
+        Path temporary = fileStorage.createTemporary(resourceId);
+        String relativePath = null;
         try {
             download(settings, targetUri, temporary);
             long size = Files.size(temporary);
             if (size > MAX_FILE_BYTES) {
                 throw new IOException("生成文件超过 50MB 限制");
             }
-            move(temporary, target);
+            relativePath = fileStorage.persist(temporary, resourceId, extension);
+            AgentFile file = buildMetadata(resourceId, userId, conversationId, descriptor, toolName, name,
+                    extension, mediaType, relativePath, size, sha256(fileStorage.resolve(relativePath)));
+            fileMapper.insert(file);
+        } catch (IOException | RuntimeException exception) {
+            if (relativePath != null) {
+                fileStorage.delete(relativePath);
+            }
+            throw exception;
         } finally {
             Files.deleteIfExists(temporary);
         }
-
-        String relativePath = storageRoot.relativize(target).toString().replace('\\', '/');
-        Map<String, Object> metadata = new LinkedHashMap<>();
-        metadata.put("resourceId", resourceId);
-        metadata.put("userId", userId);
-        metadata.put("conversationId", conversationId);
-        metadata.put("relativePath", relativePath);
-        metadata.put("name", name);
-        metadata.put("mediaType", mediaType);
-        metadata.put("extension", extension);
-        metadata.put("preview", isBrowserPreview(extension, mediaType) ? "browser" : "download");
-        metadata.put("size", Files.size(target));
-        metadata.put("createdAt", System.currentTimeMillis());
-        redisCache.setCacheObject(CACHE_PREFIX + resourceId, metadata, RESOURCE_TTL_HOURS, TimeUnit.HOURS);
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("phase", "available");
@@ -212,9 +230,9 @@ public class AgentFileService {
         result.put("extension", extension.startsWith(".") ? extension.substring(1) : extension);
         result.put("mediaType", mediaType);
         result.put("kind", fileKind(extension, mediaType));
-        result.put("size", Files.size(target));
+        result.put("size", Files.size(fileStorage.resolve(relativePath)));
         result.put("downloadUrl", "/agent/files/" + resourceId);
-        result.put("preview", metadata.get("preview"));
+        result.put("preview", isBrowserPreview(extension, mediaType) ? "browser" : "download");
         // Dify 文本回复可能包含 /files/tools/{filename} 的 Markdown 链接，前端用此字段识别并屏蔽外链跳转。
         if (!sourceName.isBlank()) {
             result.put("sourceFilename", sourceName);
@@ -421,32 +439,51 @@ public class AgentFileService {
                 || extension.equals(".md");
     }
 
-    private void move(Path source, Path target) throws IOException {
-        try {
-            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
-            Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
-        }
+    private AgentFile buildMetadata(String resourceId, Long userId, String conversationId,
+            Map<String, Object> descriptor, String toolName, String name, String extension, String mediaType,
+            String relativePath, long size, String hash) {
+        AgentFile file = new AgentFile();
+        file.setResourceId(resourceId);
+        file.setUserId(userId);
+        file.setDifyConversationId(conversationId);
+        file.setDifyFileId(text(first(descriptor, "related_id", "id", "upload_file_id")));
+        file.setToolName(toolName);
+        file.setFileName(name);
+        file.setStorageName(resourceId + extension);
+        file.setRelativePath(relativePath);
+        file.setExtension(extension.startsWith(".") ? extension.substring(1) : extension);
+        file.setMediaType(mediaType);
+        file.setFileKind(fileKind(extension, mediaType));
+        file.setFileSize(size);
+        file.setFileHash(hash);
+        file.setPreviewMode(isBrowserPreview(extension, mediaType) ? "BROWSER" : "DOWNLOAD");
+        file.setStatus(AgentFileStatus.AVAILABLE.name());
+        file.setCreateBy(String.valueOf(userId));
+        file.setUpdateBy(String.valueOf(userId));
+        return file;
     }
 
-    /** 返回不受 /profile/** 静态资源映射影响的 Agent 文件目录。 */
-    private Path storageRoot() {
-        Path profile = Path.of(RuoYiConfig.getProfile()).toAbsolutePath().normalize();
-        Path parent = profile.getParent();
-        return (parent == null ? profile.resolve("agent-file-store") : parent.resolve("agent-file-store"))
-                .normalize();
+    private String sha256(Path file) throws IOException {
+        if (file == null) {
+            throw new IOException("持久化文件不存在");
+        }
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            try (var input = Files.newInputStream(file)) {
+                byte[] buffer = new byte[8192];
+                int length;
+                while ((length = input.read(buffer)) >= 0) {
+                    digest.update(buffer, 0, length);
+                }
+            }
+            return java.util.HexFormat.of().formatHex(digest.digest());
+        } catch (NoSuchAlgorithmException exception) {
+            throw new IllegalStateException("当前JDK不支持SHA-256", exception);
+        }
     }
 
     private String text(Object value) {
         return value == null ? "" : String.valueOf(value).trim();
-    }
-
-    private long number(Object value) {
-        try {
-            return value == null ? 0L : Long.parseLong(String.valueOf(value));
-        } catch (NumberFormatException exception) {
-            return 0L;
-        }
     }
 
     /** 流式文件上下文。 */
