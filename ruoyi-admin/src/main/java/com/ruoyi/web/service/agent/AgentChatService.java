@@ -30,21 +30,18 @@ public class AgentChatService {
     private final KnowledgeBaseService knowledgeBaseService;
     private final AgentToolDisplayResolver toolDisplayResolver;
     private final AgentFileService fileService;
-    private final DifyWorkflowEventHandler workflowEventHandler;
     private final Executor executor;
 
     public AgentChatService(DifyChatflowClient difyClient, DifyAppConfigService configService,
             KnowledgeBaseService knowledgeBaseService,
             AgentToolDisplayResolver toolDisplayResolver,
             AgentFileService fileService,
-            DifyWorkflowEventHandler workflowEventHandler,
             @Qualifier("threadPoolTaskExecutor") Executor executor) {
         this.difyClient = difyClient;
         this.configService = configService;
         this.knowledgeBaseService = knowledgeBaseService;
         this.toolDisplayResolver = toolDisplayResolver;
         this.fileService = fileService;
-        this.workflowEventHandler = workflowEventHandler;
         this.executor = executor;
     }
 
@@ -102,9 +99,6 @@ public class AgentChatService {
     private void forwardEvent(SseEmitter emitter, DifyStreamEvent event, DifyClientSettings settings,
             Long userId, AgentFileService.StreamContext fileContext) {
         fileService.capture(event, fileContext);
-        if (workflowEventHandler.handle(event)) {
-            return;
-        }
         if ("agent_thought".equals(event.getEvent())) {
             forwardToolEvent(emitter, event);
             return;
