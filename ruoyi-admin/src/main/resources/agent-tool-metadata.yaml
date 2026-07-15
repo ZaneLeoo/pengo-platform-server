@@ -12,9 +12,6 @@ tools:
   - operationId: jina_search
     label: 联网搜索
     description: 联网搜索实时信息。
-  - operationId: current_time
-    label: 获取当前时间
-    description: 获取指定时区的当前日期和时间。
   - operationId: md_to_xlsx
     label: 生成 Excel 表格
     description: 将 Markdown 内容转换为 Excel 表格文件。

@@ -47,8 +47,8 @@ public class DifyAgentLogAdapter {
         target.setId(stringValue(log.get("id")));
         target.setTool(toolName);
         if (output != null) {
-            target.setToolInput(wrappedValue(toolName, output.get("tool_call_input")));
-            target.setObservation(wrappedValue(toolName, output.get("tool_response")));
+            target.setToolInput(jsonValue(output.get("tool_call_input")));
+            target.setObservation(textValue(output.get("tool_response")));
         }
         return Optional.of(target);
     }
@@ -61,8 +61,15 @@ public class DifyAgentLogAdapter {
         return nested instanceof Map<?, ?> nestedValues ? nestedValues : null;
     }
 
-    private String wrappedValue(String toolName, Object value) {
-        return value == null ? null : JSON.toJSONString(Map.of(toolName, value));
+    private String jsonValue(Object value) {
+        return value == null ? null : JSON.toJSONString(value);
+    }
+
+    private String textValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        return value instanceof String text ? text : JSON.toJSONString(value);
     }
 
     private String stringValue(Object value) {

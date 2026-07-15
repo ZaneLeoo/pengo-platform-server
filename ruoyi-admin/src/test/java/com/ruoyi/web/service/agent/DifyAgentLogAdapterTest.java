@@ -42,7 +42,6 @@ class DifyAgentLogAdapterTest {
 
         assertEquals("bar_chart", adapted.getTool());
         assertTrue(adapted.getToolInput().contains("库存统计"));
-        assertTrue(adapted.getToolInput().contains("bar_chart"));
         assertTrue(adapted.getObservation().contains("echarts"));
     }
 
