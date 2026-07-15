@@ -31,6 +31,7 @@ public class AgentChatService {
     private final AgentToolDisplayResolver toolDisplayResolver;
     private final AgentFileService fileService;
     private final DifyWorkflowEventHandler workflowEventHandler;
+    private final DifyAgentLogAdapter agentLogAdapter;
     private final Executor executor;
 
     public AgentChatService(DifyChatflowClient difyClient, DifyAppConfigService configService,
@@ -38,6 +39,7 @@ public class AgentChatService {
             AgentToolDisplayResolver toolDisplayResolver,
             AgentFileService fileService,
             DifyWorkflowEventHandler workflowEventHandler,
+            DifyAgentLogAdapter agentLogAdapter,
             @Qualifier("threadPoolTaskExecutor") Executor executor) {
         this.difyClient = difyClient;
         this.configService = configService;
@@ -45,6 +47,7 @@ public class AgentChatService {
         this.toolDisplayResolver = toolDisplayResolver;
         this.fileService = fileService;
         this.workflowEventHandler = workflowEventHandler;
+        this.agentLogAdapter = agentLogAdapter;
         this.executor = executor;
     }
 
@@ -103,6 +106,10 @@ public class AgentChatService {
             Long userId, AgentFileService.StreamContext fileContext) {
         fileService.capture(event, fileContext);
         if (workflowEventHandler.handle(event)) {
+            return;
+        }
+        if ("agent_log".equals(event.getEvent())) {
+            agentLogAdapter.adapt(event).ifPresent(adapted -> forwardToolEvent(emitter, adapted));
             return;
         }
         if ("agent_thought".equals(event.getEvent())) {
