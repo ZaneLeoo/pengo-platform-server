@@ -1,0 +1,119 @@
+openapi: 3.0.3
+info:
+  title: RuoYi Agent - 仓库与库位查询工具
+  version: 1.0.0
+  description: |
+    面向企业智能助手的仓库和库位只读查询工具。
+    在准备到货单、入库单或回答仓储位置问题前，应先调用本工具取得真实编码，禁止编造仓库或库位。
+servers:
+  - url: http://host.docker.internal:8088
+paths:
+  /agent/tools/warehouses/query:
+    post:
+      operationId: queryWarehouses
+      summary: 查询仓库
+      description: |
+        查询系统中的仓库档案。默认只返回启用仓库。
+        准备采购到货或入库草稿前，如果用户没有明确提供有效 warehouseCode，应先调用本工具让用户选择或根据上下文确认。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WarehouseQueryRequest' }
+      responses:
+        '200':
+          description: 仓库查询结果。
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WarehouseQueryResponse' }
+        '401': { description: X-Agent-Tool-Key 缺失或无效。 }
+  /agent/tools/locations/query:
+    post:
+      operationId: queryLocations
+      summary: 查询库位
+      description: |
+        查询系统中的库位档案，默认只返回启用库位。优先传入 warehouseCode 将结果限制在指定仓库内。
+        locationCode 必须取自本工具结果，不得由模型自行生成。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LocationQueryRequest' }
+      responses:
+        '200':
+          description: 库位查询结果。
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LocationQueryResponse' }
+        '401': { description: X-Agent-Tool-Key 缺失或无效。 }
+components:
+  securitySchemes:
+    AgentToolKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Tool-Key
+  schemas:
+    WarehouseQueryRequest:
+      type: object
+      properties:
+        warehouseCode: { type: string, maxLength: 64, description: 仓库编码关键词 }
+        warehouseName: { type: string, maxLength: 100, description: 仓库名称关键词 }
+        includeDisabled: { type: boolean, default: false, description: 是否包含停用仓库 }
+    WarehouseItem:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        code: { type: string, description: 可用于业务单据的仓库编码 }
+        name: { type: string, description: 仓库名称 }
+        address: { type: string, nullable: true }
+        manager: { type: string, nullable: true }
+        status: { type: string, description: 仓库状态字典值 }
+    LocationQueryRequest:
+      type: object
+      properties:
+        locationCode: { type: string, maxLength: 64, description: 库位编码关键词 }
+        locationName: { type: string, maxLength: 100, description: 库位名称关键词 }
+        warehouseId: { type: integer, format: int64, description: 所属仓库主键 }
+        warehouseCode: { type: string, maxLength: 64, description: 所属仓库编码，推荐使用 }
+        includeDisabled: { type: boolean, default: false, description: 是否包含停用库位 }
+    LocationItem:
+      type: object
+      properties:
+        id: { type: integer, format: int64 }
+        code: { type: string, description: 可用于业务单据的库位编码 }
+        name: { type: string, description: 库位名称 }
+        warehouseId: { type: integer, format: int64 }
+        warehouseCode: { type: string }
+        warehouseName: { type: string }
+        status: { type: string, description: 库位状态字典值 }
+    ToolMeta:
+      type: object
+      properties:
+        total: { type: integer, format: int64 }
+        truncated: { type: boolean }
+    WarehouseQueryResponse:
+      type: object
+      properties:
+        status: { type: string, enum: [SUCCESS, NO_RESULT, FAILED] }
+        resultCode: { type: string, enum: [WAREHOUSE_QUERY_SUCCESS, WAREHOUSE_NOT_FOUND, TOOL_UNAUTHORIZED] }
+        message: { type: string }
+        nextAction: { type: string, enum: [CONTINUE, ASK_USER, STOP] }
+        retryable: { type: boolean }
+        agentInstruction: { type: string }
+        issues: { type: array, items: { type: object } }
+        data: { type: array, items: { $ref: '#/components/schemas/WarehouseItem' } }
+        meta: { $ref: '#/components/schemas/ToolMeta' }
+    LocationQueryResponse:
+      type: object
+      properties:
+        status: { type: string, enum: [SUCCESS, NO_RESULT, FAILED] }
+        resultCode: { type: string, enum: [LOCATION_QUERY_SUCCESS, LOCATION_NOT_FOUND, TOOL_UNAUTHORIZED] }
+        message: { type: string }
+        nextAction: { type: string, enum: [CONTINUE, ASK_USER, STOP] }
+        retryable: { type: boolean }
+        agentInstruction: { type: string }
+        issues: { type: array, items: { type: object } }
+        data: { type: array, items: { $ref: '#/components/schemas/LocationItem' } }
+        meta: { $ref: '#/components/schemas/ToolMeta' }

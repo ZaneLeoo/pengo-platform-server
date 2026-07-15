@@ -9,6 +9,7 @@ import com.ruoyi.mes.common.enums.PurchaseDocumentStatus;
 import com.ruoyi.mes.purchase.domain.PurchaseInbound;
 import com.ruoyi.mes.purchase.mapper.PurchaseInboundMapper;
 import com.ruoyi.mes.purchase.service.IPurchaseFlowService;
+import com.ruoyi.mes.purchase.service.PurchaseDocumentDraftService;
 import com.ruoyi.mes.purchase.service.ShelfLifeService;
 import jakarta.validation.Valid;
 import java.util.Arrays;
@@ -33,12 +34,14 @@ public class PurchaseInboundController extends BaseController {
     private final PurchaseInboundMapper inboundMapper;
     private final IPurchaseFlowService flowService;
     private final ShelfLifeService shelfLifeService;
+    private final PurchaseDocumentDraftService draftService;
 
     public PurchaseInboundController(PurchaseInboundMapper inboundMapper, IPurchaseFlowService flowService,
-            ShelfLifeService shelfLifeService) {
+            ShelfLifeService shelfLifeService, PurchaseDocumentDraftService draftService) {
         this.inboundMapper = inboundMapper;
         this.flowService = flowService;
         this.shelfLifeService = shelfLifeService;
+        this.draftService = draftService;
     }
 
     /** 查询入库单列表。 */
@@ -65,10 +68,7 @@ public class PurchaseInboundController extends BaseController {
     @Log(title = "采购入库单", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Valid @RequestBody PurchaseInbound inbound) {
-        inbound.setCreateBy(getUsername());
-        inboundMapper.insert(inbound);
-        saveLines(inbound);
-        return success(inbound.getId());
+        return success(draftService.createInboundDraft(inbound, getUsername()));
     }
 
     /** 修改草稿入库单，并整体替换其明细。 */

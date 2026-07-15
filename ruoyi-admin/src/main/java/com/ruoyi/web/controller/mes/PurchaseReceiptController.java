@@ -10,6 +10,7 @@ import com.ruoyi.mes.purchase.domain.PurchaseReceipt;
 import com.ruoyi.mes.purchase.domain.dto.InspectionRequest;
 import com.ruoyi.mes.purchase.mapper.PurchaseReceiptMapper;
 import com.ruoyi.mes.purchase.service.IPurchaseFlowService;
+import com.ruoyi.mes.purchase.service.PurchaseDocumentDraftService;
 import com.ruoyi.mes.purchase.service.ShelfLifeService;
 import jakarta.validation.Valid;
 import java.util.Arrays;
@@ -34,12 +35,14 @@ public class PurchaseReceiptController extends BaseController {
     private final PurchaseReceiptMapper receiptMapper;
     private final IPurchaseFlowService flowService;
     private final ShelfLifeService shelfLifeService;
+    private final PurchaseDocumentDraftService draftService;
 
     public PurchaseReceiptController(PurchaseReceiptMapper receiptMapper, IPurchaseFlowService flowService,
-            ShelfLifeService shelfLifeService) {
+            ShelfLifeService shelfLifeService, PurchaseDocumentDraftService draftService) {
         this.receiptMapper = receiptMapper;
         this.flowService = flowService;
         this.shelfLifeService = shelfLifeService;
+        this.draftService = draftService;
     }
 
     /** 查询到货单列表。 */
@@ -66,10 +69,7 @@ public class PurchaseReceiptController extends BaseController {
     @Log(title = "采购到货单", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Valid @RequestBody PurchaseReceipt receipt) {
-        receipt.setCreateBy(getUsername());
-        receiptMapper.insert(receipt);
-        saveLines(receipt);
-        return success(receipt.getId());
+        return success(draftService.createReceiptDraft(receipt, getUsername()));
     }
 
     /** 修改草稿到货单，并整体替换其明细。 */

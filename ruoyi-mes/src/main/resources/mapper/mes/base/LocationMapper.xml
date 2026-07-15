@@ -25,6 +25,9 @@
             <if test="warehouseId != null">
                 and warehouse_id = #{warehouseId}
             </if>
+            <if test="warehouseCode != null and warehouseCode != ''">
+                and warehouse_code = #{warehouseCode}
+            </if>
             <if test="status != null and status != ''">
                 and status = #{status}
             </if>

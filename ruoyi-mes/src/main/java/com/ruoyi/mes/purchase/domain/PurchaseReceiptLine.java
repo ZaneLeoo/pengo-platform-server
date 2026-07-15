@@ -51,7 +51,6 @@ public class PurchaseReceiptLine extends BaseEntity {
     private String lotNo;
     private String productionDate;
     private String expiryDate;
-    @NotBlank(message = "入库仓库不能为空")
     private String warehouseCode;
     private String warehouseName;
     private String locationCode;

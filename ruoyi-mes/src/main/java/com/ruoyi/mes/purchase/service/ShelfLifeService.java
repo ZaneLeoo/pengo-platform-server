@@ -18,23 +18,40 @@ public class ShelfLifeService {
         this.materialMapper = materialMapper;
     }
 
-    /** 根据物料配置补全并校验到货批次的效期信息。 */
+    /** 保存草稿时，在信息充分的情况下补全并校验效期。 */
     public void prepareReceiptLine(PurchaseReceiptLine line) {
         Material material = requiredMaterial(line.getMaterialId());
         if (!"Y".equals(material.getShelfLifeControlFlag())) {
             return;
         }
-        requireLotAndDate(line.getMaterialCode(), line.getLotNo(), line.getProductionDate(), line.getExpiryDate());
         LocalDate productionDate = parseOptionalDate(line.getProductionDate(), "生产日期");
         LocalDate expiryDate = parseOptionalDate(line.getExpiryDate(), "有效期");
-        if (expiryDate == null) {
-            if (productionDate == null) {
-                throw new ServiceException("保质期物料 " + line.getMaterialCode() + " 缺少生产日期，无法计算有效期");
-            }
+        if (expiryDate == null && productionDate != null) {
             expiryDate = productionDate.plusDays(material.getShelfLifeDays());
             line.setExpiryDate(expiryDate.toString());
         }
-        if (productionDate != null) {
+        if (productionDate != null && expiryDate != null) {
+            validateDateOrder(line.getMaterialCode(), productionDate, expiryDate);
+        }
+    }
+
+    /** 到货单审核前严格校验批次与保质期信息。 */
+    public void validateReceiptLine(PurchaseReceiptLine line) {
+        Material material = requiredMaterial(line.getMaterialId());
+        boolean lotControlled = "Y".equals(material.getLotControlFlag());
+        boolean shelfLifeControlled = "Y".equals(material.getShelfLifeControlFlag());
+        if ((lotControlled || shelfLifeControlled) && isBlank(line.getLotNo())) {
+            throw new ServiceException("受批次管理物料 " + line.getMaterialCode() + " 必须填写批次号后才能审核");
+        }
+        if (!shelfLifeControlled) {
+            return;
+        }
+        if (isBlank(line.getProductionDate()) && isBlank(line.getExpiryDate())) {
+            throw new ServiceException("保质期物料 " + line.getMaterialCode() + " 必须填写生产日期或有效期后才能审核");
+        }
+        LocalDate productionDate = parseOptionalDate(line.getProductionDate(), "生产日期");
+        LocalDate expiryDate = parseOptionalDate(line.getExpiryDate(), "有效期");
+        if (productionDate != null && expiryDate != null) {
             validateDateOrder(line.getMaterialCode(), productionDate, expiryDate);
         }
     }
@@ -62,12 +79,16 @@ public class ShelfLifeService {
     }
 
     private void requireLotAndDate(String materialCode, String lotNo, String productionDate, String expiryDate) {
-        if (lotNo == null || lotNo.isBlank()) {
+        if (isBlank(lotNo)) {
             throw new ServiceException("保质期物料 " + materialCode + " 必须填写批次号");
         }
         if ((productionDate == null || productionDate.isBlank()) && (expiryDate == null || expiryDate.isBlank())) {
             throw new ServiceException("保质期物料 " + materialCode + " 必须填写生产日期或有效期");
         }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
     private LocalDate parseOptionalDate(String value, String fieldName) {

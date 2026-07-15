@@ -1,0 +1,147 @@
+openapi: 3.0.3
+info:
+  title: RuoYi Agent - 采购到货质检入库准备工具
+  version: 1.0.0
+  description: |
+    采购订单到到货、质检、入库的只读查询与草稿准备工具。
+    所有接口都不会写业务数据；真实创建、审核、质检和更新库存必须由登录用户在 agent-ui 确认。
+servers:
+  - url: http://host.docker.internal:8088
+paths:
+  /agent/tools/purchase-flow/receipt-candidates:
+    get:
+      operationId: queryReceiptCandidates
+      summary: 查询可到货采购订单明细
+      description: 查询已审核且仍有未到货数量的采购订单行。先用本工具取得 sourceOrderLineId，禁止编造来源行 ID。
+      security: [{ AgentToolKey: [] }]
+      parameters:
+        - { name: orderCode, in: query, schema: { type: string }, description: 采购订单编号，可选 }
+        - { name: supplierName, in: query, schema: { type: string }, description: 供应商名称，可选 }
+        - { name: materialCode, in: query, schema: { type: string }, description: 物料编码，可选 }
+      responses:
+        '200': { description: 可到货订单明细, content: { application/json: { schema: { type: object } } } }
+  /agent/tools/purchase-flow/receipts/prepare:
+    post:
+      operationId: preparePurchaseReceiptDraft
+      summary: 准备采购到货单草稿
+      description: |
+        根据用户选定的采购订单行准备到货草稿。receiptDate 不传时默认今天，不要追问。
+        到货阶段 warehouseCode 和 locationCode 都是可选的建议入库位置；如填写，必须分别来自
+        queryWarehouses 和 queryLocations 的真实查询结果，禁止编造。草稿阶段允许暂缺批次和效期信息；
+        到货审核前，批次管理物料必须补充 lotNo，保质期物料还必须补充 productionDate 或 expiryDate。
+        nextAction=CONFIRM_ACTION 后停止调用，等待 agent-ui 用户确认，禁止自行创建或审核。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReceiptDraftRequest' }
+      responses:
+        '200': { description: 到货草稿准备结果, content: { application/json: { schema: { type: object } } } }
+  /agent/tools/purchase-flow/inspections/prepare:
+    post:
+      operationId: preparePurchaseInspectionDraft
+      summary: 准备采购到货质检结果
+      description: |
+        仅对已审核且待检的到货单准备质检结果。必须提交该到货单全部明细，且每行 qualifiedQuantity + rejectedQuantity = 到货数量。
+        nextAction=CONFIRM_ACTION 后停止调用，等待用户确认，禁止自行质检。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InspectionDraftRequest' }
+      responses:
+        '200': { description: 质检草稿准备结果, content: { application/json: { schema: { type: object } } } }
+  /agent/tools/purchase-flow/inbound-candidates:
+    get:
+      operationId: queryInboundCandidates
+      summary: 查询可入库到货明细
+      description: 查询已质检合格且仍有未入库数量的到货行。先取得 sourceReceiptLineId，禁止编造来源行 ID。
+      security: [{ AgentToolKey: [] }]
+      parameters:
+        - { name: receiptCode, in: query, schema: { type: string }, description: 到货单编号，可选 }
+        - { name: warehouseCode, in: query, schema: { type: string }, description: 仓库编码，可选 }
+        - { name: materialCode, in: query, schema: { type: string }, description: 物料编码，可选 }
+      responses:
+        '200': { description: 可入库到货明细, content: { application/json: { schema: { type: object } } } }
+  /agent/tools/purchase-flow/inbounds/prepare:
+    post:
+      operationId: preparePurchaseInboundDraft
+      summary: 准备采购入库单草稿
+      description: |
+        根据已质检到货行准备入库草稿。inboundDate 不传时默认今天，不要追问。
+        每条入库明细必须明确 warehouseCode。可沿用来源到货行的建议仓库，也可以通过 queryWarehouses 选择；
+        locationCode 可选，如填写必须来自 queryLocations。禁止编造仓库和库位编码。
+        nextAction=CONFIRM_ACTION 后停止调用，等待 agent-ui 用户确认；禁止自行创建或审核，审核后才会更新库存。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InboundDraftRequest' }
+      responses:
+        '200': { description: 入库草稿准备结果, content: { application/json: { schema: { type: object } } } }
+components:
+  securitySchemes:
+    AgentToolKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Tool-Key
+  schemas:
+    ReceiptDraftRequest:
+      type: object
+      required: [lines]
+      properties:
+        receiptDate: { type: string, format: date, description: 到货日期；不传默认今天 }
+        warehouseCode: { type: string, description: 建议入库仓库编码，可选；如填写必须来自 queryWarehouses }
+        warehouseName: { type: string, description: 建议入库仓库名称，可选 }
+        remark: { type: string, description: 备注，可选 }
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [sourceOrderLineId, receivedQuantity]
+            properties:
+              sourceOrderLineId: { type: integer, format: int64, description: queryReceiptCandidates 返回的来源订单行 ID }
+              receivedQuantity: { type: number, minimum: 0.000001 }
+              lotNo: { type: string, description: 批次号；草稿可为空，批次或保质期管理物料审核前必填 }
+              productionDate: { type: string, format: date, description: 生产日期；草稿可为空 }
+              expiryDate: { type: string, format: date, description: 有效期；草稿可为空，保质期物料审核前与生产日期至少填写一个 }
+              locationCode: { type: string }
+              locationName: { type: string }
+    InspectionDraftRequest:
+      type: object
+      properties:
+        receiptId: { type: integer, format: int64 }
+        receiptCode: { type: string }
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [receiptLineId, qualifiedQuantity, rejectedQuantity]
+            properties:
+              receiptLineId: { type: integer, format: int64 }
+              qualifiedQuantity: { type: number, minimum: 0 }
+              rejectedQuantity: { type: number, minimum: 0 }
+    InboundDraftRequest:
+      type: object
+      required: [lines]
+      properties:
+        inboundDate: { type: string, format: date, description: 入库日期；不传默认今天 }
+        remark: { type: string }
+        lines:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [sourceReceiptLineId, inboundQuantity, warehouseCode]
+            properties:
+              sourceReceiptLineId: { type: integer, format: int64, description: queryInboundCandidates 返回的来源到货行 ID }
+              inboundQuantity: { type: number, minimum: 0.000001 }
+              warehouseCode: { type: string, description: 实际入库仓库编码，必须来自 queryWarehouses 或来源到货行 }
+              warehouseName: { type: string, description: 实际入库仓库名称，可选 }
+              locationCode: { type: string, description: 实际入库库位编码，可选；如填写必须来自 queryLocations }
+              locationName: { type: string, description: 实际入库库位名称，可选 }

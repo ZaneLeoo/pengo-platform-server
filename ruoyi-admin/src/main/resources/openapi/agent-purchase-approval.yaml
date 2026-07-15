@@ -1,0 +1,121 @@
+openapi: 3.0.3
+info:
+  title: RuoYi Agent - 采购单据审核准备工具
+  version: 1.0.0
+  description: |
+    采购订单、采购到货单和采购入库单的审核前校验与确认数据准备工具。
+    本工具不会执行审核。只有用户明确提出审核某张具体单据时才允许调用；创建草稿后不得自动调用。
+servers:
+  - url: http://host.docker.internal:8088
+paths:
+  /agent/tools/purchase-approvals/orders/prepare:
+    post:
+      operationId: preparePurchaseOrderApproval
+      summary: 准备审核采购订单
+      description: 用户明确要求审核某张采购订单时，按订单编号校验草稿状态并生成前端确认卡。不得在创建订单后自动调用。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [documentCode]
+              properties:
+                documentCode:
+                  type: string
+                  description: 用户明确指定的采购订单编号，禁止猜测。
+      responses:
+        '200': { $ref: '#/components/responses/ApprovalDraftResponse' }
+  /agent/tools/purchase-approvals/receipts/prepare:
+    post:
+      operationId: preparePurchaseReceiptApproval
+      summary: 准备审核采购到货单
+      description: 用户明确要求审核某张到货单时，校验草稿、明细、批号及保质期数据并生成前端确认卡。不得在创建到货草稿后自动调用。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [documentCode]
+              properties:
+                documentCode:
+                  type: string
+                  description: 用户明确指定的采购到货单编号，禁止猜测。
+      responses:
+        '200': { $ref: '#/components/responses/ApprovalDraftResponse' }
+  /agent/tools/purchase-approvals/inbounds/prepare:
+    post:
+      operationId: preparePurchaseInboundApproval
+      summary: 准备审核采购入库单
+      description: 用户明确要求审核某张入库单时，校验草稿及库存影响数据并生成前端确认卡。不得在创建入库草稿后自动调用。
+      security: [{ AgentToolKey: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [documentCode]
+              properties:
+                documentCode:
+                  type: string
+                  description: 用户明确指定的采购入库单编号，禁止猜测。
+      responses:
+        '200': { $ref: '#/components/responses/ApprovalDraftResponse' }
+components:
+  securitySchemes:
+    AgentToolKey:
+      type: apiKey
+      in: header
+      name: X-Agent-Tool-Key
+  responses:
+    ApprovalDraftResponse:
+      description: 审核确认数据。data.actionType 用于前端选择审核卡片，data.documentId 只供确认执行接口使用。
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status: { type: string }
+              resultCode: { type: string }
+              message: { type: string }
+              nextAction: { type: string, enum: [CONFIRM] }
+              data: { $ref: '#/components/schemas/ApprovalDraft' }
+  schemas:
+    ApprovalDraft:
+      type: object
+      required: [actionType, documentId, documentCode, documentStatus, lines]
+      properties:
+        actionType:
+          type: string
+          enum: [PURCHASE_ORDER_APPROVE, PURCHASE_RECEIPT_APPROVE, PURCHASE_INBOUND_APPROVE]
+        documentId: { type: integer, format: int64 }
+        documentCode: { type: string }
+        documentStatus: { type: string, enum: [DRAFT] }
+        documentDate: { type: string }
+        supplierCode: { type: string, nullable: true }
+        supplierName: { type: string, nullable: true }
+        totalQuantity: { type: number }
+        impactMessage: { type: string }
+        lines:
+          type: array
+          items: { $ref: '#/components/schemas/ApprovalLine' }
+    ApprovalLine:
+      type: object
+      properties:
+        lineNo: { type: integer }
+        sourceOrderCode: { type: string, nullable: true }
+        sourceReceiptCode: { type: string, nullable: true }
+        materialCode: { type: string }
+        materialName: { type: string }
+        spec: { type: string, nullable: true }
+        unit: { type: string }
+        quantity: { type: number }
+        warehouseCode: { type: string, nullable: true }
+        warehouseName: { type: string, nullable: true }
+        locationCode: { type: string, nullable: true }
+        locationName: { type: string, nullable: true }
+        lotNo: { type: string, nullable: true }

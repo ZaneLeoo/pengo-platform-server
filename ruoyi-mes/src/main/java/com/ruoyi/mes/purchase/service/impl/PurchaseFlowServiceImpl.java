@@ -19,6 +19,7 @@ import com.ruoyi.mes.purchase.mapper.PurchaseInboundMapper;
 import com.ruoyi.mes.purchase.mapper.PurchaseOrderMapper;
 import com.ruoyi.mes.purchase.mapper.PurchaseReceiptMapper;
 import com.ruoyi.mes.purchase.service.IPurchaseFlowService;
+import com.ruoyi.mes.purchase.service.ShelfLifeService;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -36,13 +37,15 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
     private final PurchaseReceiptMapper receiptMapper;
     private final PurchaseInboundMapper inboundMapper;
     private final PurchaseFlowMapper flowMapper;
+    private final ShelfLifeService shelfLifeService;
 
     public PurchaseFlowServiceImpl(PurchaseOrderMapper orderMapper, PurchaseReceiptMapper receiptMapper,
-            PurchaseInboundMapper inboundMapper, PurchaseFlowMapper flowMapper) {
+            PurchaseInboundMapper inboundMapper, PurchaseFlowMapper flowMapper, ShelfLifeService shelfLifeService) {
         this.orderMapper = orderMapper;
         this.receiptMapper = receiptMapper;
         this.inboundMapper = inboundMapper;
         this.flowMapper = flowMapper;
+        this.shelfLifeService = shelfLifeService;
     }
 
     @Override
@@ -78,6 +81,7 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
         if (flowMapper.countReceiptHeaderSupplierMismatch(id) > 0)
             throw new ServiceException("送货单供应商必须与来源采购订单一致");
         for (PurchaseReceiptLine line : lines) {
+            shelfLifeService.validateReceiptLine(line);
             if (flowMapper.countValidReceiptSource(line) != 1)
                 throw new ServiceException("物料 " + line.getMaterialCode() + " 的来源采购订单明细无效");
             if (flowMapper.increaseOrderReceived(line.getSourceOrderLineId(), line.getReceivedQuantity()) != 1) {
