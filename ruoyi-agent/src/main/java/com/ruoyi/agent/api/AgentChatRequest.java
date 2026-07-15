@@ -1,6 +1,9 @@
 package com.ruoyi.agent.api;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
+import java.util.List;
 import java.util.Map;
 import lombok.Data;
 
@@ -13,4 +16,8 @@ public class AgentChatRequest {
     private String difyConversationId;
 
     private Map<String, Object> inputs;
+
+    @Valid
+    @Size(max = 5, message = "单次最多上传5个附件")
+    private List<AgentInputFile> files;
 }

@@ -40,6 +40,10 @@ class DifyChatflowClientImplTest {
                     .parseObject(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
             assertEquals("streaming", body.get("response_mode"));
             assertEquals(Boolean.FALSE, body.get("auto_generate_name"));
+            List<Map<String, Object>> files = (List<Map<String, Object>>) body.get("files");
+            assertEquals("image", files.get(0).get("type"));
+            assertEquals("local_file", files.get(0).get("transfer_method"));
+            assertEquals("file-1", files.get(0).get("upload_file_id"));
             byte[] response = ("data: {\"event\":\"message\",\"answer\":\"你好\",\"task_id\":\"task-1\"}\n\n"
                     + "event: ping\n\n").getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().add("Content-Type", "text/event-stream");
@@ -50,7 +54,9 @@ class DifyChatflowClientImplTest {
         List<DifyStreamEvent> events = new ArrayList<>();
 
         new DifyChatflowClientImpl().stream(new DifyClientSettings(baseUrl, "secret"),
-                new DifyChatRequest("你好", Map.of("scene", "sales"), null, "ruoyi-user-1"), events::add);
+                new DifyChatRequest("你好", Map.of("scene", "sales"), null, "ruoyi-user-1",
+                        List.of(Map.of("type", "image", "transfer_method", "local_file", "upload_file_id", "file-1"))),
+                events::add);
 
         assertEquals(1, events.size());
         assertEquals("你好", events.get(0).getAnswer());

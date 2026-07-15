@@ -61,6 +61,17 @@ public class AgentFileService {
         return new StreamContext();
     }
 
+    /** 创建流文件上下文，并记录本轮用户输入附件，防止被误判为 Agent 生成文件。 */
+    public StreamContext newStreamContext(List<String> inputFileIds) {
+        StreamContext context = new StreamContext();
+        if (inputFileIds != null) {
+            context.inputFileIds.addAll(inputFileIds.stream()
+                    .filter(id -> id != null && !id.isBlank())
+                    .toList());
+        }
+        return context;
+    }
+
     /** 收集 Dify 的文件事件和插件 output_filename，供最终文件卡片使用。 */
     public void capture(DifyStreamEvent event, StreamContext context) {
         if (event == null || context == null) {
@@ -99,6 +110,9 @@ public class AgentFileService {
         List<String> orderedTools = new ArrayList<>(context.nameByTool.keySet());
         int descriptorIndex = 0;
         for (Map<String, Object> descriptor : descriptors.values()) {
+            if (isInputFile(descriptor, context)) {
+                continue;
+            }
             String fileId = text(first(descriptor, "related_id", "id", "upload_file_id"));
             String toolName = context.toolByFileId.getOrDefault(fileId, "");
             if (toolName.isBlank() && descriptorIndex < orderedTools.size()) {
@@ -128,6 +142,15 @@ public class AgentFileService {
         }
         context.materializedFiles = List.copyOf(results);
         return results;
+    }
+
+    private boolean isInputFile(Map<String, Object> descriptor, StreamContext context) {
+        String uploadFileId = text(descriptor.get("upload_file_id"));
+        String relatedId = text(descriptor.get("related_id"));
+        String id = text(descriptor.get("id"));
+        return context.inputFileIds.contains(uploadFileId)
+                || context.inputFileIds.contains(relatedId)
+                || context.inputFileIds.contains(id);
     }
 
     /** 返回当前流已经物化的文件，供 done 事件做最后兜底传递。 */
@@ -492,6 +515,7 @@ public class AgentFileService {
         private Map<String, String> nameByTool = new LinkedHashMap<>();
         private Map<String, String> toolByFileId = new LinkedHashMap<>();
         private Map<String, Map<String, Object>> pendingFiles = new LinkedHashMap<>();
+        private java.util.Set<String> inputFileIds = new java.util.LinkedHashSet<>();
         private List<Map<String, Object>> materializedFiles = Collections.emptyList();
         private boolean materialized;
     }

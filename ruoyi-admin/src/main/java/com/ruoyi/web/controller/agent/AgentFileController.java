@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.agent;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.web.service.agent.AgentFileService;
+import com.ruoyi.web.service.agent.AgentInputFileService;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,15 +15,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 /** 当前登录用户的 Agent 生成文件下载和预览入口。 */
 @RestController
 @RequestMapping("/agent/files")
 public class AgentFileController extends BaseController {
     private final AgentFileService fileService;
+    private final AgentInputFileService inputFileService;
 
-    public AgentFileController(AgentFileService fileService) {
+    public AgentFileController(AgentFileService fileService, AgentInputFileService inputFileService) {
         this.fileService = fileService;
+        this.inputFileService = inputFileService;
+    }
+
+    /** 上传当前用户准备随聊天消息发送的输入附件。 */
+    @PostMapping("/upload")
+    public AjaxResult upload(@RequestParam("file") MultipartFile file) {
+        return success(inputFileService.upload(file, getUserId()));
     }
 
     /** 下载或内联预览一个当前用户拥有的生成文件。 */

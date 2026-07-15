@@ -1,6 +1,7 @@
 package com.ruoyi.web.service.agent;
 
 import com.ruoyi.agent.api.AgentChatRequest;
+import com.ruoyi.agent.api.AgentInputFile;
 import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.domain.enums.DifyAppCode;
 import com.ruoyi.agent.domain.enums.AgentStreamEventType;
@@ -55,8 +56,8 @@ public class AgentChatService {
         try {
             DifyClientSettings settings = configService.requireSettings(DifyAppCode.AGENT_SUPERVISOR.getCode());
             DifyChatRequest difyRequest = new DifyChatRequest(request.getQuery(), request.getInputs(),
-                    request.getDifyConversationId(), "ruoyi-user-" + userId);
-            AgentFileService.StreamContext fileContext = fileService.newStreamContext();
+                    request.getDifyConversationId(), "ruoyi-user-" + userId, toDifyFiles(request.getFiles()));
+            AgentFileService.StreamContext fileContext = fileService.newStreamContext(inputFileIds(request.getFiles()));
             difyClient.stream(settings, difyRequest,
                     event -> forwardEvent(emitter, event, settings, userId, fileContext));
             List<Map<String, Object>> files = fileService.materializedFiles(fileContext);
@@ -73,6 +74,26 @@ public class AgentChatService {
         } catch (RuntimeException e) {
             fail(emitter, "Dify 服务调用失败");
         }
+    }
+
+    private List<Map<String, Object>> toDifyFiles(List<AgentInputFile> files) {
+        if (files == null || files.isEmpty()) {
+            return List.of();
+        }
+        return files.stream().map(file -> {
+            Map<String, Object> value = new LinkedHashMap<>();
+            value.put("type", file.getType());
+            value.put("transfer_method", "local_file");
+            value.put("upload_file_id", file.getUploadFileId());
+            return value;
+        }).toList();
+    }
+
+    private List<String> inputFileIds(List<AgentInputFile> files) {
+        if (files == null || files.isEmpty()) {
+            return List.of();
+        }
+        return files.stream().map(AgentInputFile::getUploadFileId).toList();
     }
 
     private void forwardEvent(SseEmitter emitter, DifyStreamEvent event, DifyClientSettings settings,

@@ -52,6 +52,9 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
         body.put("response_mode", "streaming");
         body.put("auto_generate_name", false);
         body.put("user", request.getUser());
+        if (request.getFiles() != null && !request.getFiles().isEmpty()) {
+            body.put("files", request.getFiles());
+        }
         if (request.getConversationId() != null && !request.getConversationId().isBlank()) {
             body.put("conversation_id", request.getConversationId());
         }
