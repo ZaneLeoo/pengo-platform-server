@@ -36,6 +36,12 @@
             <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
 
+        <!-- 用户输入 PDF 正文提取；Office 文件复用项目现有 Apache POI。 -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+        </dependency>
+
         <!-- Agent 工具元数据测试支持 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

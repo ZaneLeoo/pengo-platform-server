@@ -12,4 +12,6 @@ public class AgentInputFileUploadResult {
     private String type;
     private String mediaType;
     private Long size;
+    private String extractionStatus;
+    private Integer extractedCharacters;
 }

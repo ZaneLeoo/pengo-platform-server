@@ -63,4 +63,19 @@ public class AgentFile extends BaseEntity {
 
     /** 文件状态：AVAILABLE-可用，FAILED-失败，DELETED-已删除。 */
     private String status;
+
+    /** 文件方向：INPUT-用户上传，OUTPUT-Agent生成。 */
+    private String direction;
+
+    /** 文本提取状态：NOT_REQUIRED、READY、FAILED。 */
+    private String extractionStatus;
+
+    /** 从文档中提取并裁剪后的正文。 */
+    private String extractedText;
+
+    /** 提取正文的字符数。 */
+    private Integer extractedCharacters;
+
+    /** 文本提取失败原因。 */
+    private String extractionError;
 }

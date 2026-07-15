@@ -20,6 +20,11 @@
         <result property="fileHash" column="file_hash"/>
         <result property="previewMode" column="preview_mode"/>
         <result property="status" column="status"/>
+        <result property="direction" column="direction"/>
+        <result property="extractionStatus" column="extraction_status"/>
+        <result property="extractedText" column="extracted_text"/>
+        <result property="extractedCharacters" column="extracted_characters"/>
+        <result property="extractionError" column="extraction_error"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -30,11 +35,13 @@
         insert into agent_file
         (resource_id, user_id, conversation_id, message_id, dify_conversation_id, dify_file_id, tool_name,
          file_name, storage_name, relative_path, extension, media_type, file_kind, file_size, file_hash,
-         preview_mode, status, create_by, create_time, update_by, update_time)
+         preview_mode, status, direction, extraction_status, extracted_text, extracted_characters, extraction_error,
+         create_by, create_time, update_by, update_time)
         values
         (#{resourceId}, #{userId}, #{conversationId}, #{messageId}, #{difyConversationId}, #{difyFileId},
          #{toolName}, #{fileName}, #{storageName}, #{relativePath}, #{extension}, #{mediaType}, #{fileKind},
-         #{fileSize}, #{fileHash}, #{previewMode}, #{status}, #{createBy}, sysdate(), #{updateBy}, sysdate())
+         #{fileSize}, #{fileHash}, #{previewMode}, #{status}, #{direction}, #{extractionStatus}, #{extractedText},
+         #{extractedCharacters}, #{extractionError}, #{createBy}, sysdate(), #{updateBy}, sysdate())
     </insert>
 
     <select id="selectOwned" resultMap="AgentFileResult">
@@ -45,7 +52,7 @@
 
     <select id="selectByUserId" resultMap="AgentFileResult">
         select * from agent_file
-        where user_id = #{userId} and status = 'AVAILABLE'
+        where user_id = #{userId} and status = 'AVAILABLE' and direction = 'OUTPUT'
         order by create_time desc, id desc
     </select>
 

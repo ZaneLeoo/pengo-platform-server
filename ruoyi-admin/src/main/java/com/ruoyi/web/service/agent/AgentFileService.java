@@ -481,6 +481,8 @@ public class AgentFileService {
         file.setFileHash(hash);
         file.setPreviewMode(isBrowserPreview(extension, mediaType) ? "BROWSER" : "DOWNLOAD");
         file.setStatus(AgentFileStatus.AVAILABLE.name());
+        file.setDirection("OUTPUT");
+        file.setExtractionStatus("NOT_REQUIRED");
         file.setCreateBy(String.valueOf(userId));
         file.setUpdateBy(String.valueOf(userId));
         return file;

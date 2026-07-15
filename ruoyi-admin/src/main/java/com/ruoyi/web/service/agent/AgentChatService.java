@@ -1,7 +1,6 @@
 package com.ruoyi.web.service.agent;
 
 import com.ruoyi.agent.api.AgentChatRequest;
-import com.ruoyi.agent.api.AgentInputFile;
 import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.domain.enums.DifyAppCode;
 import com.ruoyi.agent.domain.enums.AgentStreamEventType;
@@ -30,18 +29,21 @@ public class AgentChatService {
     private final KnowledgeBaseService knowledgeBaseService;
     private final AgentToolDisplayResolver toolDisplayResolver;
     private final AgentFileService fileService;
+    private final AgentInputFileService inputFileService;
     private final Executor executor;
 
     public AgentChatService(DifyChatflowClient difyClient, DifyAppConfigService configService,
             KnowledgeBaseService knowledgeBaseService,
             AgentToolDisplayResolver toolDisplayResolver,
             AgentFileService fileService,
+            AgentInputFileService inputFileService,
             @Qualifier("threadPoolTaskExecutor") Executor executor) {
         this.difyClient = difyClient;
         this.configService = configService;
         this.knowledgeBaseService = knowledgeBaseService;
         this.toolDisplayResolver = toolDisplayResolver;
         this.fileService = fileService;
+        this.inputFileService = inputFileService;
         this.executor = executor;
     }
 
@@ -55,9 +57,11 @@ public class AgentChatService {
     private void forward(SseEmitter emitter, AgentChatRequest request, Long userId) {
         try {
             DifyClientSettings settings = configService.requireSettings(DifyAppCode.AGENT_SUPERVISOR.getCode());
-            DifyChatRequest difyRequest = new DifyChatRequest(request.getQuery(), request.getInputs(),
-                    request.getDifyConversationId(), "ruoyi-user-" + userId, toDifyFiles(request.getFiles()));
-            AgentFileService.StreamContext fileContext = fileService.newStreamContext(inputFileIds(request.getFiles()));
+            AgentInputFileService.PreparedInput preparedInput = inputFileService.prepare(request.getFiles(), userId);
+            String enrichedQuery = inputFileService.enrichQuery(request.getQuery(), preparedInput);
+            DifyChatRequest difyRequest = new DifyChatRequest(enrichedQuery, request.getInputs(),
+                    request.getDifyConversationId(), inputFileService.user(userId), preparedInput.getDifyFiles());
+            AgentFileService.StreamContext fileContext = fileService.newStreamContext(preparedInput.getDifyFileIds());
             difyClient.stream(settings, difyRequest,
                     event -> forwardEvent(emitter, event, settings, userId, fileContext));
             List<Map<String, Object>> files = fileService.materializedFiles(fileContext);
@@ -74,26 +78,6 @@ public class AgentChatService {
         } catch (RuntimeException e) {
             fail(emitter, "Dify 服务调用失败");
         }
-    }
-
-    private List<Map<String, Object>> toDifyFiles(List<AgentInputFile> files) {
-        if (files == null || files.isEmpty()) {
-            return List.of();
-        }
-        return files.stream().map(file -> {
-            Map<String, Object> value = new LinkedHashMap<>();
-            value.put("type", file.getType());
-            value.put("transfer_method", "local_file");
-            value.put("upload_file_id", file.getUploadFileId());
-            return value;
-        }).toList();
-    }
-
-    private List<String> inputFileIds(List<AgentInputFile> files) {
-        if (files == null || files.isEmpty()) {
-            return List.of();
-        }
-        return files.stream().map(AgentInputFile::getUploadFileId).toList();
     }
 
     private void forwardEvent(SseEmitter emitter, DifyStreamEvent event, DifyClientSettings settings,
@@ -147,7 +131,9 @@ public class AgentChatService {
         data.put("callId", event.getId());
         data.put(knowledgeEvent ? "datasetId" : "toolName", event.getTool());
         data.put(knowledgeEvent ? "datasetLabel" : "toolLabel",
-                knowledgeEvent ? knowledgeBaseService.resolveName(event.getTool()) : toolDisplayResolver.resolveLabel(event));
+                knowledgeEvent
+                        ? knowledgeBaseService.resolveName(event.getTool())
+                        : toolDisplayResolver.resolveLabel(event));
         if (!knowledgeEvent) {
             String description = toolDisplayResolver.resolveDescription(event.getTool());
             if (!description.isBlank())
@@ -160,7 +146,7 @@ public class AgentChatService {
             if (knowledgeEvent) {
                 String query = extractKnowledgeQuery(input, event.getTool());
                 data.put("query", query);
-                if (event.getObservation() != null && !event.getObservation().isBlank()) {
+                if (hasMeaningfulKnowledgeResult(event.getObservation())) {
                     data.put("sources", knowledgeBaseService.retrieveSources(event.getTool(), query));
                 }
             } else {
@@ -171,6 +157,39 @@ public class AgentChatService {
             data.put("output", normalizeToolOutput(event));
         }
         send(emitter, knowledgeEvent ? AgentStreamEventType.KNOWLEDGE : AgentStreamEventType.TOOL, data);
+    }
+
+    /** 只有 Dify 的知识库工具确实返回内容时，才允许补充并展示引用片段。 */
+    private boolean hasMeaningfulKnowledgeResult(String observation) {
+        if (observation == null || observation.isBlank()) {
+            return false;
+        }
+        try {
+            return hasMeaningfulValue(JSON.parse(observation));
+        } catch (RuntimeException ignored) {
+            return !observation.isBlank();
+        }
+    }
+
+    private boolean hasMeaningfulValue(Object value) {
+        if (value == null) {
+            return false;
+        }
+        if (value instanceof CharSequence text) {
+            return !text.toString().isBlank();
+        }
+        if (value instanceof Map<?, ?> map) {
+            return map.values().stream().anyMatch(this::hasMeaningfulValue);
+        }
+        if (value instanceof Iterable<?> values) {
+            for (Object item : values) {
+                if (hasMeaningfulValue(item)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
     }
 
     /** 将一个 Dify 并行图表工具事件拆分为多个标准 chart 事件。 */
