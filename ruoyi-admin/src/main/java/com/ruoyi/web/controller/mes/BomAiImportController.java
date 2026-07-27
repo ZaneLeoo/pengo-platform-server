@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * BOM AI 图纸导入控制器。
  */
@@ -29,11 +32,25 @@ public class BomAiImportController extends BaseController {
      * 上传图纸 → AI 识别 → 返回预览数据（含物料匹配状态）。
      */
     @PostMapping(value = "/recognize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public AjaxResult recognize(@RequestParam("file") MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            return error("请上传图纸文件");
+    public AjaxResult recognize(
+            @RequestParam(value = "files", required = false) MultipartFile[] files,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        List<MultipartFile> uploads = new ArrayList<>();
+        if (files != null) {
+            for (MultipartFile current : files) {
+                if (current != null && !current.isEmpty()) {
+                    uploads.add(current);
+                }
+            }
         }
-        BomAiPreviewResult result = bomAiImportService.recognize(file);
+        // 保留旧的单文件参数，避免前端尚未更新时接口直接失效。
+        if (uploads.isEmpty() && file != null && !file.isEmpty()) {
+            uploads.add(file);
+        }
+        if (uploads.isEmpty()) {
+            return error("请上传至少一张图纸");
+        }
+        BomAiPreviewResult result = bomAiImportService.recognize(uploads.toArray(new MultipartFile[0]));
         if (result.isSuccess()) {
             return success(result);
         }

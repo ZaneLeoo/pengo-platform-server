@@ -1,5 +1,7 @@
 package com.ruoyi.web.domain.dto;
 
+import java.util.List;
+
 /**
  * BOM AI 导入 — 确认导入结果。
  */
@@ -10,6 +12,7 @@ public class BomAiConfirmResult {
     private Long bomMasterId;
     private Long bomVersionId;
     private String bomCode;
+    private List<BomAiImportedBom> boms;
 
     public boolean isSuccess() { return success; }
     public void setSuccess(boolean success) { this.success = success; }
@@ -21,4 +24,6 @@ public class BomAiConfirmResult {
     public void setBomVersionId(Long bomVersionId) { this.bomVersionId = bomVersionId; }
     public String getBomCode() { return bomCode; }
     public void setBomCode(String bomCode) { this.bomCode = bomCode; }
+    public List<BomAiImportedBom> getBoms() { return boms; }
+    public void setBoms(List<BomAiImportedBom> boms) { this.boms = boms; }
 }

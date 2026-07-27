@@ -1,5 +1,6 @@
 package com.ruoyi.web.service.mes;
 
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.DifyWorkflowClient;
@@ -7,6 +8,7 @@ import com.ruoyi.agent.infrastructure.dify.model.DifyFileUploadRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyFileUploadResult;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunResult;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mes.base.domain.BomItem;
 import com.ruoyi.mes.base.domain.BomMaster;
@@ -18,9 +20,11 @@ import com.ruoyi.mes.base.service.IBomMasterService;
 import com.ruoyi.mes.base.service.IBomVersionService;
 import com.ruoyi.mes.base.service.IMaterialService;
 import com.ruoyi.web.domain.dto.BomAiConfirmResult;
+import com.ruoyi.web.domain.dto.BomAiDocument;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
 import com.ruoyi.web.domain.dto.BomAiImportHeader;
 import com.ruoyi.web.domain.dto.BomAiImportItem;
+import com.ruoyi.web.domain.dto.BomAiImportedBom;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +38,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,24 +69,49 @@ public class BomAiImportService {
     /**
      * 上传图纸 → Dify 识别 → 物料匹配 → 返回预览数据。
      */
-    public BomAiPreviewResult recognize(MultipartFile file) {
+    public BomAiPreviewResult recognize(MultipartFile[] files) {
         BomAiPreviewResult result = new BomAiPreviewResult();
         try {
+            if (files == null || files.length == 0) {
+                result.setSuccess(false);
+                result.setError("请上传至少一张图纸");
+                return result;
+            }
+
             // 1. 获取 Dify 配置
             DifyClientSettings settings = difyAppConfigService.requireSettings(DIFY_APP_CODE);
 
-            // 2. 上传图纸到 Dify
-            log.info("Uploading drawing {} to Dify", file.getOriginalFilename());
-            DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
-                    new DifyFileUploadRequest(
-                            file.getOriginalFilename(),
-                            file.getContentType(),
-                            file.getBytes(),
-                            DIFY_APP_CODE));
+            // 2. 逐个上传图纸，按用户选择顺序组装成 Dify File List。
+            List<Map<String, Object>> difyFiles = new ArrayList<>();
+            for (MultipartFile file : files) {
+                if (file == null || file.isEmpty()) {
+                    continue;
+                }
+                log.info("Uploading drawing {} to Dify", file.getOriginalFilename());
+                DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
+                        new DifyFileUploadRequest(
+                                file.getOriginalFilename(),
+                                file.getContentType(),
+                                file.getBytes(),
+                                DIFY_APP_CODE));
+                if (StringUtils.isBlank(upload.getId())) {
+                    throw new ServiceException("Dify 文件上传未返回文件 ID：" + file.getOriginalFilename());
+                }
+                Map<String, Object> difyFile = new LinkedHashMap<>();
+                difyFile.put("type", difyFileType(file));
+                difyFile.put("transfer_method", "local_file");
+                difyFile.put("upload_file_id", upload.getId());
+                difyFiles.add(difyFile);
+            }
+            if (difyFiles.isEmpty()) {
+                result.setSuccess(false);
+                result.setError("请上传至少一张有效图纸");
+                return result;
+            }
 
             // 3. 执行 BOM_OCR 工作流
             Map<String, Object> inputs = new HashMap<>();
-            inputs.put("file_id", upload.getId());
+            inputs.put("bom_files", difyFiles);
             DifyWorkflowRunResult workflow = difyWorkflowClient.runBlocking(settings,
                     new DifyWorkflowRunRequest(inputs, DIFY_APP_CODE));
 
@@ -116,112 +146,282 @@ public class BomAiImportService {
     }
 
     /**
-     * 确认导入 → 事务写入 bom_master + bom_version + bom_item。
+     * 确认导入 → 一次事务写入多个独立的 bom_master + bom_version + bom_item。
      */
     @Transactional(rollbackFor = Exception.class)
     public BomAiConfirmResult confirm(BomAiImportConfirmRequest request) {
         BomAiConfirmResult result = new BomAiConfirmResult();
-        try {
-            BomAiImportHeader header = request.getHeader();
-            List<BomAiImportItem> items = request.getItems();
-
-            if (header == null || header.getFinalParentItemCode() == null) {
-                result.setSuccess(false);
-                result.setError("母件编码不能为空");
-                return result;
-            }
-            if (items == null || items.isEmpty()) {
-                result.setSuccess(false);
-                result.setError("子件明细不能为空");
-                return result;
-            }
-
-            // -- 生成唯一 BOM 编码 --
-            String bomCode = generateBomCode(header.getFinalParentItemCode());
-
-            // -- 创建 bom_master --
-            BomMaster master = new BomMaster();
-            master.setBomCode(bomCode);
-            master.setParentItemCode(header.getFinalParentItemCode());
-            master.setParentItemName(header.getFinalParentItemName());
-            master.setParentItemSpec(header.getFinalParentItemSpec());
-            if (header.getFinalParentMaterialId() != null) {
-                master.setParentItemId(header.getFinalParentMaterialId());
-            }
-            master.setBomType("SELF");
-            master.setStatus("DRAFT");
-            master.setSourceSystem("AI_IMPORT");
-            master.setCreateBy("admin");
-            bomMasterService.insertBomMaster(master);
-
-            // -- 创建 bom_version --
-            BigDecimal baseQty = header.getFinalBaseQty() != null ? header.getFinalBaseQty() : BigDecimal.ONE;
-            BomVersion version = new BomVersion();
-            version.setBomMasterId(master.getId());
-            version.setVersionCode("V1.0");
-            version.setVersionName("AI导入版本");
-            version.setBaseQty(baseQty);
-            version.setUsageType("GENERAL");
-            version.setStatus("DRAFT");
-            version.setApproveStatus("PENDING");
-            version.setDefaultFlag(1);
-            version.setSourceSystem("AI_IMPORT");
-            version.setCreateBy("admin");
-            bomVersionService.insertBomVersion(version);
-
-            // -- 创建 bom_item 明细 --
-            for (int i = 0; i < items.size(); i++) {
-                BomAiImportItem aiItem = items.get(i);
-                BomItem bomItem = new BomItem();
-                bomItem.setBomVersionId(version.getId());
-                bomItem.setLineNo(aiItem.getLineNo() != null ? aiItem.getLineNo() : (i + 1) * 10);
-
-                String code = aiItem.getFinalItemCode() != null ? aiItem.getFinalItemCode() : aiItem.getComponentCode();
-                String name = aiItem.getFinalItemName() != null ? aiItem.getFinalItemName() : aiItem.getItemName();
-                String spec = aiItem.getFinalSpec() != null ? aiItem.getFinalSpec() : aiItem.getSpec();
-                String unit = aiItem.getFinalUnit() != null ? aiItem.getFinalUnit() : aiItem.getUnit();
-                BigDecimal qty = aiItem.getFinalQuantity() != null ? aiItem.getFinalQuantity() : aiItem.getQuantity();
-
-                bomItem.setComponentItemCode(code);
-                bomItem.setComponentItemName(name);
-                bomItem.setComponentItemSpec(spec);
-                bomItem.setComponentItemUnit(unit);
-                bomItem.setComponentQty(qty != null && qty.compareTo(BigDecimal.ZERO) > 0 ? qty : BigDecimal.ONE);
-
-                if (aiItem.getMatchedMaterialId() != null) {
-                    bomItem.setComponentItemId(aiItem.getMatchedMaterialId());
-                }
-                bomItem.setSupplyType("PICK");
-                bomItem.setIsVirtual(0);
-                bomItem.setMrpExpandFlag(1);
-                bomItem.setSourceSystem("AI_IMPORT");
-                bomItem.setRemark(aiItem.getRemark());
-                bomItem.setCreateBy("admin");
-                bomItemService.insertBomItem(bomItem);
-            }
-
-            result.setSuccess(true);
-            result.setBomMasterId(master.getId());
-            result.setBomVersionId(version.getId());
-            result.setBomCode(bomCode);
-
-        } catch (Exception e) {
-            log.error("BOM AI 导入确认异常", e);
+        if (request == null) {
             result.setSuccess(false);
-            result.setError("导入失败：" + e.getMessage());
+            result.setError("导入数据不能为空");
+            return result;
+        }
+
+        List<BomAiDocument> documents = request.getDocuments();
+        if (documents == null || documents.isEmpty()) {
+            // 兼容旧版单 BOM 请求。
+            if (request.getHeader() != null) {
+                BomAiDocument document = new BomAiDocument();
+                document.setPageNo(1);
+                document.setHeader(request.getHeader());
+                document.setItems(request.getItems());
+                documents = List.of(document);
+            } else {
+                result.setSuccess(false);
+                result.setError("至少需要一份 BOM 识别结果");
+                return result;
+            }
+        }
+
+        for (int i = 0; i < documents.size(); i++) {
+            String validationError = validateDocument(documents.get(i), i);
+            if (validationError != null) {
+                result.setSuccess(false);
+                result.setError(validationError);
+                return result;
+            }
+        }
+
+        try {
+            List<BomAiImportedBom> importedBoms = new ArrayList<>();
+            for (BomAiDocument document : documents) {
+                importedBoms.add(persistDocument(document));
+            }
+            result.setSuccess(true);
+            result.setBoms(importedBoms);
+            if (!importedBoms.isEmpty()) {
+                BomAiImportedBom first = importedBoms.get(0);
+                result.setBomMasterId(first.getBomMasterId());
+                result.setBomVersionId(first.getBomVersionId());
+                result.setBomCode(first.getBomCode());
+            }
+        } catch (Exception e) {
+            log.error("BOM AI 批量导入确认异常", e);
+            throw new ServiceException("导入失败：" + (e.getMessage() == null ? "数据库写入失败" : e.getMessage()));
         }
         return result;
+    }
+
+    private String validateDocument(BomAiDocument document, int index) {
+        String prefix = "第 " + (index + 1) + " 个 BOM";
+        if (document == null || document.getHeader() == null) {
+            return prefix + "缺少母件信息";
+        }
+        BomAiImportHeader header = document.getHeader();
+        if (StringUtils.isBlank(firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode()))) {
+            return prefix + "母件编码不能为空";
+        }
+        if (StringUtils.isBlank(firstNonBlank(header.getFinalParentItemName(), header.getParentItemName()))) {
+            return prefix + "母件名称不能为空";
+        }
+        List<BomAiImportItem> items = document.getItems();
+        if (items == null || items.isEmpty()) {
+            return prefix + "子件明细不能为空";
+        }
+        for (int i = 0; i < items.size(); i++) {
+            BomAiImportItem item = items.get(i);
+            if (item == null) {
+                return prefix + "第 " + (i + 1) + " 行为空";
+            }
+            if (StringUtils.isBlank(firstNonBlank(item.getFinalItemCode(), item.getComponentCode()))) {
+                return prefix + "第 " + (i + 1) + " 行子件编码不能为空";
+            }
+            if (StringUtils.isBlank(firstNonBlank(item.getFinalItemName(), item.getItemName()))) {
+                return prefix + "第 " + (i + 1) + " 行子件名称不能为空";
+            }
+            BigDecimal quantity = item.getFinalQuantity() != null ? item.getFinalQuantity() : item.getQuantity();
+            if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
+                return prefix + "第 " + (i + 1) + " 行子件数量必须大于 0";
+            }
+        }
+        return null;
+    }
+
+    private BomAiImportedBom persistDocument(BomAiDocument document) {
+        BomAiImportHeader header = document.getHeader();
+        String parentCode = firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode());
+        String parentName = firstNonBlank(header.getFinalParentItemName(), header.getParentItemName());
+        String parentSpec = firstNonBlank(header.getFinalParentItemSpec(), header.getParentItemSpec());
+
+        String bomCode = generateBomCode(parentCode);
+        BomMaster master = new BomMaster();
+        master.setBomCode(bomCode);
+        master.setParentItemCode(parentCode);
+        master.setParentItemName(parentName);
+        master.setParentItemSpec(parentSpec);
+        master.setParentItemId(header.getFinalParentMaterialId() != null
+                ? header.getFinalParentMaterialId() : header.getMatchedMaterialId());
+        master.setBomType("SELF");
+        master.setStatus("DRAFT");
+        master.setSourceSystem("AI_IMPORT");
+        master.setCreateBy("admin");
+        bomMasterService.insertBomMaster(master);
+
+        BigDecimal baseQty = header.getFinalBaseQty() != null ? header.getFinalBaseQty() : header.getBaseQty();
+        BomVersion version = new BomVersion();
+        version.setBomMasterId(master.getId());
+        version.setVersionCode("V1.0");
+        version.setVersionName("AI导入版本");
+        version.setBaseQty(baseQty != null ? baseQty : BigDecimal.ONE);
+        version.setUsageType("GENERAL");
+        version.setStatus("DRAFT");
+        version.setApproveStatus("PENDING");
+        version.setDefaultFlag(1);
+        version.setSourceSystem("AI_IMPORT");
+        version.setCreateBy("admin");
+        bomVersionService.insertBomVersion(version);
+
+        List<BomAiImportItem> items = document.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            BomAiImportItem aiItem = items.get(i);
+            BomItem bomItem = new BomItem();
+            bomItem.setBomVersionId(version.getId());
+            bomItem.setLineNo(aiItem.getLineNo() != null ? aiItem.getLineNo() : (i + 1) * 10);
+            bomItem.setParentItemCode(parentCode);
+
+            String code = firstNonBlank(aiItem.getFinalItemCode(), aiItem.getComponentCode());
+            String name = firstNonBlank(aiItem.getFinalItemName(), aiItem.getItemName());
+            String spec = firstNonBlank(aiItem.getFinalSpec(), aiItem.getSpec());
+            String unit = firstNonBlank(aiItem.getFinalUnit(), aiItem.getUnit());
+            BigDecimal qty = aiItem.getFinalQuantity() != null ? aiItem.getFinalQuantity() : aiItem.getQuantity();
+
+            bomItem.setComponentItemCode(code);
+            bomItem.setComponentItemName(name);
+            bomItem.setComponentItemSpec(spec);
+            bomItem.setComponentItemUnit(unit);
+            bomItem.setComponentQty(qty);
+            if (aiItem.getMatchedMaterialId() != null) {
+                bomItem.setComponentItemId(aiItem.getMatchedMaterialId());
+            }
+            bomItem.setSupplyType("PICK");
+            bomItem.setIsVirtual(0);
+            bomItem.setMrpExpandFlag(1);
+            bomItem.setSourceSystem("AI_IMPORT");
+            bomItem.setRemark(aiItem.getRemark());
+            bomItem.setCreateBy("admin");
+            // 不设置 componentBomVersionId，子件 BOM 通过物料编码软引用。
+            bomItemService.insertBomItem(bomItem);
+        }
+
+        BomAiImportedBom imported = new BomAiImportedBom();
+        imported.setBomMasterId(master.getId());
+        imported.setBomVersionId(version.getId());
+        imported.setBomCode(bomCode);
+        imported.setParentItemCode(parentCode);
+        imported.setParentItemName(parentName);
+        return imported;
     }
 
     // ── 私有方法 ──
 
     @SuppressWarnings("unchecked")
     private void parseAndMatch(BomAiPreviewResult result, Map<String, Object> outputs) {
-        // 解析母件头
+        Object payload = findDocumentPayload(outputs);
+        List<BomAiDocument> documents = parseDocuments(payload);
+
+        // 兼容旧版工作流直接返回 document + items 的格式。
+        if (documents.isEmpty() && (outputs.get("document") != null || outputs.get("items") != null)) {
+            Map<String, Object> legacy = new LinkedHashMap<>();
+            legacy.put("pageNo", 1);
+            legacy.put("document", outputs.get("document"));
+            legacy.put("items", outputs.get("items"));
+            documents.add(parseDocument(legacy));
+        }
+        if (documents.isEmpty()) {
+            throw new ServiceException("AI 识别结果中没有 documents 数据");
+        }
+
+        // 物料匹配只查询一次，逐个文档应用匹配结果。
+        Material query = new Material();
+        query.setStatus("0");
+        List<Material> allMaterials = materialService.selectMaterialList(query);
+
+        for (BomAiDocument document : documents) {
+            BomAiImportHeader header = document.getHeader();
+            if (header == null) {
+                header = new BomAiImportHeader();
+                document.setHeader(header);
+            }
+            normalizeHeader(header);
+            List<BomAiImportItem> items = document.getItems();
+            if (items == null) {
+                items = new ArrayList<>();
+                document.setItems(items);
+            }
+            for (BomAiImportItem item : items) {
+                normalizeItem(item);
+            }
+            matchParent(header, allMaterials);
+            for (BomAiImportItem item : items) {
+                matchItem(item, allMaterials);
+            }
+        }
+
+        result.setDocuments(documents);
+        // 保留首个文档的旧字段，兼容仍使用单 BOM 结构的调用方。
+        BomAiDocument first = documents.get(0);
+        result.setHeader(first.getHeader());
+        result.setItems(first.getItems());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object findDocumentPayload(Map<String, Object> outputs) {
+        Object direct = parseJsonValue(outputs.get("documents"));
+        if (direct != null) {
+            return direct;
+        }
+        for (String key : List.of("result", "output", "text", "answer")) {
+            Object candidate = parseJsonValue(outputs.get(key));
+            if (candidate instanceof Map && ((Map<String, Object>) candidate).get("documents") != null) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<BomAiDocument> parseDocuments(Object payload) {
+        List<BomAiDocument> documents = new ArrayList<>();
+        Object normalized = parseJsonValue(payload);
+        if (normalized instanceof Map) {
+            Object nested = ((Map<String, Object>) normalized).get("documents");
+            if (nested != null) {
+                normalized = parseJsonValue(nested);
+            }
+        }
+        if (normalized instanceof List) {
+            for (Object raw : (List<Object>) normalized) {
+                if (raw instanceof Map) {
+                    documents.add(parseDocument((Map<String, Object>) raw));
+                }
+            }
+        }
+        return documents;
+    }
+
+    @SuppressWarnings("unchecked")
+    private BomAiDocument parseDocument(Map<String, Object> raw) {
+        BomAiDocument document = new BomAiDocument();
+        document.setPageNo(intObj(raw.get("pageNo")));
+
+        Object headerObj = raw.get("document");
+        if (headerObj == null) {
+            headerObj = raw.get("header");
+        }
+        if (headerObj == null) {
+            headerObj = raw;
+        }
+        document.setHeader(parseHeader(headerObj));
+        document.setItems(parseItems(raw.get("items")));
+        return document;
+    }
+
+    @SuppressWarnings("unchecked")
+    private BomAiImportHeader parseHeader(Object raw) {
         BomAiImportHeader header = new BomAiImportHeader();
-        Object docObj = outputs.get("document");
-        if (docObj instanceof Map) {
-            Map<String, Object> doc = (Map<String, Object>) docObj;
+        Object normalized = parseJsonValue(raw);
+        if (normalized instanceof Map) {
+            Map<String, Object> doc = (Map<String, Object>) normalized;
             header.setParentItemCode(str(doc.get("parentItemCode")));
             header.setParentItemName(str(doc.get("parentItemName")));
             header.setParentItemSpec(str(doc.get("parentItemSpec")));
@@ -229,7 +429,36 @@ public class BomAiImportService {
             header.setRevision(str(doc.get("revision")));
             header.setBaseQty(dec(doc.get("baseQty")));
         }
-        // 默认值
+        return header;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<BomAiImportItem> parseItems(Object raw) {
+        List<BomAiImportItem> items = new ArrayList<>();
+        Object normalized = parseJsonValue(raw);
+        if (!(normalized instanceof List)) {
+            return items;
+        }
+        for (Object value : (List<Object>) normalized) {
+            if (!(value instanceof Map)) {
+                continue;
+            }
+            Map<String, Object> row = (Map<String, Object>) value;
+            BomAiImportItem item = new BomAiImportItem();
+            item.setLineNo(intObj(row.get("lineNo")));
+            item.setComponentCode(str(row.get("componentCode")));
+            item.setDrawingNo(str(row.get("drawingNo")));
+            item.setItemName(str(row.get("itemName")));
+            item.setQuantity(dec(row.get("quantity")));
+            item.setSpec(str(row.get("spec")));
+            item.setUnit(str(row.get("unit")));
+            item.setRemark(str(row.get("remark")));
+            items.add(item);
+        }
+        return items;
+    }
+
+    private void normalizeHeader(BomAiImportHeader header) {
         header.setFinalParentItemCode(header.getParentItemCode());
         header.setFinalParentItemName(header.getParentItemName());
         header.setFinalParentItemSpec(header.getParentItemSpec());
@@ -237,43 +466,38 @@ public class BomAiImportService {
             header.setBaseQty(BigDecimal.ONE);
         }
         header.setFinalBaseQty(header.getBaseQty());
-        result.setHeader(header);
+    }
 
-        // 解析子件明细
-        List<BomAiImportItem> items = new ArrayList<>();
-        Object itemsObj = outputs.get("items");
-        if (itemsObj instanceof List) {
-            for (Object raw : (List<Object>) itemsObj) {
-                if (!(raw instanceof Map)) continue;
-                Map<String, Object> row = (Map<String, Object>) raw;
-                BomAiImportItem item = new BomAiImportItem();
-                item.setLineNo(intObj(row.get("lineNo")));
-                item.setComponentCode(str(row.get("componentCode")));
-                item.setDrawingNo(str(row.get("drawingNo")));
-                item.setItemName(str(row.get("itemName")));
-                item.setQuantity(dec(row.get("quantity")));
-                item.setSpec(str(row.get("spec")));
-                item.setUnit(str(row.get("unit")));
-                item.setRemark(str(row.get("remark")));
+    private void normalizeItem(BomAiImportItem item) {
+        if (item == null) {
+            return;
+        }
+        item.setFinalItemCode(item.getComponentCode());
+        item.setFinalItemName(item.getItemName());
+        item.setFinalQuantity(item.getQuantity());
+        item.setFinalSpec(item.getSpec());
+        item.setFinalUnit(item.getUnit());
+    }
 
-                item.setFinalItemCode(item.getComponentCode());
-                item.setFinalItemName(item.getItemName());
-                item.setFinalQuantity(item.getQuantity());
-                item.setFinalSpec(item.getSpec());
-                item.setFinalUnit(item.getUnit());
-                items.add(item);
+    private Object parseJsonValue(Object value) {
+        if (!(value instanceof String)) {
+            return value;
+        }
+        String text = ((String) value).trim();
+        if (text.startsWith("```")) {
+            int firstLineEnd = text.indexOf('\n');
+            int lastFence = text.lastIndexOf("```");
+            if (firstLineEnd >= 0 && lastFence > firstLineEnd) {
+                text = text.substring(firstLineEnd + 1, lastFence).trim();
             }
         }
-        result.setItems(items);
-
-        // 物料三阶段匹配
-        Material query = new Material();
-        query.setStatus("0");
-        List<Material> allMaterials = materialService.selectMaterialList(query);
-
-        matchParent(header, allMaterials);
-        for (BomAiImportItem item : items) {
-            matchItem(item, allMaterials);
+        if (!text.startsWith("{") && !text.startsWith("[")) {
+            return value;
+        }
+        try {
+            return JSON.parse(text);
+        } catch (Exception ignored) {
+            return value;
         }
     }
 
@@ -383,6 +607,19 @@ public class BomAiImportService {
             }
         }
         throw new RuntimeException("无法生成唯一 BOM 编码，请稍后重试");
+    }
+
+    private String difyFileType(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType != null && contentType.toLowerCase().startsWith("image/")) {
+            return "image";
+        }
+        String filename = file.getOriginalFilename();
+        return filename != null && filename.toLowerCase().endsWith(".pdf") ? "document" : "image";
+    }
+
+    private String firstNonBlank(String preferred, String fallback) {
+        return StringUtils.isNotBlank(preferred) ? preferred : fallback;
     }
 
     // ── 类型转换工具 ──

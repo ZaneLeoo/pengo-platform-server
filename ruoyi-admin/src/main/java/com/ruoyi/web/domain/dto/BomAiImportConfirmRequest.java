@@ -11,9 +11,13 @@ public class BomAiImportConfirmRequest {
     private BomAiImportHeader header;
     /** 子件明细（用户编辑后） */
     private List<BomAiImportItem> items;
+    /** 多个独立 BOM（用户编辑后）。 */
+    private List<BomAiDocument> documents;
 
     public BomAiImportHeader getHeader() { return header; }
     public void setHeader(BomAiImportHeader header) { this.header = header; }
     public List<BomAiImportItem> getItems() { return items; }
     public void setItems(List<BomAiImportItem> items) { this.items = items; }
+    public List<BomAiDocument> getDocuments() { return documents; }
+    public void setDocuments(List<BomAiDocument> documents) { this.documents = documents; }
 }
