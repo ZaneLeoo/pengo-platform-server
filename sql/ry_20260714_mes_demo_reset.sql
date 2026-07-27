@@ -15,8 +15,6 @@ truncate table purchase_supplier_quote;
 truncate table bom_item;
 truncate table bom_version;
 truncate table bom_master;
-truncate table bom_import_item;
-truncate table bom_import_task;
 truncate table material;
 truncate table material_category;
 truncate table location;
