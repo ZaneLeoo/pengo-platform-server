@@ -266,7 +266,8 @@ public class BomAiImportService {
         version.setUsageType("GENERAL");
         version.setStatus("DRAFT");
         version.setApproveStatus("PENDING");
-        version.setDefaultFlag(1);
+        // AI 导入版本先保持草稿，审核生效后再由业务操作设为默认版本。
+        version.setDefaultFlag(0);
         version.setSourceSystem("AI_IMPORT");
         version.setCreateBy("admin");
         bomVersionService.insertBomVersion(version);

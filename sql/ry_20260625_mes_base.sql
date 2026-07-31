@@ -29,7 +29,7 @@ create table material (
     category_id        bigint(20)      default null               comment '分类ID',
     spec               varchar(120)    default null               comment '规格',
     model              varchar(120)    default null               comment '型号',
-    unit               varchar(32)     not null                   comment '主单位',
+    unit               varchar(32)     not null                   comment '库存基准单位',
     drawing_no         varchar(64)     default null               comment '图号',
     material_version   varchar(32)     default null               comment '物料版本',
     source_type        varchar(32)     not null                   comment '来源类型（MAKE/PURCHASE/OUTSOURCE）',

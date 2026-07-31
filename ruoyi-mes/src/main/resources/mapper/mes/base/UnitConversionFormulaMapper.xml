@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.base.mapper.UnitConversionFormulaMapper">
+
+    <resultMap id="FormulaResult" type="com.ruoyi.mes.base.domain.UnitConversionFormula">
+        <id property="id" column="id"/>
+        <result property="formulaCode" column="formula_code"/>
+        <result property="formulaName" column="formula_name"/>
+        <result property="formulaType" column="formula_type"/>
+        <result property="expression" column="expression"/>
+        <result property="unitGroupId" column="unit_group_id"/>
+        <result property="inputUnit" column="input_unit"/>
+        <result property="outputUnit" column="output_unit"/>
+        <result property="scopeType" column="scope_type"/>
+        <result property="scopeId" column="scope_id"/>
+        <result property="reverseMode" column="reverse_mode"/>
+        <result property="decimalScale" column="decimal_scale"/>
+        <result property="roundingMode" column="rounding_mode"/>
+        <result property="reverseExpression" column="reverse_expression"/>
+        <result property="param1Name" column="param1_name"/>
+        <result property="param1Field" column="param1_field"/>
+        <result property="param1Default" column="param1_default"/>
+        <result property="param2Name" column="param2_name"/>
+        <result property="param2Field" column="param2_field"/>
+        <result property="param2Default" column="param2_default"/>
+        <result property="param3Name" column="param3_name"/>
+        <result property="param3Field" column="param3_field"/>
+        <result property="param3Default" column="param3_default"/>
+        <result property="param4Name" column="param4_name"/>
+        <result property="param4Field" column="param4_field"/>
+        <result property="param4Default" column="param4_default"/>
+        <result property="param5Name" column="param5_name"/>
+        <result property="param5Field" column="param5_field"/>
+        <result property="param5Default" column="param5_default"/>
+        <result property="isActive" column="is_active"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectFormulaVo">
+        select id, formula_code, formula_name, formula_type, expression,
+               unit_group_id, input_unit, output_unit,
+               scope_type, scope_id, reverse_mode, reverse_expression,
+               decimal_scale, rounding_mode,
+               param1_name, param1_field, param1_default,
+               param2_name, param2_field, param2_default,
+               param3_name, param3_field, param3_default,
+               param4_name, param4_field, param4_default,
+               param5_name, param5_field, param5_default,
+               is_active, sort_order, status,
+               create_by, create_time, update_by, update_time, remark
+        from unit_conversion_formula
+    </sql>
+
+    <!-- 三级作用域精确匹配查找 -->
+    <select id="selectByScope" resultMap="FormulaResult">
+        <include refid="selectFormulaVo"/>
+        where unit_group_id = #{unitGroupId}
+          and input_unit = #{fromUnit}
+          and output_unit = #{toUnit}
+          and scope_type = #{scopeType}
+          <if test="scopeId != null">
+              and scope_id = #{scopeId}
+          </if>
+          <if test="scopeId == null">
+              and scope_id is null
+          </if>
+          and is_active = 'Y'
+          and status = '0'
+        limit 1
+    </select>
+
+    <select id="selectFormulaList" parameterType="com.ruoyi.mes.base.domain.UnitConversionFormula" resultMap="FormulaResult">
+        <include refid="selectFormulaVo"/>
+        <where>
+            <if test="formulaCode != null and formulaCode != ''">and formula_code like concat('%', #{formulaCode}, '%')</if>
+            <if test="formulaName != null and formulaName != ''">and formula_name like concat('%', #{formulaName}, '%')</if>
+            <if test="unitGroupId != null">and unit_group_id = #{unitGroupId}</if>
+            <if test="isActive != null and isActive != ''">and is_active = #{isActive}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+        </where>
+        order by sort_order
+    </select>
+
+    <select id="selectFormulaById" parameterType="Long" resultMap="FormulaResult">
+        <include refid="selectFormulaVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertFormula" parameterType="com.ruoyi.mes.base.domain.UnitConversionFormula" useGeneratedKeys="true" keyProperty="id">
+        insert into unit_conversion_formula (
+            formula_code, formula_name, formula_type, expression,
+            unit_group_id, input_unit, output_unit,
+            scope_type, scope_id, reverse_mode, reverse_expression,
+            decimal_scale, rounding_mode,
+            param1_name, param1_field, param1_default,
+            param2_name, param2_field, param2_default,
+            param3_name, param3_field, param3_default,
+            param4_name, param4_field, param4_default,
+            param5_name, param5_field, param5_default,
+            is_active, sort_order, status,
+            create_by, create_time, remark
+        ) values (
+            #{formulaCode}, #{formulaName}, #{formulaType}, #{expression},
+            #{unitGroupId}, #{inputUnit}, #{outputUnit},
+            #{scopeType}, #{scopeId}, #{reverseMode}, #{reverseExpression},
+            #{decimalScale}, #{roundingMode},
+            #{param1Name}, #{param1Field}, #{param1Default},
+            #{param2Name}, #{param2Field}, #{param2Default},
+            #{param3Name}, #{param3Field}, #{param3Default},
+            #{param4Name}, #{param4Field}, #{param4Default},
+            #{param5Name}, #{param5Field}, #{param5Default},
+            #{isActive}, #{sortOrder}, #{status},
+            #{createBy}, sysdate(), #{remark}
+        )
+    </insert>
+
+    <update id="updateFormula" parameterType="com.ruoyi.mes.base.domain.UnitConversionFormula">
+        update unit_conversion_formula
+        <set>
+            <if test="formulaCode != null">formula_code = #{formulaCode},</if>
+            <if test="formulaName != null">formula_name = #{formulaName},</if>
+            <if test="formulaType != null">formula_type = #{formulaType},</if>
+            <if test="expression != null">expression = #{expression},</if>
+            <if test="unitGroupId != null">unit_group_id = #{unitGroupId},</if>
+            <if test="inputUnit != null">input_unit = #{inputUnit},</if>
+            <if test="outputUnit != null">output_unit = #{outputUnit},</if>
+            <if test="scopeType != null">scope_type = #{scopeType},</if>
+            <if test="scopeId != null">scope_id = #{scopeId},</if>
+            <if test="reverseMode != null">reverse_mode = #{reverseMode},</if>
+            <if test="decimalScale != null">decimal_scale = #{decimalScale},</if>
+            <if test="roundingMode != null">rounding_mode = #{roundingMode},</if>
+            <if test="reverseExpression != null">reverse_expression = #{reverseExpression},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="param1Default != null">param1_default = #{param1Default},</if>
+            <if test="param1Name != null">param1_name = #{param1Name},</if>
+            <if test="param1Field != null">param1_field = #{param1Field},</if>
+            <if test="param2Default != null">param2_default = #{param2Default},</if>
+            <if test="param2Name != null">param2_name = #{param2Name},</if>
+            <if test="param2Field != null">param2_field = #{param2Field},</if>
+            <if test="param3Default != null">param3_default = #{param3Default},</if>
+            <if test="param3Name != null">param3_name = #{param3Name},</if>
+            <if test="param3Field != null">param3_field = #{param3Field},</if>
+            <if test="param4Default != null">param4_default = #{param4Default},</if>
+            <if test="param4Name != null">param4_name = #{param4Name},</if>
+            <if test="param4Field != null">param4_field = #{param4Field},</if>
+            <if test="param5Default != null">param5_default = #{param5Default},</if>
+            <if test="param5Name != null">param5_name = #{param5Name},</if>
+            <if test="param5Field != null">param5_field = #{param5Field},</if>
+            update_by = #{updateBy}, update_time = sysdate(), remark = #{remark}
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFormulaByIds" parameterType="Long">
+        delete from unit_conversion_formula where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

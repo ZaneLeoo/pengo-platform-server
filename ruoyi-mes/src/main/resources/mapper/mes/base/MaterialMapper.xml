@@ -14,6 +14,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="spec" column="spec"/>
         <result property="model" column="model"/>
         <result property="unit" column="unit"/>
+        <result property="unitGroupCode" column="unit_group_code"/>
+        <result property="length" column="length"/>
+        <result property="width" column="width"/>
+        <result property="height" column="height"/>
+        <result property="weight" column="weight"/>
+        <result property="yards" column="yards"/>
+        <result property="standardWeightPerSqm" column="standard_weight_per_sqm"/>
         <result property="drawingNo" column="drawing_no"/>
         <result property="materialVersion" column="material_version"/>
         <result property="sourceType" column="source_type"/>
@@ -36,7 +43,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <sql id="selectMaterialVo">
         select m.material_id, m.material_code, m.material_name, m.material_type, m.category_id,
-               c.category_name, m.spec, m.model, m.unit, m.drawing_no, m.material_version,
+               c.category_name, m.spec, m.model, m.unit, m.unit_group_code,
+               m.length, m.width, m.height, m.weight, m.yards, m.standard_weight_per_sqm,
+               m.drawing_no, m.material_version,
                m.source_type, m.lot_control_flag, m.shelf_life_control_flag, m.shelf_life_days,
                m.expiry_warning_days, m.sn_control_flag, m.inspection_flag, m.safe_stock,
                m.default_bom_id, m.default_route_id, m.status, m.create_by, m.create_time,
@@ -105,12 +114,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <insert id="insertMaterial" parameterType="Material" useGeneratedKeys="true" keyProperty="materialId">
         insert into material(
-            material_code, material_name, material_type, category_id, spec, model, unit, drawing_no,
+            material_code, material_name, material_type, category_id, spec, model, unit, unit_group_code,
+            length, width, height, weight, yards, standard_weight_per_sqm,
+            drawing_no,
             material_version, source_type, lot_control_flag, shelf_life_control_flag, shelf_life_days,
             expiry_warning_days, sn_control_flag, inspection_flag,
             safe_stock, default_bom_id, default_route_id, status, remark, create_by, create_time
         ) values (
-            #{materialCode}, #{materialName}, #{materialType}, #{categoryId}, #{spec}, #{model}, #{unit}, #{drawingNo},
+            #{materialCode}, #{materialName}, #{materialType}, #{categoryId}, #{spec}, #{model}, #{unit}, #{unitGroupCode},
+            #{length}, #{width}, #{height}, #{weight}, #{yards}, #{standardWeightPerSqm},
+            #{drawingNo},
             #{materialVersion}, #{sourceType}, #{lotControlFlag}, #{shelfLifeControlFlag}, #{shelfLifeDays},
             #{expiryWarningDays}, #{snControlFlag}, #{inspectionFlag},
             #{safeStock}, #{defaultBomId}, #{defaultRouteId}, #{status}, #{remark}, #{createBy}, sysdate()
@@ -127,6 +140,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="spec != null">spec = #{spec},</if>
             <if test="model != null">model = #{model},</if>
             <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="unitGroupCode != null">unit_group_code = #{unitGroupCode},</if>
+            <if test="length != null">length = #{length},</if>
+            <if test="width != null">width = #{width},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="yards != null">yards = #{yards},</if>
+            <if test="standardWeightPerSqm != null">standard_weight_per_sqm = #{standardWeightPerSqm},</if>
             <if test="drawingNo != null">drawing_no = #{drawingNo},</if>
             <if test="materialVersion != null">material_version = #{materialVersion},</if>
             <if test="sourceType != null and sourceType != ''">source_type = #{sourceType},</if>

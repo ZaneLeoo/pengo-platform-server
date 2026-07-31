@@ -31,6 +31,19 @@
         <result property="spec" column="spec"/>
         <result property="model" column="model"/>
         <result property="unit" column="unit"/>
+        <result property="unitGroupCode" column="unit_group_code"/>
+        <result property="inputUnitCode" column="input_unit_code"/>
+        <result property="inputUnitName" column="input_unit_name"/>
+        <result property="inputQty" column="input_qty"/>
+        <result property="unit1Code" column="unit1_code"/>
+        <result property="unit1Name" column="unit1_name"/>
+        <result property="unit1Qty" column="unit1_qty"/>
+        <result property="unit2Code" column="unit2_code"/>
+        <result property="unit2Name" column="unit2_name"/>
+        <result property="unit2Qty" column="unit2_qty"/>
+        <result property="unit3Code" column="unit3_code"/>
+        <result property="unit3Name" column="unit3_name"/>
+        <result property="unit3Qty" column="unit3_qty"/>
         <result property="orderQuantity" column="order_quantity"/>
         <result property="receivedQuantity" column="received_quantity"/>
         <result property="qualifiedQuantity" column="qualified_quantity"/>
@@ -120,13 +133,22 @@
     </delete>
 
     <select id="selectPurchaseOrderLineList" resultMap="PurchaseOrderLineResult">
-        select * from purchase_order_line where order_id = #{orderId} order by line_no
+        select pol.*, m.unit_group_code
+        from purchase_order_line pol
+        left join material m on m.material_id = pol.material_id
+        where pol.order_id = #{orderId}
+        order by pol.line_no
     </select>
 
     <insert id="insertPurchaseOrderLine" useGeneratedKeys="true" keyProperty="id">
         insert into purchase_order_line(order_id, line_no,
                                         material_id, material_code, material_name,
                                         spec, model, unit,
+                                        input_unit_code, input_unit_name,
+                                        input_qty,
+                                        unit1_code, unit1_name, unit1_qty,
+                                        unit2_code, unit2_name, unit2_qty,
+                                        unit3_code, unit3_name, unit3_qty,
                                         order_quantity, received_quantity,
                                         qualified_quantity, inbound_quantity,
                                         unit_price, tax_rate, amount,
@@ -135,6 +157,11 @@
         values (#{orderId}, #{lineNo},
                 #{materialId}, #{materialCode}, #{materialName},
                 #{spec}, #{model}, #{unit},
+                #{inputUnitCode}, #{inputUnitName},
+                #{inputQty},
+                #{unit1Code}, #{unit1Name}, #{unit1Qty},
+                #{unit2Code}, #{unit2Name}, #{unit2Qty},
+                #{unit3Code}, #{unit3Name}, #{unit3Qty},
                 #{orderQuantity}, #{receivedQuantity},
                 #{qualifiedQuantity}, #{inboundQuantity},
                 #{unitPrice}, #{taxRate}, #{amount},
@@ -147,6 +174,21 @@
         set material_id    = #{materialId},
             material_code  = #{materialCode},
             material_name  = #{materialName},
+            spec           = #{spec},
+            model          = #{model},
+            unit           = #{unit},
+            input_unit_code = #{inputUnitCode},
+            input_unit_name = #{inputUnitName},
+            input_qty      = #{inputQty},
+            unit1_code     = #{unit1Code},
+            unit1_name     = #{unit1Name},
+            unit1_qty      = #{unit1Qty},
+            unit2_code     = #{unit2Code},
+            unit2_name     = #{unit2Name},
+            unit2_qty      = #{unit2Qty},
+            unit3_code     = #{unit3Code},
+            unit3_name     = #{unit3Name},
+            unit3_qty      = #{unit3Qty},
             order_quantity = #{orderQuantity},
             unit_price     = #{unitPrice},
             tax_rate       = #{taxRate},

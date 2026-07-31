@@ -3,7 +3,10 @@ package com.ruoyi.mes.base.service.impl;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.mes.base.domain.Material;
+import com.ruoyi.mes.base.domain.UnitGroup;
 import com.ruoyi.mes.base.mapper.MaterialMapper;
+import com.ruoyi.mes.base.mapper.UnitGroupDetailMapper;
+import com.ruoyi.mes.base.mapper.UnitGroupMapper;
 import com.ruoyi.mes.base.service.IMaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,10 @@ public class MaterialServiceImpl implements IMaterialService {
 
     @Autowired
     private MaterialMapper materialMapper;
+    @Autowired
+    private UnitGroupMapper unitGroupMapper;
+    @Autowired
+    private UnitGroupDetailMapper unitGroupDetailMapper;
 
     /**
      * 查询物料列表。
@@ -75,6 +82,7 @@ public class MaterialServiceImpl implements IMaterialService {
      */
     @Override
     public int insertMaterial(Material material) {
+        validateUnitConfiguration(material);
         validateShelfLife(material);
         return materialMapper.insertMaterial(material);
     }
@@ -88,6 +96,7 @@ public class MaterialServiceImpl implements IMaterialService {
      */
     @Override
     public int updateMaterial(Material material) {
+        validateUnitConfiguration(material);
         validateShelfLife(material);
         return materialMapper.updateMaterial(material);
     }
@@ -102,6 +111,23 @@ public class MaterialServiceImpl implements IMaterialService {
     @Override
     public int deleteMaterialByIds(Long[] materialIds) {
         return materialMapper.deleteMaterialByIds(materialIds);
+    }
+
+    /** 校验物料保质期配置。 */
+    private void validateUnitConfiguration(Material material) {
+        if (StringUtils.isBlank(material.getUnitGroupCode())) {
+            throw new ServiceException("物料必须配置计量单位组");
+        }
+        UnitGroup group = unitGroupMapper.selectUnitGroupByCode(material.getUnitGroupCode());
+        if (group == null) {
+            throw new ServiceException("计量单位组不存在: " + material.getUnitGroupCode());
+        }
+        if (StringUtils.isBlank(material.getUnit())) {
+            throw new ServiceException("物料必须配置库存基准单位");
+        }
+        if (unitGroupDetailMapper.selectByGroupAndUnit(group.getId(), material.getUnit()) == null) {
+            throw new ServiceException("库存基准单位不属于物料计量单位组");
+        }
     }
 
     /** 校验物料保质期配置。 */

@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -34,10 +33,10 @@ public class PurchaseOrder extends BaseEntity {
     private String status;
     private String approvedBy;
     private Date approvedTime;
-    @NotNull(message = "订单总数量不能为空")
+    /** 服务端按采购行的 inputQty 汇总；多单位订单不把它作为换算基准。 */
     @DecimalMin(value = "0.0", message = "订单总数量不能小于0")
     private BigDecimal totalQuantity;
-    @NotNull(message = "订单总金额不能为空")
+    /** 服务端按采购行的 inputQty * unitPrice 汇总。 */
     @DecimalMin(value = "0.0", message = "订单总金额不能小于0")
     private BigDecimal totalAmount;
     @NotBlank(message = "币种不能为空")

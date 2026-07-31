@@ -5,6 +5,8 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -15,6 +17,8 @@ import java.math.BigDecimal;
  *
  * @author ruoyi
  */
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class Material extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
@@ -49,9 +53,37 @@ public class Material extends BaseEntity {
     @Excel(name = "型号")
     private String model;
 
-    /** 主单位 */
-    @Excel(name = "主单位")
+    /** 库存基准单位 */
+    @Excel(name = "库存基准单位")
     private String unit;
+
+    /** 计量单位组编码 */
+    @Excel(name = "计量单位组编码")
+    private String unitGroupCode;
+
+    /** 长(m) */
+    @Excel(name = "长(m)")
+    private BigDecimal length;
+
+    /** 宽(m) */
+    @Excel(name = "宽(m)")
+    private BigDecimal width;
+
+    /** 高(m) */
+    @Excel(name = "高(m)")
+    private BigDecimal height;
+
+    /** 重量(kg) */
+    @Excel(name = "重量(kg)")
+    private BigDecimal weight;
+
+    /** 码数 */
+    @Excel(name = "码数")
+    private BigDecimal yards;
+
+    /** 每平方标准重量(kg/m2) */
+    @Excel(name = "每平方标准重量")
+    private BigDecimal standardWeightPerSqm;
 
     /** 图号 */
     @Excel(name = "图号")
@@ -172,7 +204,7 @@ public class Material extends BaseEntity {
         this.model = model;
     }
 
-    @NotBlank(message = "主单位不能为空")
+    @NotBlank(message = "库存基准单位不能为空")
     public String getUnit() {
         return unit;
     }
