@@ -60,6 +60,18 @@ public class MaterialServiceImpl implements IMaterialService {
     }
 
     /**
+     * 根据物料编码精确查询物料。
+     *
+     * @param materialCode
+     *            物料编码
+     * @return 物料
+     */
+    @Override
+    public Material selectMaterialByCode(String materialCode) {
+        return materialMapper.selectMaterialByCode(materialCode);
+    }
+
+    /**
      * 校验物料编码是否唯一。
      *
      * @param material

@@ -195,6 +195,12 @@ public class BomAiImportService {
                 result.setError(validationError);
                 return result;
             }
+            String materialBindingError = bindMaterialsByCode(documents.get(i), i);
+            if (materialBindingError != null) {
+                result.setSuccess(false);
+                result.setError(materialBindingError);
+                return result;
+            }
         }
 
         try {
@@ -248,6 +254,32 @@ public class BomAiImportService {
             if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
                 return prefix + "第 " + (i + 1) + " 行子件数量必须大于 0";
             }
+        }
+        return null;
+    }
+
+    /**
+     * 以物料编码精确查询物料库并重新绑定，避免客户端提交的匹配结果失真。
+     */
+    private String bindMaterialsByCode(BomAiDocument document, int index) {
+        String prefix = "第 " + (index + 1) + " 个 BOM";
+        BomAiImportHeader header = document.getHeader();
+        String parentCode = firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode());
+        Material parentMaterial = materialService.selectMaterialByCode(parentCode);
+        if (!isEnabled(parentMaterial)) {
+            return prefix + "母件物料编码未匹配或已停用：" + parentCode;
+        }
+        applyParentMatch(header, parentMaterial);
+
+        List<BomAiImportItem> items = document.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            BomAiImportItem item = items.get(i);
+            String componentCode = firstNonBlank(item.getFinalItemCode(), item.getComponentCode());
+            Material componentMaterial = materialService.selectMaterialByCode(componentCode);
+            if (!isEnabled(componentMaterial)) {
+                return prefix + "第 " + (i + 1) + " 行子件物料编码未匹配或已停用：" + componentCode;
+            }
+            applyItemMatch(item, componentMaterial);
         }
         return null;
     }
@@ -518,32 +550,15 @@ public class BomAiImportService {
     }
 
     private void matchParent(BomAiImportHeader header, List<Material> materials) {
-        if (header == null) return;
+        if (header == null || StringUtils.isBlank(header.getParentItemCode())) {
+            return;
+        }
         String code = header.getParentItemCode();
-        String drawingNo = header.getDrawingNo();
-        String name = header.getParentItemName();
-
-        // 精确编码匹配
         if (StringUtils.isNotBlank(code)) {
             for (Material m : materials) {
                 if (code.equals(m.getMaterialCode())) {
-                    applyParentMatch(header, m); return;
-                }
-            }
-        }
-        // 图号模糊匹配
-        if (StringUtils.isNotBlank(drawingNo)) {
-            for (Material m : materials) {
-                if (StringUtils.isNotBlank(m.getDrawingNo()) && m.getDrawingNo().contains(drawingNo)) {
-                    applyParentMatch(header, m); return;
-                }
-            }
-        }
-        // 名称模糊匹配
-        if (StringUtils.isNotBlank(name)) {
-            for (Material m : materials) {
-                if (StringUtils.isNotBlank(m.getMaterialName()) && m.getMaterialName().contains(name)) {
-                    applyParentMatch(header, m); return;
+                    applyParentMatch(header, m);
+                    return;
                 }
             }
         }
@@ -560,41 +575,22 @@ public class BomAiImportService {
     }
 
     private void matchItem(BomAiImportItem item, List<Material> materials) {
+        if (item == null || StringUtils.isBlank(item.getComponentCode())) {
+            return;
+        }
         String code = item.getComponentCode();
-        String drawingNo = item.getDrawingNo();
-        String name = item.getItemName();
-        String spec = item.getSpec();
-
-        // Stage 1: 编码精确匹配
         if (StringUtils.isNotBlank(code)) {
             for (Material m : materials) {
                 if (code.equals(m.getMaterialCode())) {
-                    applyItemMatch(item, m); return;
+                    applyItemMatch(item, m);
+                    return;
                 }
             }
         }
-        // Stage 2: 图号模糊匹配
-        if (StringUtils.isNotBlank(drawingNo)) {
-            for (Material m : materials) {
-                if (StringUtils.isNotBlank(m.getDrawingNo()) && m.getDrawingNo().contains(drawingNo)) {
-                    applyItemMatch(item, m); return;
-                }
-            }
-        }
-        // Stage 3: 名称+规格模糊匹配
-        if (StringUtils.isNotBlank(name)) {
-            for (Material m : materials) {
-                if (StringUtils.isNotBlank(m.getMaterialName()) && m.getMaterialName().contains(name)) {
-                    if (StringUtils.isNotBlank(spec) && StringUtils.isNotBlank(m.getSpec())) {
-                        if (m.getSpec().contains(spec) || spec.contains(m.getSpec())) {
-                            applyItemMatch(item, m); return;
-                        }
-                    } else {
-                        applyItemMatch(item, m); return;
-                    }
-                }
-            }
-        }
+    }
+
+    private boolean isEnabled(Material material) {
+        return material != null && "0".equals(material.getStatus());
     }
 
     private void applyItemMatch(BomAiImportItem item, Material m) {

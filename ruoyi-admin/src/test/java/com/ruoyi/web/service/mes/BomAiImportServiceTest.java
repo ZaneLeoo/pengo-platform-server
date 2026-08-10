@@ -14,10 +14,12 @@ import com.ruoyi.agent.infrastructure.dify.model.DifyFileUploadResult;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunResult;
 import com.ruoyi.mes.base.domain.BomMaster;
+import com.ruoyi.mes.base.domain.Material;
 import com.ruoyi.mes.base.mapper.BomMasterMapper;
 import com.ruoyi.mes.base.service.IBomItemService;
 import com.ruoyi.mes.base.service.IBomMasterService;
 import com.ruoyi.mes.base.service.IBomVersionService;
+import com.ruoyi.mes.base.service.IMaterialService;
 import com.ruoyi.web.domain.dto.BomAiDocument;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
 import com.ruoyi.web.domain.dto.BomAiImportHeader;
@@ -53,6 +55,9 @@ class BomAiImportServiceTest {
 
     @Mock
     private IBomItemService bomItemService;
+
+    @Mock
+    private IMaterialService materialService;
 
     @Mock
     private BomMasterMapper bomMasterMapper;
@@ -96,6 +101,8 @@ class BomAiImportServiceTest {
     @Test
     void confirmsBomMasterAsManufacturingAndEnabled() {
         when(bomMasterMapper.selectBomMasterByCode(any())).thenReturn(null);
+        when(materialService.selectMaterialByCode("PARENT-001")).thenReturn(material("PARENT-001", 1L));
+        when(materialService.selectMaterialByCode("COMPONENT-001")).thenReturn(material("COMPONENT-001", 2L));
 
         BomAiImportHeader header = new BomAiImportHeader();
         header.setParentItemCode("PARENT-001");
@@ -117,6 +124,26 @@ class BomAiImportServiceTest {
         assertEquals("ENABLED", captor.getValue().getStatus());
     }
 
+    @Test
+    void rejectsConfirmWhenMaterialCodeDoesNotExist() {
+        BomAiImportHeader header = new BomAiImportHeader();
+        header.setParentItemCode("PARENT-001");
+        header.setParentItemName("母件");
+        BomAiImportItem item = new BomAiImportItem();
+        item.setComponentCode("UNKNOWN-001");
+        item.setItemName("未建物料");
+        item.setQuantity(BigDecimal.ONE);
+        BomAiDocument document = new BomAiDocument();
+        document.setHeader(header);
+        document.setItems(List.of(item));
+        BomAiImportConfirmRequest request = new BomAiImportConfirmRequest();
+        request.setDocuments(List.of(document));
+
+        when(materialService.selectMaterialByCode("PARENT-001")).thenReturn(material("PARENT-001", 1L));
+
+        assertFalse(service.confirm(request).isSuccess());
+    }
+
     private DifyWorkflowRunRequest recognizeAndCapture(MockMultipartFile file) throws Exception {
         when(difyAppConfigService.requireSettings("BOM_OCR"))
                 .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
@@ -136,5 +163,14 @@ class BomAiImportServiceTest {
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> fileList(Object value) {
         return (List<Map<String, Object>>) value;
+    }
+
+    private Material material(String code, Long id) {
+        Material material = new Material();
+        material.setMaterialId(id);
+        material.setMaterialCode(code);
+        material.setMaterialName(code + "名称");
+        material.setStatus("0");
+        return material;
     }
 }
