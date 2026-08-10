@@ -19,6 +19,8 @@ import com.ruoyi.mes.base.service.IBomItemService;
 import com.ruoyi.mes.base.service.IBomMasterService;
 import com.ruoyi.mes.base.service.IBomVersionService;
 import com.ruoyi.mes.base.service.IMaterialService;
+import com.ruoyi.mes.common.enums.BomMasterStatus;
+import com.ruoyi.mes.common.enums.BomType;
 import com.ruoyi.web.domain.dto.BomAiConfirmResult;
 import com.ruoyi.web.domain.dto.BomAiDocument;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
@@ -81,8 +83,9 @@ public class BomAiImportService {
             // 1. 获取 Dify 配置
             DifyClientSettings settings = difyAppConfigService.requireSettings(DIFY_APP_CODE);
 
-            // 2. 逐个上传图纸，按用户选择顺序组装成 Dify File List。
-            List<Map<String, Object>> difyFiles = new ArrayList<>();
+            // 2. 逐个上传图纸，并按 BOM_OCR 工作流的输入变量分组。
+            List<Map<String, Object>> difyImages = new ArrayList<>();
+            Map<String, Object> difyPdf = null;
             for (MultipartFile file : files) {
                 if (file == null || file.isEmpty()) {
                     continue;
@@ -101,9 +104,16 @@ public class BomAiImportService {
                 difyFile.put("type", difyFileType(file));
                 difyFile.put("transfer_method", "local_file");
                 difyFile.put("upload_file_id", upload.getId());
-                difyFiles.add(difyFile);
+                if (isPdf(file)) {
+                    if (difyPdf != null) {
+                        throw new ServiceException("一次仅支持上传一个 PDF 图纸");
+                    }
+                    difyPdf = difyFile;
+                } else {
+                    difyImages.add(difyFile);
+                }
             }
-            if (difyFiles.isEmpty()) {
+            if (difyImages.isEmpty() && difyPdf == null) {
                 result.setSuccess(false);
                 result.setError("请上传至少一张有效图纸");
                 return result;
@@ -111,7 +121,12 @@ public class BomAiImportService {
 
             // 3. 执行 BOM_OCR 工作流
             Map<String, Object> inputs = new HashMap<>();
-            inputs.put("bom_files", difyFiles);
+            if (!difyImages.isEmpty()) {
+                inputs.put("bom_images", difyImages);
+            }
+            if (difyPdf != null) {
+                inputs.put("bom_pdf", List.of(difyPdf));
+            }
             DifyWorkflowRunResult workflow = difyWorkflowClient.runBlocking(settings,
                     new DifyWorkflowRunRequest(inputs, DIFY_APP_CODE));
 
@@ -251,8 +266,8 @@ public class BomAiImportService {
         master.setParentItemSpec(parentSpec);
         master.setParentItemId(header.getFinalParentMaterialId() != null
                 ? header.getFinalParentMaterialId() : header.getMatchedMaterialId());
-        master.setBomType("SELF");
-        master.setStatus("DRAFT");
+        master.setBomType(BomType.MANUFACTURING.getCode());
+        master.setStatus(BomMasterStatus.ENABLED.getCode());
         master.setSourceSystem("AI_IMPORT");
         master.setCreateBy("admin");
         bomMasterService.insertBomMaster(master);
@@ -611,12 +626,16 @@ public class BomAiImportService {
     }
 
     private String difyFileType(MultipartFile file) {
+        return isPdf(file) ? "document" : "image";
+    }
+
+    private boolean isPdf(MultipartFile file) {
         String contentType = file.getContentType();
-        if (contentType != null && contentType.toLowerCase().startsWith("image/")) {
-            return "image";
+        if (contentType != null && "application/pdf".equalsIgnoreCase(contentType.trim())) {
+            return true;
         }
         String filename = file.getOriginalFilename();
-        return filename != null && filename.toLowerCase().endsWith(".pdf") ? "document" : "image";
+        return filename != null && filename.toLowerCase().endsWith(".pdf");
     }
 
     private String firstNonBlank(String preferred, String fallback) {
