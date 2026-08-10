@@ -6,6 +6,8 @@ import java.util.List;
  * BOM AI 导入 — 确认导入请求。
  */
 public class BomAiImportConfirmRequest {
+    /** 识别阶段创建的可追溯记录 ID。 */
+    private Long traceId;
 
     /** 母件信息（用户编辑后） */
     private BomAiImportHeader header;
@@ -13,6 +15,9 @@ public class BomAiImportConfirmRequest {
     private List<BomAiImportItem> items;
     /** 多个独立 BOM（用户编辑后）。 */
     private List<BomAiDocument> documents;
+
+    public Long getTraceId() { return traceId; }
+    public void setTraceId(Long traceId) { this.traceId = traceId; }
 
     public BomAiImportHeader getHeader() { return header; }
     public void setHeader(BomAiImportHeader header) { this.header = header; }

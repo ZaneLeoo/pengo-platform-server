@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.mes.BomAiImportTraceMapper">
+
+    <resultMap id="BomAiImportTraceResult" type="com.ruoyi.web.domain.BomAiImportTrace">
+        <id property="id" column="id"/>
+        <result property="importNo" column="import_no"/>
+        <result property="status" column="status"/>
+        <result property="fileCount" column="file_count"/>
+        <result property="sourceFiles" column="source_files"/>
+        <result property="rawDifyOutputs" column="raw_dify_outputs"/>
+        <result property="previewPayload" column="preview_payload"/>
+        <result property="errorMessage" column="error_message"/>
+        <result property="importedBomMasterIds" column="imported_bom_master_ids"/>
+        <result property="importedBomVersionIds" column="imported_bom_version_ids"/>
+        <result property="recognizedTime" column="recognized_time"/>
+        <result property="confirmedTime" column="confirmed_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectColumns">
+        select id, import_no, status, file_count, source_files, raw_dify_outputs, preview_payload,
+               error_message, imported_bom_master_ids, imported_bom_version_ids, recognized_time,
+               confirmed_time, create_by, create_time, update_by, update_time, remark
+        from bom_ai_import_trace
+    </sql>
+
+    <insert id="insert" parameterType="com.ruoyi.web.domain.BomAiImportTrace" useGeneratedKeys="true" keyProperty="id">
+        insert into bom_ai_import_trace(
+            import_no, status, file_count, source_files, create_by, create_time, update_by, update_time
+        ) values (
+            #{importNo}, #{status}, #{fileCount}, #{sourceFiles}, #{createBy}, now(), #{updateBy}, now()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.ruoyi.web.domain.BomAiImportTrace">
+        update bom_ai_import_trace
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="sourceFiles != null">source_files = #{sourceFiles},</if>
+            <if test="rawDifyOutputs != null">raw_dify_outputs = #{rawDifyOutputs},</if>
+            <if test="previewPayload != null">preview_payload = #{previewPayload},</if>
+            <if test="errorMessage != null">error_message = #{errorMessage},</if>
+            <if test="importedBomMasterIds != null">imported_bom_master_ids = #{importedBomMasterIds},</if>
+            <if test="importedBomVersionIds != null">imported_bom_version_ids = #{importedBomVersionIds},</if>
+            <if test="recognizedTime != null">recognized_time = #{recognizedTime},</if>
+            <if test="confirmedTime != null">confirmed_time = #{confirmedTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectById" parameterType="Long" resultMap="BomAiImportTraceResult">
+        <include refid="selectColumns"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectList" parameterType="com.ruoyi.web.domain.BomAiImportTrace" resultMap="BomAiImportTraceResult">
+        <include refid="selectColumns"/>
+        <where>
+            <if test="importNo != null and importNo != ''">
+                and import_no like concat('%', #{importNo}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+        </where>
+        order by id desc
+    </select>
+</mapper>

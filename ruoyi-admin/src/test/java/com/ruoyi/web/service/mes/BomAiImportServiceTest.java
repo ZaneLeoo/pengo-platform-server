@@ -20,6 +20,7 @@ import com.ruoyi.mes.base.service.IBomItemService;
 import com.ruoyi.mes.base.service.IBomMasterService;
 import com.ruoyi.mes.base.service.IBomVersionService;
 import com.ruoyi.mes.base.service.IMaterialService;
+import com.ruoyi.web.domain.BomAiImportTrace;
 import com.ruoyi.web.domain.dto.BomAiDocument;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
 import com.ruoyi.web.domain.dto.BomAiImportHeader;
@@ -61,6 +62,9 @@ class BomAiImportServiceTest {
 
     @Mock
     private BomMasterMapper bomMasterMapper;
+
+    @Mock
+    private BomAiImportTraceService bomAiImportTraceService;
 
     @InjectMocks
     private BomAiImportService service;
@@ -144,9 +148,27 @@ class BomAiImportServiceTest {
         assertFalse(service.confirm(request).isSuccess());
     }
 
+    @Test
+    void rejectsNonBomDocumentReturnedByWorkflow() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("files", "random.jpg", "image/jpeg", new byte[] { 1 });
+        when(difyAppConfigService.requireSettings("BOM_OCR"))
+                .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
+        when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
+        when(difyWorkflowClient.uploadFile(any(), any()))
+                .thenReturn(new DifyFileUploadResult("uploaded-file-id", file.getOriginalFilename(), 1, null, null));
+        when(difyWorkflowClient.runBlocking(any(), any())).thenReturn(new DifyWorkflowRunResult(null, null, "succeeded",
+                Map.of("text", "{\"documents\":[{\"pageNo\":1,\"error\":\"非制造业BOM数据\"}]}"), null, null));
+
+        BomAiPreviewResult result = service.recognize(new MockMultipartFile[] { file });
+
+        assertFalse(result.isSuccess());
+        assertEquals("识别失败：第 1 页：非制造业BOM数据", result.getError());
+    }
+
     private DifyWorkflowRunRequest recognizeAndCapture(MockMultipartFile file) throws Exception {
         when(difyAppConfigService.requireSettings("BOM_OCR"))
                 .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
+        when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
         when(difyWorkflowClient.uploadFile(any(), any()))
                 .thenReturn(new DifyFileUploadResult("uploaded-file-id", file.getOriginalFilename(), 1, null, null));
         when(difyWorkflowClient.runBlocking(any(), any()))
@@ -172,5 +194,12 @@ class BomAiImportServiceTest {
         material.setMaterialName(code + "名称");
         material.setStatus("0");
         return material;
+    }
+
+    private BomAiImportTrace trace() {
+        BomAiImportTrace trace = new BomAiImportTrace();
+        trace.setId(1L);
+        trace.setImportNo("BOMAI-TEST");
+        return trace;
     }
 }

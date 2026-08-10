@@ -21,6 +21,7 @@ import com.ruoyi.mes.base.service.IBomVersionService;
 import com.ruoyi.mes.base.service.IMaterialService;
 import com.ruoyi.mes.common.enums.BomMasterStatus;
 import com.ruoyi.mes.common.enums.BomType;
+import com.ruoyi.web.domain.BomAiImportTrace;
 import com.ruoyi.web.domain.dto.BomAiConfirmResult;
 import com.ruoyi.web.domain.dto.BomAiDocument;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
@@ -67,12 +68,22 @@ public class BomAiImportService {
     private IBomItemService bomItemService;
     @Autowired
     private BomMasterMapper bomMasterMapper;
+    @Autowired
+    private BomAiImportTraceService bomAiImportTraceService;
 
     /**
      * 上传图纸 → Dify 识别 → 物料匹配 → 返回预览数据。
      */
     public BomAiPreviewResult recognize(MultipartFile[] files) {
+        return recognize(files, "admin");
+    }
+
+    /**
+     * 上传图纸、调用 Dify 并保存本次识别的可追溯信息。
+     */
+    public BomAiPreviewResult recognize(MultipartFile[] files, String operator) {
         BomAiPreviewResult result = new BomAiPreviewResult();
+        BomAiImportTrace trace = null;
         try {
             if (files == null || files.length == 0) {
                 result.setSuccess(false);
@@ -80,12 +91,17 @@ public class BomAiImportService {
                 return result;
             }
 
+            trace = bomAiImportTraceService.start(files, operator);
+            result.setTraceId(trace.getId());
+            result.setImportNo(trace.getImportNo());
+
             // 1. 获取 Dify 配置
             DifyClientSettings settings = difyAppConfigService.requireSettings(DIFY_APP_CODE);
 
             // 2. 逐个上传图纸，并按 BOM_OCR 工作流的输入变量分组。
             List<Map<String, Object>> difyImages = new ArrayList<>();
             Map<String, Object> difyPdf = null;
+            List<String> difyFileIds = new ArrayList<>();
             for (MultipartFile file : files) {
                 if (file == null || file.isEmpty()) {
                     continue;
@@ -100,6 +116,7 @@ public class BomAiImportService {
                 if (StringUtils.isBlank(upload.getId())) {
                     throw new ServiceException("Dify 文件上传未返回文件 ID：" + file.getOriginalFilename());
                 }
+                difyFileIds.add(upload.getId());
                 Map<String, Object> difyFile = new LinkedHashMap<>();
                 difyFile.put("type", difyFileType(file));
                 difyFile.put("transfer_method", "local_file");
@@ -146,9 +163,13 @@ public class BomAiImportService {
 
             parseAndMatch(result, outputs);
             result.setSuccess(true);
+            bomAiImportTraceService.markRecognized(trace, difyFileIds, outputs, result, operator);
 
         } catch (Exception e) {
             log.error("BOM AI 识别异常", e);
+            if (trace != null) {
+                bomAiImportTraceService.markFailed(trace, e.getMessage(), operator);
+            }
             result.setSuccess(false);
             String msg = e.getMessage();
             if (msg != null && msg.contains("请先配置 Dify 应用")) {
@@ -165,6 +186,13 @@ public class BomAiImportService {
      */
     @Transactional(rollbackFor = Exception.class)
     public BomAiConfirmResult confirm(BomAiImportConfirmRequest request) {
+        return confirm(request, "admin");
+    }
+
+    /**
+     * 确认导入并将生成的 BOM 回写至识别追溯记录。
+     */
+    public BomAiConfirmResult confirm(BomAiImportConfirmRequest request, String operator) {
         BomAiConfirmResult result = new BomAiConfirmResult();
         if (request == null) {
             result.setSuccess(false);
@@ -208,6 +236,7 @@ public class BomAiImportService {
             for (BomAiDocument document : documents) {
                 importedBoms.add(persistDocument(document));
             }
+            bomAiImportTraceService.markImported(request.getTraceId(), importedBoms, operator);
             result.setSuccess(true);
             result.setBoms(importedBoms);
             if (!importedBoms.isEmpty()) {
@@ -378,6 +407,7 @@ public class BomAiImportService {
         if (documents.isEmpty()) {
             throw new ServiceException("AI 识别结果中没有 documents 数据");
         }
+        assertNoDocumentErrors(documents);
 
         // 物料匹配只查询一次，逐个文档应用匹配结果。
         Material query = new Material();
@@ -406,10 +436,6 @@ public class BomAiImportService {
         }
 
         result.setDocuments(documents);
-        // 保留首个文档的旧字段，兼容仍使用单 BOM 结构的调用方。
-        BomAiDocument first = documents.get(0);
-        result.setHeader(first.getHeader());
-        result.setItems(first.getItems());
     }
 
     @SuppressWarnings("unchecked")
@@ -451,6 +477,7 @@ public class BomAiImportService {
     private BomAiDocument parseDocument(Map<String, Object> raw) {
         BomAiDocument document = new BomAiDocument();
         document.setPageNo(intObj(raw.get("pageNo")));
+        document.setError(str(raw.get("error")));
 
         Object headerObj = raw.get("document");
         if (headerObj == null) {
@@ -462,6 +489,17 @@ public class BomAiImportService {
         document.setHeader(parseHeader(headerObj));
         document.setItems(parseItems(raw.get("items")));
         return document;
+    }
+
+    /** 工作流声明某页不是 BOM 时，不能将它伪装成空 BOM 继续导入。 */
+    private void assertNoDocumentErrors(List<BomAiDocument> documents) {
+        for (int i = 0; i < documents.size(); i++) {
+            BomAiDocument document = documents.get(i);
+            if (StringUtils.isNotBlank(document.getError())) {
+                int pageNo = document.getPageNo() == null ? i + 1 : document.getPageNo();
+                throw new ServiceException("第 " + pageNo + " 页：" + document.getError());
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
