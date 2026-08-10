@@ -88,6 +88,46 @@ public class BomVersionController extends BaseController {
         return toAjax(bomVersionService.updateBomVersion(bomVersion));
     }
 
+    /** 生效BOM版本。 */
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:edit')")
+    @Log(title = "BOM版本生效", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/activate")
+    public AjaxResult activate(@PathVariable Long id) {
+        return toAjax(bomVersionService.activateBomVersion(id, getUsername()));
+    }
+
+    /** 冻结BOM版本。 */
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:edit')")
+    @Log(title = "BOM版本冻结", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/freeze")
+    public AjaxResult freeze(@PathVariable Long id) {
+        return toAjax(bomVersionService.freezeBomVersion(id, getUsername()));
+    }
+
+    /** 审核BOM版本。 */
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:edit')")
+    @Log(title = "BOM版本审核", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/approve")
+    public AjaxResult approve(@PathVariable Long id) {
+        return toAjax(bomVersionService.approveBomVersion(id, getUsername()));
+    }
+
+    /** 弃审BOM版本。 */
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:edit')")
+    @Log(title = "BOM版本弃审", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/unapprove")
+    public AjaxResult unapprove(@PathVariable Long id) {
+        return toAjax(bomVersionService.unapproveBomVersion(id, getUsername()));
+    }
+
+    /** 设置默认BOM版本。 */
+    @PreAuthorize("@ss.hasPermi('base:bomVersion:edit')")
+    @Log(title = "BOM版本设为默认", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/default")
+    public AjaxResult setDefault(@PathVariable Long id) {
+        return toAjax(bomVersionService.setDefaultBomVersion(id, getUsername()));
+    }
+
     /**
      * 删除BOM版本。
      */

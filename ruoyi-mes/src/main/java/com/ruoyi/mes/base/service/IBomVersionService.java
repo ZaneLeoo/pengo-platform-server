@@ -17,6 +17,11 @@ public interface IBomVersionService {
     int insertBomVersion(BomVersion bomVersion);
     int updateBomVersion(BomVersion bomVersion);
     int deleteBomVersionByIds(Long[] ids);
+    int activateBomVersion(Long id, String updateBy);
+    int freezeBomVersion(Long id, String updateBy);
+    int approveBomVersion(Long id, String updateBy);
+    int unapproveBomVersion(Long id, String updateBy);
+    int setDefaultBomVersion(Long id, String updateBy);
     BomCheckResult checkBomVersion(Long id);
     BomVersionCompareResult compareBomVersion(Long baseVersionId, Long targetVersionId);
 

@@ -63,15 +63,104 @@ public class BomVersionServiceImpl implements IBomVersionService {
 
     @Override
     public int updateBomVersion(BomVersion bomVersion) {
+        BomVersion current = requireVersion(bomVersion.getId());
+        if (BomApproveStatus.APPROVED.getCode().equals(current.getApproveStatus())) {
+            throw new ServiceException("已审核的BOM版本不能编辑，请先弃审");
+        }
+        if (!Objects.equals(current.getStatus(), bomVersion.getStatus())
+                || !Objects.equals(current.getApproveStatus(), bomVersion.getApproveStatus())
+                || !Objects.equals(current.getDefaultFlag(), bomVersion.getDefaultFlag())) {
+            throw new ServiceException("版本状态、审核状态和默认版本只能通过对应操作修改");
+        }
+        bomVersion.setBomMasterId(current.getBomMasterId());
         validateDateRange(bomVersion);
-        resetOtherDefaults(bomVersion);
         return bomVersionMapper.updateBomVersion(bomVersion);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteBomVersionByIds(Long[] ids) {
+        for (Long id : ids) {
+            BomVersion version = requireVersion(id);
+            if (!BomVersionStatus.DRAFT.getCode().equals(version.getStatus())) {
+                throw new ServiceException("只有草稿状态的BOM版本可以删除");
+            }
+            if (Integer.valueOf(1).equals(version.getDefaultFlag())) {
+                throw new ServiceException("默认BOM版本不能删除");
+            }
+        }
         bomItemMapper.deleteBomItemByVersionIds(ids);
         return bomVersionMapper.deleteBomVersionByIds(ids);
+    }
+
+    @Override
+    public int activateBomVersion(Long id, String updateBy) {
+        BomVersion version = requireVersion(id);
+        if (!BomVersionStatus.DRAFT.getCode().equals(version.getStatus())
+                && !BomVersionStatus.FROZEN.getCode().equals(version.getStatus())) {
+            throw new ServiceException("只有草稿或冻结状态的BOM版本可以生效");
+        }
+        ensureNoBlockingIssues(id);
+        version.setStatus(BomVersionStatus.EFFECTIVE.getCode());
+        version.setUpdateBy(updateBy);
+        return bomVersionMapper.updateBomVersion(version);
+    }
+
+    @Override
+    public int freezeBomVersion(Long id, String updateBy) {
+        BomVersion version = requireVersion(id);
+        if (!BomVersionStatus.EFFECTIVE.getCode().equals(version.getStatus())) {
+            throw new ServiceException("只有生效状态的BOM版本可以冻结");
+        }
+        version.setStatus(BomVersionStatus.FROZEN.getCode());
+        version.setDefaultFlag(0);
+        version.setUpdateBy(updateBy);
+        return bomVersionMapper.updateBomVersion(version);
+    }
+
+    @Override
+    public int approveBomVersion(Long id, String updateBy) {
+        BomVersion version = requireVersion(id);
+        if (!BomVersionStatus.EFFECTIVE.getCode().equals(version.getStatus())) {
+            throw new ServiceException("只有已生效的BOM版本可以审核");
+        }
+        if (!BomApproveStatus.PENDING.getCode().equals(version.getApproveStatus())) {
+            throw new ServiceException("只有待审核的BOM版本可以审核");
+        }
+        ensureNoBlockingIssues(id);
+        version.setApproveStatus(BomApproveStatus.APPROVED.getCode());
+        version.setCheckBy(updateBy);
+        version.setCheckTime(new java.util.Date());
+        version.setUpdateBy(updateBy);
+        return bomVersionMapper.updateBomVersion(version);
+    }
+
+    @Override
+    public int unapproveBomVersion(Long id, String updateBy) {
+        BomVersion version = requireVersion(id);
+        if (!BomApproveStatus.APPROVED.getCode().equals(version.getApproveStatus())) {
+            throw new ServiceException("只有已审核的BOM版本可以弃审");
+        }
+        version.setApproveStatus(BomApproveStatus.PENDING.getCode());
+        version.setDefaultFlag(0);
+        version.setCheckBy(null);
+        version.setCheckTime(null);
+        version.setUpdateBy(updateBy);
+        return bomVersionMapper.updateBomVersion(version);
+    }
+
+    @Override
+    public int setDefaultBomVersion(Long id, String updateBy) {
+        BomVersion version = requireVersion(id);
+        ensureNoBlockingIssues(id);
+        if (!BomVersionStatus.EFFECTIVE.getCode().equals(version.getStatus())
+                || !BomApproveStatus.APPROVED.getCode().equals(version.getApproveStatus())) {
+            throw new ServiceException("只有已审核且生效的BOM版本才能设为默认版本");
+        }
+        bomVersionMapper.resetDefaultFlag(version.getBomMasterId(), version.getId());
+        version.setDefaultFlag(1);
+        version.setUpdateBy(updateBy);
+        return bomVersionMapper.updateBomVersion(version);
     }
 
     @Override
@@ -159,6 +248,22 @@ public class BomVersionServiceImpl implements IBomVersionService {
         if (bomVersion.getEffectiveDate() != null && bomVersion.getExpireDate() != null
                 && bomVersion.getExpireDate().before(bomVersion.getEffectiveDate())) {
             throw new ServiceException("失效日期不能早于生效日期");
+        }
+    }
+
+    private BomVersion requireVersion(Long id) {
+        BomVersion version = bomVersionMapper.selectBomVersionById(id);
+        if (version == null) {
+            throw new ServiceException("未找到BOM版本信息");
+        }
+        return version;
+    }
+
+    private void ensureNoBlockingIssues(Long id) {
+        for (BomCheckIssue issue : checkBomVersion(id).getIssues()) {
+            if ("ERROR".equals(issue.getLevel())) {
+                throw new ServiceException("BOM版本完整性检查未通过：" + issue.getMessage());
+            }
         }
     }
 
