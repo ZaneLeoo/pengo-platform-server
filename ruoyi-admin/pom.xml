@@ -85,6 +85,12 @@
             <artifactId>ruoyi-mes</artifactId>
         </dependency>
 
+        <!-- 项目管理模块 -->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-project-management</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

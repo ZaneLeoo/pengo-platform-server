@@ -199,6 +199,13 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- 项目管理模块 -->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-project-management</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -211,6 +218,7 @@
         <module>ruoyi-common</module>
         <module>ruoyi-agent</module>
         <module>ruoyi-mes</module>
+        <module>ruoyi-project-management</module>
     </modules>
     <packaging>pom</packaging>
 
