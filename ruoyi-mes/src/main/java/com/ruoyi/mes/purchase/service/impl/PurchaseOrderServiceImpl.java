@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 /** 采购订单业务处理。 */
 @Service
 public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
+    private static final int MIN_UNIT_COUNT = 2;
+    private static final int MAX_UNIT_COUNT = 3;
+
     private final PurchaseOrderMapper orderMapper;
     private final UnitConversionService conversionService;
 
@@ -119,13 +122,14 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     }
 
     /**
-     * 以录入单位为入口计算单位组内三个对称单位的数量。
+     * 以录入单位为入口计算单位组内两个或三个单位的数量。
      * 前端结果只用于即时展示，最终保存统一由服务端重新计算。
      */
     private void normalizeLineUnits(PurchaseOrderLine line) {
         List<UnitGroupDetail> details = conversionService.getUnitDetails(line.getMaterialId());
-        if (details.size() != 3) {
-            throw new IllegalArgumentException("采购多计量换算要求物料单位组配置恰好三个单位: "
+        if (details.size() < MIN_UNIT_COUNT || details.size() > MAX_UNIT_COUNT) {
+            throw new IllegalArgumentException("采购多计量换算要求物料单位组配置"
+                    + MIN_UNIT_COUNT + "到" + MAX_UNIT_COUNT + "个单位: "
                     + line.getMaterialCode());
         }
 
@@ -157,9 +161,12 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         line.setUnit(inputUnitCode);
         line.setOrderQuantity(line.getInputQty());
 
-        applyUnitSnapshot(line, details.get(0), results, 1);
-        applyUnitSnapshot(line, details.get(1), results, 2);
-        applyUnitSnapshot(line, details.get(2), results, 3);
+        line.setUnit3Code(null);
+        line.setUnit3Name(null);
+        line.setUnit3Qty(null);
+        for (int index = 0; index < details.size(); index++) {
+            applyUnitSnapshot(line, details.get(index), results, index + 1);
+        }
     }
 
     private void applyUnitSnapshot(PurchaseOrderLine line, UnitGroupDetail detail,
