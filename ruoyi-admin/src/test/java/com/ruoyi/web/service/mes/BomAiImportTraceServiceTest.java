@@ -125,4 +125,17 @@ class BomAiImportTraceServiceTest {
 
         assertEquals(historical, service.findImportedDuplicate(current));
     }
+
+    @Test
+    void ignoresHistoricalTraceWithoutImportedVersionIds() {
+        BomAiImportTrace current = new BomAiImportTrace();
+        current.setId(24L);
+        current.setSourceFingerprint("same-file");
+        BomAiImportTrace historical = new BomAiImportTrace();
+        historical.setId(23L);
+        historical.setImportedBomVersionIds("");
+        when(traceMapper.selectImportedByFingerprint("same-file", 24L)).thenReturn(List.of(historical));
+
+        assertEquals(null, service.findImportedDuplicate(current));
+    }
 }
