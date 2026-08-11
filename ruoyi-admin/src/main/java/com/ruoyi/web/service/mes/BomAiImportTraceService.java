@@ -190,7 +190,25 @@ public class BomAiImportTraceService {
         if (trace == null || trace.getSourceFingerprint() == null) {
             return null;
         }
-        return traceMapper.selectLatestImportedByFingerprint(trace.getSourceFingerprint(), trace.getId());
+        return traceMapper.selectImportedByFingerprint(trace.getSourceFingerprint(), trace.getId()).stream()
+                .filter(this::hasLiveImportedBomVersion)
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * 只有历史批次实际生成的 BOM 版本仍存在时，才阻止相同原始文件再次导入。
+     * 旧追溯记录缺少版本关联数据时保守处理，继续视作重复，避免绕过未知的历史导入。
+     */
+    private boolean hasLiveImportedBomVersion(BomAiImportTrace trace) {
+        if (trace.getImportedBomVersionIds() == null || trace.getImportedBomVersionIds().isBlank()) {
+            return true;
+        }
+        List<Long> versionIds = JSON.parseArray(trace.getImportedBomVersionIds(), Long.class);
+        if (versionIds.isEmpty()) {
+            return true;
+        }
+        return versionIds.stream().anyMatch(versionId -> bomVersionMapper.selectBomVersionById(versionId) != null);
     }
 
     /** 查询一条 AI 导入追溯记录。 */

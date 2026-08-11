@@ -21,7 +21,7 @@ public interface BomAiImportTraceMapper {
 
     BomAiImportTrace selectById(Long id);
 
-    BomAiImportTrace selectLatestImportedByFingerprint(@Param("sourceFingerprint") String sourceFingerprint,
+    List<BomAiImportTrace> selectImportedByFingerprint(@Param("sourceFingerprint") String sourceFingerprint,
             @Param("excludeId") Long excludeId);
 
     List<BomAiImportTrace> selectList(BomAiImportTrace trace);

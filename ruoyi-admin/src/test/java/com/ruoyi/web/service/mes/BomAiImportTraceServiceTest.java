@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.List;
 
 /** BOM AI 追溯状态机测试。 */
 @ExtendWith(MockitoExtension.class)
@@ -94,5 +95,34 @@ class BomAiImportTraceServiceTest {
         assertEquals(1, detail.getImportedBoms().size());
         assertEquals("BOM-TL-1000", detail.getImportedBoms().get(0).getBomCode());
         assertEquals("V1.1", detail.getImportedBoms().get(0).getVersionCode());
+    }
+
+    @Test
+    void ignoresDuplicateWhenAllImportedVersionsWereDeleted() {
+        BomAiImportTrace current = new BomAiImportTrace();
+        current.setId(20L);
+        current.setSourceFingerprint("same-file");
+        BomAiImportTrace historical = new BomAiImportTrace();
+        historical.setId(19L);
+        historical.setImportedBomVersionIds("[12,13]");
+        when(traceMapper.selectImportedByFingerprint("same-file", 20L)).thenReturn(List.of(historical));
+        when(bomVersionMapper.selectBomVersionById(12L)).thenReturn(null);
+        when(bomVersionMapper.selectBomVersionById(13L)).thenReturn(null);
+
+        assertEquals(null, service.findImportedDuplicate(current));
+    }
+
+    @Test
+    void keepsDuplicateWhenAnyImportedVersionStillExists() {
+        BomAiImportTrace current = new BomAiImportTrace();
+        current.setId(22L);
+        current.setSourceFingerprint("same-file");
+        BomAiImportTrace historical = new BomAiImportTrace();
+        historical.setId(21L);
+        historical.setImportedBomVersionIds("[14]");
+        when(traceMapper.selectImportedByFingerprint("same-file", 22L)).thenReturn(List.of(historical));
+        when(bomVersionMapper.selectBomVersionById(14L)).thenReturn(new BomVersion());
+
+        assertEquals(historical, service.findImportedDuplicate(current));
     }
 }

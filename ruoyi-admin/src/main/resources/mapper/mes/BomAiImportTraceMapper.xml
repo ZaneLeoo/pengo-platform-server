@@ -87,13 +87,12 @@
         where id = #{id}
     </select>
 
-    <select id="selectLatestImportedByFingerprint" resultMap="BomAiImportTraceResult">
+    <select id="selectImportedByFingerprint" resultMap="BomAiImportTraceResult">
         <include refid="selectColumns"/>
         where source_fingerprint = #{sourceFingerprint}
           and status = 'IMPORTED'
           <if test="excludeId != null">and id != #{excludeId}</if>
         order by id desc
-        limit 1
     </select>
 
     <select id="selectList" parameterType="com.ruoyi.web.domain.BomAiImportTrace" resultMap="BomAiImportTraceResult">
