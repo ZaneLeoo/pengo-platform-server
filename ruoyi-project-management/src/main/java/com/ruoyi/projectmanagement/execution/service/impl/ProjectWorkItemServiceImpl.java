@@ -20,10 +20,22 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         this.projectMapper = projectMapper;
     }
 
-    @Override public List<ProjectWorkItem> selectList(ProjectWorkItem item) { return mapper.selectList(item); }
-    @Override public ProjectWorkItem selectById(Long itemId) { return mapper.selectById(itemId); }
-    @Override public List<Map<String, Object>> overview() { return mapper.selectOverview(); }
-    @Override public int deleteByIds(Long[] itemIds) { return mapper.deleteByIds(itemIds); }
+    @Override
+    public List<ProjectWorkItem> selectList(ProjectWorkItem item) {
+        return mapper.selectList(item);
+    }
+    @Override
+    public ProjectWorkItem selectById(Long itemId) {
+        return mapper.selectById(itemId);
+    }
+    @Override
+    public List<Map<String, Object>> overview() {
+        return mapper.selectOverview();
+    }
+    @Override
+    public int deleteByIds(Long[] itemIds) {
+        return mapper.deleteByIds(itemIds);
+    }
 
     @Override
     public int insert(ProjectWorkItem item) {
@@ -45,11 +57,15 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         if (sameCode != null && !sameCode.getItemId().equals(item.getItemId())) {
             throw new ServiceException("执行项编码已存在");
         }
-        if (item.getStartDate() != null && item.getDueDate() != null && item.getDueDate().isBefore(item.getStartDate())) {
+        if (item.getStartDate() != null && item.getDueDate() != null
+                && item.getDueDate().isBefore(item.getStartDate())) {
             throw new ServiceException("截止日期不能早于开始日期");
         }
-        if (item.getProgress() == null) item.setProgress(0);
-        if (item.getSortOrder() == null) item.setSortOrder(0);
-        if (item.getParentId() == null) item.setParentId(0L);
+        if (item.getProgress() == null)
+            item.setProgress(0);
+        if (item.getSortOrder() == null)
+            item.setSortOrder(0);
+        if (item.getParentId() == null)
+            item.setParentId(0L);
     }
 }

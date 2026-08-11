@@ -14,21 +14,28 @@ import lombok.EqualsAndHashCode;
 public class ProjectWorkItem extends BaseEntity {
     private static final long serialVersionUID = 1L;
     private Long itemId;
-    @NotNull(message = "所属项目不能为空") private Long projectId;
+    @NotNull(message = "所属项目不能为空")
+    private Long projectId;
     private String projectName;
     private Long parentId;
     /** TASK、DELIVERABLE、ISSUE。 */
-    @NotBlank(message = "执行项类型不能为空") private String itemType;
-    @NotBlank(message = "编码不能为空") private String itemCode;
-    @NotBlank(message = "名称不能为空") private String itemName;
+    @NotBlank(message = "执行项类型不能为空")
+    private String itemType;
+    @NotBlank(message = "编码不能为空")
+    private String itemCode;
+    @NotBlank(message = "名称不能为空")
+    private String itemName;
     private Long ownerId;
     private String ownerName;
     /** 任务/交付物/问题各自的生命周期状态。 */
-    @NotBlank(message = "状态不能为空") private String status;
+    @NotBlank(message = "状态不能为空")
+    private String status;
     /** LOW、MEDIUM、HIGH、CRITICAL，主要供问题使用。 */
     private String priority;
-    @JsonFormat(pattern = "yyyy-MM-dd") private LocalDate startDate;
-    @JsonFormat(pattern = "yyyy-MM-dd") private LocalDate dueDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dueDate;
     private Integer progress;
     private String fileUrl;
     private String description;
