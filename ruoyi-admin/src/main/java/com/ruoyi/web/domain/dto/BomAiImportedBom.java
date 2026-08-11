@@ -8,6 +8,7 @@ public class BomAiImportedBom {
     private Long bomMasterId;
     private Long bomVersionId;
     private String bomCode;
+    private String versionCode;
     private String parentItemCode;
     private String parentItemName;
 
@@ -17,6 +18,8 @@ public class BomAiImportedBom {
     public void setBomVersionId(Long bomVersionId) { this.bomVersionId = bomVersionId; }
     public String getBomCode() { return bomCode; }
     public void setBomCode(String bomCode) { this.bomCode = bomCode; }
+    public String getVersionCode() { return versionCode; }
+    public void setVersionCode(String versionCode) { this.versionCode = versionCode; }
     public String getParentItemCode() { return parentItemCode; }
     public void setParentItemCode(String parentItemCode) { this.parentItemCode = parentItemCode; }
     public String getParentItemName() { return parentItemName; }

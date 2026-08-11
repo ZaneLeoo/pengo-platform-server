@@ -17,6 +17,8 @@ public class BomAiPreviewResult {
     private Long traceId;
     /** 本次识别的可追溯批次号。 */
     private String importNo;
+    private Long duplicateImportedTraceId;
+    private String duplicateImportedImportNo;
     /** 是否识别成功 */
     private boolean success;
     /** 错误信息 */
@@ -32,6 +34,10 @@ public class BomAiPreviewResult {
     public void setTraceId(Long traceId) { this.traceId = traceId; }
     public String getImportNo() { return importNo; }
     public void setImportNo(String importNo) { this.importNo = importNo; }
+    public Long getDuplicateImportedTraceId() { return duplicateImportedTraceId; }
+    public void setDuplicateImportedTraceId(Long duplicateImportedTraceId) { this.duplicateImportedTraceId = duplicateImportedTraceId; }
+    public String getDuplicateImportedImportNo() { return duplicateImportedImportNo; }
+    public void setDuplicateImportedImportNo(String duplicateImportedImportNo) { this.duplicateImportedImportNo = duplicateImportedImportNo; }
     public boolean isSuccess() { return success; }
     public void setSuccess(boolean success) { this.success = success; }
     public String getError() { return error; }

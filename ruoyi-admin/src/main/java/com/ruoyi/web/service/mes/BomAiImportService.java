@@ -29,6 +29,7 @@ import com.ruoyi.web.domain.dto.BomAiImportHeader;
 import com.ruoyi.web.domain.dto.BomAiImportItem;
 import com.ruoyi.web.domain.dto.BomAiImportedBom;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
+import com.ruoyi.web.domain.enums.BomAiImportTraceStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +163,11 @@ public class BomAiImportService {
             }
 
             parseAndMatch(result, outputs);
+            BomAiImportTrace duplicate = bomAiImportTraceService.findImportedDuplicate(trace);
+            if (duplicate != null) {
+                result.setDuplicateImportedTraceId(duplicate.getId());
+                result.setDuplicateImportedImportNo(duplicate.getImportNo());
+            }
             result.setSuccess(true);
             bomAiImportTraceService.markRecognized(trace, difyFileIds, outputs, result, operator);
 
@@ -192,6 +198,7 @@ public class BomAiImportService {
     /**
      * 确认导入并将生成的 BOM 回写至识别追溯记录。
      */
+    @Transactional(rollbackFor = Exception.class)
     public BomAiConfirmResult confirm(BomAiImportConfirmRequest request, String operator) {
         BomAiConfirmResult result = new BomAiConfirmResult();
         if (request == null) {
@@ -231,12 +238,29 @@ public class BomAiImportService {
             }
         }
 
+        BomAiImportTrace trace = null;
+        if (request.getTraceId() != null) {
+            trace = bomAiImportTraceService.acquireForImport(request.getTraceId(), operator);
+            if (BomAiImportTraceStatus.IMPORTED.name().equals(trace.getStatus())) {
+                return importedResult(trace);
+            }
+            BomAiImportTrace duplicate = bomAiImportTraceService.findImportedDuplicate(trace);
+            if (duplicate != null && !request.isForceNewVersion()) {
+                throw new ServiceException("相同原始图纸已通过批次 " + duplicate.getImportNo()
+                        + " 导入，请查看已有 BOM；如确认内容有调整，请选择作为新版本导入");
+            }
+            if (duplicate != null && StringUtils.isBlank(request.getReimportReason())) {
+                throw new ServiceException("作为新版本重复导入时必须填写原因");
+            }
+        }
+
         try {
             List<BomAiImportedBom> importedBoms = new ArrayList<>();
             for (BomAiDocument document : documents) {
                 importedBoms.add(persistDocument(document));
             }
-            bomAiImportTraceService.markImported(request.getTraceId(), importedBoms, operator);
+            bomAiImportTraceService.markImported(request.getTraceId(), importedBoms, operator,
+                    request.getReimportReason());
             result.setSuccess(true);
             result.setBoms(importedBoms);
             if (!importedBoms.isEmpty()) {
@@ -319,24 +343,29 @@ public class BomAiImportService {
         String parentName = firstNonBlank(header.getFinalParentItemName(), header.getParentItemName());
         String parentSpec = firstNonBlank(header.getFinalParentItemSpec(), header.getParentItemSpec());
 
-        String bomCode = generateBomCode(parentCode);
-        BomMaster master = new BomMaster();
-        master.setBomCode(bomCode);
-        master.setParentItemCode(parentCode);
-        master.setParentItemName(parentName);
-        master.setParentItemSpec(parentSpec);
-        master.setParentItemId(header.getFinalParentMaterialId() != null
-                ? header.getFinalParentMaterialId() : header.getMatchedMaterialId());
-        master.setBomType(BomType.MANUFACTURING.getCode());
-        master.setStatus(BomMasterStatus.ENABLED.getCode());
-        master.setSourceSystem("AI_IMPORT");
-        master.setCreateBy("admin");
-        bomMasterService.insertBomMaster(master);
+        Long parentMaterialId = header.getFinalParentMaterialId() != null
+                ? header.getFinalParentMaterialId() : header.getMatchedMaterialId();
+        BomMaster master = bomMasterMapper.selectBomMasterByParentItem(parentMaterialId, BomType.MANUFACTURING.getCode());
+        if (master == null) {
+            String bomCode = generateBomCode(parentCode);
+            master = new BomMaster();
+            master.setBomCode(bomCode);
+            master.setParentItemCode(parentCode);
+            master.setParentItemName(parentName);
+            master.setParentItemSpec(parentSpec);
+            master.setParentItemId(parentMaterialId);
+            master.setBomType(BomType.MANUFACTURING.getCode());
+            master.setStatus(BomMasterStatus.ENABLED.getCode());
+            master.setSourceSystem("AI_IMPORT");
+            master.setCreateBy("admin");
+            bomMasterService.insertBomMaster(master);
+        }
+        String bomCode = master.getBomCode();
 
         BigDecimal baseQty = header.getFinalBaseQty() != null ? header.getFinalBaseQty() : header.getBaseQty();
         BomVersion version = new BomVersion();
         version.setBomMasterId(master.getId());
-        version.setVersionCode("V1.0");
+        version.setVersionCode(nextVersionCode(master.getId()));
         version.setVersionName("AI导入版本");
         version.setBaseQty(baseQty != null ? baseQty : BigDecimal.ONE);
         version.setUsageType("GENERAL");
@@ -384,9 +413,44 @@ public class BomAiImportService {
         imported.setBomMasterId(master.getId());
         imported.setBomVersionId(version.getId());
         imported.setBomCode(bomCode);
+        imported.setVersionCode(version.getVersionCode());
         imported.setParentItemCode(parentCode);
         imported.setParentItemName(parentName);
         return imported;
+    }
+
+    private String nextVersionCode(Long bomMasterId) {
+        BomVersion query = new BomVersion();
+        query.setBomMasterId(bomMasterId);
+        int maxMinor = -1;
+        for (BomVersion version : bomVersionService.selectBomVersionList(query)) {
+            String code = version.getVersionCode();
+            if (code != null && code.matches("V1\\.\\d+")) {
+                maxMinor = Math.max(maxMinor, Integer.parseInt(code.substring(3)));
+            }
+        }
+        return "V1." + (maxMinor + 1);
+    }
+
+    private BomAiConfirmResult importedResult(BomAiImportTrace trace) {
+        BomAiConfirmResult result = new BomAiConfirmResult();
+        List<Long> masterIds = JSON.parseArray(trace.getImportedBomMasterIds(), Long.class);
+        List<Long> versionIds = JSON.parseArray(trace.getImportedBomVersionIds(), Long.class);
+        List<BomAiImportedBom> imported = new ArrayList<>();
+        int count = Math.min(masterIds == null ? 0 : masterIds.size(), versionIds == null ? 0 : versionIds.size());
+        for (int i = 0; i < count; i++) {
+            BomAiImportedBom item = new BomAiImportedBom();
+            item.setBomMasterId(masterIds.get(i));
+            item.setBomVersionId(versionIds.get(i));
+            imported.add(item);
+        }
+        result.setSuccess(true);
+        result.setBoms(imported);
+        if (!imported.isEmpty()) {
+            result.setBomMasterId(imported.get(0).getBomMasterId());
+            result.setBomVersionId(imported.get(0).getBomVersionId());
+        }
+        return result;
     }
 
     // ── 私有方法 ──

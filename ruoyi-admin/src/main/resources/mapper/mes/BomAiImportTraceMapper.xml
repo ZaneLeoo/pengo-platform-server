@@ -7,6 +7,8 @@
         <result property="importNo" column="import_no"/>
         <result property="status" column="status"/>
         <result property="fileCount" column="file_count"/>
+        <result property="recognizedBomCount" column="recognized_bom_count"/>
+        <result property="sourceFingerprint" column="source_fingerprint"/>
         <result property="sourceFiles" column="source_files"/>
         <result property="rawDifyOutputs" column="raw_dify_outputs"/>
         <result property="previewPayload" column="preview_payload"/>
@@ -15,6 +17,8 @@
         <result property="importedBomVersionIds" column="imported_bom_version_ids"/>
         <result property="recognizedTime" column="recognized_time"/>
         <result property="confirmedTime" column="confirmed_time"/>
+        <result property="cancelledTime" column="cancelled_time"/>
+        <result property="expiredTime" column="expired_time"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
@@ -23,17 +27,17 @@
     </resultMap>
 
     <sql id="selectColumns">
-        select id, import_no, status, file_count, source_files, raw_dify_outputs, preview_payload,
+        select id, import_no, status, file_count, recognized_bom_count, source_fingerprint, source_files, raw_dify_outputs, preview_payload,
                error_message, imported_bom_master_ids, imported_bom_version_ids, recognized_time,
-               confirmed_time, create_by, create_time, update_by, update_time, remark
+               confirmed_time, cancelled_time, expired_time, create_by, create_time, update_by, update_time, remark
         from bom_ai_import_trace
     </sql>
 
     <insert id="insert" parameterType="com.ruoyi.web.domain.BomAiImportTrace" useGeneratedKeys="true" keyProperty="id">
         insert into bom_ai_import_trace(
-            import_no, status, file_count, source_files, create_by, create_time, update_by, update_time
+            import_no, status, file_count, source_fingerprint, source_files, create_by, create_time, update_by, update_time
         ) values (
-            #{importNo}, #{status}, #{fileCount}, #{sourceFiles}, #{createBy}, now(), #{updateBy}, now()
+            #{importNo}, #{status}, #{fileCount}, #{sourceFingerprint}, #{sourceFiles}, #{createBy}, now(), #{updateBy}, now()
         )
     </insert>
 
@@ -42,6 +46,8 @@
         <set>
             <if test="status != null">status = #{status},</if>
             <if test="sourceFiles != null">source_files = #{sourceFiles},</if>
+            <if test="recognizedBomCount != null">recognized_bom_count = #{recognizedBomCount},</if>
+            <if test="sourceFingerprint != null">source_fingerprint = #{sourceFingerprint},</if>
             <if test="rawDifyOutputs != null">raw_dify_outputs = #{rawDifyOutputs},</if>
             <if test="previewPayload != null">preview_payload = #{previewPayload},</if>
             <if test="errorMessage != null">error_message = #{errorMessage},</if>
@@ -49,15 +55,45 @@
             <if test="importedBomVersionIds != null">imported_bom_version_ids = #{importedBomVersionIds},</if>
             <if test="recognizedTime != null">recognized_time = #{recognizedTime},</if>
             <if test="confirmedTime != null">confirmed_time = #{confirmedTime},</if>
+            <if test="cancelledTime != null">cancelled_time = #{cancelledTime},</if>
+            <if test="expiredTime != null">expired_time = #{expiredTime},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="remark != null">remark = #{remark},</if>
             update_time = now()
         </set>
         where id = #{id}
     </update>
 
+    <update id="transitionStatus">
+        update bom_ai_import_trace
+        set status = #{targetStatus}, update_by = #{operator}, update_time = now()
+        where id = #{id} and status = #{expectedStatus}
+    </update>
+
+    <update id="expireRecognized">
+        update bom_ai_import_trace
+        set status = 'EXPIRED', expired_time = now(), update_time = now()
+        where status = 'RECOGNIZED' and recognized_time &lt; date_sub(now(), interval 7 day)
+    </update>
+
+    <update id="failStaleRecognizing">
+        update bom_ai_import_trace
+        set status = 'FAILED', error_message = '识别任务超时未完成', update_time = now()
+        where status = 'RECOGNIZING' and create_time &lt; date_sub(now(), interval 30 minute)
+    </update>
+
     <select id="selectById" parameterType="Long" resultMap="BomAiImportTraceResult">
         <include refid="selectColumns"/>
         where id = #{id}
+    </select>
+
+    <select id="selectLatestImportedByFingerprint" resultMap="BomAiImportTraceResult">
+        <include refid="selectColumns"/>
+        where source_fingerprint = #{sourceFingerprint}
+          and status = 'IMPORTED'
+          <if test="excludeId != null">and id != #{excludeId}</if>
+        order by id desc
+        limit 1
     </select>
 
     <select id="selectList" parameterType="com.ruoyi.web.domain.BomAiImportTrace" resultMap="BomAiImportTraceResult">

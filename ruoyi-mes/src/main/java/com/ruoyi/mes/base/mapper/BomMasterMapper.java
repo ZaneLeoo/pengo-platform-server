@@ -16,6 +16,8 @@ public interface BomMasterMapper {
     List<BomMaster> selectBomMasterList(BomMaster bomMaster);
     BomMaster selectBomMasterById(Long id);
     BomMaster selectBomMasterByCode(String bomCode);
+    BomMaster selectBomMasterByParentItem(@Param("parentItemId") Long parentItemId,
+            @Param("bomType") String bomType);
     int insertBomMaster(BomMaster bomMaster);
     int updateBomMaster(BomMaster bomMaster);
     int deleteBomMasterByIds(Long[] ids);

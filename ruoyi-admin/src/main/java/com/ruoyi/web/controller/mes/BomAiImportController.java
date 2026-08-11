@@ -82,6 +82,19 @@ public class BomAiImportController extends BaseController {
         return error(result.getError());
     }
 
+    /** 恢复一条仍处于待确认状态的识别预览。 */
+    @GetMapping("/trace/{traceId}/resume")
+    public AjaxResult resume(@PathVariable Long traceId) {
+        return success(bomAiImportTraceService.resume(traceId));
+    }
+
+    /** 主动放弃一条待确认记录。 */
+    @PostMapping("/trace/{traceId}/cancel")
+    public AjaxResult cancel(@PathVariable Long traceId) {
+        bomAiImportTraceService.cancel(traceId, getUsername());
+        return success();
+    }
+
     /** 查询一次 AI 图纸识别/导入的追溯详情。 */
     @GetMapping("/trace/{traceId}")
     public AjaxResult trace(@PathVariable Long traceId) {

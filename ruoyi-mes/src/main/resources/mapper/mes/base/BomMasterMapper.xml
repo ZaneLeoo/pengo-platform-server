@@ -52,6 +52,12 @@
     <select id="selectBomMasterByCode" parameterType="String" resultMap="BomMasterResult">
         <include refid="selectBomMasterVo"/> where bom_code = #{bomCode} limit 1
     </select>
+    <select id="selectBomMasterByParentItem" resultMap="BomMasterResult">
+        <include refid="selectBomMasterVo"/>
+        where parent_item_id = #{parentItemId} and bom_type = #{bomType}
+        order by id asc
+        limit 1
+    </select>
     <insert id="insertBomMaster" parameterType="BomMaster" useGeneratedKeys="true" keyProperty="id">
         insert into bom_master(bom_code,parent_item_id,parent_item_code,parent_item_name,parent_item_spec,parent_item_unit,bom_type,status,source_system,source_id,remark,create_by,create_time)
         values(#{bomCode},#{parentItemId},#{parentItemCode},#{parentItemName},#{parentItemSpec},#{parentItemUnit},#{bomType},#{status},#{sourceSystem},#{sourceId},#{remark},#{createBy},sysdate())

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import com.ruoyi.agent.application.DifyAppConfigService;
@@ -14,6 +15,7 @@ import com.ruoyi.agent.infrastructure.dify.model.DifyFileUploadResult;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunResult;
 import com.ruoyi.mes.base.domain.BomMaster;
+import com.ruoyi.mes.base.domain.BomVersion;
 import com.ruoyi.mes.base.domain.Material;
 import com.ruoyi.mes.base.mapper.BomMasterMapper;
 import com.ruoyi.mes.base.service.IBomItemService;
@@ -146,6 +148,41 @@ class BomAiImportServiceTest {
         when(materialService.selectMaterialByCode("PARENT-001")).thenReturn(material("PARENT-001", 1L));
 
         assertFalse(service.confirm(request).isSuccess());
+    }
+
+    @Test
+    void reusesExistingMasterAndIncrementsVersion() {
+        BomMaster existing = new BomMaster();
+        existing.setId(9L);
+        existing.setBomCode("BOM-PARENT-001");
+        when(bomMasterMapper.selectBomMasterByParentItem(1L, "MANUFACTURING")).thenReturn(existing);
+        when(materialService.selectMaterialByCode("PARENT-001")).thenReturn(material("PARENT-001", 1L));
+        when(materialService.selectMaterialByCode("COMPONENT-001")).thenReturn(material("COMPONENT-001", 2L));
+        BomVersion v10 = new BomVersion();
+        v10.setVersionCode("V1.0");
+        BomVersion v12 = new BomVersion();
+        v12.setVersionCode("V1.2");
+        when(bomVersionService.selectBomVersionList(any())).thenReturn(List.of(v10, v12));
+
+        BomAiImportHeader header = new BomAiImportHeader();
+        header.setParentItemCode("PARENT-001");
+        header.setParentItemName("母件");
+        BomAiImportItem item = new BomAiImportItem();
+        item.setComponentCode("COMPONENT-001");
+        item.setItemName("子件");
+        item.setQuantity(BigDecimal.ONE);
+        BomAiDocument document = new BomAiDocument();
+        document.setHeader(header);
+        document.setItems(List.of(item));
+        BomAiImportConfirmRequest request = new BomAiImportConfirmRequest();
+        request.setDocuments(List.of(document));
+
+        assertTrue(service.confirm(request).isSuccess());
+        verify(bomMasterService, never()).insertBomMaster(any());
+        ArgumentCaptor<BomVersion> versionCaptor = ArgumentCaptor.forClass(BomVersion.class);
+        verify(bomVersionService).insertBomVersion(versionCaptor.capture());
+        assertEquals("V1.3", versionCaptor.getValue().getVersionCode());
+        assertEquals(9L, versionCaptor.getValue().getBomMasterId());
     }
 
     @Test
