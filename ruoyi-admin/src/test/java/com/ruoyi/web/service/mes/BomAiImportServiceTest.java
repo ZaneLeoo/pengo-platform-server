@@ -28,17 +28,21 @@ import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
 import com.ruoyi.web.domain.dto.BomAiImportHeader;
 import com.ruoyi.web.domain.dto.BomAiImportItem;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 /** Tests the request-variable contract of the BOM_OCR Dify workflow. */
 @ExtendWith(MockitoExtension.class)
@@ -90,7 +94,7 @@ class BomAiImportServiceTest {
     @Test
     void sendsPdfFileToBomPdf() throws Exception {
         DifyWorkflowRunRequest request = recognizeAndCapture(new MockMultipartFile("files", "drawing.pdf",
-                "application/pdf", new byte[] { 1 }));
+                "application/pdf", pdfBytes(1)));
 
         Map<String, Object> inputs = request.getInputs();
         assertFalse(inputs.containsKey("bom_images"));
@@ -102,6 +106,35 @@ class BomAiImportServiceTest {
         Map<String, Object> pdf = pdfFiles.get(0);
         assertEquals("document", pdf.get("type"));
         assertEquals("uploaded-file-id", pdf.get("upload_file_id"));
+    }
+
+    @Test
+    void rejectsMultiplePdfFiles() throws Exception {
+        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
+                new MockMultipartFile("files", "drawing-1.pdf", "application/pdf", pdfBytes(1)),
+                new MockMultipartFile("files", "drawing-2.pdf", "application/pdf", pdfBytes(1)) });
+
+        assertFalse(result.isSuccess());
+        assertEquals("识别失败：一次仅支持上传 1 个 PDF", result.getError());
+    }
+
+    @Test
+    void rejectsMixedImageAndPdfInput() {
+        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
+                new MockMultipartFile("files", "drawing.png", "image/png", new byte[] { 1 }),
+                new MockMultipartFile("files", "drawing.pdf", "application/pdf", new byte[] { 2 }) });
+
+        assertFalse(result.isSuccess());
+        assertEquals("识别失败：一次只能上传多张图片或 1 个 PDF，不能混合上传", result.getError());
+    }
+
+    @Test
+    void rejectsPdfOverTwentyPages() throws Exception {
+        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
+                new MockMultipartFile("files", "drawing.pdf", "application/pdf", pdfBytes(21)) });
+
+        assertFalse(result.isSuccess());
+        assertEquals("识别失败：PDF 页数不能超过 20 页", result.getError());
     }
 
     @Test
@@ -202,16 +235,16 @@ class BomAiImportServiceTest {
         assertEquals("识别失败：第 1 页：非制造业BOM数据", result.getError());
     }
 
-    private DifyWorkflowRunRequest recognizeAndCapture(MockMultipartFile file) throws Exception {
+    private DifyWorkflowRunRequest recognizeAndCapture(MockMultipartFile... files) throws Exception {
         when(difyAppConfigService.requireSettings("BOM_OCR"))
                 .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
         when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
         when(difyWorkflowClient.uploadFile(any(), any()))
-                .thenReturn(new DifyFileUploadResult("uploaded-file-id", file.getOriginalFilename(), 1, null, null));
+                .thenReturn(new DifyFileUploadResult("uploaded-file-id", files[0].getOriginalFilename(), 1, null, null));
         when(difyWorkflowClient.runBlocking(any(), any()))
                 .thenReturn(new DifyWorkflowRunResult(null, null, "succeeded", Collections.emptyMap(), null, null));
 
-        BomAiPreviewResult result = service.recognize(new MockMultipartFile[] { file });
+        BomAiPreviewResult result = service.recognize(files);
         assertFalse(result.isSuccess());
 
         ArgumentCaptor<DifyWorkflowRunRequest> captor = ArgumentCaptor.forClass(DifyWorkflowRunRequest.class);
@@ -238,5 +271,15 @@ class BomAiImportServiceTest {
         trace.setId(1L);
         trace.setImportNo("BOMAI-TEST");
         return trace;
+    }
+
+    private byte[] pdfBytes(int pageCount) throws Exception {
+        try (PDDocument document = new PDDocument(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+            for (int index = 0; index < pageCount; index++) {
+                document.addPage(new PDPage());
+            }
+            document.save(output);
+            return output.toByteArray();
+        }
     }
 }

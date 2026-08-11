@@ -30,6 +30,7 @@ import com.ruoyi.web.domain.dto.BomAiImportItem;
 import com.ruoyi.web.domain.dto.BomAiImportedBom;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
 import com.ruoyi.web.domain.enums.BomAiImportTraceStatus;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -54,6 +56,10 @@ public class BomAiImportService {
 
     private static final Logger log = LoggerFactory.getLogger(BomAiImportService.class);
     private static final String DIFY_APP_CODE = "BOM_OCR";
+    private static final int MAX_IMAGE_COUNT = 20;
+    private static final int MAX_PDF_PAGE_COUNT = 20;
+    private static final long MAX_FILE_SIZE = 10L * 1024 * 1024;
+    private static final long MAX_REQUEST_SIZE = 100L * 1024 * 1024;
 
     @Autowired
     private DifyWorkflowClient difyWorkflowClient;
@@ -85,13 +91,16 @@ public class BomAiImportService {
     public BomAiPreviewResult recognize(MultipartFile[] files, String operator) {
         BomAiPreviewResult result = new BomAiPreviewResult();
         BomAiImportTrace trace = null;
+        long recognitionStartedAt = 0L;
         try {
             if (files == null || files.length == 0) {
                 result.setSuccess(false);
                 result.setError("请上传至少一张图纸");
                 return result;
             }
+            validateSingleInputType(files);
 
+            recognitionStartedAt = System.currentTimeMillis();
             trace = bomAiImportTraceService.start(files, operator);
             result.setTraceId(trace.getId());
             result.setImportNo(trace.getImportNo());
@@ -123,9 +132,6 @@ public class BomAiImportService {
                 difyFile.put("transfer_method", "local_file");
                 difyFile.put("upload_file_id", upload.getId());
                 if (isPdf(file)) {
-                    if (difyPdf != null) {
-                        throw new ServiceException("一次仅支持上传一个 PDF 图纸");
-                    }
                     difyPdf = difyFile;
                 } else {
                     difyImages.add(difyFile);
@@ -143,6 +149,7 @@ public class BomAiImportService {
                 inputs.put("bom_images", difyImages);
             }
             if (difyPdf != null) {
+                // Dify 的文件变量即使只有一个 PDF，也要求以文件列表传入。
                 inputs.put("bom_pdf", List.of(difyPdf));
             }
             DifyWorkflowRunResult workflow = difyWorkflowClient.runBlocking(settings,
@@ -169,7 +176,8 @@ public class BomAiImportService {
                 result.setDuplicateImportedImportNo(duplicate.getImportNo());
             }
             result.setSuccess(true);
-            bomAiImportTraceService.markRecognized(trace, difyFileIds, outputs, result, operator);
+            bomAiImportTraceService.markRecognized(trace, difyFileIds, outputs, result, operator,
+                    System.currentTimeMillis() - recognitionStartedAt);
 
         } catch (Exception e) {
             log.error("BOM AI 识别异常", e);
@@ -734,6 +742,75 @@ public class BomAiImportService {
         }
         String filename = file.getOriginalFilename();
         return filename != null && filename.toLowerCase().endsWith(".pdf");
+    }
+
+    /** 单次识别仅接受至多 20 张图片，或 1 个不超过 20 页的 PDF。 */
+    private void validateSingleInputType(MultipartFile[] files) {
+        Boolean pdfInput = null;
+        int validFileCount = 0;
+        long totalSize = 0L;
+        MultipartFile pdfFile = null;
+        for (MultipartFile file : files) {
+            if (file == null || file.isEmpty()) {
+                continue;
+            }
+            if (file.getSize() > MAX_FILE_SIZE) {
+                throw new ServiceException("文件 " + file.getOriginalFilename() + " 不能超过 10MB");
+            }
+            totalSize += file.getSize();
+            if (totalSize > MAX_REQUEST_SIZE) {
+                throw new ServiceException("单次上传文件总大小不能超过 100MB");
+            }
+            if (!isPdf(file) && !isSupportedImage(file)) {
+                throw new ServiceException("仅支持 PNG、JPG、JPEG、PDF 格式");
+            }
+            boolean currentIsPdf = isPdf(file);
+            validFileCount++;
+            if (pdfInput == null) {
+                pdfInput = currentIsPdf;
+            } else if (pdfInput != currentIsPdf) {
+                throw new ServiceException("一次只能上传多张图片或 1 个 PDF，不能混合上传");
+            }
+            if (currentIsPdf) {
+                if (pdfFile != null) {
+                    throw new ServiceException("一次仅支持上传 1 个 PDF");
+                }
+                pdfFile = file;
+            }
+        }
+        if (validFileCount == 0) {
+            throw new ServiceException("请上传至少一张有效图纸");
+        }
+        if (Boolean.FALSE.equals(pdfInput) && validFileCount > MAX_IMAGE_COUNT) {
+            throw new ServiceException("一次最多上传 " + MAX_IMAGE_COUNT + " 张图片");
+        }
+        if (pdfFile != null) {
+            validatePdfPageCount(pdfFile);
+        }
+    }
+
+    private void validatePdfPageCount(MultipartFile pdfFile) {
+        try (PDDocument document = PDDocument.load(pdfFile.getBytes())) {
+            if (document.isEncrypted()) {
+                throw new ServiceException("PDF 已加密，无法识别页数");
+            }
+            if (document.getNumberOfPages() > MAX_PDF_PAGE_COUNT) {
+                throw new ServiceException("PDF 页数不能超过 " + MAX_PDF_PAGE_COUNT + " 页");
+            }
+        } catch (ServiceException exception) {
+            throw exception;
+        } catch (IOException exception) {
+            throw new ServiceException("PDF 无法读取，请检查文件是否损坏或加密");
+        }
+    }
+
+    private boolean isSupportedImage(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        if (filename == null) {
+            return false;
+        }
+        String lowercaseName = filename.toLowerCase();
+        return lowercaseName.endsWith(".png") || lowercaseName.endsWith(".jpg") || lowercaseName.endsWith(".jpeg");
     }
 
     private String firstNonBlank(String preferred, String fallback) {

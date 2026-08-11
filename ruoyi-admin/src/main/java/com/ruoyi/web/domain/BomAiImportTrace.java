@@ -16,6 +16,8 @@ public class BomAiImportTrace extends BaseEntity {
     private String status;
     private Integer fileCount;
     private Integer recognizedBomCount;
+    /** 从提交识别到返回预览的总耗时（毫秒），包含文件上传和 Dify 工作流调用。 */
+    private Long recognitionDurationMs;
     private String sourceFingerprint;
     private String sourceFiles;
     private String rawDifyOutputs;

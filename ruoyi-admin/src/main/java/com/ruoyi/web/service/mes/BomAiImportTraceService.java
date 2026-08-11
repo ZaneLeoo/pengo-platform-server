@@ -83,13 +83,14 @@ public class BomAiImportTraceService {
 
     /** 记录 Dify 文件 ID、原始输出和解析后的预览结果。 */
     public void markRecognized(BomAiImportTrace trace, List<String> difyFileIds, Map<String, Object> outputs,
-            BomAiPreviewResult preview, String operator) {
+            BomAiPreviewResult preview, String operator, long recognitionDurationMs) {
         List<BomAiImportSourceFile> sourceFiles = parseSourceFiles(trace.getSourceFiles());
         for (int i = 0; i < sourceFiles.size() && i < difyFileIds.size(); i++) {
             sourceFiles.get(i).setDifyFileId(difyFileIds.get(i));
         }
         trace.setStatus(BomAiImportTraceStatus.RECOGNIZED.name());
         trace.setRecognizedBomCount(preview.getDocuments() == null ? 0 : preview.getDocuments().size());
+        trace.setRecognitionDurationMs(recognitionDurationMs);
         trace.setSourceFiles(JSON.toJSONString(sourceFiles));
         trace.setRawDifyOutputs(JSON.toJSONString(outputs));
         trace.setPreviewPayload(JSON.toJSONString(preview));

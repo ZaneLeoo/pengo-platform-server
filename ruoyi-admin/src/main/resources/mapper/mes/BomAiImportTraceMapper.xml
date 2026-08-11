@@ -8,6 +8,7 @@
         <result property="status" column="status"/>
         <result property="fileCount" column="file_count"/>
         <result property="recognizedBomCount" column="recognized_bom_count"/>
+        <result property="recognitionDurationMs" column="recognition_duration_ms"/>
         <result property="sourceFingerprint" column="source_fingerprint"/>
         <result property="sourceFiles" column="source_files"/>
         <result property="rawDifyOutputs" column="raw_dify_outputs"/>
@@ -27,7 +28,7 @@
     </resultMap>
 
     <sql id="selectColumns">
-        select id, import_no, status, file_count, recognized_bom_count, source_fingerprint, source_files, raw_dify_outputs, preview_payload,
+        select id, import_no, status, file_count, recognized_bom_count, recognition_duration_ms, source_fingerprint, source_files, raw_dify_outputs, preview_payload,
                error_message, imported_bom_master_ids, imported_bom_version_ids, recognized_time,
                confirmed_time, cancelled_time, expired_time, create_by, create_time, update_by, update_time, remark
         from bom_ai_import_trace
@@ -47,6 +48,7 @@
             <if test="status != null">status = #{status},</if>
             <if test="sourceFiles != null">source_files = #{sourceFiles},</if>
             <if test="recognizedBomCount != null">recognized_bom_count = #{recognizedBomCount},</if>
+            <if test="recognitionDurationMs != null">recognition_duration_ms = #{recognitionDurationMs},</if>
             <if test="sourceFingerprint != null">source_fingerprint = #{sourceFingerprint},</if>
             <if test="rawDifyOutputs != null">raw_dify_outputs = #{rawDifyOutputs},</if>
             <if test="previewPayload != null">preview_payload = #{previewPayload},</if>
