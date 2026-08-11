@@ -21,6 +21,7 @@ import com.ruoyi.mes.base.service.IBomVersionService;
 import com.ruoyi.mes.base.service.IMaterialService;
 import com.ruoyi.mes.common.enums.BomMasterStatus;
 import com.ruoyi.mes.common.enums.BomType;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.web.domain.BomAiImportTrace;
 import com.ruoyi.web.domain.dto.BomAiConfirmResult;
 import com.ruoyi.web.domain.dto.BomAiDocument;
@@ -56,10 +57,14 @@ public class BomAiImportService {
 
     private static final Logger log = LoggerFactory.getLogger(BomAiImportService.class);
     private static final String DIFY_APP_CODE = "BOM_OCR";
-    private static final int MAX_IMAGE_COUNT = 20;
-    private static final int MAX_PDF_PAGE_COUNT = 20;
-    private static final long MAX_FILE_SIZE = 10L * 1024 * 1024;
-    private static final long MAX_REQUEST_SIZE = 100L * 1024 * 1024;
+    public static final String MAX_IMAGE_COUNT_KEY = "mes.bom.ai.import.maxImageCount";
+    public static final String MAX_PDF_PAGE_COUNT_KEY = "mes.bom.ai.import.maxPdfPages";
+    public static final String MAX_FILE_SIZE_MB_KEY = "mes.bom.ai.import.maxFileSizeMb";
+    public static final String MAX_REQUEST_SIZE_MB_KEY = "mes.bom.ai.import.maxRequestSizeMb";
+    private static final int DEFAULT_MAX_IMAGE_COUNT = 20;
+    private static final int DEFAULT_MAX_PDF_PAGE_COUNT = 20;
+    private static final int DEFAULT_MAX_FILE_SIZE_MB = 10;
+    private static final int DEFAULT_MAX_REQUEST_SIZE_MB = 100;
 
     @Autowired
     private DifyWorkflowClient difyWorkflowClient;
@@ -77,6 +82,19 @@ public class BomAiImportService {
     private BomMasterMapper bomMasterMapper;
     @Autowired
     private BomAiImportTraceService bomAiImportTraceService;
+    @Autowired
+    private ISysConfigService sysConfigService;
+
+    /** 返回当前生效的导入限制，供前端展示和提前校验。 */
+    public Map<String, Integer> getImportLimits() {
+        ImportLimits limits = resolveImportLimits();
+        Map<String, Integer> result = new LinkedHashMap<>();
+        result.put("maxImageCount", limits.maxImageCount);
+        result.put("maxPdfPages", limits.maxPdfPages);
+        result.put("maxFileSizeMb", limits.maxFileSizeMb);
+        result.put("maxRequestSizeMb", limits.maxRequestSizeMb);
+        return result;
+    }
 
     /**
      * 上传图纸 → Dify 识别 → 物料匹配 → 返回预览数据。
@@ -746,6 +764,7 @@ public class BomAiImportService {
 
     /** 单次识别仅接受至多 20 张图片，或 1 个不超过 20 页的 PDF。 */
     private void validateSingleInputType(MultipartFile[] files) {
+        ImportLimits limits = resolveImportLimits();
         Boolean pdfInput = null;
         int validFileCount = 0;
         long totalSize = 0L;
@@ -754,12 +773,12 @@ public class BomAiImportService {
             if (file == null || file.isEmpty()) {
                 continue;
             }
-            if (file.getSize() > MAX_FILE_SIZE) {
-                throw new ServiceException("文件 " + file.getOriginalFilename() + " 不能超过 10MB");
+            if (file.getSize() > limits.maxFileSizeMb * 1024L * 1024L) {
+                throw new ServiceException("文件 " + file.getOriginalFilename() + " 不能超过 " + limits.maxFileSizeMb + "MB");
             }
             totalSize += file.getSize();
-            if (totalSize > MAX_REQUEST_SIZE) {
-                throw new ServiceException("单次上传文件总大小不能超过 100MB");
+            if (totalSize > limits.maxRequestSizeMb * 1024L * 1024L) {
+                throw new ServiceException("单次上传文件总大小不能超过 " + limits.maxRequestSizeMb + "MB");
             }
             if (!isPdf(file) && !isSupportedImage(file)) {
                 throw new ServiceException("仅支持 PNG、JPG、JPEG、PDF 格式");
@@ -781,21 +800,21 @@ public class BomAiImportService {
         if (validFileCount == 0) {
             throw new ServiceException("请上传至少一张有效图纸");
         }
-        if (Boolean.FALSE.equals(pdfInput) && validFileCount > MAX_IMAGE_COUNT) {
-            throw new ServiceException("一次最多上传 " + MAX_IMAGE_COUNT + " 张图片");
+        if (Boolean.FALSE.equals(pdfInput) && validFileCount > limits.maxImageCount) {
+            throw new ServiceException("一次最多上传 " + limits.maxImageCount + " 张图片");
         }
         if (pdfFile != null) {
-            validatePdfPageCount(pdfFile);
+            validatePdfPageCount(pdfFile, limits.maxPdfPages);
         }
     }
 
-    private void validatePdfPageCount(MultipartFile pdfFile) {
+    private void validatePdfPageCount(MultipartFile pdfFile, int maxPdfPages) {
         try (PDDocument document = PDDocument.load(pdfFile.getBytes())) {
             if (document.isEncrypted()) {
                 throw new ServiceException("PDF 已加密，无法识别页数");
             }
-            if (document.getNumberOfPages() > MAX_PDF_PAGE_COUNT) {
-                throw new ServiceException("PDF 页数不能超过 " + MAX_PDF_PAGE_COUNT + " 页");
+            if (document.getNumberOfPages() > maxPdfPages) {
+                throw new ServiceException("PDF 页数不能超过 " + maxPdfPages + " 页");
             }
         } catch (ServiceException exception) {
             throw exception;
@@ -811,6 +830,41 @@ public class BomAiImportService {
         }
         String lowercaseName = filename.toLowerCase();
         return lowercaseName.endsWith(".png") || lowercaseName.endsWith(".jpg") || lowercaseName.endsWith(".jpeg");
+    }
+
+    private ImportLimits resolveImportLimits() {
+        return new ImportLimits(
+                getPositiveConfig(MAX_IMAGE_COUNT_KEY, DEFAULT_MAX_IMAGE_COUNT, 100),
+                getPositiveConfig(MAX_PDF_PAGE_COUNT_KEY, DEFAULT_MAX_PDF_PAGE_COUNT, 100),
+                getPositiveConfig(MAX_FILE_SIZE_MB_KEY, DEFAULT_MAX_FILE_SIZE_MB, 50),
+                getPositiveConfig(MAX_REQUEST_SIZE_MB_KEY, DEFAULT_MAX_REQUEST_SIZE_MB, 200));
+    }
+
+    private int getPositiveConfig(String key, int defaultValue, int maxValue) {
+        String value = sysConfigService.selectConfigByKey(key);
+        if (StringUtils.isBlank(value)) {
+            return defaultValue;
+        }
+        try {
+            int configured = Integer.parseInt(value.trim());
+            return configured > 0 && configured <= maxValue ? configured : defaultValue;
+        } catch (NumberFormatException ignored) {
+            return defaultValue;
+        }
+    }
+
+    private static class ImportLimits {
+        private final int maxImageCount;
+        private final int maxPdfPages;
+        private final int maxFileSizeMb;
+        private final int maxRequestSizeMb;
+
+        private ImportLimits(int maxImageCount, int maxPdfPages, int maxFileSizeMb, int maxRequestSizeMb) {
+            this.maxImageCount = maxImageCount;
+            this.maxPdfPages = maxPdfPages;
+            this.maxFileSizeMb = maxFileSizeMb;
+            this.maxRequestSizeMb = maxRequestSizeMb;
+        }
     }
 
     private String firstNonBlank(String preferred, String fallback) {

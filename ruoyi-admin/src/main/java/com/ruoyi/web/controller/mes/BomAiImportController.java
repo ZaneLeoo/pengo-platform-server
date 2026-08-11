@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ContentDisposition;
@@ -40,6 +41,12 @@ public class BomAiImportController extends BaseController {
     private BomAiImportService bomAiImportService;
     @Autowired
     private BomAiImportTraceService bomAiImportTraceService;
+
+    /** 获取当前生效的 AI 图纸导入限制。 */
+    @GetMapping("/limits")
+    public AjaxResult limits() {
+        return success(bomAiImportService.getImportLimits());
+    }
 
     /**
      * 上传图纸 → AI 识别 → 返回预览数据（含物料匹配状态）。

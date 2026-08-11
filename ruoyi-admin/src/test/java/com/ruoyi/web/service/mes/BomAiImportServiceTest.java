@@ -22,6 +22,7 @@ import com.ruoyi.mes.base.service.IBomItemService;
 import com.ruoyi.mes.base.service.IBomMasterService;
 import com.ruoyi.mes.base.service.IBomVersionService;
 import com.ruoyi.mes.base.service.IMaterialService;
+import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.web.domain.BomAiImportTrace;
 import com.ruoyi.web.domain.dto.BomAiDocument;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
@@ -71,6 +72,9 @@ class BomAiImportServiceTest {
 
     @Mock
     private BomAiImportTraceService bomAiImportTraceService;
+
+    @Mock
+    private ISysConfigService sysConfigService;
 
     @InjectMocks
     private BomAiImportService service;

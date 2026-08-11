@@ -57,9 +57,11 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-      max-file-size: 10MB
+      # 参数管理的业务限制可在 1~50MB 间调整；此处为 Web 层硬上限。
+      max-file-size: 50MB
       # 多张 BOM 图纸一次识别的总大小
-      max-request-size: 100MB
+      # 参数管理的业务限制可在 1~200MB 间调整；此处为 Web 层硬上限。
+      max-request-size: 200MB
   jackson:
     time-zone: GMT+8
     date-format: yyyy-MM-dd HH:mm:ss
