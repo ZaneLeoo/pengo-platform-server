@@ -101,6 +101,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
             case "START" -> {
                 if (!"NOT_STARTED".equals(from)) throw new ServiceException("只有未开始任务可以开始");
                 if (!"ACTIVE".equals(project.getStatus())) throw new ServiceException("项目未执行中，不能开始新任务");
+                assertPhaseActive(item);
                 to = "ACTIVE";
                 item.setActualStartDate(LocalDate.now());
             }
@@ -113,6 +114,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
             case "RESUME" -> {
                 if (!"PAUSED".equals(from)) throw new ServiceException("只有已暂停任务可以恢复");
                 if (!"ACTIVE".equals(project.getStatus())) throw new ServiceException("项目未执行中，不能恢复任务");
+                assertPhaseActive(item);
                 to = "ACTIVE";
                 item.setPauseReason(null);
             }
@@ -186,5 +188,12 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
             item.setSortOrder(0);
         if (item.getParentId() == null)
             item.setParentId(0L);
+    }
+
+    private void assertPhaseActive(ProjectWorkItem item) {
+        var phase = phaseMapper.selectById(item.getPhaseId());
+        if (phase == null || !"ACTIVE".equals(phase.getStatus())) {
+            throw new ServiceException("所属阶段未进行中，请先开始阶段");
+        }
     }
 }
