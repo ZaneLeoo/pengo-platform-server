@@ -8,6 +8,7 @@ import com.ruoyi.projectmanagement.execution.domain.ProjectWorkItem;
 import com.ruoyi.projectmanagement.execution.mapper.ProjectWorkItemMapper;
 import com.ruoyi.projectmanagement.execution.service.IProjectWorkItemService;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
+import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import java.util.List;
 import java.util.Map;
 import java.time.LocalDate;
@@ -19,11 +20,13 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     private final ProjectWorkItemMapper mapper;
     private final ProjectInfoMapper projectMapper;
     private final ProjectDeliverableMapper deliverableMapper;
+    private final IProjectTeamService teamService;
 
-    public ProjectWorkItemServiceImpl(ProjectWorkItemMapper mapper, ProjectInfoMapper projectMapper, ProjectDeliverableMapper deliverableMapper) {
+    public ProjectWorkItemServiceImpl(ProjectWorkItemMapper mapper, ProjectInfoMapper projectMapper, ProjectDeliverableMapper deliverableMapper, IProjectTeamService teamService) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.deliverableMapper = deliverableMapper;
+        this.teamService = teamService;
     }
 
     @Override
@@ -134,6 +137,9 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         }
         if (projectMapper.selectProjectInfoById(item.getProjectId()) == null) {
             throw new ServiceException("所属项目不存在");
+        }
+        if ("TASK".equals(item.getItemType()) && item.getOwnerId() != null && !teamService.isActiveMember(item.getProjectId(), item.getOwnerId())) {
+            throw new ServiceException("任务负责人必须是当前项目的在组成员");
         }
         if ("DELIVERABLE".equals(item.getItemType()) && item.getTaskId() == null) {
             throw new ServiceException("请选择关联WBS任务");

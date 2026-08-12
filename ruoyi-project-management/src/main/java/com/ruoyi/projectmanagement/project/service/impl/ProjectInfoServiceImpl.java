@@ -7,19 +7,23 @@ import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
+import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 /** 项目主档业务实现。 */
 @Service
 public class ProjectInfoServiceImpl implements IProjectInfoService {
     private final ProjectInfoMapper projectMapper;
     private final ProjectCategoryMapper categoryMapper;
     private final ProjectPersonMapper personMapper;
-    public ProjectInfoServiceImpl(ProjectInfoMapper p, ProjectCategoryMapper c, ProjectPersonMapper m) {
+    private final IProjectTeamService teamService;
+    public ProjectInfoServiceImpl(ProjectInfoMapper p, ProjectCategoryMapper c, ProjectPersonMapper m, IProjectTeamService teamService) {
         projectMapper = p;
         categoryMapper = c;
         personMapper = m;
+        this.teamService = teamService;
     }
     @Override
     public List<ProjectInfo> selectProjectInfoList(ProjectInfo project) {
@@ -36,13 +40,17 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         return e == null || e.getProjectId().longValue() == id.longValue();
     }
     @Override
+    @Transactional
     public int insertProjectInfo(ProjectInfo p) {
         p.setStatus("DRAFT");
         p.setProgress(0);
         validate(p);
-        return projectMapper.insertProjectInfo(p);
+        int rows = projectMapper.insertProjectInfo(p);
+        if (rows > 0) teamService.ensureManager(p.getProjectId(), p.getManagerId(), null, p.getCreateBy());
+        return rows;
     }
     @Override
+    @Transactional
     public int updateProjectInfo(ProjectInfo p) {
         ProjectInfo existing = projectMapper.selectProjectInfoById(p.getProjectId());
         if (existing == null) throw new ServiceException("项目不存在");
@@ -51,7 +59,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         p.setActualEndDate(existing.getActualEndDate());
         p.setPauseReason(existing.getPauseReason());
         validate(p);
-        return projectMapper.updateProjectInfo(p);
+        int rows = projectMapper.updateProjectInfo(p);
+        if (rows > 0 && !existing.getManagerId().equals(p.getManagerId())) teamService.ensureManager(p.getProjectId(), p.getManagerId(), existing.getManagerId(), p.getUpdateBy());
+        return rows;
     }
     @Override
     public int deleteProjectInfoByIds(Long[] ids) {
@@ -68,6 +78,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         switch (action) {
             case "START" -> {
                 if (!"DRAFT".equals(from) && !"PLANNED".equals(from)) throw new ServiceException("只有未启动项目可以启动");
+                if (teamService.activeCount(projectId) == 0) throw new ServiceException("项目团队尚未组建，不能启动项目");
                 to = "ACTIVE";
                 project.setActualStartDate(LocalDate.now());
             }
