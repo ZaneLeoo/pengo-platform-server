@@ -53,6 +53,16 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         if (projectMapper.selectProjectInfoById(item.getProjectId()) == null) {
             throw new ServiceException("所属项目不存在");
         }
+        if ("DELIVERABLE".equals(item.getItemType()) && item.getTaskId() == null) {
+            throw new ServiceException("请选择关联WBS任务");
+        }
+        if (item.getTaskId() != null) {
+            ProjectWorkItem task = mapper.selectById(item.getTaskId());
+            if (task == null || !"TASK".equals(task.getItemType())
+                    || !task.getProjectId().equals(item.getProjectId())) {
+                throw new ServiceException("关联WBS任务不存在或不属于当前项目");
+            }
+        }
         ProjectWorkItem sameCode = mapper.selectByCode(item.getItemCode());
         if (sameCode != null && !sameCode.getItemId().equals(item.getItemId())) {
             throw new ServiceException("执行项编码已存在");

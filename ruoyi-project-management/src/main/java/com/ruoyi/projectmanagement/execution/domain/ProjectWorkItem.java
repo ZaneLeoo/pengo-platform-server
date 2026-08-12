@@ -18,6 +18,10 @@ public class ProjectWorkItem extends BaseEntity {
     private Long projectId;
     private String projectName;
     private Long parentId;
+    /** 关联WBS任务ID，供交付物和问题追溯来源任务。 */
+    private Long taskId;
+    /** 关联WBS任务名称，仅用于展示。 */
+    private String taskName;
     /** TASK、DELIVERABLE、ISSUE。 */
     @NotBlank(message = "执行项类型不能为空")
     private String itemType;
