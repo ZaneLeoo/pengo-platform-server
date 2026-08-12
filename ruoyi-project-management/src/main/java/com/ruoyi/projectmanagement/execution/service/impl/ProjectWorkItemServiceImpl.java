@@ -69,10 +69,9 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
                 throw new ServiceException("关联WBS任务不存在或不属于当前项目");
             }
         }
-        if ("TASK".equals(item.getItemType()) && "1".equals(item.getDeliverableRequired())
-                && "COMPLETED".equals(item.getStatus())
-                && (deliverableMapper.countByTaskId(item.getItemId()) == 0
-                        || deliverableMapper.countUnsatisfiedRequiredByTaskId(item.getItemId()) > 0)) {
+        if ("TASK".equals(item.getItemType()) && "COMPLETED".equals(item.getStatus())
+                && (deliverableMapper.countUnsatisfiedRequiredByTaskId(item.getItemId()) > 0
+                        || ("1".equals(item.getDeliverableRequired()) && deliverableMapper.countByTaskId(item.getItemId()) == 0))) {
             throw new ServiceException("该任务要求交付物，请先完成所有必交交付物");
         }
         ProjectWorkItem sameCode = mapper.selectByCode(item.getItemCode());
