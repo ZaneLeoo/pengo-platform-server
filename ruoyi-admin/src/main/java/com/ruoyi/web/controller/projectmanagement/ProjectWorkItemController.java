@@ -33,7 +33,15 @@ public class ProjectWorkItemController extends BaseController {
     @GetMapping("/overview") public AjaxResult overview() { return success(service.overview()); }
     @PreAuthorize("@ss.hasPermi('projectManagement:workItem:add')")
     @Log(title = "项目执行项", businessType = BusinessType.INSERT)
-    @PostMapping public AjaxResult add(@Validated @RequestBody ProjectWorkItem item) { item.setCreateBy(getUsername()); return toAjax(service.insert(item)); }
+    @PostMapping public AjaxResult add(@Validated @RequestBody ProjectWorkItem item) {
+        item.setCreateBy(getUsername());
+        int rows = service.insert(item);
+        AjaxResult result = toAjax(rows);
+        if (rows > 0) {
+            result.put("data", item.getItemId());
+        }
+        return result;
+    }
     @PreAuthorize("@ss.hasPermi('projectManagement:workItem:edit')")
     @Log(title = "项目执行项", businessType = BusinessType.UPDATE)
     @PutMapping public AjaxResult edit(@Validated @RequestBody ProjectWorkItem item) { item.setUpdateBy(getUsername()); return toAjax(service.update(item)); }
