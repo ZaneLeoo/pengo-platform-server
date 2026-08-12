@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.execution.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.ProjectWorkItem;
 import com.ruoyi.projectmanagement.execution.mapper.ProjectWorkItemMapper;
 import com.ruoyi.projectmanagement.execution.service.IProjectWorkItemService;
@@ -14,10 +15,12 @@ import org.springframework.stereotype.Service;
 public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     private final ProjectWorkItemMapper mapper;
     private final ProjectInfoMapper projectMapper;
+    private final ProjectDeliverableMapper deliverableMapper;
 
-    public ProjectWorkItemServiceImpl(ProjectWorkItemMapper mapper, ProjectInfoMapper projectMapper) {
+    public ProjectWorkItemServiceImpl(ProjectWorkItemMapper mapper, ProjectInfoMapper projectMapper, ProjectDeliverableMapper deliverableMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
+        this.deliverableMapper = deliverableMapper;
     }
 
     @Override
@@ -67,8 +70,10 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
             }
         }
         if ("TASK".equals(item.getItemType()) && "1".equals(item.getDeliverableRequired())
-                && "COMPLETED".equals(item.getStatus()) && mapper.countDeliverablesByTaskId(item.getItemId()) == 0) {
-            throw new ServiceException("该任务要求交付物，请先创建关联交付物再完成任务");
+                && "COMPLETED".equals(item.getStatus())
+                && (deliverableMapper.countByTaskId(item.getItemId()) == 0
+                        || deliverableMapper.countUnsatisfiedRequiredByTaskId(item.getItemId()) > 0)) {
+            throw new ServiceException("该任务要求交付物，请先完成所有必交交付物");
         }
         ProjectWorkItem sameCode = mapper.selectByCode(item.getItemCode());
         if (sameCode != null && !sameCode.getItemId().equals(item.getItemId())) {
