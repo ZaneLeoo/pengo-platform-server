@@ -8,6 +8,7 @@ import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
+import com.ruoyi.projectmanagement.phase.service.IProjectPhaseService;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,13 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     private final ProjectCategoryMapper categoryMapper;
     private final ProjectPersonMapper personMapper;
     private final IProjectTeamService teamService;
-    public ProjectInfoServiceImpl(ProjectInfoMapper p, ProjectCategoryMapper c, ProjectPersonMapper m, IProjectTeamService teamService) {
+    private final IProjectPhaseService phaseService;
+    public ProjectInfoServiceImpl(ProjectInfoMapper p, ProjectCategoryMapper c, ProjectPersonMapper m, IProjectTeamService teamService, IProjectPhaseService phaseService) {
         projectMapper = p;
         categoryMapper = c;
         personMapper = m;
         this.teamService = teamService;
+        this.phaseService = phaseService;
     }
     @Override
     public List<ProjectInfo> selectProjectInfoList(ProjectInfo project) {
@@ -95,7 +98,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             }
             case "COMPLETE" -> {
                 if (!"ACTIVE".equals(from)) throw new ServiceException("只有执行中的项目可以完成");
-                if (projectMapper.countIncompleteTasksByProjectId(projectId) > 0) throw new ServiceException("仍有未完成的末级WBS任务，不能完成项目");
+                if (!phaseService.allCompleted(projectId)) throw new ServiceException("请先完成项目的全部阶段");
                 to = "COMPLETED";
                 project.setActualEndDate(LocalDate.now());
                 project.setProgress(100);

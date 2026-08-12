@@ -8,6 +8,7 @@ import com.ruoyi.projectmanagement.execution.domain.ProjectWorkItem;
 import com.ruoyi.projectmanagement.execution.mapper.ProjectWorkItemMapper;
 import com.ruoyi.projectmanagement.execution.service.IProjectWorkItemService;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
+import com.ruoyi.projectmanagement.phase.mapper.ProjectPhaseMapper;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import java.util.List;
 import java.util.Map;
@@ -21,12 +22,14 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     private final ProjectInfoMapper projectMapper;
     private final ProjectDeliverableMapper deliverableMapper;
     private final IProjectTeamService teamService;
+    private final ProjectPhaseMapper phaseMapper;
 
-    public ProjectWorkItemServiceImpl(ProjectWorkItemMapper mapper, ProjectInfoMapper projectMapper, ProjectDeliverableMapper deliverableMapper, IProjectTeamService teamService) {
+    public ProjectWorkItemServiceImpl(ProjectWorkItemMapper mapper, ProjectInfoMapper projectMapper, ProjectDeliverableMapper deliverableMapper, IProjectTeamService teamService, ProjectPhaseMapper phaseMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.deliverableMapper = deliverableMapper;
         this.teamService = teamService;
+        this.phaseMapper = phaseMapper;
     }
 
     @Override
@@ -58,6 +61,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
             ProjectWorkItem parent = mapper.selectById(item.getParentId());
             if (parent == null || !"TASK".equals(parent.getItemType())) throw new ServiceException("上级WBS任务不存在");
             if ("COMPLETED".equals(parent.getStatus())) throw new ServiceException("已完成任务不能新增子任务；如需调整请先重新打开任务");
+            item.setPhaseId(parent.getPhaseId());
         }
         if ("TASK".equals(item.getItemType())) item.setStatus("NOT_STARTED");
         validate(item);
@@ -114,6 +118,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
             }
             case "COMPLETE" -> {
                 if (!"ACTIVE".equals(from)) throw new ServiceException("只有执行中的任务可以完成");
+                if (mapper.countChildren(itemId) > 0) throw new ServiceException("汇总任务由下级任务状态汇总，不能手工完成");
                 if (deliverableMapper.countUnsatisfiedRequiredByTaskId(itemId) > 0
                     || ("1".equals(item.getDeliverableRequired()) && deliverableMapper.countByTaskId(itemId) == 0)) {
                     throw new ServiceException("该任务要求交付物，请先完成所有必交交付物");
@@ -140,6 +145,17 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         }
         if ("TASK".equals(item.getItemType()) && item.getOwnerId() != null && !teamService.isActiveMember(item.getProjectId(), item.getOwnerId())) {
             throw new ServiceException("任务负责人必须是当前项目的在组成员");
+        }
+        if ("TASK".equals(item.getItemType())) {
+            if (item.getParentId() != null && item.getParentId() != 0) {
+                ProjectWorkItem parent = mapper.selectById(item.getParentId());
+                if (parent == null || !item.getProjectId().equals(parent.getProjectId())) throw new ServiceException("上级WBS任务不存在或不属于当前项目");
+                item.setPhaseId(parent.getPhaseId());
+            }
+            if (item.getPhaseId() == null) throw new ServiceException("请选择所属项目阶段");
+            var phase = phaseMapper.selectById(item.getPhaseId());
+            if (phase == null || !item.getProjectId().equals(phase.getProjectId())) throw new ServiceException("所属阶段不存在或不属于当前项目");
+            if ("COMPLETED".equals(phase.getStatus())) throw new ServiceException("已完成阶段不能新增或修改WBS任务");
         }
         if ("DELIVERABLE".equals(item.getItemType()) && item.getTaskId() == null) {
             throw new ServiceException("请选择关联WBS任务");

@@ -19,4 +19,5 @@ public interface ProjectWorkItemMapper {
     List<Map<String, Object>> selectOverview();
     int updateLifecycle(ProjectWorkItem item);
     int insertLifecycleLog(@Param("itemId") Long itemId, @Param("projectId") Long projectId, @Param("action") String action, @Param("fromStatus") String fromStatus, @Param("toStatus") String toStatus, @Param("reason") String reason, @Param("operator") String operator);
+    int countChildren(@Param("itemId") Long itemId);
 }

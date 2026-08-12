@@ -17,6 +17,8 @@ public class ProjectWorkItem extends BaseEntity {
     @NotNull(message = "所属项目不能为空")
     private Long projectId;
     private String projectName;
+    private Long phaseId;
+    private String phaseName;
     private Long parentId;
     /** 关联WBS任务ID，供交付物和问题追溯来源任务。 */
     private Long taskId;

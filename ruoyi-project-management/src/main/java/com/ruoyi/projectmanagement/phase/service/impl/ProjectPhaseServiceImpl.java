@@ -1,0 +1,18 @@
+package com.ruoyi.projectmanagement.phase.service.impl;
+import com.ruoyi.common.exception.ServiceException;import com.ruoyi.common.utils.StringUtils;import com.ruoyi.projectmanagement.phase.domain.ProjectPhase;import com.ruoyi.projectmanagement.phase.mapper.ProjectPhaseMapper;import com.ruoyi.projectmanagement.phase.service.IProjectPhaseService;import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;import com.ruoyi.projectmanagement.team.service.IProjectTeamService;import java.time.LocalDate;import java.util.List;import org.springframework.stereotype.Service;
+@Service public class ProjectPhaseServiceImpl implements IProjectPhaseService {
+ private final ProjectPhaseMapper mapper;private final ProjectInfoMapper projectMapper;private final IProjectTeamService teamService;
+ public ProjectPhaseServiceImpl(ProjectPhaseMapper m,ProjectInfoMapper p,IProjectTeamService t){mapper=m;projectMapper=p;teamService=t;}
+ public List<ProjectPhase> list(ProjectPhase p){return mapper.selectList(p);} public ProjectPhase get(Long id){return mapper.selectById(id);}
+ public int add(ProjectPhase p,String op){p.setStatus("NOT_STARTED");validate(p);p.setCreateBy(op);return mapper.insert(p);}
+ public int edit(ProjectPhase p,String op){ProjectPhase old=required(p.getPhaseId());if("COMPLETED".equals(old.getStatus()))throw new ServiceException("已完成阶段不能编辑");p.setStatus(old.getStatus());validate(p);p.setUpdateBy(op);return mapper.update(p);}
+ public int remove(Long id,String op){ProjectPhase p=required(id);assertOwner(p,op);if(mapper.countTasks(id)>0)throw new ServiceException("阶段下已有WBS任务，不能删除");if("COMPLETED".equals(p.getStatus()))throw new ServiceException("已完成阶段不能删除");return mapper.deleteById(id);}
+ public int lifecycle(Long id,String action,String op){ProjectPhase p=required(id);assertOwner(p,op);var project=projectMapper.selectProjectInfoById(p.getProjectId());if(project==null)throw new ServiceException("所属项目不存在");String from=p.getStatus(),a=action.trim().toUpperCase(),to;
+  if("START".equals(a)){if(!"NOT_STARTED".equals(from))throw new ServiceException("只有未开始阶段可以开始");if(!"ACTIVE".equals(project.getStatus()))throw new ServiceException("项目未执行中，不能开始阶段");to="ACTIVE";p.setActualStartDate(LocalDate.now());}
+  else if("COMPLETE".equals(a)){if(!"ACTIVE".equals(from))throw new ServiceException("只有执行中的阶段可以完成");if(mapper.countTasks(id)==0)throw new ServiceException("空阶段不能完成，请先添加WBS任务");int n=mapper.countIncompleteLeafTasks(id);if(n>0)throw new ServiceException("阶段仍有"+n+"个末级WBS任务未完成");to="COMPLETED";p.setActualEndDate(LocalDate.now());}
+  else throw new ServiceException("不支持的阶段动作");p.setStatus(to);p.setUpdateBy(op);int rows=mapper.updateLifecycle(p);if(rows>0)mapper.insertLifecycleLog(id,p.getProjectId(),a,from,to,op);return rows;}
+ public boolean allCompleted(Long projectId){return mapper.countByProject(projectId)>0&&mapper.countIncompleteByProject(projectId)==0;}
+ private ProjectPhase required(Long id){ProjectPhase p=mapper.selectById(id);if(p==null)throw new ServiceException("项目阶段不存在");return p;}
+ private void validate(ProjectPhase p){if(projectMapper.selectProjectInfoById(p.getProjectId())==null)throw new ServiceException("所属项目不存在");if(p.getOwnerId()!=null&&!teamService.isActiveMember(p.getProjectId(),p.getOwnerId()))throw new ServiceException("阶段负责人必须是当前项目的在组成员");if(p.getStartDate()!=null&&p.getEndDate()!=null&&p.getEndDate().isBefore(p.getStartDate()))throw new ServiceException("阶段结束日期不能早于开始日期");if(p.getSortOrder()==null)p.setSortOrder(0);}
+ private void assertOwner(ProjectPhase p,String op){if(!"admin".equalsIgnoreCase(op)&&(StringUtils.isBlank(p.getOwnerCode())||!p.getOwnerCode().equalsIgnoreCase(op)))throw new ServiceException("只有阶段负责人或admin可以执行该操作");}
+}
