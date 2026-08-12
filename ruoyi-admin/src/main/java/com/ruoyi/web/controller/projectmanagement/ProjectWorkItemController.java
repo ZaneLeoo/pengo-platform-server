@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.projectmanagement.execution.domain.ProjectWorkItem;
+import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.service.IProjectWorkItemService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -45,6 +46,9 @@ public class ProjectWorkItemController extends BaseController {
     @PreAuthorize("@ss.hasPermi('projectManagement:workItem:edit')")
     @Log(title = "项目执行项", businessType = BusinessType.UPDATE)
     @PutMapping public AjaxResult edit(@Validated @RequestBody ProjectWorkItem item) { item.setUpdateBy(getUsername()); return toAjax(service.update(item)); }
+    @PreAuthorize("@ss.hasPermi('projectManagement:workItem:edit')")
+    @Log(title = "WBS任务生命周期", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/lifecycle") public AjaxResult lifecycle(@PathVariable Long id, @Validated @RequestBody LifecycleActionRequest request) { return toAjax(service.applyLifecycleAction(id, request, getUsername())); }
     @PreAuthorize("@ss.hasPermi('projectManagement:workItem:remove')")
     @Log(title = "项目执行项", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}") public AjaxResult remove(@PathVariable Long[] ids) { return toAjax(service.deleteByIds(ids)); }

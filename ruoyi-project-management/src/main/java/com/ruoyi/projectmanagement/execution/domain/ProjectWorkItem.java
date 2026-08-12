@@ -33,6 +33,8 @@ public class ProjectWorkItem extends BaseEntity {
     private String itemName;
     private Long ownerId;
     private String ownerName;
+    /** 负责人登录账号（由人员工号映射，仅用于权限判断）。 */
+    private String ownerCode;
     /** 任务/交付物/问题各自的生命周期状态。 */
     @NotBlank(message = "状态不能为空")
     private String status;
@@ -42,6 +44,14 @@ public class ProjectWorkItem extends BaseEntity {
     private LocalDate startDate;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dueDate;
+    /** 实际开始日期，由开始任务动作写入。 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate actualStartDate;
+    /** 实际完成日期，由完成任务动作写入。 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate actualEndDate;
+    /** 最近一次暂停原因，仅供快速查看。 */
+    private String pauseReason;
     private Integer progress;
     private String fileUrl;
     private String description;

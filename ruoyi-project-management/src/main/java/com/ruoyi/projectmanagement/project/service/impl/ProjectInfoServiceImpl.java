@@ -6,6 +6,8 @@ import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
+import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
 /** 项目主档业务实现。 */
@@ -35,17 +37,65 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     }
     @Override
     public int insertProjectInfo(ProjectInfo p) {
+        p.setStatus("DRAFT");
+        p.setProgress(0);
         validate(p);
         return projectMapper.insertProjectInfo(p);
     }
     @Override
     public int updateProjectInfo(ProjectInfo p) {
+        ProjectInfo existing = projectMapper.selectProjectInfoById(p.getProjectId());
+        if (existing == null) throw new ServiceException("项目不存在");
+        p.setStatus(existing.getStatus());
+        p.setActualStartDate(existing.getActualStartDate());
+        p.setActualEndDate(existing.getActualEndDate());
+        p.setPauseReason(existing.getPauseReason());
         validate(p);
         return projectMapper.updateProjectInfo(p);
     }
     @Override
     public int deleteProjectInfoByIds(Long[] ids) {
         return projectMapper.deleteProjectInfoByIds(ids);
+    }
+    @Override
+    public int applyLifecycleAction(Long projectId, LifecycleActionRequest request, String operator) {
+        ProjectInfo project = projectMapper.selectProjectInfoById(projectId);
+        if (project == null) throw new ServiceException("项目不存在");
+        assertOperator(project.getManagerCode(), operator, "只有项目负责人或admin可以执行该项目动作");
+        String from = project.getStatus();
+        String action = request.getAction().trim().toUpperCase();
+        String to;
+        switch (action) {
+            case "START" -> {
+                if (!"DRAFT".equals(from) && !"PLANNED".equals(from)) throw new ServiceException("只有未启动项目可以启动");
+                to = "ACTIVE";
+                project.setActualStartDate(LocalDate.now());
+            }
+            case "PAUSE" -> {
+                if (!"ACTIVE".equals(from)) throw new ServiceException("只有执行中的项目可以暂停");
+                if (StringUtils.isBlank(request.getReason())) throw new ServiceException("暂停项目必须填写原因");
+                to = "PAUSED";
+                project.setPauseReason(request.getReason().trim());
+            }
+            case "RESUME" -> {
+                if (!"PAUSED".equals(from)) throw new ServiceException("只有已暂停项目可以恢复");
+                to = "ACTIVE";
+                project.setPauseReason(null);
+            }
+            case "COMPLETE" -> {
+                if (!"ACTIVE".equals(from)) throw new ServiceException("只有执行中的项目可以完成");
+                if (projectMapper.countIncompleteTasksByProjectId(projectId) > 0) throw new ServiceException("仍有未完成的末级WBS任务，不能完成项目");
+                to = "COMPLETED";
+                project.setActualEndDate(LocalDate.now());
+                project.setProgress(100);
+            }
+            default -> throw new ServiceException("不支持的项目生命周期动作");
+        }
+        project.setStatus(to);
+        project.setUpdateBy(operator);
+        int rows = projectMapper.updateLifecycle(project);
+        if (rows > 0) projectMapper.insertLifecycleLog(projectId, action, from, to, request.getReason(), operator);
+        return rows;
     }
     private void validate(ProjectInfo p) {
         if (p.getEndDate().isBefore(p.getStartDate()))
@@ -59,5 +109,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             p.setProgress(0);
         if (StringUtils.isBlank(p.getStatus()))
             p.setStatus("DRAFT");
+    }
+    private void assertOperator(String ownerCode, String operator, String message) {
+        if (!"admin".equalsIgnoreCase(operator) && (StringUtils.isBlank(ownerCode) || !ownerCode.equalsIgnoreCase(operator))) throw new ServiceException(message);
     }
 }

@@ -35,6 +35,8 @@ public class ProjectInfo extends BaseEntity {
     /** 项目负责人姓名，仅用于展示。 */
     @Excel(name = "项目负责人")
     private String managerName;
+    /** 项目负责人登录账号（由人员工号映射，仅用于权限判断）。 */
+    private String managerCode;
     /** 负责人所属部门，仅用于展示。 */
     private String managerDeptName;
     /** 计划开始日期。 */
@@ -45,6 +47,14 @@ public class ProjectInfo extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "计划结束日期")
     private LocalDate endDate;
+    /** 实际启动日期，由启动项目动作写入。 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate actualStartDate;
+    /** 实际完成日期，由完成项目动作写入。 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate actualEndDate;
+    /** 最近一次暂停原因，仅供快速查看；完整历史保存在生命周期记录中。 */
+    private String pauseReason;
     /** 状态：DRAFT 草稿，PLANNED 未开始，ACTIVE 执行中，PAUSED 已暂停，COMPLETED 已完成。 */
     @Excel(name = "状态")
     private String status;

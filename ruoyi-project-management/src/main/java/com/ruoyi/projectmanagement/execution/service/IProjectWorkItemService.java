@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.execution.service;
 
 import com.ruoyi.projectmanagement.execution.domain.ProjectWorkItem;
+import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -12,4 +13,5 @@ public interface IProjectWorkItemService {
     int update(ProjectWorkItem item);
     int deleteByIds(Long[] itemIds);
     List<Map<String, Object>> overview();
+    int applyLifecycleAction(Long itemId, LifecycleActionRequest request, String operator);
 }
