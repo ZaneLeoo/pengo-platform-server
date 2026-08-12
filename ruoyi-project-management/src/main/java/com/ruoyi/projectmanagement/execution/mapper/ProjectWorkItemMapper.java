@@ -14,5 +14,6 @@ public interface ProjectWorkItemMapper {
     int insert(ProjectWorkItem item);
     int update(ProjectWorkItem item);
     int deleteByIds(Long[] itemIds);
+    int countDeliverablesByTaskId(Long taskId);
     List<Map<String, Object>> selectOverview();
 }

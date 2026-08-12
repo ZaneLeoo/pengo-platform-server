@@ -50,6 +50,9 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     }
 
     private void validate(ProjectWorkItem item) {
+        if (item.getDeliverableRequired() == null) {
+            item.setDeliverableRequired("0");
+        }
         if (projectMapper.selectProjectInfoById(item.getProjectId()) == null) {
             throw new ServiceException("所属项目不存在");
         }
@@ -62,6 +65,10 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
                     || !task.getProjectId().equals(item.getProjectId())) {
                 throw new ServiceException("关联WBS任务不存在或不属于当前项目");
             }
+        }
+        if ("TASK".equals(item.getItemType()) && "1".equals(item.getDeliverableRequired())
+                && "COMPLETED".equals(item.getStatus()) && mapper.countDeliverablesByTaskId(item.getItemId()) == 0) {
+            throw new ServiceException("该任务要求交付物，请先创建关联交付物再完成任务");
         }
         ProjectWorkItem sameCode = mapper.selectByCode(item.getItemCode());
         if (sameCode != null && !sameCode.getItemId().equals(item.getItemId())) {
