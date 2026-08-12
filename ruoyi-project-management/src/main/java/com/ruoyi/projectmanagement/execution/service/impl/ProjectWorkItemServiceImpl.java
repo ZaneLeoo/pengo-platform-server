@@ -40,11 +40,22 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     }
     @Override
     public int deleteByIds(Long[] itemIds) {
+        for (Long itemId : itemIds) {
+            ProjectWorkItem item = mapper.selectById(itemId);
+            if (item != null && "TASK".equals(item.getItemType()) && "COMPLETED".equals(item.getStatus())) {
+                throw new ServiceException("已完成任务仅可查看，不能删除；如需调整请先重新打开任务");
+            }
+        }
         return mapper.deleteByIds(itemIds);
     }
 
     @Override
     public int insert(ProjectWorkItem item) {
+        if ("TASK".equals(item.getItemType()) && item.getParentId() != null && item.getParentId() != 0) {
+            ProjectWorkItem parent = mapper.selectById(item.getParentId());
+            if (parent == null || !"TASK".equals(parent.getItemType())) throw new ServiceException("上级WBS任务不存在");
+            if ("COMPLETED".equals(parent.getStatus())) throw new ServiceException("已完成任务不能新增子任务；如需调整请先重新打开任务");
+        }
         if ("TASK".equals(item.getItemType())) item.setStatus("NOT_STARTED");
         validate(item);
         return mapper.insert(item);
@@ -55,6 +66,9 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         ProjectWorkItem existing = mapper.selectById(item.getItemId());
         if (existing == null) throw new ServiceException("项目执行项不存在");
         if ("TASK".equals(item.getItemType())) {
+            if ("COMPLETED".equals(existing.getStatus())) {
+                throw new ServiceException("已完成任务仅可查看，不能编辑；如需调整请先重新打开任务");
+            }
             item.setStatus(existing.getStatus());
             item.setActualStartDate(existing.getActualStartDate());
             item.setActualEndDate(existing.getActualEndDate());

@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.deliverable.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
@@ -19,9 +20,9 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     public ProjectDeliverableServiceImpl(ProjectDeliverableMapper mapper, ProjectInfoMapper projectMapper, ProjectWorkItemMapper taskMapper) { this.mapper = mapper; this.projectMapper = projectMapper; this.taskMapper = taskMapper; }
     public List<ProjectDeliverable> selectList(ProjectDeliverable entity) { return mapper.selectList(entity); }
     public ProjectDeliverable selectById(Long id) { return mapper.selectById(id); }
-    public int insert(ProjectDeliverable entity) { prepare(entity); return mapper.insert(entity); }
-    public int update(ProjectDeliverable entity) { prepare(entity); return mapper.update(entity); }
-    public int deleteByIds(Long[] ids) { return mapper.deleteByIds(ids); }
+    public int insert(ProjectDeliverable entity) { prepare(entity); assertTaskEditable(entity.getTaskId()); return mapper.insert(entity); }
+    public int update(ProjectDeliverable entity) { prepare(entity); assertTaskEditable(entity.getTaskId()); return mapper.update(entity); }
+    public int deleteByIds(Long[] ids) { for (Long id : ids) { ProjectDeliverable d = required(id); assertTaskEditable(d.getTaskId()); } return mapper.deleteByIds(ids); }
     private void prepare(ProjectDeliverable entity) {
         if (projectMapper.selectProjectInfoById(entity.getProjectId()) == null) throw new ServiceException("所属项目不存在");
         ProjectWorkItem task = taskMapper.selectById(entity.getTaskId());
@@ -33,6 +34,12 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     }
     public void submit(Long id, ProjectDeliverableSubmission submission, String username) {
         ProjectDeliverable d = required(id);
+        ProjectWorkItem task = requiredTask(d.getTaskId());
+        if ("COMPLETED".equals(task.getStatus())) throw new ServiceException("所属任务已完成，不能再提交交付物；如需补交请先重新打开任务");
+        if (!"admin".equalsIgnoreCase(username) && (StringUtils.isBlank(task.getOwnerCode()) || !task.getOwnerCode().equalsIgnoreCase(username))) {
+            throw new ServiceException("仅任务负责人或admin可以提交交付物");
+        }
+        if (!"PENDING".equals(d.getStatus()) && !"RETURNED".equals(d.getStatus())) throw new ServiceException("当前交付物不允许提交");
         if (submission.getFileUrl() == null && submission.getExternalUrl() == null) throw new ServiceException("请上传文件或填写外部链接");
         Integer next = mapper.selectNextVersion(id); submission.setDeliverableId(id); submission.setVersionNo(next == null ? 1 : next); submission.setSubmitBy(username);
         submission.setReviewResult("1".equals(d.getApprovalRequired()) ? "SUBMITTED" : "DELIVERED"); mapper.insertSubmission(submission);
@@ -48,4 +55,6 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     }
     public List<ProjectDeliverableSubmission> selectSubmissions(Long id) { return mapper.selectSubmissions(id); }
     private ProjectDeliverable required(Long id) { ProjectDeliverable d = mapper.selectById(id); if (d == null) throw new ServiceException("交付物不存在"); return d; }
+    private ProjectWorkItem requiredTask(Long taskId) { ProjectWorkItem task = taskMapper.selectById(taskId); if (task == null || !"TASK".equals(task.getItemType())) throw new ServiceException("关联WBS任务不存在"); return task; }
+    private void assertTaskEditable(Long taskId) { if ("COMPLETED".equals(requiredTask(taskId).getStatus())) throw new ServiceException("所属任务已完成，不能调整交付物；如需调整请先重新打开任务"); }
 }
