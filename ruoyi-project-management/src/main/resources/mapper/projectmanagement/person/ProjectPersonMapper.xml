@@ -31,7 +31,8 @@
         <where>
             <if test="personCode != null and personCode != ''">and p.person_code like concat('%', #{personCode}, '%')</if>
             <if test="personName != null and personName != ''">and p.person_name like concat('%', #{personName}, '%')</if>
-            <if test="deptId != null">and (p.dept_id = #{deptId} or p.dept_id in (select dept_id from sys_dept where find_in_set(#{deptId}, ancestors)))</if>
+            <if test="deptId != null">and (p.dept_id = #{deptId} or p.dept_id in (
+                select dept_id from sys_dept where find_in_set(#{deptId}, ancestors)))</if>
             <if test="positionName != null and positionName != ''">and p.position_name like concat('%', #{positionName}, '%')</if>
             <if test="status != null and status != ''">and p.status = #{status}</if>
         </where>
@@ -42,7 +43,9 @@
         <include refid="selectProjectPersonVo"/>
         where p.status = '0'
         <if test="keyword != null and keyword != ''">
-            and (p.person_code like concat('%', #{keyword}, '%') or p.person_name like concat('%', #{keyword}, '%') or d.dept_name like concat('%', #{keyword}, '%'))
+            and (p.person_code like concat('%', #{keyword}, '%')
+                 or p.person_name like concat('%', #{keyword}, '%')
+                 or d.dept_name like concat('%', #{keyword}, '%'))
         </if>
         order by p.person_name, p.person_id
         limit 100
