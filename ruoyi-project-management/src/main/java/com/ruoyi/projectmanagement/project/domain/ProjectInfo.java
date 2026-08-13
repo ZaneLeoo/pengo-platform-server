@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -63,6 +64,23 @@ public class ProjectInfo extends BaseEntity {
     private Integer progress;
     /** 项目目标。 */
     private String projectGoal;
+    private String applicant;
+    private Long applicantDeptId;
+    private String applicantDeptName;
+    private String projectBackground;
+    private String projectScope;
+    private String outOfScope;
+    private String expectedOutcome;
+    private String resourceRequirement;
+    private String budgetRequired;
+    private BigDecimal budgetAmount;
+    private String budgetDescription;
+    private String majorRisk;
+    private String technicalFeasibility;
+    private String resourceFeasibility;
+    private String feasibilityConclusion;
+    private Integer initiationVersion;
+    private java.time.LocalDateTime initiationTime;
 
     @NotBlank(message = "项目编码不能为空")
     @Size(max = 32, message = "项目编码长度不能超过32个字符")

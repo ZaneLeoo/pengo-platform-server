@@ -11,6 +11,14 @@ import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import com.ruoyi.projectmanagement.phase.service.IProjectPhaseService;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDateTime;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
+import com.ruoyi.projectmanagement.project.domain.ProjectInitiationApproval;
+import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
+import com.ruoyi.projectmanagement.phase.domain.ProjectPhase;
+import com.ruoyi.projectmanagement.phase.mapper.ProjectPhaseMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 /** 项目主档业务实现。 */
@@ -21,12 +29,15 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     private final ProjectPersonMapper personMapper;
     private final IProjectTeamService teamService;
     private final IProjectPhaseService phaseService;
-    public ProjectInfoServiceImpl(ProjectInfoMapper p, ProjectCategoryMapper c, ProjectPersonMapper m, IProjectTeamService teamService, IProjectPhaseService phaseService) {
+    private final ProjectPhaseMapper phaseMapper;
+    private final ObjectMapper objectMapper;
+    public ProjectInfoServiceImpl(ProjectInfoMapper p, ProjectCategoryMapper c, ProjectPersonMapper m, IProjectTeamService teamService, IProjectPhaseService phaseService,ProjectPhaseMapper phaseMapper,ObjectMapper objectMapper) {
         projectMapper = p;
         categoryMapper = c;
         personMapper = m;
         this.teamService = teamService;
         this.phaseService = phaseService;
+        this.phaseMapper=phaseMapper;this.objectMapper=objectMapper;
     }
     @Override
     public List<ProjectInfo> selectProjectInfoList(ProjectInfo project) {
@@ -47,6 +58,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     public int insertProjectInfo(ProjectInfo p) {
         p.setStatus("DRAFT");
         p.setProgress(0);
+        p.setApplicant(p.getCreateBy());
+        if(p.getBudgetRequired()==null)p.setBudgetRequired("0");
         validate(p);
         int rows = projectMapper.insertProjectInfo(p);
         if (rows > 0) teamService.ensureManager(p.getProjectId(), p.getManagerId(), null, p.getCreateBy());
@@ -57,6 +70,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     public int updateProjectInfo(ProjectInfo p) {
         ProjectInfo existing = projectMapper.selectProjectInfoById(p.getProjectId());
         if (existing == null) throw new ServiceException("项目不存在");
+        if ("PENDING_APPROVAL".equals(existing.getStatus())) throw new ServiceException("项目正在立项审批中，不能修改申请材料");
+        if (!"DRAFT".equals(existing.getStatus()) && !"APPROVED".equals(existing.getStatus())) throw new ServiceException("当前项目状态不能修改基本信息");
         p.setStatus(existing.getStatus());
         p.setActualStartDate(existing.getActualStartDate());
         p.setActualEndDate(existing.getActualEndDate());
@@ -80,8 +95,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         String to;
         switch (action) {
             case "START" -> {
-                if (!"DRAFT".equals(from) && !"PLANNED".equals(from)) throw new ServiceException("只有未启动项目可以启动");
+                if (!"APPROVED".equals(from)) throw new ServiceException("只有已正式立项的项目可以启动");
                 if (teamService.activeCount(projectId) == 0) throw new ServiceException("项目团队尚未组建，不能启动项目");
+                if (phaseMapper.countByProject(projectId) == 0) throw new ServiceException("项目尚未建立正式阶段，不能启动项目");
                 to = "ACTIVE";
                 project.setActualStartDate(LocalDate.now());
             }
@@ -111,6 +127,17 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         if (rows > 0) projectMapper.insertLifecycleLog(projectId, action, from, to, request.getReason(), operator);
         return rows;
     }
+    @Override public List<ProjectPreliminaryPlan> preliminaryPlans(Long projectId){return projectMapper.selectPreliminaryPlans(projectId);}
+    @Override public int addPreliminaryPlan(ProjectPreliminaryPlan p,String op){ProjectInfo project=editable(p.getProjectId(),op);validatePlan(p,project);p.setCreateBy(op);if(p.getSortOrder()==null)p.setSortOrder(0);return projectMapper.insertPreliminaryPlan(p);}
+    @Override public int updatePreliminaryPlan(ProjectPreliminaryPlan p,String op){ProjectPreliminaryPlan old=projectMapper.selectPreliminaryPlan(p.getPlanId());if(old==null)throw new ServiceException("初步计划不存在");if(old.getConvertedPhaseId()!=null)throw new ServiceException("该初步阶段已转为正式阶段，不能修改");ProjectInfo project=editable(old.getProjectId(),op);p.setProjectId(old.getProjectId());validatePlan(p,project);p.setUpdateBy(op);return projectMapper.updatePreliminaryPlan(p);}
+    @Override public int deletePreliminaryPlan(Long id,String op){ProjectPreliminaryPlan p=projectMapper.selectPreliminaryPlan(id);if(p==null)throw new ServiceException("初步计划不存在");if(p.getConvertedPhaseId()!=null)throw new ServiceException("该初步阶段已转为正式阶段，不能删除");editable(p.getProjectId(),op);return projectMapper.deletePreliminaryPlan(id);}
+    @Override @Transactional public int submitInitiation(Long id,String op){ProjectInfo p=editable(id,op);List<ProjectPreliminaryPlan> plans=projectMapper.selectPreliminaryPlans(id);List<String> missing=new ArrayList<>();if(StringUtils.isBlank(p.getProjectBackground()))missing.add("项目背景");if(StringUtils.isBlank(p.getProjectScope()))missing.add("项目范围");if(StringUtils.isBlank(p.getExpectedOutcome()))missing.add("预期成果");if(StringUtils.isBlank(p.getResourceRequirement()))missing.add("资源需求");if(StringUtils.isBlank(p.getMajorRisk()))missing.add("主要风险");if(StringUtils.isBlank(p.getFeasibilityConclusion()))missing.add("可行性综合结论");if(plans.isEmpty())missing.add("初步计划");if(!missing.isEmpty())throw new ServiceException("请先完善立项材料："+String.join("、",missing));if("1".equals(p.getBudgetRequired())&&p.getBudgetAmount()==null)throw new ServiceException("项目需要预算，请填写预算总额");int version=(p.getInitiationVersion()==null?0:p.getInitiationVersion())+1;ProjectInitiationApproval a=new ProjectInitiationApproval();a.setProjectId(id);a.setVersionNo(version);a.setSubmitBy(op);a.setStatus("PENDING");try{a.setSnapshotJson(objectMapper.writeValueAsString(java.util.Map.of("project",p,"preliminaryPlans",plans)));}catch(Exception e){throw new ServiceException("生成立项申请快照失败");}projectMapper.insertApproval(a);p.setStatus("PENDING_APPROVAL");p.setInitiationVersion(version);p.setUpdateBy(op);return projectMapper.updateInitiationState(p);}
+    @Override @Transactional public int reviewInitiation(Long id,InitiationReviewRequest r,String op){if(!"admin".equalsIgnoreCase(op))throw new ServiceException("只有admin可以审批立项申请");ProjectInfo p=projectMapper.selectProjectInfoById(id);if(p==null||!"PENDING_APPROVAL".equals(p.getStatus()))throw new ServiceException("项目不在立项审批中");ProjectInitiationApproval a=projectMapper.selectPendingApproval(id);if(a==null)throw new ServiceException("待审批记录不存在");String result=r.getResult().trim().toUpperCase();boolean approved="APPROVED".equals(result);if(!approved&&!"RETURNED".equals(result))throw new ServiceException("审批结果不正确");if(!approved&&StringUtils.isBlank(r.getComment()))throw new ServiceException("退回必须填写审批意见");a.setStatus(result);a.setReviewBy(op);a.setReviewComment(r.getComment());int rows=projectMapper.reviewApproval(a);p.setStatus(approved?"APPROVED":"DRAFT");p.setInitiationTime(approved?LocalDateTime.now():null);p.setUpdateBy(op);projectMapper.updateInitiationState(p);if(approved)convertPlans(p,op);return rows;}
+    @Override public List<ProjectInitiationApproval> approvalHistory(Long id){return projectMapper.selectApprovals(id);}
+    @Override public ProjectInitiationApproval approvalSnapshot(Long projectId,Long approvalId){return projectMapper.selectApprovals(projectId).stream().filter(x->x.getApprovalId().equals(approvalId)).findFirst().orElseThrow(()->new ServiceException("审批记录不存在"));}
+    private ProjectInfo editable(Long id,String op){ProjectInfo p=projectMapper.selectProjectInfoById(id);if(p==null)throw new ServiceException("项目不存在");assertOperator(p.getManagerCode(),op,"只有项目负责人或admin可以维护立项申请");if(!"DRAFT".equals(p.getStatus()))throw new ServiceException("只有申请草稿可以修改或提交");return p;}
+    private void validatePlan(ProjectPreliminaryPlan plan,ProjectInfo project){if(plan.getEndDate().isBefore(plan.getStartDate()))throw new ServiceException("初步阶段结束日期不能早于开始日期");if(plan.getStartDate().isBefore(project.getStartDate())||plan.getEndDate().isAfter(project.getEndDate()))throw new ServiceException("初步阶段日期必须在项目预计日期范围内");}
+    private void convertPlans(ProjectInfo p,String op){for(ProjectPreliminaryPlan plan:projectMapper.selectPreliminaryPlans(p.getProjectId())){if(plan.getConvertedPhaseId()!=null)continue;ProjectPhase phase=new ProjectPhase();phase.setProjectId(p.getProjectId());phase.setPhaseCode("INIT-"+plan.getPlanId());phase.setPhaseName(plan.getPhaseName());phase.setStartDate(plan.getStartDate());phase.setEndDate(plan.getEndDate());phase.setStatus("NOT_STARTED");phase.setSortOrder(plan.getSortOrder());phase.setRemark("关键里程碑："+plan.getMilestoneName()+(StringUtils.isBlank(plan.getPhaseGoal())?"":"；"+plan.getPhaseGoal()));phase.setCreateBy(op);phaseMapper.insert(phase);projectMapper.markPlanConverted(plan.getPlanId(),phase.getPhaseId());}}
     private void validate(ProjectInfo p) {
         if (p.getEndDate().isBefore(p.getStartDate()))
             throw new ServiceException("计划结束日期不能早于开始日期");
