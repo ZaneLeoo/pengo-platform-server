@@ -1,29 +1,149 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.projectmanagement.execution.mapper.ProjectWorkItemMapper">
-  <resultMap id="result" type="ProjectWorkItem"><id property="itemId" column="item_id"/><result property="projectId" column="project_id"/><result property="projectName" column="project_name"/><result property="phaseId" column="phase_id"/><result property="phaseName" column="phase_name"/><result property="parentId" column="parent_id"/><result property="taskId" column="task_id"/><result property="taskName" column="task_name"/><result property="deliverableRequired" column="deliverable_required"/><result property="itemType" column="item_type"/><result property="itemCode" column="item_code"/><result property="itemName" column="item_name"/><result property="ownerId" column="owner_id"/><result property="ownerName" column="owner_name"/><result property="ownerCode" column="owner_code"/><result property="status" column="status"/><result property="priority" column="priority"/><result property="startDate" column="start_date"/><result property="dueDate" column="due_date"/><result property="actualStartDate" column="actual_start_date"/><result property="actualEndDate" column="actual_end_date"/><result property="pauseReason" column="pause_reason"/><result property="progress" column="progress"/><result property="fileUrl" column="file_url"/><result property="description" column="description"/><result property="sortOrder" column="sort_order"/></resultMap>
-  <sql id="vo">select i.*,p.project_name,ph.phase_name,o.person_name owner_name,o.person_code owner_code,t.item_name task_name from pm_project_work_item i join pm_project p on p.project_id=i.project_id left join pm_project_phase ph on ph.phase_id=i.phase_id left join pm_person o on o.person_id=i.owner_id left join pm_project_work_item t on t.item_id=i.task_id</sql>
-  <select id="selectList" parameterType="ProjectWorkItem" resultMap="result">
-    <include refid="vo"/>
-    <where>
-      <if test="projectId!=null"> and i.project_id=#{projectId}</if>
-      <if test="phaseId!=null"> and i.phase_id=#{phaseId}</if>
-      <if test="itemType!=null and itemType!=''"> and i.item_type=#{itemType}</if>
-      <if test="itemCode!=null and itemCode!=''"> and i.item_code like concat('%',#{itemCode},'%')</if>
-      <if test="itemName!=null and itemName!=''"> and i.item_name like concat('%',#{itemName},'%')</if>
-      <if test="ownerId!=null"> and i.owner_id=#{ownerId}</if>
-      <if test="status!=null and status!=''"> and i.status=#{status}</if>
-    </where>
-    order by i.sort_order,i.item_id desc
-  </select>
-  <select id="selectById" resultMap="result"><include refid="vo"/> where i.item_id=#{itemId}</select><select id="selectByCode" resultMap="result"><include refid="vo"/> where i.item_code=#{itemCode} limit 1</select>
-  <insert id="insert" useGeneratedKeys="true" keyProperty="itemId">insert into pm_project_work_item(project_id,phase_id,parent_id,task_id,deliverable_required,item_type,item_code,item_name,owner_id,status,priority,start_date,due_date,progress,file_url,description,sort_order,create_by,create_time) values(#{projectId},#{phaseId},#{parentId},#{taskId},#{deliverableRequired},#{itemType},#{itemCode},#{itemName},#{ownerId},#{status},#{priority},#{startDate},#{dueDate},#{progress},#{fileUrl},#{description},#{sortOrder},#{createBy},sysdate())</insert>
-  <update id="update">update pm_project_work_item set project_id=#{projectId},phase_id=#{phaseId},parent_id=#{parentId},task_id=#{taskId},deliverable_required=#{deliverableRequired},item_code=#{itemCode},item_name=#{itemName},owner_id=#{ownerId},status=#{status},priority=#{priority},start_date=#{startDate},due_date=#{dueDate},progress=#{progress},file_url=#{fileUrl},description=#{description},sort_order=#{sortOrder},update_by=#{updateBy},update_time=sysdate() where item_id=#{itemId}</update>
-  <update id="updateLifecycle">update pm_project_work_item set status=#{status},progress=#{progress},actual_start_date=#{actualStartDate},actual_end_date=#{actualEndDate},pause_reason=#{pauseReason},update_by=#{updateBy},update_time=sysdate() where item_id=#{itemId}</update>
-  <insert id="insertLifecycleLog">insert into pm_project_work_item_lifecycle_log(item_id,project_id,action,from_status,to_status,reason,operator,operate_time) values(#{itemId},#{projectId},#{action},#{fromStatus},#{toStatus},#{reason},#{operator},sysdate())</insert>
-  <delete id="deleteByIds">delete from pm_project_work_item where item_id in <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach></delete>
-  <select id="countDeliverablesByTaskId" resultType="int">select count(*) from pm_project_work_item where task_id=#{taskId} and item_type='DELIVERABLE'</select><select id="selectOverview" resultType="java.util.HashMap">select item_type itemType,status,count(*) total from pm_project_work_item group by item_type,status</select><select id="countChildren" resultType="int">select count(*) from pm_project_work_item where parent_id=#{itemId} and item_type='TASK'</select>
-  <select id="countLeafTasksByPhaseId" resultType="int">select count(*) from pm_project_work_item i where i.phase_id=#{phaseId} and i.item_type='TASK' and not exists(select 1 from pm_project_work_item c where c.parent_id=i.item_id and c.item_type='TASK')</select>
-  <select id="countIncompleteLeafTasksByProjectId" resultType="int">select count(*) from pm_project_work_item i where i.project_id=#{projectId} and i.item_type='TASK' and not exists(select 1 from pm_project_work_item c where c.parent_id=i.item_id and c.item_type='TASK') and i.status&lt;&gt;'COMPLETED'</select>
-  <update id="updateProgress">update pm_project_work_item set progress=#{progress},update_time=sysdate() where item_id=#{itemId}</update>
+
+    <resultMap id="result" type="ProjectWorkItem">
+        <id property="itemId" column="item_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
+        <result property="phaseId" column="phase_id"/>
+        <result property="phaseName" column="phase_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="deliverableRequired" column="deliverable_required"/>
+        <result property="itemType" column="item_type"/>
+        <result property="itemCode" column="item_code"/>
+        <result property="itemName" column="item_name"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="ownerName" column="owner_name"/>
+        <result property="ownerCode" column="owner_code"/>
+        <result property="status" column="status"/>
+        <result property="priority" column="priority"/>
+        <result property="startDate" column="start_date"/>
+        <result property="dueDate" column="due_date"/>
+        <result property="actualStartDate" column="actual_start_date"/>
+        <result property="actualEndDate" column="actual_end_date"/>
+        <result property="pauseReason" column="pause_reason"/>
+        <result property="progress" column="progress"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <sql id="vo">
+        select i.*, p.project_name, ph.phase_name, o.person_name owner_name, o.person_code owner_code,
+               t.item_name task_name
+        from pm_project_work_item i
+        join pm_project p on p.project_id = i.project_id
+        left join pm_project_phase ph on ph.phase_id = i.phase_id
+        left join pm_person o on o.person_id = i.owner_id
+        left join pm_project_work_item t on t.item_id = i.task_id
+    </sql>
+
+    <select id="selectList" parameterType="ProjectWorkItem" resultMap="result">
+        <include refid="vo"/>
+        <where>
+            <if test="projectId != null">and i.project_id = #{projectId}</if>
+            <if test="phaseId != null">and i.phase_id = #{phaseId}</if>
+            <if test="itemType != null and itemType != ''">and i.item_type = #{itemType}</if>
+            <if test="itemCode != null and itemCode != ''">and i.item_code like concat('%', #{itemCode}, '%')</if>
+            <if test="itemName != null and itemName != ''">and i.item_name like concat('%', #{itemName}, '%')</if>
+            <if test="ownerId != null">and i.owner_id = #{ownerId}</if>
+            <if test="status != null and status != ''">and i.status = #{status}</if>
+        </where>
+        order by i.sort_order, i.item_id desc
+    </select>
+
+    <select id="selectById" resultMap="result">
+        <include refid="vo"/>
+        where i.item_id = #{itemId}
+    </select>
+
+    <select id="selectByCode" resultMap="result">
+        <include refid="vo"/>
+        where i.item_code = #{itemCode} limit 1
+    </select>
+
+    <select id="selectDirectTasks" resultMap="result">
+        <include refid="vo"/>
+        where i.project_id = #{projectId} and i.parent_id = #{parentId} and i.item_type = 'TASK'
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="itemId">
+        insert into pm_project_work_item(project_id, phase_id, parent_id, task_id, deliverable_required,
+                                         item_type, item_code, item_name, owner_id, status, priority,
+                                         start_date, due_date, progress, file_url, description, sort_order,
+                                         create_by, create_time)
+        values(#{projectId}, #{phaseId}, #{parentId}, #{taskId}, #{deliverableRequired},
+               #{itemType}, #{itemCode}, #{itemName}, #{ownerId}, #{status}, #{priority},
+               #{startDate}, #{dueDate}, #{progress}, #{fileUrl}, #{description}, #{sortOrder},
+               #{createBy}, sysdate())
+    </insert>
+
+    <update id="update">
+        update pm_project_work_item
+        set project_id = #{projectId}, phase_id = #{phaseId}, parent_id = #{parentId},
+            task_id = #{taskId}, deliverable_required = #{deliverableRequired},
+            item_code = #{itemCode}, item_name = #{itemName}, owner_id = #{ownerId},
+            status = #{status}, priority = #{priority}, start_date = #{startDate},
+            due_date = #{dueDate}, progress = #{progress}, file_url = #{fileUrl},
+            description = #{description}, sort_order = #{sortOrder},
+            update_by = #{updateBy}, update_time = sysdate()
+        where item_id = #{itemId}
+    </update>
+
+    <update id="updateLifecycle">
+        update pm_project_work_item
+        set status = #{status}, progress = #{progress}, actual_start_date = #{actualStartDate},
+            actual_end_date = #{actualEndDate}, pause_reason = #{pauseReason},
+            update_by = #{updateBy}, update_time = sysdate()
+        where item_id = #{itemId}
+    </update>
+
+    <update id="updateProgress">
+        update pm_project_work_item set progress = #{progress}, update_time = sysdate()
+        where item_id = #{itemId}
+    </update>
+
+    <insert id="insertLifecycleLog">
+        insert into pm_project_work_item_lifecycle_log(item_id, project_id, action, from_status, to_status,
+                                                       reason, operator, operate_time)
+        values(#{itemId}, #{projectId}, #{action}, #{fromStatus}, #{toStatus},
+               #{reason}, #{operator}, sysdate())
+    </insert>
+
+    <delete id="deleteByIds">
+        delete from pm_project_work_item where item_id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <select id="countDeliverablesByTaskId" resultType="int">
+        select count(*) from pm_project_work_item where task_id = #{taskId} and item_type = 'DELIVERABLE'
+    </select>
+
+    <select id="selectOverview" resultType="java.util.HashMap">
+        select item_type itemType, status, count(*) total
+        from pm_project_work_item
+        group by item_type, status
+    </select>
+
+    <select id="countChildren" resultType="int">
+        select count(*) from pm_project_work_item where parent_id = #{itemId} and item_type = 'TASK'
+    </select>
+
+    <select id="countLeafTasksByPhaseId" resultType="int">
+        select count(*) from pm_project_work_item i
+        where i.phase_id = #{phaseId} and i.item_type = 'TASK'
+          and not exists (select 1 from pm_project_work_item c
+                           where c.parent_id = i.item_id and c.item_type = 'TASK')
+    </select>
+
+    <select id="countIncompleteLeafTasksByProjectId" resultType="int">
+        select count(*) from pm_project_work_item i
+        where i.project_id = #{projectId} and i.item_type = 'TASK'
+          and not exists (select 1 from pm_project_work_item c
+                           where c.parent_id = i.item_id and c.item_type = 'TASK')
+          and i.status &lt;&gt; 'COMPLETED'
+    </select>
 </mapper>

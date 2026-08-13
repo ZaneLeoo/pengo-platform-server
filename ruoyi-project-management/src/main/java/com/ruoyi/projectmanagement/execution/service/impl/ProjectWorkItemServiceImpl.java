@@ -16,11 +16,13 @@ import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.phase.domain.ProjectPhase;
 import com.ruoyi.projectmanagement.phase.mapper.ProjectPhaseMapper;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -36,8 +38,8 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     private final ProjectPhaseMapper phaseMapper;
 
     public ProjectWorkItemServiceImpl(ProjectWorkItemMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectDeliverableMapper deliverableMapper, IProjectTeamService teamService,
-            ProjectPhaseMapper phaseMapper) {
+                                      ProjectDeliverableMapper deliverableMapper, IProjectTeamService teamService,
+                                      ProjectPhaseMapper phaseMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.deliverableMapper = deliverableMapper;
@@ -90,6 +92,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         }
         if (WorkItemType.TASK.matches(item.getItemType())) {
             item.setStatus(WorkItemStatus.NOT_STARTED.getCode());
+            item.setItemCode(generateTaskCode(item));
         }
         validate(item);
         return mapper.insert(item);
@@ -103,9 +106,16 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         }
         assertFormalModuleAllowed(existing.getProjectId(), existing.getItemType());
         if (WorkItemType.TASK.matches(item.getItemType())) {
-        if (WorkItemStatus.COMPLETED.matches(existing.getStatus())) {
+            if (WorkItemStatus.COMPLETED.matches(existing.getStatus())) {
                 throw new ServiceException("已完成任务仅可查看，不能编辑；如需调整请先重新打开任务");
             }
+            Long requestParentId = item.getParentId() == null ? 0L : item.getParentId();
+            Long existingParentId = existing.getParentId() == null ? 0L : existing.getParentId();
+            if (!existingParentId.equals(requestParentId)) {
+                throw new ServiceException("WBS编码按层级自动生成，已创建任务不能调整上级任务");
+            }
+            item.setProjectId(existing.getProjectId());
+            item.setItemCode(existing.getItemCode());
             item.setStatus(existing.getStatus());
             item.setActualStartDate(existing.getActualStartDate());
             item.setActualEndDate(existing.getActualEndDate());
@@ -175,7 +185,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
                 }
                 if (deliverableMapper.countUnsatisfiedRequiredByTaskId(itemId) > 0
                         || ("1".equals(item.getDeliverableRequired())
-                                && deliverableMapper.countByTaskId(itemId) == 0)) {
+                        && deliverableMapper.countByTaskId(itemId) == 0)) {
                     throw new ServiceException("该任务要求交付物，请先完成所有必交交付物");
                 }
                 to = WorkItemStatus.COMPLETED.getCode();
@@ -256,13 +266,15 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         }
         if (WorkItemType.TASK.matches(item.getItemType()) && WorkItemStatus.COMPLETED.matches(item.getStatus())
                 && (deliverableMapper.countUnsatisfiedRequiredByTaskId(item.getItemId()) > 0
-                        || ("1".equals(item.getDeliverableRequired())
-                                && deliverableMapper.countByTaskId(item.getItemId()) == 0))) {
+                || ("1".equals(item.getDeliverableRequired())
+                && deliverableMapper.countByTaskId(item.getItemId()) == 0))) {
             throw new ServiceException("该任务要求交付物，请先完成所有必交交付物");
         }
-        ProjectWorkItem sameCode = mapper.selectByCode(item.getItemCode());
-        if (sameCode != null && !sameCode.getItemId().equals(item.getItemId())) {
-            throw new ServiceException("执行项编码已存在");
+        if (!WorkItemType.TASK.matches(item.getItemType())) {
+            ProjectWorkItem sameCode = mapper.selectByCode(item.getItemCode());
+            if (sameCode != null && !sameCode.getItemId().equals(item.getItemId())) {
+                throw new ServiceException("执行项编码已存在");
+            }
         }
         if (item.getStartDate() != null && item.getDueDate() != null
                 && item.getDueDate().isBefore(item.getStartDate())) {
@@ -313,6 +325,31 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
                 mapper.updateProgress(task.getItemId(), summaryProgress(task, children));
             }
         }
+    }
+
+    private String generateTaskCode(ProjectWorkItem item) {
+        Long parentId = item.getParentId() == null ? 0L : item.getParentId();
+        String parentCode = "";
+        if (parentId != 0) {
+            ProjectWorkItem parent = mapper.selectById(parentId);
+            if (parent == null || !WorkItemType.TASK.matches(parent.getItemType())) {
+                throw new ServiceException("上级WBS任务不存在");
+            }
+            parentCode = parent.getItemCode();
+        }
+        int next = 1;
+        for (ProjectWorkItem sibling : mapper.selectDirectTasks(item.getProjectId(), parentId)) {
+            String code = sibling.getItemCode();
+            if (code == null) {
+                continue;
+            }
+            try {
+                next = Math.max(next, Integer.parseInt(code.substring(code.lastIndexOf('.') + 1)) + 1);
+            } catch (NumberFormatException ignored) {
+                // 兼容既有自定义编码，新任务从可识别的最大序号继续。
+            }
+        }
+        return parentCode.isEmpty() ? String.valueOf(next) : parentCode + "." + next;
     }
 
     private int summaryProgress(ProjectWorkItem task, Map<Long, List<ProjectWorkItem>> children) {

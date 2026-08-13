@@ -41,7 +41,6 @@ public class ProjectWorkItem extends BaseEntity {
      */
     @NotBlank(message = "执行项类型不能为空")
     private String itemType;
-    @NotBlank(message = "编码不能为空")
     private String itemCode;
     @NotBlank(message = "名称不能为空")
     private String itemName;

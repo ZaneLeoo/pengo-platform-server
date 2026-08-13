@@ -21,6 +21,9 @@ public interface ProjectWorkItemMapper {
     /** 根据编码查询执行项。 */
     ProjectWorkItem selectByCode(String itemCode);
 
+    /** 查询同一上级下的直接WBS任务，用于自动生成层级编码。 */
+    List<ProjectWorkItem> selectDirectTasks(@Param("projectId") Long projectId, @Param("parentId") Long parentId);
+
     /** 新增执行项。 */
     int insert(ProjectWorkItem item);
 
