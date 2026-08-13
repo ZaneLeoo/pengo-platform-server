@@ -9,7 +9,6 @@ import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.common.enums.TaskType;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import com.ruoyi.projectmanagement.common.enums.WbsStatus;
-import com.ruoyi.projectmanagement.common.util.ProjectSecurityUtils;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
@@ -141,8 +140,6 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     @Transactional
     public int applyLifecycleAction(Long projectId, LifecycleActionRequest request, String operator) {
         ProjectInfo project = requiredProject(projectId);
-        ProjectSecurityUtils.assertAdminOrOwner(project.getManagerCode(), operator,
-                "只有项目负责人或admin可以执行该项目动作");
         LifecycleAction action = LifecycleAction.fromCode(request.getAction());
         if (action == null) {
             throw new ServiceException("不支持的项目生命周期动作");
@@ -498,8 +495,6 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     /** 校验操作者可编辑且项目处于申请草稿状态。 */
     private ProjectInfo editable(Long id, String operator) {
         ProjectInfo project = requiredProject(id);
-        ProjectSecurityUtils.assertAdminOrOwner(project.getManagerCode(), operator,
-                "只有项目负责人或admin可以维护立项申请");
         if (!ProjectStatus.DRAFT.matches(project.getStatus())) {
             throw new ServiceException("只有申请草稿可以修改或提交");
         }

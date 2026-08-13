@@ -4,7 +4,6 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.common.enums.TeamRoleCode;
-import com.ruoyi.projectmanagement.common.util.ProjectSecurityUtils;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
@@ -57,7 +56,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
     @Override
     @Transactional
     public void addMembers(Long projectId, List<ProjectMember> members, String operator) {
-        assertManage(projectId, operator);
+        assertProjectExists(projectId);
         assertMutable(projectId);
         ProjectRole defaultRole = mapper.selectSystemRole(TeamRoleCode.MEMBER.getCode());
         for (ProjectMember member : members) {
@@ -87,7 +86,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
     @Override
     public int updateMember(ProjectMember member, String operator) {
         ProjectMember old = required(member.getMemberId());
-        assertManage(old.getProjectId(), operator);
+        assertProjectExists(old.getProjectId());
         assertMutable(old.getProjectId());
         if (TeamRoleCode.PROJECT_MANAGER.matches(old.getRoleCode())) {
             throw new ServiceException("项目负责人请通过变更项目负责人调整");
@@ -100,7 +99,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
     @Override
     public int exitMember(Long id, String operator) {
         ProjectMember member = required(id);
-        assertManage(member.getProjectId(), operator);
+        assertProjectExists(member.getProjectId());
         assertMutable(member.getProjectId());
         if (TeamRoleCode.PROJECT_MANAGER.matches(member.getRoleCode())) {
             throw new ServiceException("项目负责人不能退出团队，请先变更项目负责人");
@@ -116,7 +115,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
 
     @Override
     public int addRole(ProjectRole role, String operator) {
-        assertManage(role.getProjectId(), operator);
+        assertProjectExists(role.getProjectId());
         assertMutable(role.getProjectId());
         role.setRoleCode("CUSTOM_" + System.currentTimeMillis());
         role.setSystemFlag("0");
@@ -131,7 +130,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         if (old == null || "1".equals(old.getSystemFlag())) {
             throw new ServiceException("系统预置角色不可修改");
         }
-        assertManage(old.getProjectId(), operator);
+        assertProjectExists(old.getProjectId());
         assertMutable(old.getProjectId());
         if ("1".equals(role.getStatus()) && mapper.countRoleMembers(role.getRoleId()) > 0) {
             throw new ServiceException("该角色仍有在组成员，不能停用");
@@ -192,12 +191,10 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         }
     }
 
-    private void assertManage(Long id, String operator) {
-        ProjectInfo project = projectMapper.selectProjectInfoById(id);
-        if (project == null) {
+    /** 校验项目存在且允许调整团队。 */
+    private void assertProjectExists(Long projectId) {
+        if (projectMapper.selectProjectInfoById(projectId) == null) {
             throw new ServiceException("项目不存在");
         }
-        ProjectSecurityUtils.assertAdminOrOwner(project.getManagerCode(), operator,
-                "只有项目负责人或admin可以管理项目团队");
     }
 }

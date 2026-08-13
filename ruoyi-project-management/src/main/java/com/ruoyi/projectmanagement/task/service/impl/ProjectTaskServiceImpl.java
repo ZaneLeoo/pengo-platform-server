@@ -8,7 +8,6 @@ import com.ruoyi.projectmanagement.common.enums.TaskType;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import com.ruoyi.projectmanagement.common.enums.WbsStatus;
 import com.ruoyi.projectmanagement.common.enums.WorkItemStatus;
-import com.ruoyi.projectmanagement.common.util.ProjectSecurityUtils;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
@@ -124,7 +123,6 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         if (!TaskType.EXECUTION.matches(task.getTaskType())) {
             throw new ServiceException("汇总任务由下级自动汇总，不能执行生命周期动作");
         }
-        ProjectSecurityUtils.assertAdminOrOwner(task.getAssigneeCode(), operator, "只有任务执行人或admin可以执行该操作");
         ProjectInfo project = projectMapper.selectProjectInfoById(task.getProjectId());
         if (project == null || !ProjectStatus.ACTIVE.matches(project.getStatus())) {
             throw new ServiceException("项目未执行中，不能执行任务动作");
@@ -189,7 +187,6 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         if (!TaskType.EXECUTION.matches(task.getTaskType())) {
             throw new ServiceException("只有执行任务可以上传任务成果");
         }
-        assertTaskOwner(task, operator);
         if (WorkItemStatus.COMPLETED.matches(task.getStatus())) {
             throw new ServiceException("已完成任务的成果仅可查看");
         }
@@ -206,7 +203,6 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
             throw new ServiceException("任务成果不存在");
         }
         ProjectTask task = required(output.getTaskId());
-        assertTaskOwner(task, operator);
         if (WorkItemStatus.COMPLETED.matches(task.getStatus())) {
             throw new ServiceException("已完成任务的成果仅可查看");
         }
@@ -361,11 +357,6 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
             throw new ServiceException("任务不存在");
         }
         return task;
-    }
-
-    /** 校验操作者是否为任务执行人或admin。 */
-    private void assertTaskOwner(ProjectTask task, String operator) {
-        ProjectSecurityUtils.assertAdminOrOwner(task.getAssigneeCode(), operator, "只有任务执行人或admin可以维护任务成果");
     }
 
     /** 校验项目处于已立项待启动状态，允许调整任务结构。 */

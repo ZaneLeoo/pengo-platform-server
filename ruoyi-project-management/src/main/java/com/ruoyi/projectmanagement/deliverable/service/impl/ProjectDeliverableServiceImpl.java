@@ -1,7 +1,6 @@
 package com.ruoyi.projectmanagement.deliverable.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
@@ -97,11 +96,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     public void submit(Long id, ProjectDeliverableSubmission submission, String username) {
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
-        ProjectWbsNode wp = requiredPackage(d.getWorkPackageId());
-        if (!"admin".equalsIgnoreCase(username)
-                && (StringUtils.isBlank(wp.getOwnerCode()) || !wp.getOwnerCode().equalsIgnoreCase(username))) {
-            throw new ServiceException("仅工作包负责人或admin可以提交交付物");
-        }
+        requiredPackage(d.getWorkPackageId());
         if (!DeliverableStatus.PENDING.matches(d.getStatus()) && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
         }
