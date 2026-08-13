@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ruoyi-project-management</artifactId>
-    <description>离散制造业项目管理模块</description>
+    <artifactId>ruoyi-flow</artifactId>
+    <description>轻量线性审批流程引擎模块</description>
 
     <dependencies>
         <dependency>
@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-flow</artifactId>
+            <artifactId>ruoyi-system</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

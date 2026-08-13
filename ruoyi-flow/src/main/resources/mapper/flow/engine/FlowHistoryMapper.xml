@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.flow.engine.mapper.FlowHistoryMapper">
+
+    <resultMap id="history" type="com.ruoyi.flow.engine.domain.FlowHistory">
+        <id property="historyId" column="history_id"/>
+        <result property="instanceId" column="instance_id"/>
+        <result property="nodeId" column="node_id"/>
+        <result property="nodeName" column="node_name"/>
+        <result property="action" column="action"/>
+        <result property="operator" column="operator"/>
+        <result property="operatorName" column="operator_name"/>
+        <result property="comment" column="comment"/>
+        <result property="operateTime" column="operate_time"/>
+    </resultMap>
+
+    <select id="selectByInstance" resultMap="history">
+        select history_id, instance_id, node_id, node_name, action, operator, operator_name,
+               comment, operate_time
+        from pm_flow_history
+        where instance_id = #{instanceId}
+        order by operate_time
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="historyId">
+        insert into pm_flow_history(instance_id, node_id, node_name, action, operator, operator_name,
+                                    comment, operate_time)
+        values(#{instanceId}, #{nodeId}, #{nodeName}, #{action}, #{operator}, #{operatorName},
+               #{comment}, sysdate())
+    </insert>
+</mapper>

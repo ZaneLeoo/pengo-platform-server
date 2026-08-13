@@ -206,6 +206,13 @@
                 <version>${ruoyi.version}</version>
             </dependency>
 
+            <!-- 流程引擎模块 -->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-flow</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -219,6 +226,7 @@
         <module>ruoyi-agent</module>
         <module>ruoyi-mes</module>
         <module>ruoyi-project-management</module>
+        <module>ruoyi-flow</module>
     </modules>
     <packaging>pom</packaging>
 

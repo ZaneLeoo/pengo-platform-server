@@ -2,7 +2,7 @@ package com.ruoyi.projectmanagement.common.enums;
 
 /** 立项申请审批记录状态。 */
 public enum InitiationApprovalStatus {
-    PENDING("PENDING"), APPROVED("APPROVED"), RETURNED("RETURNED");
+    PENDING("PENDING"), APPROVED("APPROVED"), RETURNED("RETURNED"), CANCELLED("CANCELLED");
 
     private final String code;
     InitiationApprovalStatus(String code) { this.code = code; }

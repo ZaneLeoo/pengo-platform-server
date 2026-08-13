@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.flow.definition.mapper.FlowDefinitionMapper">
+
+    <resultMap id="definition" type="com.ruoyi.flow.definition.domain.FlowDefinition">
+        <id property="flowId" column="flow_id"/>
+        <result property="flowKey" column="flow_key"/>
+        <result property="flowName" column="flow_name"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectList" parameterType="com.ruoyi.flow.definition.domain.FlowDefinition" resultMap="definition">
+        select flow_id, flow_key, flow_name, status, remark, create_by, create_time, update_by, update_time
+        from pm_flow_definition
+        <where>
+            <if test="flowKey != null and flowKey != ''">and flow_key like concat('%', #{flowKey}, '%')</if>
+            <if test="flowName != null and flowName != ''">and flow_name like concat('%', #{flowName}, '%')</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+        </where>
+        order by flow_id desc
+    </select>
+
+    <select id="selectById" resultMap="definition">
+        select flow_id, flow_key, flow_name, status, remark, create_by, create_time, update_by, update_time
+        from pm_flow_definition where flow_id = #{flowId}
+    </select>
+
+    <select id="selectByKey" resultMap="definition">
+        select flow_id, flow_key, flow_name, status, remark, create_by, create_time, update_by, update_time
+        from pm_flow_definition where flow_key = #{flowKey}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="flowId">
+        insert into pm_flow_definition(flow_key, flow_name, status, remark, create_by, create_time)
+        values(#{flowKey}, #{flowName}, #{status}, #{remark}, #{createBy}, sysdate())
+    </insert>
+
+    <update id="update">
+        update pm_flow_definition
+        set flow_key = #{flowKey}, flow_name = #{flowName}, remark = #{remark},
+            update_by = #{updateBy}, update_time = sysdate()
+        where flow_id = #{flowId}
+    </update>
+
+    <update id="updateStatus">
+        update pm_flow_definition
+        set status = #{status}, update_by = #{updateBy}, update_time = sysdate()
+        where flow_id = #{flowId}
+    </update>
+
+    <delete id="deleteByIds">
+        delete from pm_flow_definition where flow_id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+</mapper>

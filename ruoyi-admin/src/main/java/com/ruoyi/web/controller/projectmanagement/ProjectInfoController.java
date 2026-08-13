@@ -6,7 +6,6 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
-import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
@@ -110,16 +109,10 @@ public class ProjectInfoController extends BaseController {
         return toAjax(service.deletePreliminaryPlan(id, getUsername()));
     }
 
-    /** 提交立项审批。 */
+    /** 提交立项审批（发起审批流程）。 */
     @PostMapping("/{id}/initiation/submit")
     public AjaxResult submit(@PathVariable Long id) {
         return toAjax(service.submitInitiation(id, getUsername()));
-    }
-
-    /** 立项审批。 */
-    @PostMapping("/{id}/initiation/review")
-    public AjaxResult review(@PathVariable Long id, @Validated @RequestBody InitiationReviewRequest request) {
-        return toAjax(service.reviewInitiation(id, request, getUsername()));
     }
 
     /** 查询立项审批历史。 */
