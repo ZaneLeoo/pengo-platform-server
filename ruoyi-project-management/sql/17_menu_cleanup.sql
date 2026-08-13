@@ -74,3 +74,31 @@ SET menu_name = CASE menu_id
     update_time = NOW()
 WHERE menu_id IN (2003, 2004, 2005, 2011, 2108);
 
+-- 4. 隐藏系统监控、系统工具及其全部下级菜单/权限。
+WITH RECURSIVE hidden_system_menu AS (
+    SELECT menu_id
+    FROM sys_menu
+    WHERE menu_id IN (2, 3)
+    UNION ALL
+    SELECT m.menu_id
+    FROM sys_menu m
+    INNER JOIN hidden_system_menu p ON m.parent_id = p.menu_id
+)
+UPDATE sys_menu
+SET visible = '1',
+    status = '1',
+    update_by = 'admin',
+    update_time = NOW()
+WHERE menu_id IN (SELECT menu_id FROM hidden_system_menu);
+
+-- 5. 顶层动态菜单顺序：项目管理、制造运营、系统管理。
+-- 工作台是前端固定首项，不在 sys_menu 中参与排序。
+UPDATE sys_menu
+SET order_num = CASE menu_id
+        WHEN 2124 THEN 1
+        WHEN 2003 THEN 2
+        WHEN 1 THEN 3
+    END,
+    update_by = 'admin',
+    update_time = NOW()
+WHERE menu_id IN (2124, 2003, 1);
