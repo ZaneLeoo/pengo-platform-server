@@ -48,6 +48,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     public int deleteByIds(Long[] itemIds) {
         for (Long itemId : itemIds) {
             ProjectWorkItem item = mapper.selectById(itemId);
+            if (item != null) assertFormalModuleAllowed(item.getProjectId(), item.getItemType());
             if (item != null && "TASK".equals(item.getItemType()) && "COMPLETED".equals(item.getStatus())) {
                 throw new ServiceException("已完成任务仅可查看，不能删除；如需调整请先重新打开任务");
             }
@@ -57,6 +58,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
 
     @Override
     public int insert(ProjectWorkItem item) {
+        assertFormalModuleAllowed(item.getProjectId(), item.getItemType());
         if ("TASK".equals(item.getItemType()) && item.getParentId() != null && item.getParentId() != 0) {
             ProjectWorkItem parent = mapper.selectById(item.getParentId());
             if (parent == null || !"TASK".equals(parent.getItemType())) throw new ServiceException("上级WBS任务不存在");
@@ -72,6 +74,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     public int update(ProjectWorkItem item) {
         ProjectWorkItem existing = mapper.selectById(item.getItemId());
         if (existing == null) throw new ServiceException("项目执行项不存在");
+        assertFormalModuleAllowed(existing.getProjectId(), existing.getItemType());
         if ("TASK".equals(item.getItemType())) {
             if ("COMPLETED".equals(existing.getStatus())) {
                 throw new ServiceException("已完成任务仅可查看，不能编辑；如需调整请先重新打开任务");
@@ -89,6 +92,7 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
     public int applyLifecycleAction(Long itemId, LifecycleActionRequest request, String operator) {
         ProjectWorkItem item = mapper.selectById(itemId);
         if (item == null || !"TASK".equals(item.getItemType())) throw new ServiceException("WBS任务不存在");
+        assertFormalModuleAllowed(item.getProjectId(), item.getItemType());
         if (!"admin".equalsIgnoreCase(operator) && (StringUtils.isBlank(item.getOwnerCode()) || !item.getOwnerCode().equalsIgnoreCase(operator))) {
             throw new ServiceException("只有任务负责人或admin可以执行该任务动作");
         }
@@ -194,6 +198,14 @@ public class ProjectWorkItemServiceImpl implements IProjectWorkItemService {
         var phase = phaseMapper.selectById(item.getPhaseId());
         if (phase == null || !"ACTIVE".equals(phase.getStatus())) {
             throw new ServiceException("所属阶段未进行中，请先开始阶段");
+        }
+    }
+    private void assertFormalModuleAllowed(Long projectId, String itemType) {
+        var project = projectMapper.selectProjectInfoById(projectId);
+        if (project == null) throw new ServiceException("所属项目不存在");
+        if ("DRAFT".equals(project.getStatus())) {
+            String module = "ISSUE".equals(itemType) ? "问题跟踪" : "项目计划";
+            throw new ServiceException("项目处于申请草稿阶段，正式立项后才能维护" + module);
         }
     }
 }
