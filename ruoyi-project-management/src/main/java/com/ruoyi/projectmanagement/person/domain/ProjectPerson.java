@@ -9,43 +9,63 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/** 项目人员档案。 */
+/**
+ * 项目人员档案。
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectPerson extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 人员档案ID。 */
+    /**
+     * 人员档案ID。
+     */
     private Long personId;
 
-    /** 工号，项目管理范围内唯一。 */
+    /**
+     * 工号，项目管理范围内唯一。
+     */
     @Excel(name = "工号")
     private String personCode;
 
-    /** 人员姓名。 */
+    /**
+     * 人员姓名。
+     */
     @Excel(name = "姓名")
     private String personName;
 
-    /** 所属部门ID，关联 sys_dept.dept_id。 */
+    /**
+     * 所属部门ID，关联 sys_dept.dept_id。
+     */
     private Long deptId;
 
-    /** 所属部门名称，仅用于查询展示。 */
+    /**
+     * 所属部门名称，仅用于查询展示。
+     */
     @Excel(name = "部门")
     private String deptName;
 
-    /** 岗位或专业角色。 */
+    /**
+     * 岗位或专业角色。
+     */
     @Excel(name = "岗位")
     private String positionName;
 
-    /** 工作邮箱。 */
+    /**
+     * 工作邮箱。
+     */
     @Excel(name = "邮箱")
     private String email;
 
-    /** 联系电话。 */
+    /**
+     * 联系电话。
+     */
     @Excel(name = "联系电话")
     private String mobile;
 
-    /** 档案状态：0 启用，1 停用。 */
+    /**
+     * 档案状态：0 启用，1 停用。
+     */
     @Excel(name = "状态", readConverterExp = "0=启用,1=停用")
     private String status;
 

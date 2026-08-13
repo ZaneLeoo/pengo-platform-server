@@ -7,7 +7,9 @@ import com.ruoyi.projectmanagement.person.service.IProjectPersonService;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-/** 项目人员档案业务实现。 */
+/**
+ * 项目人员档案业务实现。
+ */
 @Service
 public class ProjectPersonServiceImpl implements IProjectPersonService {
     private final ProjectPersonMapper personMapper;

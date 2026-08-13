@@ -11,9 +11,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
-/** 项目分类业务实现。 */
+/**
+ * 项目分类业务实现。
+ */
 @Service
 public class ProjectCategoryServiceImpl implements IProjectCategoryService {
+
     private final ProjectCategoryMapper categoryMapper;
 
     public ProjectCategoryServiceImpl(ProjectCategoryMapper categoryMapper) {
@@ -56,8 +59,9 @@ public class ProjectCategoryServiceImpl implements IProjectCategoryService {
 
     @Override
     public int updateProjectCategory(ProjectCategory category) {
-        if (category.getCategoryId().equals(category.getParentId()))
+        if (category.getCategoryId().equals(category.getParentId())) {
             throw new ServiceException("分类不能选择自己作为上级");
+        }
         ProjectCategory parent = getParent(category.getParentId());
         category.setAncestors(parent == null ? "0" : parent.getAncestors() + "," + parent.getCategoryId());
         return categoryMapper.updateProjectCategory(category);
@@ -65,17 +69,20 @@ public class ProjectCategoryServiceImpl implements IProjectCategoryService {
 
     @Override
     public int deleteProjectCategoryById(Long categoryId) {
-        if (categoryMapper.countChildren(categoryId) > 0)
+        if (categoryMapper.countChildren(categoryId) > 0) {
             throw new ServiceException("存在子分类，不能删除");
+        }
         return categoryMapper.deleteProjectCategoryById(categoryId);
     }
 
     private ProjectCategory getParent(Long parentId) {
-        if (parentId == null || parentId == 0L)
+        if (parentId == null || parentId == 0L) {
             return null;
+        }
         ProjectCategory parent = categoryMapper.selectProjectCategoryById(parentId);
-        if (parent == null)
+        if (parent == null) {
             throw new ServiceException("上级分类不存在");
+        }
         return parent;
     }
 }
