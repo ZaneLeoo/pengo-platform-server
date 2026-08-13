@@ -27,8 +27,8 @@ public interface IProjectDeliverableService {
     /** 提交交付物（含文件或外部链接）。 */
     void submit(Long id, ProjectDeliverableSubmission submission, String username);
 
-    /** 审核交付物。 */
-    void review(Long id, boolean approved, String comment, String username);
+    /** 审核交付物提交（approve 或驳回）。 */
+    void review(Long id, ProjectDeliverableSubmission submission, String username);
 
     /** 查询交付物提交与审核历史。 */
     List<ProjectDeliverableSubmission> selectSubmissions(Long id);

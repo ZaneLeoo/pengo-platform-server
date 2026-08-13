@@ -15,7 +15,8 @@
         <result property="reviewer" column="reviewer"/>
         <result property="status" column="status"/>
         <result property="description" column="description"/>
-        <result property="plannedDate" column="planned_date"/><result property="acceptanceCriteria" column="acceptance_criteria"/><result property="businessType" column="business_type"/><result property="businessId" column="business_id"/>
+        <result property="plannedDate" column="planned_date"/>
+        <result property="acceptanceCriteria" column="acceptance_criteria"/>
         <result property="submitBy" column="submit_by"/>
         <result property="latestFileUrl" column="latest_file_url"/>
         <result property="latestExternalUrl" column="latest_external_url"/>
@@ -61,17 +62,18 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="deliverableId">
         insert into pm_project_deliverable(project_id, work_package_id, deliverable_name, deliverable_type,
                                            required_flag, approval_required, reviewer, status, description,
-                                           planned_date,acceptance_criteria,business_type,business_id,create_by, create_time)
+                                           planned_date, acceptance_criteria, create_by, create_time)
         values(#{projectId}, #{workPackageId}, #{deliverableName}, #{deliverableType},
-               #{requiredFlag}, #{approvalRequired}, #{reviewer}, #{status}, #{description},#{plannedDate},#{acceptanceCriteria},#{businessType},#{businessId},
-               #{createBy}, sysdate())
+               #{requiredFlag}, #{approvalRequired}, #{reviewer}, #{status}, #{description},
+               #{plannedDate}, #{acceptanceCriteria}, #{createBy}, sysdate())
     </insert>
 
     <update id="update">
         update pm_project_deliverable
         set work_package_id = #{workPackageId}, deliverable_name = #{deliverableName},
             deliverable_type = #{deliverableType}, required_flag = #{requiredFlag},
-            approval_required = #{approvalRequired}, description = #{description},planned_date=#{plannedDate},acceptance_criteria=#{acceptanceCriteria},business_type=#{businessType},business_id=#{businessId},
+            approval_required = #{approvalRequired}, description = #{description},
+            planned_date = #{plannedDate}, acceptance_criteria = #{acceptanceCriteria},
             update_by = #{updateBy}, update_time = sysdate()
         where deliverable_id = #{deliverableId}
     </update>
@@ -93,10 +95,6 @@
         where work_package_id = #{workPackageId} and required_flag = '1'
           and ((approval_required = '0' and status != 'DELIVERED')
                or (approval_required = '1' and status != 'APPROVED'))
-    </select>
-
-    <select id="countByWorkPackageId" resultType="int">
-        select count(*) from pm_project_deliverable where work_package_id = #{workPackageId}
     </select>
 
     <select id="countRequiredByWorkPackageId" resultType="int">

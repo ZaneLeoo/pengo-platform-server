@@ -32,9 +32,6 @@ public interface ProjectDeliverableMapper {
     /** 统计工作包未完成的必交交付物数量。 */
     int countUnsatisfiedRequiredByWorkPackageId(Long workPackageId);
 
-    /** 统计工作包关联的交付物数量。 */
-    int countByWorkPackageId(Long workPackageId);
-
     /** 统计工作包的必交正式交付物数量。 */
     int countRequiredByWorkPackageId(Long workPackageId);
 

@@ -1,15 +1,17 @@
 package com.ruoyi.projectmanagement.common.enums;
 
 /**
- * 任务类型：汇总任务（SUMMARY）与执行任务（EXECUTION）。
+ * 问题跟踪状态。
  */
-public enum TaskType {
-    SUMMARY("SUMMARY"),
-    EXECUTION("EXECUTION");
+public enum IssueStatus {
+    OPEN("OPEN"),
+    PROCESSING("PROCESSING"),
+    RESOLVED("RESOLVED"),
+    CLOSED("CLOSED");
 
     private final String code;
 
-    TaskType(String code) { this.code = code; }
+    IssueStatus(String code) { this.code = code; }
 
     public String getCode() { return code; }
 

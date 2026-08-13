@@ -1,3 +1,9 @@
+-- ============================================================
+-- 【已废弃】阶段模型迁移脚本。
+-- 阶段模型已由 19_project_plan_domain_refactor.sql 取消并清理
+-- （drop 表 pm_project_phase / pm_project_work_item 等），
+-- 本脚本仅保留作为历史记录，不要在全新环境中执行。
+-- ============================================================
 create table if not exists pm_project_phase (phase_id bigint not null auto_increment,project_id bigint not null,phase_code varchar(64),phase_name varchar(200) not null,owner_id bigint,start_date date,end_date date,actual_start_date date,actual_end_date date,status varchar(20) not null default 'NOT_STARTED',sort_order int not null default 0,remark varchar(500),create_by varchar(64) default '',create_time datetime,update_by varchar(64) default '',update_time datetime,primary key(phase_id),key idx_pm_phase_project(project_id,sort_order)) engine=innodb comment='项目阶段';
 set @has_phase_id=(select count(*) from information_schema.columns where table_schema=database() and table_name='pm_project_work_item' and column_name='phase_id');set @sql=if(@has_phase_id=0,'alter table pm_project_work_item add column phase_id bigint null after project_id','select 1');prepare stmt from @sql;execute stmt;deallocate prepare stmt;
 create table if not exists pm_project_phase_lifecycle_log(log_id bigint not null auto_increment,phase_id bigint not null,project_id bigint not null,action varchar(20) not null,from_status varchar(20) not null,to_status varchar(20) not null,operator varchar(64) not null,operate_time datetime not null,primary key(log_id),key idx_pm_phase_log(phase_id,operate_time)) engine=innodb comment='项目阶段生命周期记录';

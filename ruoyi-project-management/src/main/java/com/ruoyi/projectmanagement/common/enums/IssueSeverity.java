@@ -1,15 +1,16 @@
 package com.ruoyi.projectmanagement.common.enums;
 
 /**
- * 任务类型：汇总任务（SUMMARY）与执行任务（EXECUTION）。
+ * 问题严重程度。
  */
-public enum TaskType {
-    SUMMARY("SUMMARY"),
-    EXECUTION("EXECUTION");
+public enum IssueSeverity {
+    HIGH("HIGH"),
+    MEDIUM("MEDIUM"),
+    LOW("LOW");
 
     private final String code;
 
-    TaskType(String code) { this.code = code; }
+    IssueSeverity(String code) { this.code = code; }
 
     public String getCode() { return code; }
 

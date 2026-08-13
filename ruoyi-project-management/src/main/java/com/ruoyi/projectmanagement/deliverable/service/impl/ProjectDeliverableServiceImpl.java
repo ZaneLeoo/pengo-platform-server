@@ -88,7 +88,6 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         if (entity.getApprovalRequired() == null) {
             entity.setApprovalRequired("0");
         }
-        entity.setReviewer("admin");
         if (entity.getStatus() == null) {
             entity.setStatus(DeliverableStatus.PENDING.getCode());
         }
@@ -125,17 +124,25 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         taskService.refreshPackage(d.getWorkPackageId());
     }
 
+    /**
+     * 审核交付物提交：按提交结果（APPROVED/RETURNED）更新交付物与最新提交记录。
+     */
     @Override
-    public void review(Long id, boolean approved, String comment, String username) {
+    public void review(Long id, ProjectDeliverableSubmission submission, String username) {
         if (!"admin".equals(username)) {
             throw new ServiceException("仅 admin 可以审核交付物");
         }
-        ProjectDeliverable d = required(id);
-        assertProjectAllowed(d.getProjectId());
-        if (!DeliverableStatus.PENDING_APPROVAL.matches(d.getStatus())) {
+        ProjectDeliverable deliverable = required(id);
+        assertProjectAllowed(deliverable.getProjectId());
+        if (!DeliverableStatus.PENDING_APPROVAL.matches(deliverable.getStatus())) {
             throw new ServiceException("当前交付物不在待审批状态");
         }
-        if (!approved && (comment == null || comment.trim().isEmpty())) {
+        String result = submission.getReviewResult() == null ? null : submission.getReviewResult().trim();
+        boolean approved = DeliverableSubmissionStatus.APPROVED.matches(result);
+        if (!approved && !DeliverableSubmissionStatus.RETURNED.matches(result)) {
+            throw new ServiceException("审核结果不正确");
+        }
+        if (!approved && (submission.getReviewComment() == null || submission.getReviewComment().trim().isEmpty())) {
             throw new ServiceException("驳回时必须填写意见");
         }
         List<ProjectDeliverableSubmission> history = mapper.selectSubmissions(id);
@@ -144,13 +151,13 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         }
         ProjectDeliverableSubmission last = history.get(0);
         last.setReviewBy(username);
-        last.setReviewComment(comment);
+        last.setReviewComment(submission.getReviewComment());
         last.setReviewResult(approved ? DeliverableSubmissionStatus.APPROVED.getCode()
                 : DeliverableSubmissionStatus.RETURNED.getCode());
         mapper.updateSubmissionReview(last);
-        d.setStatus(approved ? DeliverableStatus.APPROVED.getCode() : DeliverableStatus.RETURNED.getCode());
-        mapper.updateStatus(d);
-        taskService.refreshPackage(d.getWorkPackageId());
+        deliverable.setStatus(approved ? DeliverableStatus.APPROVED.getCode() : DeliverableStatus.RETURNED.getCode());
+        mapper.updateStatus(deliverable);
+        taskService.refreshPackage(deliverable.getWorkPackageId());
     }
 
     @Override

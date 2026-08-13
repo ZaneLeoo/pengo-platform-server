@@ -1,12 +1,12 @@
 package com.ruoyi.projectmanagement.project.service;
 
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
+import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.domain.ProjectInitiationApproval;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 项目主档业务接口。
@@ -59,5 +59,5 @@ public interface IProjectInfoService {
     ProjectInitiationApproval approvalSnapshot(Long projectId, Long approvalId);
 
     /** 项目启动前就绪检查。 */
-    Map<String, Object> startReadiness(Long projectId);
+    StartReadinessResult startReadiness(Long projectId);
 }

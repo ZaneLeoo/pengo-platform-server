@@ -1,9 +1,10 @@
 package com.ruoyi.projectmanagement.team.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
+import com.ruoyi.projectmanagement.common.enums.TeamRoleCode;
+import com.ruoyi.projectmanagement.common.util.ProjectSecurityUtils;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
@@ -58,7 +59,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
     public void addMembers(Long projectId, List<ProjectMember> members, String operator) {
         assertManage(projectId, operator);
         assertMutable(projectId);
-        ProjectRole defaultRole = mapper.selectSystemRole("MEMBER");
+        ProjectRole defaultRole = mapper.selectSystemRole(TeamRoleCode.MEMBER.getCode());
         for (ProjectMember member : members) {
             if (member.getPersonId() == null) {
                 throw new ServiceException("请选择人员");
@@ -88,7 +89,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         ProjectMember old = required(member.getMemberId());
         assertManage(old.getProjectId(), operator);
         assertMutable(old.getProjectId());
-        if ("PROJECT_MANAGER".equals(old.getRoleCode())) {
+        if (TeamRoleCode.PROJECT_MANAGER.matches(old.getRoleCode())) {
             throw new ServiceException("项目负责人请通过变更项目负责人调整");
         }
         validateRole(old.getProjectId(), member.getRoleId());
@@ -101,7 +102,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         ProjectMember member = required(id);
         assertManage(member.getProjectId(), operator);
         assertMutable(member.getProjectId());
-        if ("PROJECT_MANAGER".equals(member.getRoleCode())) {
+        if (TeamRoleCode.PROJECT_MANAGER.matches(member.getRoleCode())) {
             throw new ServiceException("项目负责人不能退出团队，请先变更项目负责人");
         }
         int count = mapper.countIncompleteTasks(member.getProjectId(), member.getPersonId());
@@ -142,8 +143,8 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
     @Override
     @Transactional
     public void ensureManager(Long projectId, Long managerId, Long previousManagerId, String operator) {
-        ProjectRole manager = mapper.selectSystemRole("PROJECT_MANAGER");
-        ProjectRole core = mapper.selectSystemRole("CORE_MEMBER");
+        ProjectRole manager = mapper.selectSystemRole(TeamRoleCode.PROJECT_MANAGER.getCode());
+        ProjectRole core = mapper.selectSystemRole(TeamRoleCode.CORE_MEMBER.getCode());
         // 原负责人降为核心成员
         if (previousManagerId != null && !previousManagerId.equals(managerId)) {
             ProjectMember old = mapper.selectActiveMember(projectId, previousManagerId);
@@ -196,10 +197,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         if (project == null) {
             throw new ServiceException("项目不存在");
         }
-        if (!"admin".equalsIgnoreCase(operator)
-                && (StringUtils.isBlank(project.getManagerCode())
-                        || !project.getManagerCode().equalsIgnoreCase(operator))) {
-            throw new ServiceException("只有项目负责人或admin可以管理项目团队");
-        }
+        ProjectSecurityUtils.assertAdminOrOwner(project.getManagerCode(), operator,
+                "只有项目负责人或admin可以管理项目团队");
     }
 }
