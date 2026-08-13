@@ -2,6 +2,8 @@ package com.ruoyi.projectmanagement.phase.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.projectmanagement.common.enums.ProjectPhaseStatus;
+import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.phase.domain.ProjectPhase;
 import com.ruoyi.projectmanagement.phase.mapper.ProjectPhaseMapper;
 import com.ruoyi.projectmanagement.phase.service.IProjectPhaseService;
@@ -42,7 +44,7 @@ public class ProjectPhaseServiceImpl implements IProjectPhaseService {
     @Override
     public int add(ProjectPhase phase, String op) {
         assertPlanningAllowed(phase.getProjectId());
-        phase.setStatus("NOT_STARTED");
+        phase.setStatus(ProjectPhaseStatus.NOT_STARTED.getCode());
         validate(phase);
         phase.setCreateBy(op);
         return mapper.insert(phase);
@@ -53,7 +55,7 @@ public class ProjectPhaseServiceImpl implements IProjectPhaseService {
         ProjectPhase old = required(phase.getPhaseId());
         assertOwner(old, op);
         assertPlanningAllowed(old.getProjectId());
-        if ("COMPLETED".equals(old.getStatus())) {
+        if (ProjectPhaseStatus.COMPLETED.matches(old.getStatus())) {
             throw new ServiceException("已完成阶段不能编辑");
         }
         phase.setProjectId(old.getProjectId());
@@ -71,7 +73,7 @@ public class ProjectPhaseServiceImpl implements IProjectPhaseService {
         if (mapper.countTasks(id) > 0) {
             throw new ServiceException("阶段下已有WBS任务，不能删除");
         }
-        if ("COMPLETED".equals(phase.getStatus())) {
+        if (ProjectPhaseStatus.COMPLETED.matches(phase.getStatus())) {
             throw new ServiceException("已完成阶段不能删除");
         }
         return mapper.deleteById(id);
@@ -89,16 +91,16 @@ public class ProjectPhaseServiceImpl implements IProjectPhaseService {
         String a = action.trim().toUpperCase();
         String to;
         if ("START".equals(a)) {
-            if (!"NOT_STARTED".equals(from)) {
+            if (!ProjectPhaseStatus.NOT_STARTED.matches(from)) {
                 throw new ServiceException("只有未开始阶段可以开始");
             }
-            if (!"ACTIVE".equals(project.getStatus())) {
+            if (!ProjectStatus.ACTIVE.matches(project.getStatus())) {
                 throw new ServiceException("项目未执行中，不能开始阶段");
             }
-            to = "ACTIVE";
+            to = ProjectPhaseStatus.ACTIVE.getCode();
             phase.setActualStartDate(LocalDate.now());
         } else if ("COMPLETE".equals(a)) {
-            if (!"ACTIVE".equals(from)) {
+            if (!ProjectPhaseStatus.ACTIVE.matches(from)) {
                 throw new ServiceException("只有执行中的阶段可以完成");
             }
             if (mapper.countTasks(id) == 0) {
@@ -108,7 +110,7 @@ public class ProjectPhaseServiceImpl implements IProjectPhaseService {
             if (n > 0) {
                 throw new ServiceException("阶段仍有" + n + "个末级WBS任务未完成");
             }
-            to = "COMPLETED";
+            to = ProjectPhaseStatus.COMPLETED.getCode();
             phase.setActualEndDate(LocalDate.now());
         } else {
             throw new ServiceException("不支持的阶段动作");
@@ -173,7 +175,8 @@ public class ProjectPhaseServiceImpl implements IProjectPhaseService {
         if (project == null) {
             throw new ServiceException("所属项目不存在");
         }
-        if ("DRAFT".equals(project.getStatus()) || "PENDING_APPROVAL".equals(project.getStatus())) {
+        if (ProjectStatus.DRAFT.matches(project.getStatus())
+                || ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
             throw new ServiceException("项目尚未正式立项，不能维护项目计划");
         }
     }

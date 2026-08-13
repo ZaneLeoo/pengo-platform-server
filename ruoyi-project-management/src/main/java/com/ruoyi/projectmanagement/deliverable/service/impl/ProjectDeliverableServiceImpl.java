@@ -2,6 +2,11 @@ package com.ruoyi.projectmanagement.deliverable.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
+import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
+import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
+import com.ruoyi.projectmanagement.common.enums.WorkItemStatus;
+import com.ruoyi.projectmanagement.common.enums.WorkItemType;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
@@ -71,7 +76,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
             throw new ServiceException("所属项目不存在");
         }
         ProjectWorkItem task = taskMapper.selectById(entity.getTaskId());
-        if (task == null || !"TASK".equals(task.getItemType())
+        if (task == null || !WorkItemType.TASK.matches(task.getItemType())
                 || !task.getProjectId().equals(entity.getProjectId())) {
             throw new ServiceException("关联WBS任务不存在或不属于当前项目");
         }
@@ -83,7 +88,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         }
         entity.setReviewer("admin");
         if (entity.getStatus() == null) {
-            entity.setStatus("PENDING");
+            entity.setStatus(DeliverableStatus.PENDING.getCode());
         }
     }
 
@@ -92,14 +97,14 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
         ProjectWorkItem task = requiredTask(d.getTaskId());
-        if ("COMPLETED".equals(task.getStatus())) {
+        if (WorkItemStatus.COMPLETED.matches(task.getStatus())) {
             throw new ServiceException("所属任务已完成，不能再提交交付物；如需补交请先重新打开任务");
         }
         if (!"admin".equalsIgnoreCase(username)
                 && (StringUtils.isBlank(task.getOwnerCode()) || !task.getOwnerCode().equalsIgnoreCase(username))) {
             throw new ServiceException("仅任务负责人或admin可以提交交付物");
         }
-        if (!"PENDING".equals(d.getStatus()) && !"RETURNED".equals(d.getStatus())) {
+        if (!DeliverableStatus.PENDING.matches(d.getStatus()) && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
         }
         if (submission.getFileUrl() == null && submission.getExternalUrl() == null) {
@@ -109,9 +114,11 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         submission.setDeliverableId(id);
         submission.setVersionNo(next == null ? 1 : next);
         submission.setSubmitBy(username);
-        submission.setReviewResult("1".equals(d.getApprovalRequired()) ? "SUBMITTED" : "DELIVERED");
+        submission.setReviewResult("1".equals(d.getApprovalRequired())
+                ? DeliverableSubmissionStatus.SUBMITTED.getCode() : DeliverableSubmissionStatus.DELIVERED.getCode());
         mapper.insertSubmission(submission);
-        d.setStatus("1".equals(d.getApprovalRequired()) ? "PENDING_APPROVAL" : "DELIVERED");
+        d.setStatus("1".equals(d.getApprovalRequired()) ? DeliverableStatus.PENDING_APPROVAL.getCode()
+                : DeliverableStatus.DELIVERED.getCode());
         d.setSubmitBy(username);
         d.setLatestFileUrl(submission.getFileUrl());
         d.setLatestExternalUrl(submission.getExternalUrl());
@@ -125,7 +132,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         }
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
-        if (!"PENDING_APPROVAL".equals(d.getStatus())) {
+        if (!DeliverableStatus.PENDING_APPROVAL.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不在待审批状态");
         }
         if (!approved && (comment == null || comment.trim().isEmpty())) {
@@ -138,9 +145,10 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         ProjectDeliverableSubmission last = history.get(0);
         last.setReviewBy(username);
         last.setReviewComment(comment);
-        last.setReviewResult(approved ? "APPROVED" : "RETURNED");
+        last.setReviewResult(approved ? DeliverableSubmissionStatus.APPROVED.getCode()
+                : DeliverableSubmissionStatus.RETURNED.getCode());
         mapper.updateSubmissionReview(last);
-        d.setStatus(approved ? "APPROVED" : "RETURNED");
+        d.setStatus(approved ? DeliverableStatus.APPROVED.getCode() : DeliverableStatus.RETURNED.getCode());
         mapper.updateStatus(d);
     }
 
@@ -159,14 +167,14 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
 
     private ProjectWorkItem requiredTask(Long taskId) {
         ProjectWorkItem task = taskMapper.selectById(taskId);
-        if (task == null || !"TASK".equals(task.getItemType())) {
+        if (task == null || !WorkItemType.TASK.matches(task.getItemType())) {
             throw new ServiceException("关联WBS任务不存在");
         }
         return task;
     }
 
     private void assertTaskEditable(Long taskId) {
-        if ("COMPLETED".equals(requiredTask(taskId).getStatus())) {
+        if (WorkItemStatus.COMPLETED.matches(requiredTask(taskId).getStatus())) {
             throw new ServiceException("所属任务已完成，不能调整交付物；如需调整请先重新打开任务");
         }
     }
@@ -176,7 +184,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         if (project == null) {
             throw new ServiceException("所属项目不存在");
         }
-        if ("DRAFT".equals(project.getStatus())) {
+        if (ProjectStatus.DRAFT.matches(project.getStatus()) || ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
             throw new ServiceException("项目处于申请草稿阶段，正式立项后才能维护交付物");
         }
     }

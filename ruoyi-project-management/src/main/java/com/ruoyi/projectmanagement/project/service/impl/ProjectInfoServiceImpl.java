@@ -3,6 +3,10 @@ package com.ruoyi.projectmanagement.project.service.impl;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
+import com.ruoyi.projectmanagement.common.enums.InitiationApprovalStatus;
+import com.ruoyi.projectmanagement.common.enums.ProjectPhaseStatus;
+import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
+import com.ruoyi.projectmanagement.common.enums.WorkItemType;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.ProjectWorkItem;
@@ -80,7 +84,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     @Override
     @Transactional
     public int insertProjectInfo(ProjectInfo p) {
-        p.setStatus("DRAFT");
+        p.setStatus(ProjectStatus.DRAFT.getCode());
         p.setProgress(0);
         p.setApplicant(p.getCreateBy());
         if (p.getBudgetRequired() == null) {
@@ -101,10 +105,10 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         if (existing == null) {
             throw new ServiceException("项目不存在");
         }
-        if ("PENDING_APPROVAL".equals(existing.getStatus())) {
+        if (ProjectStatus.PENDING_APPROVAL.matches(existing.getStatus())) {
             throw new ServiceException("项目正在立项审批中，不能修改申请材料");
         }
-        if (!"DRAFT".equals(existing.getStatus()) && !"APPROVED".equals(existing.getStatus())) {
+        if (!ProjectStatus.DRAFT.matches(existing.getStatus()) && !ProjectStatus.APPROVED.matches(existing.getStatus())) {
             throw new ServiceException("当前项目状态不能修改基本信息");
         }
         p.setStatus(existing.getStatus());
@@ -136,7 +140,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         String to;
         switch (action) {
             case "START" -> {
-                if (!"APPROVED".equals(from)) {
+                if (!ProjectStatus.APPROVED.matches(from)) {
                     throw new ServiceException("只有已正式立项的项目可以启动");
                 }
                 @SuppressWarnings("unchecked")
@@ -144,34 +148,34 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
                 if (!issues.isEmpty()) {
                     throw new ServiceException("项目计划尚未准备完成：\n- " + String.join("\n- ", issues));
                 }
-                to = "ACTIVE";
+                to = ProjectStatus.ACTIVE.getCode();
                 project.setActualStartDate(LocalDate.now());
             }
             case "PAUSE" -> {
-                if (!"ACTIVE".equals(from)) {
+                if (!ProjectStatus.ACTIVE.matches(from)) {
                     throw new ServiceException("只有执行中的项目可以暂停");
                 }
                 if (StringUtils.isBlank(request.getReason())) {
                     throw new ServiceException("暂停项目必须填写原因");
                 }
-                to = "PAUSED";
+                to = ProjectStatus.PAUSED.getCode();
                 project.setPauseReason(request.getReason().trim());
             }
             case "RESUME" -> {
-                if (!"PAUSED".equals(from)) {
+                if (!ProjectStatus.PAUSED.matches(from)) {
                     throw new ServiceException("只有已暂停项目可以恢复");
                 }
-                to = "ACTIVE";
+                to = ProjectStatus.ACTIVE.getCode();
                 project.setPauseReason(null);
             }
             case "COMPLETE" -> {
-                if (!"ACTIVE".equals(from)) {
+                if (!ProjectStatus.ACTIVE.matches(from)) {
                     throw new ServiceException("只有执行中的项目可以完成");
                 }
                 if (!phaseService.allCompleted(projectId)) {
                     throw new ServiceException("请先完成项目的全部阶段");
                 }
-                to = "COMPLETED";
+                to = ProjectStatus.COMPLETED.getCode();
                 project.setActualEndDate(LocalDate.now());
                 project.setProgress(100);
             }
@@ -201,7 +205,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         }
         ProjectWorkItem filter = new ProjectWorkItem();
         filter.setProjectId(projectId);
-        filter.setItemType("TASK");
+        filter.setItemType(WorkItemType.TASK.getCode());
         List<ProjectWorkItem> tasks = workItemMapper.selectList(filter);
         Map<Long, ProjectWorkItem> byId = new HashMap<>();
         for (ProjectWorkItem t : tasks) {
@@ -345,7 +349,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         a.setProjectId(id);
         a.setVersionNo(version);
         a.setSubmitBy(op);
-        a.setStatus("PENDING");
+        a.setStatus(InitiationApprovalStatus.PENDING.getCode());
         try {
             a.setSnapshotJson(objectMapper
                     .writeValueAsString(Map.of("project", p, "preliminaryPlans", plans)));
@@ -353,7 +357,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             throw new ServiceException("生成立项申请快照失败");
         }
         projectMapper.insertApproval(a);
-        p.setStatus("PENDING_APPROVAL");
+        p.setStatus(ProjectStatus.PENDING_APPROVAL.getCode());
         p.setInitiationVersion(version);
         p.setUpdateBy(op);
         return projectMapper.updateInitiationState(p);
@@ -366,7 +370,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             throw new ServiceException("只有admin可以审批立项申请");
         }
         ProjectInfo p = projectMapper.selectProjectInfoById(id);
-        if (p == null || !"PENDING_APPROVAL".equals(p.getStatus())) {
+        if (p == null || !ProjectStatus.PENDING_APPROVAL.matches(p.getStatus())) {
             throw new ServiceException("项目不在立项审批中");
         }
         ProjectInitiationApproval a = projectMapper.selectPendingApproval(id);
@@ -374,8 +378,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             throw new ServiceException("待审批记录不存在");
         }
         String result = r.getResult().trim().toUpperCase();
-        boolean approved = "APPROVED".equals(result);
-        if (!approved && !"RETURNED".equals(result)) {
+        boolean approved = InitiationApprovalStatus.APPROVED.matches(result);
+        if (!approved && !InitiationApprovalStatus.RETURNED.matches(result)) {
             throw new ServiceException("审批结果不正确");
         }
         if (!approved && StringUtils.isBlank(r.getComment())) {
@@ -385,7 +389,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         a.setReviewBy(op);
         a.setReviewComment(r.getComment());
         int rows = projectMapper.reviewApproval(a);
-        p.setStatus(approved ? "APPROVED" : "DRAFT");
+        p.setStatus(approved ? ProjectStatus.APPROVED.getCode() : ProjectStatus.DRAFT.getCode());
         p.setInitiationTime(approved ? LocalDateTime.now() : null);
         p.setUpdateBy(op);
         projectMapper.updateInitiationState(p);
@@ -414,7 +418,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             throw new ServiceException("项目不存在");
         }
         assertOperator(p.getManagerCode(), op, "只有项目负责人或admin可以维护立项申请");
-        if (!"DRAFT".equals(p.getStatus())) {
+        if (!ProjectStatus.DRAFT.matches(p.getStatus())) {
             throw new ServiceException("只有申请草稿可以修改或提交");
         }
         return p;
@@ -441,7 +445,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             phase.setPhaseName(plan.getPhaseName());
             phase.setStartDate(plan.getStartDate());
             phase.setEndDate(plan.getEndDate());
-            phase.setStatus("NOT_STARTED");
+            phase.setStatus(ProjectPhaseStatus.NOT_STARTED.getCode());
             phase.setSortOrder(plan.getSortOrder());
             phase.setRemark("关键里程碑：" + plan.getMilestoneName()
                     + (StringUtils.isBlank(plan.getPhaseGoal()) ? "" : "；" + plan.getPhaseGoal()));
@@ -466,7 +470,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             p.setProgress(0);
         }
         if (StringUtils.isBlank(p.getStatus())) {
-            p.setStatus("DRAFT");
+            p.setStatus(ProjectStatus.DRAFT.getCode());
         }
     }
 

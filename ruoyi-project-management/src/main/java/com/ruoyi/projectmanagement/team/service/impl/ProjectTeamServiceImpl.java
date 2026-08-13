@@ -2,6 +2,8 @@ package com.ruoyi.projectmanagement.team.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
+import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
@@ -75,7 +77,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
             if (member.getJoinDate() == null) {
                 member.setJoinDate(LocalDate.now());
             }
-            member.setStatus("ACTIVE");
+            member.setStatus(ProjectMemberStatus.ACTIVE.getCode());
             member.setCreateBy(operator);
             mapper.insertMember(member);
         }
@@ -159,7 +161,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         member.setSpecialtyRole("项目经理");
         member.setResponsibility("负责项目总体目标、计划与协调");
         member.setJoinDate(LocalDate.now());
-        member.setStatus("ACTIVE");
+        member.setStatus(ProjectMemberStatus.ACTIVE.getCode());
         member.setCreateBy(operator);
         mapper.insertMember(member);
     }
@@ -181,10 +183,10 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
 
     private void assertMutable(Long id) {
         String status = projectMapper.selectProjectInfoById(id).getStatus();
-        if ("COMPLETED".equals(status)) {
+        if (ProjectStatus.COMPLETED.matches(status)) {
             throw new ServiceException("项目已完成，团队仅可查看");
         }
-        if ("PENDING_APPROVAL".equals(status)) {
+        if (ProjectStatus.PENDING_APPROVAL.matches(status)) {
             throw new ServiceException("项目正在立项审批中，拟定团队不能修改");
         }
     }
