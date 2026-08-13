@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * WBS任务的应交付项。
+ * 工作包的正式应交付项。
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,10 +20,10 @@ public class ProjectDeliverable extends BaseEntity {
 
     private String projectName;
 
-    @NotNull(message = "关联WBS任务不能为空")
-    private Long taskId;
+    @NotNull(message = "所属工作包不能为空")
+    private Long workPackageId;
 
-    private String taskName;
+    private String workPackageName;
 
     @NotBlank(message = "交付物名称不能为空")
     private String deliverableName;
@@ -44,6 +44,11 @@ public class ProjectDeliverable extends BaseEntity {
     private String status;
 
     private String description;
+
+    private java.time.LocalDate plannedDate;
+    private String acceptanceCriteria;
+    private String businessType;
+    private String businessId;
 
     private String submitBy;
 

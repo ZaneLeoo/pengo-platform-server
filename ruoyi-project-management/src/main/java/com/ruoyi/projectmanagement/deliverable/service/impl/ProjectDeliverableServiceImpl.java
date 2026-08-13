@@ -5,16 +5,16 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
-import com.ruoyi.projectmanagement.common.enums.WorkItemStatus;
-import com.ruoyi.projectmanagement.common.enums.WorkItemType;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.deliverable.service.IProjectDeliverableService;
-import com.ruoyi.projectmanagement.execution.domain.ProjectWorkItem;
-import com.ruoyi.projectmanagement.execution.mapper.ProjectWorkItemMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
+import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
+import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
+import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
+import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -26,13 +26,15 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
 
     private final ProjectDeliverableMapper mapper;
     private final ProjectInfoMapper projectMapper;
-    private final ProjectWorkItemMapper taskMapper;
+    private final ProjectWbsMapper wbsMapper;
+    private final IProjectTaskService taskService;
 
     public ProjectDeliverableServiceImpl(ProjectDeliverableMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectWorkItemMapper taskMapper) {
+            ProjectWbsMapper wbsMapper, IProjectTaskService taskService) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
-        this.taskMapper = taskMapper;
+        this.wbsMapper = wbsMapper;
+        this.taskService = taskService;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     public int insert(ProjectDeliverable entity) {
         assertProjectAllowed(entity.getProjectId());
         prepare(entity);
-        assertTaskEditable(entity.getTaskId());
+        assertPackageEditable(entity.getWorkPackageId());
         return mapper.insert(entity);
     }
 
@@ -57,7 +59,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     public int update(ProjectDeliverable entity) {
         assertProjectAllowed(entity.getProjectId());
         prepare(entity);
-        assertTaskEditable(entity.getTaskId());
+        assertPackageEditable(entity.getWorkPackageId());
         return mapper.update(entity);
     }
 
@@ -66,7 +68,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         for (Long id : ids) {
             ProjectDeliverable d = required(id);
             assertProjectAllowed(d.getProjectId());
-            assertTaskEditable(d.getTaskId());
+            assertPackageEditable(d.getWorkPackageId());
         }
         return mapper.deleteByIds(ids);
     }
@@ -75,10 +77,10 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         if (projectMapper.selectProjectInfoById(entity.getProjectId()) == null) {
             throw new ServiceException("所属项目不存在");
         }
-        ProjectWorkItem task = taskMapper.selectById(entity.getTaskId());
-        if (task == null || !WorkItemType.TASK.matches(task.getItemType())
-                || !task.getProjectId().equals(entity.getProjectId())) {
-            throw new ServiceException("关联WBS任务不存在或不属于当前项目");
+        ProjectWbsNode wp = wbsMapper.selectById(entity.getWorkPackageId());
+        if (wp == null || !WbsNodeType.WORK_PACKAGE.matches(wp.getNodeType())
+                || !wp.getProjectId().equals(entity.getProjectId())) {
+            throw new ServiceException("所属工作包不存在或不属于当前项目");
         }
         if (entity.getRequiredFlag() == null) {
             entity.setRequiredFlag("1");
@@ -96,13 +98,10 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     public void submit(Long id, ProjectDeliverableSubmission submission, String username) {
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
-        ProjectWorkItem task = requiredTask(d.getTaskId());
-        if (WorkItemStatus.COMPLETED.matches(task.getStatus())) {
-            throw new ServiceException("所属任务已完成，不能再提交交付物；如需补交请先重新打开任务");
-        }
+        ProjectWbsNode wp = requiredPackage(d.getWorkPackageId());
         if (!"admin".equalsIgnoreCase(username)
-                && (StringUtils.isBlank(task.getOwnerCode()) || !task.getOwnerCode().equalsIgnoreCase(username))) {
-            throw new ServiceException("仅任务负责人或admin可以提交交付物");
+                && (StringUtils.isBlank(wp.getOwnerCode()) || !wp.getOwnerCode().equalsIgnoreCase(username))) {
+            throw new ServiceException("仅工作包负责人或admin可以提交交付物");
         }
         if (!DeliverableStatus.PENDING.matches(d.getStatus()) && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
@@ -123,6 +122,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         d.setLatestFileUrl(submission.getFileUrl());
         d.setLatestExternalUrl(submission.getExternalUrl());
         mapper.updateStatus(d);
+        taskService.refreshPackage(d.getWorkPackageId());
     }
 
     @Override
@@ -150,6 +150,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         mapper.updateSubmissionReview(last);
         d.setStatus(approved ? DeliverableStatus.APPROVED.getCode() : DeliverableStatus.RETURNED.getCode());
         mapper.updateStatus(d);
+        taskService.refreshPackage(d.getWorkPackageId());
     }
 
     @Override
@@ -165,18 +166,16 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         return d;
     }
 
-    private ProjectWorkItem requiredTask(Long taskId) {
-        ProjectWorkItem task = taskMapper.selectById(taskId);
-        if (task == null || !WorkItemType.TASK.matches(task.getItemType())) {
-            throw new ServiceException("关联WBS任务不存在");
+    private ProjectWbsNode requiredPackage(Long id) {
+        ProjectWbsNode wp = wbsMapper.selectById(id);
+        if (wp == null || !WbsNodeType.WORK_PACKAGE.matches(wp.getNodeType())) {
+            throw new ServiceException("所属工作包不存在");
         }
-        return task;
+        return wp;
     }
 
-    private void assertTaskEditable(Long taskId) {
-        if (WorkItemStatus.COMPLETED.matches(requiredTask(taskId).getStatus())) {
-            throw new ServiceException("所属任务已完成，不能调整交付物；如需调整请先重新打开任务");
-        }
+    private void assertPackageEditable(Long id) {
+        requiredPackage(id);
     }
 
     private void assertProjectAllowed(Long projectId) {

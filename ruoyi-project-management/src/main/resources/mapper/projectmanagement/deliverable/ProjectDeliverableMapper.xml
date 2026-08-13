@@ -6,8 +6,8 @@
         <id property="deliverableId" column="deliverable_id"/>
         <result property="projectId" column="project_id"/>
         <result property="projectName" column="project_name"/>
-        <result property="taskId" column="task_id"/>
-        <result property="taskName" column="task_name"/>
+        <result property="workPackageId" column="work_package_id"/>
+        <result property="workPackageName" column="work_package_name"/>
         <result property="deliverableName" column="deliverable_name"/>
         <result property="deliverableType" column="deliverable_type"/>
         <result property="requiredFlag" column="required_flag"/>
@@ -15,6 +15,7 @@
         <result property="reviewer" column="reviewer"/>
         <result property="status" column="status"/>
         <result property="description" column="description"/>
+        <result property="plannedDate" column="planned_date"/><result property="acceptanceCriteria" column="acceptance_criteria"/><result property="businessType" column="business_type"/><result property="businessId" column="business_id"/>
         <result property="submitBy" column="submit_by"/>
         <result property="latestFileUrl" column="latest_file_url"/>
         <result property="latestExternalUrl" column="latest_external_url"/>
@@ -35,21 +36,21 @@
     </resultMap>
 
     <sql id="vo">
-        select d.*, p.project_name, t.item_name task_name
+        select d.*, p.project_name, w.wbs_name work_package_name
         from pm_project_deliverable d
         join pm_project p on p.project_id = d.project_id
-        join pm_project_work_item t on t.item_id = d.task_id
+        join pm_project_wbs_node w on w.wbs_id = d.work_package_id
     </sql>
 
     <select id="selectList" parameterType="ProjectDeliverable" resultMap="deliverable">
         <include refid="vo"/>
         <where>
             <if test="projectId != null">and d.project_id = #{projectId}</if>
-            <if test="taskId != null">and d.task_id = #{taskId}</if>
+            <if test="workPackageId != null">and d.work_package_id = #{workPackageId}</if>
             <if test="status != null and status != ''">and d.status = #{status}</if>
             <if test="deliverableName != null and deliverableName != ''">and d.deliverable_name like concat('%', #{deliverableName}, '%')</if>
         </where>
-        order by d.task_id, d.deliverable_id desc
+        order by d.work_package_id, d.deliverable_id desc
     </select>
 
     <select id="selectById" resultMap="deliverable">
@@ -58,19 +59,19 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="deliverableId">
-        insert into pm_project_deliverable(project_id, task_id, deliverable_name, deliverable_type,
+        insert into pm_project_deliverable(project_id, work_package_id, deliverable_name, deliverable_type,
                                            required_flag, approval_required, reviewer, status, description,
-                                           create_by, create_time)
-        values(#{projectId}, #{taskId}, #{deliverableName}, #{deliverableType},
-               #{requiredFlag}, #{approvalRequired}, #{reviewer}, #{status}, #{description},
+                                           planned_date,acceptance_criteria,business_type,business_id,create_by, create_time)
+        values(#{projectId}, #{workPackageId}, #{deliverableName}, #{deliverableType},
+               #{requiredFlag}, #{approvalRequired}, #{reviewer}, #{status}, #{description},#{plannedDate},#{acceptanceCriteria},#{businessType},#{businessId},
                #{createBy}, sysdate())
     </insert>
 
     <update id="update">
         update pm_project_deliverable
-        set task_id = #{taskId}, deliverable_name = #{deliverableName},
+        set work_package_id = #{workPackageId}, deliverable_name = #{deliverableName},
             deliverable_type = #{deliverableType}, required_flag = #{requiredFlag},
-            approval_required = #{approvalRequired}, description = #{description},
+            approval_required = #{approvalRequired}, description = #{description},planned_date=#{plannedDate},acceptance_criteria=#{acceptanceCriteria},business_type=#{businessType},business_id=#{businessId},
             update_by = #{updateBy}, update_time = sysdate()
         where deliverable_id = #{deliverableId}
     </update>
@@ -87,15 +88,20 @@
         <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
     </delete>
 
-    <select id="countUnsatisfiedRequiredByTaskId" resultType="int">
+    <select id="countUnsatisfiedRequiredByWorkPackageId" resultType="int">
         select count(*) from pm_project_deliverable
-        where task_id = #{taskId} and required_flag = '1'
+        where work_package_id = #{workPackageId} and required_flag = '1'
           and ((approval_required = '0' and status != 'DELIVERED')
                or (approval_required = '1' and status != 'APPROVED'))
     </select>
 
-    <select id="countByTaskId" resultType="int">
-        select count(*) from pm_project_deliverable where task_id = #{taskId}
+    <select id="countByWorkPackageId" resultType="int">
+        select count(*) from pm_project_deliverable where work_package_id = #{workPackageId}
+    </select>
+
+    <select id="countRequiredByWorkPackageId" resultType="int">
+        select count(*) from pm_project_deliverable
+        where work_package_id = #{workPackageId} and required_flag = '1'
     </select>
 
     <select id="selectSubmissions" resultMap="submission">
