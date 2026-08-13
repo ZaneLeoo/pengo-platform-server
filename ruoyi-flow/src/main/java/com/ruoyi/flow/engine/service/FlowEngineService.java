@@ -17,12 +17,13 @@ import com.ruoyi.flow.engine.enums.FlowTaskStatus;
 import com.ruoyi.flow.engine.mapper.FlowHistoryMapper;
 import com.ruoyi.flow.engine.mapper.FlowInstanceMapper;
 import com.ruoyi.flow.engine.mapper.FlowTaskMapper;
-import com.ruoyi.flow.handler.FlowBizHandler;
+import com.ruoyi.flow.handler.FlowFinishedEvent;
 import com.ruoyi.flow.message.domain.FlowMessage;
 import com.ruoyi.flow.message.mapper.FlowMessageMapper;
 import com.ruoyi.system.service.ISysUserService;
 import java.util.Date;
 import java.util.List;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,12 +42,12 @@ public class FlowEngineService {
     private final FlowHistoryMapper historyMapper;
     private final FlowMessageMapper messageMapper;
     private final ISysUserService userService;
-    private final List<FlowBizHandler> bizHandlers;
+    private final ApplicationEventPublisher eventPublisher;
 
     public FlowEngineService(FlowBindingMapper bindingMapper, FlowDefinitionMapper definitionMapper,
             FlowDefinitionNodeMapper nodeMapper, FlowInstanceMapper instanceMapper, FlowTaskMapper taskMapper,
             FlowHistoryMapper historyMapper, FlowMessageMapper messageMapper, ISysUserService userService,
-            List<FlowBizHandler> bizHandlers) {
+            ApplicationEventPublisher eventPublisher) {
         this.bindingMapper = bindingMapper;
         this.definitionMapper = definitionMapper;
         this.nodeMapper = nodeMapper;
@@ -55,7 +56,7 @@ public class FlowEngineService {
         this.historyMapper = historyMapper;
         this.messageMapper = messageMapper;
         this.userService = userService;
-        this.bizHandlers = bizHandlers;
+        this.eventPublisher = eventPublisher;
     }
 
     /**
@@ -180,11 +181,7 @@ public class FlowEngineService {
         }
         recordHistory(instance, null, null, FlowAction.CANCEL, operator, null);
         finishInstance(instance, FlowInstanceStatus.CANCELLED);
-        for (FlowBizHandler handler : bizHandlers) {
-            if (handler.bizType().equals(instance.getBizType())) {
-                handler.onCancelled(instance, operator);
-            }
-        }
+        eventPublisher.publishEvent(new FlowFinishedEvent(instance, false, null, operator));
     }
 
     /** 查询实例审批链条（按时间正序）。 */
@@ -314,17 +311,9 @@ public class FlowEngineService {
         messageMapper.insert(message);
     }
 
-    /** 实例终态时回调业务模块。 */
+    /** 实例终态时发布事件通知业务模块。 */
     private void notifyHandler(FlowInstance instance, String comment, String operator, boolean approved) {
-        for (FlowBizHandler handler : bizHandlers) {
-            if (handler.bizType().equals(instance.getBizType())) {
-                if (approved) {
-                    handler.onApproved(instance, operator);
-                } else {
-                    handler.onRejected(instance, comment, operator);
-                }
-            }
-        }
+        eventPublisher.publishEvent(new FlowFinishedEvent(instance, approved, comment, operator));
     }
 
     /** 查询登录名对应的姓名。 */
