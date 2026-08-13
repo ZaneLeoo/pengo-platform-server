@@ -99,6 +99,9 @@ set @sql=if(@has_business_type=0,'alter table pm_project_deliverable add column 
 set @has_outline_name=(select count(*) from information_schema.columns where table_schema=database() and table_name='pm_project_preliminary_plan' and column_name='outline_name');
 set @has_phase_name=(select count(*) from information_schema.columns where table_schema=database() and table_name='pm_project_preliminary_plan' and column_name='phase_name');
 set @sql=if(@has_outline_name=0 and @has_phase_name=1,'alter table pm_project_preliminary_plan change column phase_name outline_name varchar(100) not null','select 1'); prepare stmt from @sql; execute stmt; deallocate prepare stmt;
+set @has_outline_description=(select count(*) from information_schema.columns where table_schema=database() and table_name='pm_project_preliminary_plan' and column_name='outline_description');
+set @has_phase_goal=(select count(*) from information_schema.columns where table_schema=database() and table_name='pm_project_preliminary_plan' and column_name='phase_goal');
+set @sql=if(@has_outline_description=0 and @has_phase_goal=1,'alter table pm_project_preliminary_plan change column phase_goal outline_description varchar(1000) null','select 1'); prepare stmt from @sql; execute stmt; deallocate prepare stmt;
 set @has_converted_wbs=(select count(*) from information_schema.columns where table_schema=database() and table_name='pm_project_preliminary_plan' and column_name='converted_wbs_id');
 set @has_converted_phase=(select count(*) from information_schema.columns where table_schema=database() and table_name='pm_project_preliminary_plan' and column_name='converted_phase_id');
 set @sql=if(@has_converted_wbs=0 and @has_converted_phase=1,'alter table pm_project_preliminary_plan change column converted_phase_id converted_wbs_id bigint null','select 1'); prepare stmt from @sql; execute stmt; deallocate prepare stmt;

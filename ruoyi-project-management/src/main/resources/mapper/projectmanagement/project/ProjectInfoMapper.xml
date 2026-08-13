@@ -113,14 +113,6 @@
         where project_id = #{projectId}
     </update>
 
-    <select id="countIncompleteTasksByProjectId" resultType="int">
-        select count(*) from pm_project_work_item i
-        where i.project_id = #{projectId} and i.item_type = 'TASK'
-          and not exists (select 1 from pm_project_work_item c
-                           where c.parent_id = i.item_id and c.item_type = 'TASK')
-          and i.status &lt;&gt; 'COMPLETED'
-    </select>
-
     <insert id="insertLifecycleLog">
         insert into pm_project_lifecycle_log(project_id, action, from_status, to_status, reason,
                                              operator, operate_time)
@@ -143,17 +135,17 @@
     </select>
 
     <insert id="insertPreliminaryPlan" useGeneratedKeys="true" keyProperty="planId">
-        insert into pm_project_preliminary_plan(project_id, phase_name, start_date, end_date,
-                                                milestone_name, phase_goal, sort_order,
+        insert into pm_project_preliminary_plan(project_id, outline_name, start_date, end_date,
+                                                milestone_name, outline_description, sort_order,
                                                 create_by, create_time)
-        values(#{projectId}, #{phaseName}, #{startDate}, #{endDate}, #{milestoneName},
-               #{phaseGoal}, #{sortOrder}, #{createBy}, sysdate())
+        values(#{projectId}, #{outlineName}, #{startDate}, #{endDate}, #{milestoneName},
+               #{outlineDescription}, #{sortOrder}, #{createBy}, sysdate())
     </insert>
 
     <update id="updatePreliminaryPlan">
         update pm_project_preliminary_plan
-        set phase_name = #{phaseName}, start_date = #{startDate}, end_date = #{endDate},
-            milestone_name = #{milestoneName}, phase_goal = #{phaseGoal}, sort_order = #{sortOrder},
+        set outline_name = #{outlineName}, start_date = #{startDate}, end_date = #{endDate},
+            milestone_name = #{milestoneName}, outline_description = #{outlineDescription}, sort_order = #{sortOrder},
             update_by = #{updateBy}, update_time = sysdate()
         where plan_id = #{planId}
     </update>
@@ -195,7 +187,7 @@
 
     <update id="markPlanConverted">
         update pm_project_preliminary_plan
-        set converted_phase_id = #{phaseId}, update_time = sysdate()
-        where plan_id = #{planId} and converted_phase_id is null
+        set converted_wbs_id = #{wbsId}, update_time = sysdate()
+        where plan_id = #{planId} and converted_wbs_id is null
     </update>
 </mapper>

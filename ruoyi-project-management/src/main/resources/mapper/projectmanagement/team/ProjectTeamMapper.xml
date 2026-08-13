@@ -35,16 +35,16 @@
 
     <sql id="memberVo">
         select m.*, p.person_code, p.person_name, d.dept_name, r.role_code, r.role_name,
-               (select count(*) from pm_project_work_item i
-                 where i.project_id = m.project_id and i.owner_id = m.person_id
-                   and i.item_type = 'TASK') task_count,
-               (select count(*) from pm_project_work_item i
-                 where i.project_id = m.project_id and i.owner_id = m.person_id
-                   and i.item_type = 'TASK' and i.status = 'COMPLETED') completed_task_count,
-               (select count(*) from pm_project_work_item i
-                 where i.project_id = m.project_id and i.owner_id = m.person_id
-                   and i.item_type = 'TASK' and i.status &lt;&gt; 'COMPLETED'
-                   and i.due_date &lt; curdate()) overdue_task_count
+               (select count(*) from pm_project_task i
+                 where i.project_id = m.project_id and i.assignee_id = m.person_id
+                   and i.task_type = 'EXECUTION') task_count,
+               (select count(*) from pm_project_task i
+                 where i.project_id = m.project_id and i.assignee_id = m.person_id
+                   and i.task_type = 'EXECUTION' and i.status = 'COMPLETED') completed_task_count,
+               (select count(*) from pm_project_task i
+                 where i.project_id = m.project_id and i.assignee_id = m.person_id
+                   and i.task_type = 'EXECUTION' and i.status &lt;&gt; 'COMPLETED'
+                   and i.plan_end_date &lt; curdate()) overdue_task_count
         from pm_project_member m
         join pm_person p on p.person_id = m.person_id
         left join sys_dept d on d.dept_id = p.dept_id
@@ -102,9 +102,9 @@
     </select>
 
     <select id="countIncompleteTasks" resultType="int">
-        select count(*) from pm_project_work_item
-        where project_id = #{projectId} and owner_id = #{personId}
-          and item_type = 'TASK' and status &lt;&gt; 'COMPLETED'
+        select count(*) from pm_project_task
+        where project_id = #{projectId} and assignee_id = #{personId}
+          and task_type = 'EXECUTION' and status &lt;&gt; 'COMPLETED'
     </select>
 
     <select id="selectRoles" resultMap="role">

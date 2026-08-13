@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 项目初步计划（立项阶段）。
+ * 立项申请中的WBS概要。
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -21,7 +21,7 @@ public class ProjectPreliminaryPlan extends BaseEntity {
     private Long projectId;
 
     @NotBlank
-    private String phaseName;
+    private String outlineName;
 
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -34,10 +34,10 @@ public class ProjectPreliminaryPlan extends BaseEntity {
     @NotBlank
     private String milestoneName;
 
-    private String phaseGoal;
+    private String outlineDescription;
 
     private Integer sortOrder;
 
-    /** 已转换的正式阶段ID。 */
-    private Long convertedPhaseId;
+    /** 已转换的顶层WBS节点ID。 */
+    private Long convertedWbsId;
 }

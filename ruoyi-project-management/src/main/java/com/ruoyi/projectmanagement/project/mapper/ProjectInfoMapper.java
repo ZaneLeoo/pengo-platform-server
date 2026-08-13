@@ -34,9 +34,6 @@ public interface ProjectInfoMapper {
     /** 更新项目生命周期状态。 */
     int updateLifecycle(ProjectInfo project);
 
-    /** 统计项目未完成任务数。 */
-    int countIncompleteTasksByProjectId(@Param("projectId") Long projectId);
-
     /** 记录项目生命周期操作日志。 */
     int insertLifecycleLog(@Param("projectId") Long projectId, @Param("action") String action,
             @Param("fromStatus") String fromStatus, @Param("toStatus") String toStatus,
@@ -72,6 +69,6 @@ public interface ProjectInfoMapper {
     /** 更新项目立项状态。 */
     int updateInitiationState(ProjectInfo project);
 
-    /** 标记初步计划已转为正式阶段。 */
-    int markPlanConverted(@Param("planId") Long planId, @Param("phaseId") Long phaseId);
+    /** 标记WBS概要已转为顶层WBS。 */
+    int markPlanConverted(@Param("planId") Long planId, @Param("wbsId") Long wbsId);
 }
