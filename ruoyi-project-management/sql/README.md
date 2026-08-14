@@ -11,3 +11,4 @@
 29. `29_project_person_user_binding.sql`：项目人员档案与系统登录账号的一对一绑定。
 30. `30_project_management_test_accounts.sql`：本地联调使用的多账号测试数据（密码仅用于开发环境）。
 31. `31_ivs_project_team_accounts.sql`：智能装配视觉检测工作站研发项目团队账号与权限。
+33. `33_ivs_project_plan_demo_layers.sql`：智能装配视觉检测工作站研发项目的 WBS、工作包、任务与交付物示例数据。
