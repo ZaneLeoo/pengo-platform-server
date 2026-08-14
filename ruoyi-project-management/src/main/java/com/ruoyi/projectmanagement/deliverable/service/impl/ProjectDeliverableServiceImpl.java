@@ -6,7 +6,9 @@ import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
+import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableType;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
+import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableTypeMapper;
 import com.ruoyi.projectmanagement.deliverable.service.IProjectDeliverableService;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
@@ -15,6 +17,10 @@ import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,13 +33,15 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     private final ProjectInfoMapper projectMapper;
     private final ProjectWbsMapper wbsMapper;
     private final IProjectTaskService taskService;
+    private final ProjectDeliverableTypeMapper typeMapper;
 
     public ProjectDeliverableServiceImpl(ProjectDeliverableMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectWbsMapper wbsMapper, IProjectTaskService taskService) {
+            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.wbsMapper = wbsMapper;
         this.taskService = taskService;
+        this.typeMapper = typeMapper;
     }
 
     @Override
@@ -81,11 +89,26 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
                 || !wp.getProjectId().equals(entity.getProjectId())) {
             throw new ServiceException("所属工作包不存在或不属于当前项目");
         }
+        ProjectDeliverableType type = entity.getDeliverableTypeId() == null
+                ? typeMapper.selectByCode(entity.getDeliverableType()) : typeMapper.selectById(entity.getDeliverableTypeId());
+        if (type == null || !"0".equals(type.getStatus())) {
+            throw new ServiceException("交付物类型不存在或已停用");
+        }
+        entity.setDeliverableTypeId(type.getTypeId());
+        entity.setDeliverableType(type.getTypeCode());
+        entity.setSubmissionMode(type.getSubmissionMode());
+        Set<String> typeExtensions = type.getAllowedExtensions().stream()
+                .map(x -> x.toLowerCase(Locale.ROOT)).collect(Collectors.toSet());
+        Set<String> selectedExtensions = extensions(entity.getAllowedExtensions());
+        if (!selectedExtensions.isEmpty() && !typeExtensions.containsAll(selectedExtensions)) {
+            throw new ServiceException("允许格式必须属于交付物类型配置的格式范围");
+        }
+        entity.setAllowedExtensions(String.join(",", selectedExtensions.isEmpty() ? typeExtensions : selectedExtensions));
         if (entity.getRequiredFlag() == null) {
             entity.setRequiredFlag("1");
         }
         if (entity.getApprovalRequired() == null) {
-            entity.setApprovalRequired("0");
+            entity.setApprovalRequired(type.getDefaultApprovalRequired());
         }
         if (entity.getStatus() == null) {
             entity.setStatus(DeliverableStatus.PENDING.getCode());
@@ -100,8 +123,18 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         if (!DeliverableStatus.PENDING.matches(d.getStatus()) && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
         }
-        if (submission.getFileUrl() == null && submission.getExternalUrl() == null) {
-            throw new ServiceException("请上传文件或填写外部链接");
+        if ("FILE".equals(d.getSubmissionMode())) {
+            if (submission.getFileUrl() == null || submission.getFileUrl().isBlank()) throw new ServiceException("请上传文件");
+            String extension = extensionOf(submission.getFileUrl());
+            if (!extensions(d.getAllowedExtensions()).isEmpty() && !extensions(d.getAllowedExtensions()).contains(extension)) {
+                throw new ServiceException("文件格式不符合交付要求，仅允许：" + d.getAllowedExtensions());
+            }
+            submission.setExternalUrl(null);
+        } else if ("LINK".equals(d.getSubmissionMode())) {
+            if (submission.getExternalUrl() == null || submission.getExternalUrl().isBlank()) throw new ServiceException("请填写外部链接");
+            submission.setFileUrl(null);
+        } else {
+            throw new ServiceException("当前交付物提交方式暂不支持");
         }
         Integer next = mapper.selectNextVersion(id);
         submission.setDeliverableId(id);
@@ -188,5 +221,18 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         if (ProjectStatus.DRAFT.matches(project.getStatus()) || ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
             throw new ServiceException("项目处于申请草稿阶段，正式立项后才能维护交付物");
         }
+    }
+
+    private Set<String> extensions(String value) {
+        if (value == null || value.isBlank()) return Set.of();
+        return Arrays.stream(value.split(",")).map(x -> x.trim().replaceFirst("^\\.", "").toLowerCase(Locale.ROOT))
+                .filter(x -> !x.isBlank()).collect(Collectors.toSet());
+    }
+
+    private String extensionOf(String fileUrl) {
+        String path = fileUrl.split("[?#]", 2)[0];
+        int index = path.lastIndexOf('.');
+        if (index < 0 || index == path.length() - 1) throw new ServiceException("无法识别上传文件格式");
+        return path.substring(index + 1).toLowerCase(Locale.ROOT);
     }
 }

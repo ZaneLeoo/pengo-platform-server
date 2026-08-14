@@ -10,6 +10,10 @@
         <result property="workPackageName" column="work_package_name"/>
         <result property="deliverableName" column="deliverable_name"/>
         <result property="deliverableType" column="deliverable_type"/>
+        <result property="deliverableTypeId" column="deliverable_type_id"/>
+        <result property="deliverableTypeName" column="deliverable_type_name"/>
+        <result property="submissionMode" column="submission_mode"/>
+        <result property="allowedExtensions" column="allowed_extensions"/>
         <result property="requiredFlag" column="required_flag"/>
         <result property="approvalRequired" column="approval_required"/>
         <result property="reviewer" column="reviewer"/>
@@ -37,10 +41,11 @@
     </resultMap>
 
     <sql id="vo">
-        select d.*, p.project_name, w.wbs_name work_package_name
+        select d.*, p.project_name, w.wbs_name work_package_name, t.type_name deliverable_type_name
         from pm_project_deliverable d
         join pm_project p on p.project_id = d.project_id
         join pm_project_wbs_node w on w.wbs_id = d.work_package_id
+        left join pm_project_deliverable_type t on t.type_id = d.deliverable_type_id
     </sql>
 
     <select id="selectList" parameterType="ProjectDeliverable" resultMap="deliverable">
@@ -60,10 +65,12 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="deliverableId">
-        insert into pm_project_deliverable(project_id, work_package_id, deliverable_name, deliverable_type,
+        insert into pm_project_deliverable(project_id, work_package_id, deliverable_name, deliverable_type, deliverable_type_id,
+                                           submission_mode, allowed_extensions,
                                            required_flag, approval_required, reviewer, status, description,
                                            planned_date, acceptance_criteria, create_by, create_time)
-        values(#{projectId}, #{workPackageId}, #{deliverableName}, #{deliverableType},
+        values(#{projectId}, #{workPackageId}, #{deliverableName}, #{deliverableType}, #{deliverableTypeId},
+               #{submissionMode}, #{allowedExtensions},
                #{requiredFlag}, #{approvalRequired}, #{reviewer}, #{status}, #{description},
                #{plannedDate}, #{acceptanceCriteria}, #{createBy}, sysdate())
     </insert>
@@ -71,7 +78,8 @@
     <update id="update">
         update pm_project_deliverable
         set work_package_id = #{workPackageId}, deliverable_name = #{deliverableName},
-            deliverable_type = #{deliverableType}, required_flag = #{requiredFlag},
+            deliverable_type = #{deliverableType}, deliverable_type_id = #{deliverableTypeId},
+            submission_mode = #{submissionMode}, allowed_extensions = #{allowedExtensions}, required_flag = #{requiredFlag},
             approval_required = #{approvalRequired}, description = #{description},
             planned_date = #{plannedDate}, acceptance_criteria = #{acceptanceCriteria},
             update_by = #{updateBy}, update_time = sysdate()

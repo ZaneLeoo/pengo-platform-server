@@ -39,6 +39,18 @@ public class ProjectDeliverable extends BaseEntity {
     @NotBlank(message = "交付物类型不能为空")
     private String deliverableType;
 
+    /** 来源交付物类型配置。 */
+    private Long deliverableTypeId;
+
+    /** 类型名称快照。 */
+    private String deliverableTypeName;
+
+    /** 提交方式快照：FILE、LINK；BUSINESS_OBJECT预留。 */
+    private String submissionMode;
+
+    /** 允许文件扩展名快照，逗号分隔；LINK类型为空。 */
+    private String allowedExtensions;
+
     /** 是否必交：0选交，1必交。 */
     private String requiredFlag;
 
