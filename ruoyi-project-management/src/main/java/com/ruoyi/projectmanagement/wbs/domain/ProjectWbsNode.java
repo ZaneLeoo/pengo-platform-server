@@ -74,6 +74,9 @@ public class ProjectWbsNode extends BaseEntity {
     /** 完成定义（工作包必填）。 */
     private String definitionOfDone;
 
+    /** 是否需要正式交付物：0不需要，1需要（仅工作包）。 */
+    private String deliverableRequired;
+
     /** 优先级。 */
     private String priority;
 

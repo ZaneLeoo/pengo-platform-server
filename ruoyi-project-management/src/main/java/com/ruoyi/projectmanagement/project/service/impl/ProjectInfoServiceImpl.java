@@ -263,7 +263,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
                 issues.add(label + "计划日期超出项目周期");
             }
         }
-        if (deliverableMapper.countRequiredByWorkPackageId(workPackage.getWbsId()) == 0) {
+        if ("1".equals(workPackage.getDeliverableRequired())
+                && deliverableMapper.countRequiredByWorkPackageId(workPackage.getWbsId()) == 0) {
             issues.add(label + "至少需要一个必交正式交付物");
         }
         ProjectTask taskFilter = new ProjectTask();

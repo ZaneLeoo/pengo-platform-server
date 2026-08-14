@@ -77,9 +77,14 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         if (!WbsNodeType.WORK_PACKAGE.matches(workPackage.getNodeType())) {
             throw new ServiceException("该接口仅用于创建工作包");
         }
+        List<ProjectDeliverable> deliverables = request.getDeliverables() == null
+                ? Collections.<ProjectDeliverable>emptyList() : request.getDeliverables();
+        if ("1".equals(workPackage.getDeliverableRequired())
+                && deliverables.stream().noneMatch(x -> "1".equals(x.getRequiredFlag()))) {
+            throw new ServiceException("已开启正式交付物，请至少配置一项必交交付物");
+        }
         Long workPackageId = add(workPackage, operator);
-        for (ProjectDeliverable deliverable : request.getDeliverables() == null
-                ? Collections.<ProjectDeliverable>emptyList() : request.getDeliverables()) {
+        for (ProjectDeliverable deliverable : deliverables) {
             deliverable.setProjectId(workPackage.getProjectId());
             deliverable.setWorkPackageId(workPackageId);
             deliverable.setCreateBy(operator);
@@ -263,6 +268,9 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         }
         if (node.getSortOrder() == null) {
             node.setSortOrder(0);
+        }
+        if (node.getDeliverableRequired() == null) {
+            node.setDeliverableRequired("0");
         }
     }
 

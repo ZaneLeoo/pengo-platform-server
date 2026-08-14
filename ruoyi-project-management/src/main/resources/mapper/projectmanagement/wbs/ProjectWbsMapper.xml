@@ -20,6 +20,7 @@
         <result property="targetMilestone" column="target_milestone"/>
         <result property="acceptanceCriteria" column="acceptance_criteria"/>
         <result property="definitionOfDone" column="definition_of_done"/>
+        <result property="deliverableRequired" column="deliverable_required"/>
         <result property="priority" column="priority"/>
         <result property="estimatedHours" column="estimated_hours"/>
         <result property="budgetAmount" column="budget_amount"/>
@@ -64,12 +65,12 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="wbsId">
         insert into pm_project_wbs_node(project_id, parent_id, wbs_code, node_type, wbs_name, scope_description,
                                         owner_id, plan_start_date, plan_end_date, target_start_date, target_end_date,
-                                        target_milestone, acceptance_criteria, definition_of_done, priority,
+                                        target_milestone, acceptance_criteria, definition_of_done, deliverable_required, priority,
                                         estimated_hours, budget_amount, status, progress, sort_order,
                                         create_by, create_time)
         values(#{projectId}, #{parentId}, #{wbsCode}, #{nodeType}, #{wbsName}, #{scopeDescription},
                #{ownerId}, #{planStartDate}, #{planEndDate}, #{targetStartDate}, #{targetEndDate},
-               #{targetMilestone}, #{acceptanceCriteria}, #{definitionOfDone}, #{priority},
+               #{targetMilestone}, #{acceptanceCriteria}, #{definitionOfDone}, #{deliverableRequired}, #{priority},
                #{estimatedHours}, #{budgetAmount}, #{status}, #{progress}, #{sortOrder},
                #{createBy}, sysdate())
     </insert>
@@ -80,6 +81,7 @@
             scope_description = #{scopeDescription}, owner_id = #{ownerId},
             plan_start_date = #{planStartDate}, plan_end_date = #{planEndDate},
             acceptance_criteria = #{acceptanceCriteria}, definition_of_done = #{definitionOfDone},
+            deliverable_required = #{deliverableRequired},
             priority = #{priority}, estimated_hours = #{estimatedHours}, budget_amount = #{budgetAmount},
             sort_order = #{sortOrder}, update_by = #{updateBy}, update_time = sysdate()
         where wbs_id = #{wbsId}
