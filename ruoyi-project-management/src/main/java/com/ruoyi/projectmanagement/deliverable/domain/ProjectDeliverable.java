@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -27,6 +28,9 @@ public class ProjectDeliverable extends BaseEntity {
     /** 所属工作包ID。 */
     @NotNull(message = "所属工作包不能为空")
     private Long workPackageId;
+
+    /** 列表筛选用：汇总WBS或项目节点下的工作包ID集合，不落库。 */
+    private List<Long> workPackageIds;
 
     /** 工作包名称（冗余展示字段）。 */
     private String workPackageName;
