@@ -508,7 +508,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         }
         if (plan.getStartDate().isBefore(project.getStartDate())
                 || plan.getEndDate().isAfter(project.getEndDate())) {
-            throw new ServiceException("WBS概要目标日期必须在项目预计日期范围内");
+            throw new ServiceException("WBS概要目标日期必须在项目预计日期范围内（" + project.getStartDate() + " ~ "
+                    + project.getEndDate() + "）");
         }
     }
 
