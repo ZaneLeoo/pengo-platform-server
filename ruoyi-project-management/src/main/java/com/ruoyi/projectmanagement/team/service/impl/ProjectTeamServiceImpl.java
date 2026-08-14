@@ -5,6 +5,8 @@ import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.common.enums.TeamRoleCode;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
+import com.ruoyi.projectmanagement.professionalrole.domain.ProfessionalRole;
+import com.ruoyi.projectmanagement.professionalrole.mapper.ProfessionalRoleMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.team.domain.ProjectMember;
@@ -25,12 +27,14 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
     private final ProjectTeamMapper mapper;
     private final ProjectInfoMapper projectMapper;
     private final ProjectPersonMapper personMapper;
+    private final ProfessionalRoleMapper professionalRoleMapper;
 
     public ProjectTeamServiceImpl(ProjectTeamMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectPersonMapper personMapper) {
+            ProjectPersonMapper personMapper, ProfessionalRoleMapper professionalRoleMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.personMapper = personMapper;
+        this.professionalRoleMapper = professionalRoleMapper;
     }
 
     @Override
@@ -74,6 +78,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
                 member.setRoleId(defaultRole.getRoleId());
             }
             validateRole(projectId, member.getRoleId());
+            validateProfessionalRole(member);
             if (member.getJoinDate() == null) {
                 member.setJoinDate(LocalDate.now());
             }
@@ -92,6 +97,7 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
             throw new ServiceException("项目负责人请通过变更项目负责人调整");
         }
         validateRole(old.getProjectId(), member.getRoleId());
+        validateProfessionalRole(member);
         member.setUpdateBy(operator);
         return mapper.updateMember(member);
     }
@@ -158,7 +164,12 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         member.setProjectId(projectId);
         member.setPersonId(managerId);
         member.setRoleId(manager.getRoleId());
-        member.setSpecialtyRole("项目经理");
+        ProfessionalRole professionalRole = professionalRoleMapper.selectByCode("PROJECT_MANAGER");
+        if (professionalRole == null || !"0".equals(professionalRole.getStatus())) {
+            throw new ServiceException("系统未配置启用的项目经理专业角色");
+        }
+        member.setProfessionalRoleId(professionalRole.getProfessionalRoleId());
+        member.setSpecialtyRole(professionalRole.getRoleName());
         member.setResponsibility("负责项目总体目标、计划与协调");
         member.setJoinDate(LocalDate.now());
         member.setStatus(ProjectMemberStatus.ACTIVE.getCode());
@@ -179,6 +190,20 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
         if (role == null || (!Long.valueOf(0).equals(role.getProjectId()) && !projectId.equals(role.getProjectId()))) {
             throw new ServiceException("项目角色不可用");
         }
+    }
+
+    /** 校验并回填全局专业角色，同时保留成员记录中的名称快照。 */
+    private void validateProfessionalRole(ProjectMember member) {
+        if (member.getProfessionalRoleId() == null) {
+            throw new ServiceException("请选择专业角色");
+        }
+        ProfessionalRole role = professionalRoleMapper.selectById(member.getProfessionalRoleId());
+        if (role == null || !"0".equals(role.getStatus())) {
+            throw new ServiceException("专业角色不存在或已停用");
+        }
+        member.setProfessionalRoleCode(role.getRoleCode());
+        member.setProfessionalRoleName(role.getRoleName());
+        member.setSpecialtyRole(role.getRoleName());
     }
 
     private void assertMutable(Long id) {

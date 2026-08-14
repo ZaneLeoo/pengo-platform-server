@@ -12,6 +12,9 @@
         <result property="roleId" column="role_id"/>
         <result property="roleCode" column="role_code"/>
         <result property="roleName" column="role_name"/>
+        <result property="professionalRoleId" column="professional_role_id"/>
+        <result property="professionalRoleCode" column="professional_role_code"/>
+        <result property="professionalRoleName" column="professional_role_name"/>
         <result property="specialtyRole" column="specialty_role"/>
         <result property="responsibility" column="responsibility"/>
         <result property="joinDate" column="join_date"/>
@@ -34,7 +37,13 @@
     </resultMap>
 
     <sql id="memberVo">
-        select m.*, p.person_code, p.person_name, d.dept_name, r.role_code, r.role_name,
+        select m.member_id, m.project_id, m.person_id, m.role_id, m.professional_role_id,
+               coalesce(pr.role_name, m.specialty_role) as specialty_role,
+               pr.role_code as professional_role_code,
+               pr.role_name as professional_role_name,
+               m.responsibility, m.join_date, m.exit_date, m.status, m.remark,
+               m.create_by, m.create_time, m.update_by, m.update_time,
+               p.person_code, p.person_name, d.dept_name, r.role_code, r.role_name,
                (select count(*) from pm_project_task i
                  where i.project_id = m.project_id and i.assignee_id = m.person_id
                    and i.task_type = 'EXECUTION') task_count,
@@ -49,6 +58,7 @@
         join pm_person p on p.person_id = m.person_id
         left join sys_dept d on d.dept_id = p.dept_id
         join pm_project_role r on r.role_id = m.role_id
+        left join pm_professional_role pr on pr.professional_role_id = m.professional_role_id
     </sql>
 
     <select id="selectMembers" resultMap="member">
@@ -72,12 +82,13 @@
     </select>
 
     <insert id="insertMember" useGeneratedKeys="true" keyProperty="memberId">
-        insert into pm_project_member(project_id, person_id, role_id, specialty_role, responsibility,
+        insert into pm_project_member(project_id, person_id, role_id, professional_role_id, specialty_role, responsibility,
                                       join_date, status, remark, create_by, create_time)
-        values(#{projectId}, #{personId}, #{roleId}, #{specialtyRole}, #{responsibility},
+        values(#{projectId}, #{personId}, #{roleId}, #{professionalRoleId}, #{specialtyRole}, #{responsibility},
                #{joinDate}, #{status}, #{remark}, #{createBy}, sysdate())
         on duplicate key update
-            role_id = values(role_id), specialty_role = values(specialty_role),
+            role_id = values(role_id), professional_role_id = values(professional_role_id),
+            specialty_role = values(specialty_role),
             responsibility = values(responsibility), join_date = values(join_date),
             exit_date = null, status = 'ACTIVE', remark = values(remark),
             update_by = values(create_by), update_time = sysdate()
@@ -85,7 +96,7 @@
 
     <update id="updateMember">
         update pm_project_member
-        set role_id = #{roleId}, specialty_role = #{specialtyRole},
+        set role_id = #{roleId}, professional_role_id = #{professionalRoleId}, specialty_role = #{specialtyRole},
             responsibility = #{responsibility}, remark = #{remark},
             update_by = #{updateBy}, update_time = sysdate()
         where member_id = #{memberId}

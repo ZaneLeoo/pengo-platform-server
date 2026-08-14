@@ -35,7 +35,16 @@ public class ProjectMember extends BaseEntity {
 
     private String roleName;
 
-    /** 专业角色，如项目经理、机械设计、电气设计等。 */
+    /** 标准化专业角色ID。 */
+    private Long professionalRoleId;
+
+    /** 标准化专业角色编码。 */
+    private String professionalRoleCode;
+
+    /** 标准化专业角色名称。 */
+    private String professionalRoleName;
+
+    /** 专业角色名称快照，兼容历史数据。 */
     private String specialtyRole;
 
     /** 职责说明。 */
