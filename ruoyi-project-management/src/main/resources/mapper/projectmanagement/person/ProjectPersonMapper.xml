@@ -83,7 +83,8 @@
     </select>
 
     <select id="selectProjectPersonByUserId" parameterType="Long" resultMap="ProjectPersonResult">
-        <include refid="selectProjectPersonVo"/> where p.user_id = #{userId} limit 1
+        <!-- user_id 有唯一索引；这里不写固定 limit，避免被 PageHelper 分页查询再次追加 LIMIT。 -->
+        <include refid="selectProjectPersonVo"/> where p.user_id = #{userId}
     </select>
 
     <insert id="insertProjectPerson" parameterType="ProjectPerson" useGeneratedKeys="true" keyProperty="personId">
