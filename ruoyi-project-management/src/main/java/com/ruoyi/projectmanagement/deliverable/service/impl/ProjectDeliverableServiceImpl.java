@@ -97,7 +97,9 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         entity.setDeliverableTypeId(type.getTypeId());
         entity.setDeliverableType(type.getTypeCode());
         entity.setSubmissionMode(type.getSubmissionMode());
-        Set<String> typeExtensions = type.getAllowedExtensions().stream()
+        List<String> configuredExtensions = type.getAllowedExtensions() == null
+                ? List.of() : type.getAllowedExtensions();
+        Set<String> typeExtensions = configuredExtensions.stream()
                 .map(x -> x.toLowerCase(Locale.ROOT)).collect(Collectors.toSet());
         Set<String> selectedExtensions = extensions(entity.getAllowedExtensions());
         if (!selectedExtensions.isEmpty() && !typeExtensions.containsAll(selectedExtensions)) {
