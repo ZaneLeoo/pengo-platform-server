@@ -90,10 +90,6 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-project-management</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-flow</artifactId>
-        </dependency>
 
     </dependencies>
 

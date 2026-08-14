@@ -2,8 +2,6 @@ package com.ruoyi.projectmanagement.project.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.flow.engine.domain.FlowInstance;
-import com.ruoyi.flow.engine.service.FlowEngineService;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
 import com.ruoyi.projectmanagement.common.enums.InitiationApprovalStatus;
 import com.ruoyi.projectmanagement.common.enums.LifecycleAction;
@@ -16,6 +14,7 @@ import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
 import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
+import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.domain.ProjectInitiationApproval;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
@@ -52,13 +51,11 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     private final ProjectTaskMapper taskMapper;
     private final ProjectDeliverableMapper deliverableMapper;
     private final ObjectMapper objectMapper;
-    private final FlowEngineService flowEngineService;
 
     public ProjectInfoServiceImpl(ProjectInfoMapper projectMapper, ProjectCategoryMapper categoryMapper,
             ProjectPersonMapper personMapper, IProjectTeamService teamService, IProjectWbsService wbsService,
             ProjectWbsMapper wbsMapper, ProjectTaskMapper taskMapper,
-            ProjectDeliverableMapper deliverableMapper, ObjectMapper objectMapper,
-            FlowEngineService flowEngineService) {
+            ProjectDeliverableMapper deliverableMapper, ObjectMapper objectMapper) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -68,7 +65,6 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         this.taskMapper = taskMapper;
         this.deliverableMapper = deliverableMapper;
         this.objectMapper = objectMapper;
-        this.flowEngineService = flowEngineService;
     }
 
     /** 查询项目列表。 */
@@ -414,75 +410,44 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         project.setStatus(ProjectStatus.PENDING_APPROVAL.getCode());
         project.setInitiationVersion(version);
         project.setUpdateBy(operator);
-        int rows = projectMapper.updateInitiationState(project);
-        // 发起审批流程，后续由流程引擎推进审批并回调
-        FlowInstance instance = flowEngineService.start("PROJECT_INITIATION", id, project.getProjectCode(),
-                project.getProjectName(), operator);
-        if (instance == null) {
-            throw new ServiceException("发起审批流程失败");
-        }
-        return rows;
+        return projectMapper.updateInitiationState(project);
     }
 
-    /** 流程全部节点通过后回调：立项通过，生成正式WBS。 */
+    /** 审批立项申请，通过后把WBS概要转为正式WBS。 */
     @Override
     @Transactional
-    public void approveInitiation(Long projectId, String operator) {
-        ProjectInfo project = requiredProject(projectId);
+    public int reviewInitiation(Long id, InitiationReviewRequest request, String operator) {
+        if (!"admin".equalsIgnoreCase(operator)) {
+            throw new ServiceException("只有admin可以审批立项申请");
+        }
+        ProjectInfo project = requiredProject(id);
         if (!ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
             throw new ServiceException("项目不在立项审批中");
         }
-        ProjectInitiationApproval approval = projectMapper.selectPendingApproval(projectId);
+        ProjectInitiationApproval approval = projectMapper.selectPendingApproval(id);
         if (approval == null) {
             throw new ServiceException("待审批记录不存在");
         }
-        approval.setStatus(InitiationApprovalStatus.APPROVED.getCode());
+        String result = request.getResult().trim().toUpperCase();
+        boolean approved = InitiationApprovalStatus.APPROVED.matches(result);
+        if (!approved && !InitiationApprovalStatus.RETURNED.matches(result)) {
+            throw new ServiceException("审批结果不正确");
+        }
+        if (!approved && StringUtils.isBlank(request.getComment())) {
+            throw new ServiceException("退回必须填写审批意见");
+        }
+        approval.setStatus(result);
         approval.setReviewBy(operator);
-        projectMapper.reviewApproval(approval);
-        project.setStatus(ProjectStatus.APPROVED.getCode());
-        project.setInitiationTime(LocalDateTime.now());
+        approval.setReviewComment(request.getComment());
+        int rows = projectMapper.reviewApproval(approval);
+        project.setStatus(approved ? ProjectStatus.APPROVED.getCode() : ProjectStatus.DRAFT.getCode());
+        project.setInitiationTime(approved ? LocalDateTime.now() : null);
         project.setUpdateBy(operator);
         projectMapper.updateInitiationState(project);
-        convertPlans(project, operator);
-    }
-
-    /** 流程被驳回后回调：立项退回草稿。 */
-    @Override
-    @Transactional
-    public void rejectInitiation(Long projectId, String comment, String operator) {
-        ProjectInfo project = requiredProject(projectId);
-        if (!ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
-            throw new ServiceException("项目不在立项审批中");
+        if (approved) {
+            convertPlans(project, operator);
         }
-        ProjectInitiationApproval approval = projectMapper.selectPendingApproval(projectId);
-        if (approval != null) {
-            approval.setStatus(InitiationApprovalStatus.RETURNED.getCode());
-            approval.setReviewBy(operator);
-            approval.setReviewComment(comment);
-            projectMapper.reviewApproval(approval);
-        }
-        project.setStatus(ProjectStatus.DRAFT.getCode());
-        project.setUpdateBy(operator);
-        projectMapper.updateInitiationState(project);
-    }
-
-    /** 流程被撤销后回调：立项退回草稿。 */
-    @Override
-    @Transactional
-    public void cancelInitiation(Long projectId, String operator) {
-        ProjectInfo project = requiredProject(projectId);
-        if (!ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
-            throw new ServiceException("项目不在立项审批中");
-        }
-        ProjectInitiationApproval approval = projectMapper.selectPendingApproval(projectId);
-        if (approval != null) {
-            approval.setStatus(InitiationApprovalStatus.CANCELLED.getCode());
-            approval.setReviewBy(operator);
-            projectMapper.reviewApproval(approval);
-        }
-        project.setStatus(ProjectStatus.DRAFT.getCode());
-        project.setUpdateBy(operator);
-        projectMapper.updateInitiationState(project);
+        return rows;
     }
 
     /** 查询立项审批历史。 */

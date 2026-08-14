@@ -2,6 +2,7 @@ package com.ruoyi.projectmanagement.project.service;
 
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
+import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.domain.ProjectInitiationApproval;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
@@ -45,17 +46,11 @@ public interface IProjectInfoService {
     /** 删除初步计划。 */
     int deletePreliminaryPlan(Long planId, String operator);
 
-    /** 提交立项申请（发起审批流程）。 */
+    /** 提交立项申请。 */
     int submitInitiation(Long projectId, String operator);
 
-    /** 流程通过后回调：立项通过并生成正式WBS。 */
-    void approveInitiation(Long projectId, String operator);
-
-    /** 流程驳回后回调：立项退回草稿。 */
-    void rejectInitiation(Long projectId, String comment, String operator);
-
-    /** 流程撤销后回调：立项退回草稿。 */
-    void cancelInitiation(Long projectId, String operator);
+    /** 审批立项申请。 */
+    int reviewInitiation(Long projectId, InitiationReviewRequest request, String operator);
 
     /** 查询立项审批历史。 */
     List<ProjectInitiationApproval> approvalHistory(Long projectId);
