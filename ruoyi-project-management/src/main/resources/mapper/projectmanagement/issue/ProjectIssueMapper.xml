@@ -1,11 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.projectmanagement.issue.mapper.ProjectIssueMapper">
-  <sql id="vo">select i.*,w.wbs_name work_package_name,t.task_name,p.person_name owner_name from pm_project_issue i left join pm_project_wbs_node w on w.wbs_id=i.work_package_id left join pm_project_task t on t.task_id=i.task_id left join pm_person p on p.person_id=i.owner_id</sql>
-  <select id="selectList" resultType="ProjectIssue"><include refid="vo"/><where><if test="projectId!=null">i.project_id=#{projectId}</if><if test="workPackageId!=null">and i.work_package_id=#{workPackageId}</if><if test="taskId!=null">and i.task_id=#{taskId}</if><if test="status!=null and status!=''">and i.status=#{status}</if><if test="issueName!=null and issueName!=''">and i.issue_name like concat('%',#{issueName},'%')</if></where>order by i.issue_id desc</select>
-  <select id="selectById" resultType="ProjectIssue"><include refid="vo"/> where i.issue_id=#{id}</select>
-  <select id="countByProject" resultType="int">select count(*) from pm_project_issue where project_id=#{projectId}</select>
-  <insert id="insert" useGeneratedKeys="true" keyProperty="issueId">insert into pm_project_issue(project_id,work_package_id,task_id,issue_code,issue_name,description,owner_id,severity,status,due_date,resolution,create_by,create_time) values(#{projectId},#{workPackageId},#{taskId},#{issueCode},#{issueName},#{description},#{ownerId},#{severity},#{status},#{dueDate},#{resolution},#{createBy},sysdate())</insert>
-  <update id="update">update pm_project_issue set work_package_id=#{workPackageId},task_id=#{taskId},issue_name=#{issueName},description=#{description},owner_id=#{ownerId},severity=#{severity},status=#{status},due_date=#{dueDate},resolution=#{resolution},update_by=#{updateBy},update_time=sysdate() where issue_id=#{issueId}</update>
-  <delete id="delete">delete from pm_project_issue where issue_id in <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach></delete>
+
+    <sql id="vo">
+        select i.*, w.wbs_name work_package_name, t.task_name, p.person_name owner_name
+        from pm_project_issue i
+        left join pm_project_wbs_node w on w.wbs_id = i.work_package_id
+        left join pm_project_task t on t.task_id = i.task_id
+        left join pm_person p on p.person_id = i.owner_id
+    </sql>
+
+    <select id="selectList" resultType="ProjectIssue">
+        <include refid="vo"/>
+        <where>
+            <if test="projectId != null">and i.project_id = #{projectId}</if>
+            <if test="workPackageId != null">and i.work_package_id = #{workPackageId}</if>
+            <if test="taskId != null">and i.task_id = #{taskId}</if>
+            <if test="status != null and status != ''">and i.status = #{status}</if>
+            <if test="issueName != null and issueName != ''">and i.issue_name like concat('%', #{issueName}, '%')</if>
+        </where>
+        order by i.issue_id desc
+    </select>
+
+    <select id="selectById" resultType="ProjectIssue">
+        <include refid="vo"/>
+        where i.issue_id = #{id}
+    </select>
+
+    <select id="countByProject" resultType="int">
+        select count(*) from pm_project_issue where project_id = #{projectId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="issueId">
+        insert into pm_project_issue(project_id, work_package_id, task_id, issue_code, issue_name, description,
+                                     owner_id, severity, status, due_date, resolution, create_by, create_time)
+        values(#{projectId}, #{workPackageId}, #{taskId}, #{issueCode}, #{issueName}, #{description},
+               #{ownerId}, #{severity}, #{status}, #{dueDate}, #{resolution}, #{createBy}, sysdate())
+    </insert>
+
+    <update id="update">
+        update pm_project_issue
+        set work_package_id = #{workPackageId}, task_id = #{taskId}, issue_name = #{issueName},
+            description = #{description}, owner_id = #{ownerId}, severity = #{severity}, status = #{status},
+            due_date = #{dueDate}, resolution = #{resolution},
+            update_by = #{updateBy}, update_time = sysdate()
+        where issue_id = #{issueId}
+    </update>
+
+    <delete id="delete">
+        delete from pm_project_issue where issue_id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
 </mapper>

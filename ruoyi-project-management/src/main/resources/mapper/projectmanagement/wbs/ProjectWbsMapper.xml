@@ -1,15 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper">
-  <resultMap id="result" type="ProjectWbsNode"><id property="wbsId" column="wbs_id"/><result property="projectId" column="project_id"/><result property="parentId" column="parent_id"/><result property="wbsCode" column="wbs_code"/><result property="nodeType" column="node_type"/><result property="wbsName" column="wbs_name"/><result property="scopeDescription" column="scope_description"/><result property="ownerId" column="owner_id"/><result property="ownerName" column="owner_name"/><result property="ownerCode" column="owner_code"/><result property="planStartDate" column="plan_start_date"/><result property="planEndDate" column="plan_end_date"/><result property="targetStartDate" column="target_start_date"/><result property="targetEndDate" column="target_end_date"/><result property="targetMilestone" column="target_milestone"/><result property="acceptanceCriteria" column="acceptance_criteria"/><result property="definitionOfDone" column="definition_of_done"/><result property="priority" column="priority"/><result property="estimatedHours" column="estimated_hours"/><result property="budgetAmount" column="budget_amount"/><result property="status" column="status"/><result property="progress" column="progress"/><result property="sortOrder" column="sort_order"/><result property="childCount" column="child_count"/><result property="taskCount" column="task_count"/><result property="deliverableCount" column="deliverable_count"/></resultMap>
-  <sql id="vo">select w.*,o.person_name owner_name,o.person_code owner_code,(select count(*) from pm_project_wbs_node c where c.parent_id=w.wbs_id) child_count,(select count(*) from pm_project_task t where t.work_package_id=w.wbs_id) task_count,(select count(*) from pm_project_deliverable d where d.work_package_id=w.wbs_id) deliverable_count from pm_project_wbs_node w left join pm_person o on o.person_id=w.owner_id</sql>
-  <select id="selectList" resultMap="result"><include refid="vo"/><where><if test="projectId!=null">w.project_id=#{projectId}</if><if test="parentId!=null">and w.parent_id=#{parentId}</if><if test="nodeType!=null and nodeType!=''">and w.node_type=#{nodeType}</if></where>order by w.wbs_code</select>
-  <select id="selectById" resultMap="result"><include refid="vo"/> where w.wbs_id=#{id}</select>
-  <select id="selectChildren" resultMap="result"><include refid="vo"/> where w.project_id=#{projectId} and w.parent_id=#{parentId} order by w.sort_order,w.wbs_id</select>
-  <insert id="insert" useGeneratedKeys="true" keyProperty="wbsId">insert into pm_project_wbs_node(project_id,parent_id,wbs_code,node_type,wbs_name,scope_description,owner_id,plan_start_date,plan_end_date,target_start_date,target_end_date,target_milestone,acceptance_criteria,definition_of_done,priority,estimated_hours,budget_amount,status,progress,sort_order,create_by,create_time) values(#{projectId},#{parentId},#{wbsCode},#{nodeType},#{wbsName},#{scopeDescription},#{ownerId},#{planStartDate},#{planEndDate},#{targetStartDate},#{targetEndDate},#{targetMilestone},#{acceptanceCriteria},#{definitionOfDone},#{priority},#{estimatedHours},#{budgetAmount},#{status},#{progress},#{sortOrder},#{createBy},sysdate())</insert>
-  <update id="update">update pm_project_wbs_node set parent_id=#{parentId},node_type=#{nodeType},wbs_name=#{wbsName},scope_description=#{scopeDescription},owner_id=#{ownerId},plan_start_date=#{planStartDate},plan_end_date=#{planEndDate},acceptance_criteria=#{acceptanceCriteria},definition_of_done=#{definitionOfDone},priority=#{priority},estimated_hours=#{estimatedHours},budget_amount=#{budgetAmount},sort_order=#{sortOrder},update_by=#{updateBy},update_time=sysdate() where wbs_id=#{wbsId}</update>
-  <delete id="deleteById">delete from pm_project_wbs_node where wbs_id=#{id}</delete>
-  <select id="countChildren" resultType="int">select count(*) from pm_project_wbs_node where parent_id=#{id}</select><select id="countTasks" resultType="int">select count(*) from pm_project_task where work_package_id=#{id}</select><select id="countDeliverables" resultType="int">select count(*) from pm_project_deliverable where work_package_id=#{id}</select>
-  <update id="updateCode">update pm_project_wbs_node set wbs_code=#{code} where wbs_id=#{id}</update>
-  <update id="updateAggregate">update pm_project_wbs_node set plan_start_date=#{start},plan_end_date=#{end},status=#{status},progress=#{progress},update_time=sysdate() where wbs_id=#{id}</update>
+
+    <resultMap id="result" type="ProjectWbsNode">
+        <id property="wbsId" column="wbs_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="wbsCode" column="wbs_code"/>
+        <result property="nodeType" column="node_type"/>
+        <result property="wbsName" column="wbs_name"/>
+        <result property="scopeDescription" column="scope_description"/>
+        <result property="ownerId" column="owner_id"/>
+        <result property="ownerName" column="owner_name"/>
+        <result property="ownerCode" column="owner_code"/>
+        <result property="planStartDate" column="plan_start_date"/>
+        <result property="planEndDate" column="plan_end_date"/>
+        <result property="targetStartDate" column="target_start_date"/>
+        <result property="targetEndDate" column="target_end_date"/>
+        <result property="targetMilestone" column="target_milestone"/>
+        <result property="acceptanceCriteria" column="acceptance_criteria"/>
+        <result property="definitionOfDone" column="definition_of_done"/>
+        <result property="priority" column="priority"/>
+        <result property="estimatedHours" column="estimated_hours"/>
+        <result property="budgetAmount" column="budget_amount"/>
+        <result property="status" column="status"/>
+        <result property="progress" column="progress"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="childCount" column="child_count"/>
+        <result property="taskCount" column="task_count"/>
+        <result property="deliverableCount" column="deliverable_count"/>
+    </resultMap>
+
+    <sql id="vo">
+        select w.*, o.person_name owner_name, o.person_code owner_code,
+               (select count(*) from pm_project_wbs_node c where c.parent_id = w.wbs_id) child_count,
+               (select count(*) from pm_project_task t where t.work_package_id = w.wbs_id) task_count,
+               (select count(*) from pm_project_deliverable d where d.work_package_id = w.wbs_id) deliverable_count
+        from pm_project_wbs_node w
+        left join pm_person o on o.person_id = w.owner_id
+    </sql>
+
+    <select id="selectList" resultMap="result">
+        <include refid="vo"/>
+        <where>
+            <if test="projectId != null">and w.project_id = #{projectId}</if>
+            <if test="parentId != null">and w.parent_id = #{parentId}</if>
+            <if test="nodeType != null and nodeType != ''">and w.node_type = #{nodeType}</if>
+        </where>
+        order by w.wbs_code
+    </select>
+
+    <select id="selectById" resultMap="result">
+        <include refid="vo"/>
+        where w.wbs_id = #{id}
+    </select>
+
+    <select id="selectChildren" resultMap="result">
+        <include refid="vo"/>
+        where w.project_id = #{projectId} and w.parent_id = #{parentId}
+        order by w.sort_order, w.wbs_id
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="wbsId">
+        insert into pm_project_wbs_node(project_id, parent_id, wbs_code, node_type, wbs_name, scope_description,
+                                        owner_id, plan_start_date, plan_end_date, target_start_date, target_end_date,
+                                        target_milestone, acceptance_criteria, definition_of_done, priority,
+                                        estimated_hours, budget_amount, status, progress, sort_order,
+                                        create_by, create_time)
+        values(#{projectId}, #{parentId}, #{wbsCode}, #{nodeType}, #{wbsName}, #{scopeDescription},
+               #{ownerId}, #{planStartDate}, #{planEndDate}, #{targetStartDate}, #{targetEndDate},
+               #{targetMilestone}, #{acceptanceCriteria}, #{definitionOfDone}, #{priority},
+               #{estimatedHours}, #{budgetAmount}, #{status}, #{progress}, #{sortOrder},
+               #{createBy}, sysdate())
+    </insert>
+
+    <update id="update">
+        update pm_project_wbs_node
+        set parent_id = #{parentId}, node_type = #{nodeType}, wbs_name = #{wbsName},
+            scope_description = #{scopeDescription}, owner_id = #{ownerId},
+            plan_start_date = #{planStartDate}, plan_end_date = #{planEndDate},
+            acceptance_criteria = #{acceptanceCriteria}, definition_of_done = #{definitionOfDone},
+            priority = #{priority}, estimated_hours = #{estimatedHours}, budget_amount = #{budgetAmount},
+            sort_order = #{sortOrder}, update_by = #{updateBy}, update_time = sysdate()
+        where wbs_id = #{wbsId}
+    </update>
+
+    <delete id="deleteById">
+        delete from pm_project_wbs_node where wbs_id = #{id}
+    </delete>
+
+    <select id="countChildren" resultType="int">
+        select count(*) from pm_project_wbs_node where parent_id = #{id}
+    </select>
+
+    <select id="countTasks" resultType="int">
+        select count(*) from pm_project_task where work_package_id = #{id}
+    </select>
+
+    <select id="countDeliverables" resultType="int">
+        select count(*) from pm_project_deliverable where work_package_id = #{id}
+    </select>
+
+    <update id="updateCode">
+        update pm_project_wbs_node set wbs_code = #{code} where wbs_id = #{id}
+    </update>
+
+    <update id="updateAggregate">
+        update pm_project_wbs_node
+        set plan_start_date = #{start}, plan_end_date = #{end}, status = #{status}, progress = #{progress},
+            update_time = sysdate()
+        where wbs_id = #{id}
+    </update>
 </mapper>
