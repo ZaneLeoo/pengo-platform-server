@@ -1,13 +1,16 @@
 package com.ruoyi.projectmanagement.deliverable.domain;
 
+import com.ruoyi.common.core.domain.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /** 项目正式交付物类型配置。 */
 @Data
-public class ProjectDeliverableType {
+@EqualsAndHashCode(callSuper = true)
+public class ProjectDeliverableType extends BaseEntity {
 
     private Long typeId;
 
