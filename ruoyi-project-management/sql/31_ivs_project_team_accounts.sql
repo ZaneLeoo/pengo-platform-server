@@ -51,6 +51,13 @@ from sys_user u
 where u.user_name in ('lps', 'lbh', 'lh', 'zxl', 'sn')
   and not exists (select 1 from sys_user_role ur where ur.user_id = u.user_id and ur.role_id = 100);
 
+-- 动态路由树需要同时授权项目管理顶层目录，工作台才会出现在登录后的路由中。
+insert into sys_role_menu(role_id, menu_id)
+select 100, m.menu_id
+from sys_menu m
+where m.parent_id = 0 and m.path = 'projectManagement'
+  and not exists (select 1 from sys_role_menu rm where rm.role_id = 100 and rm.menu_id = m.menu_id);
+
 -- 将项目团队成员绑定到对应系统账号；人员档案仍保留独立的业务字段。
 update pm_person p
 join sys_user u on u.user_name = case p.person_code

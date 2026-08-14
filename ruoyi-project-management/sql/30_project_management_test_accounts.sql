@@ -35,6 +35,13 @@ from sys_menu m
 where m.perms like 'projectManagement:%'
   and not exists (select 1 from sys_role_menu rm where rm.role_id = 100 and rm.menu_id = m.menu_id);
 
+-- 动态路由树需要同时拥有项目管理顶层目录，否则子菜单虽有权限也无法组装出来。
+insert into sys_role_menu(role_id, menu_id)
+select 100, m.menu_id
+from sys_menu m
+where m.parent_id = 0 and m.path = 'projectManagement'
+  and not exists (select 1 from sys_role_menu rm where rm.role_id = 100 and rm.menu_id = m.menu_id);
+
 -- 将三份已有业务人员档案绑定到对应测试账号；重复执行不会改变其他绑定。
 update pm_person p
 join sys_user u on u.user_name = case p.person_code
