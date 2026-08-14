@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.projectmanagement;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
+import com.ruoyi.projectmanagement.wbs.domain.ProjectWorkPackageCreateRequest;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +45,13 @@ public class ProjectWbsController extends BaseController {
     public AjaxResult add(@Validated @RequestBody ProjectWbsNode node) {
         node.setCreateBy(getUsername());
         return AjaxResult.success("新增成功", service.add(node, getUsername()));
+    }
+
+    /** 创建工作包并一并定义初始交付要求。 */
+    @PostMapping("/work-package")
+    public AjaxResult addWorkPackage(@Validated @RequestBody ProjectWorkPackageCreateRequest request) {
+        request.getWorkPackage().setCreateBy(getUsername());
+        return AjaxResult.success("新增成功", service.addWorkPackage(request, getUsername()));
     }
 
     /** 修改WBS节点。 */

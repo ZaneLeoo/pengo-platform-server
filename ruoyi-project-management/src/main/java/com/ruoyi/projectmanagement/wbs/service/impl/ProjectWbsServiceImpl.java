@@ -4,14 +4,19 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import com.ruoyi.projectmanagement.common.enums.WbsStatus;
+import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
+import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
+import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
+import com.ruoyi.projectmanagement.wbs.domain.ProjectWorkPackageCreateRequest;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +30,14 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
     private final ProjectWbsMapper mapper;
     private final ProjectInfoMapper projectMapper;
     private final IProjectTeamService teamService;
+    private final ProjectDeliverableMapper deliverableMapper;
 
     public ProjectWbsServiceImpl(ProjectWbsMapper mapper, ProjectInfoMapper projectMapper,
-            IProjectTeamService teamService) {
+            IProjectTeamService teamService, ProjectDeliverableMapper deliverableMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.teamService = teamService;
+        this.deliverableMapper = deliverableMapper;
     }
 
     /** 查询WBS节点列表。 */
@@ -60,6 +67,30 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
             throw new ServiceException("新增WBS节点失败");
         }
         return node.getWbsId();
+    }
+
+    /** 创建工作包和初始交付要求，任一交付要求校验失败时整体回滚。 */
+    @Override
+    @Transactional
+    public Long addWorkPackage(ProjectWorkPackageCreateRequest request, String operator) {
+        ProjectWbsNode workPackage = request.getWorkPackage();
+        if (!WbsNodeType.WORK_PACKAGE.matches(workPackage.getNodeType())) {
+            throw new ServiceException("该接口仅用于创建工作包");
+        }
+        Long workPackageId = add(workPackage, operator);
+        for (ProjectDeliverable deliverable : request.getDeliverables() == null
+                ? Collections.<ProjectDeliverable>emptyList() : request.getDeliverables()) {
+            deliverable.setProjectId(workPackage.getProjectId());
+            deliverable.setWorkPackageId(workPackageId);
+            deliverable.setCreateBy(operator);
+            deliverable.setRequiredFlag(deliverable.getRequiredFlag() == null ? "1" : deliverable.getRequiredFlag());
+            deliverable.setApprovalRequired(deliverable.getApprovalRequired() == null ? "0" : deliverable.getApprovalRequired());
+            deliverable.setStatus(DeliverableStatus.PENDING.getCode());
+            if (deliverableMapper.insert(deliverable) == 0) {
+                throw new ServiceException("新增工作包交付要求失败");
+            }
+        }
+        return workPackageId;
     }
 
     /** 修改WBS节点，移动节点时重排受影响分支编码。 */

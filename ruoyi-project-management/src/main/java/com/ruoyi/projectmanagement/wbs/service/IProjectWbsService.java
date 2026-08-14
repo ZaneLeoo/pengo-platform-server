@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.wbs.service;
 
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
+import com.ruoyi.projectmanagement.wbs.domain.ProjectWorkPackageCreateRequest;
 import java.util.List;
 
 /**
@@ -16,6 +17,9 @@ public interface IProjectWbsService {
 
     /** 新增WBS节点，返回新节点ID。 */
     Long add(ProjectWbsNode node, String operator);
+
+    /** 创建工作包，并在同一事务内创建其初始交付要求。 */
+    Long addWorkPackage(ProjectWorkPackageCreateRequest request, String operator);
 
     /** 修改WBS节点。 */
     int edit(ProjectWbsNode node, String operator);
