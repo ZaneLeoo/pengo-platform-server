@@ -467,10 +467,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
 
     /** 立项通过后把WBS概要转换为正式WBS节点。 */
     private void convertPlans(ProjectInfo project, String operator) {
-        int code = 1;
+        int code = nextTopLevelWbsCode(project.getProjectId());
         for (ProjectPreliminaryPlan plan : projectMapper.selectPreliminaryPlans(project.getProjectId())) {
             if (plan.getConvertedWbsId() != null) {
-                code++;
                 continue;
             }
             ProjectWbsNode wbs = new ProjectWbsNode();
@@ -490,6 +489,19 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             wbsMapper.insert(wbs);
             projectMapper.markPlanConverted(plan.getPlanId(), wbs.getWbsId());
         }
+    }
+
+    /** 获取项目中下一个可用的顶层WBS数字编码，兼容审批前已经编制的范围节点。 */
+    private int nextTopLevelWbsCode(Long projectId) {
+        int maxCode = 0;
+        for (ProjectWbsNode node : wbsMapper.selectChildren(projectId, 0L)) {
+            try {
+                maxCode = Math.max(maxCode, Integer.parseInt(node.getWbsCode()));
+            } catch (NumberFormatException ignored) {
+                // 顶层WBS由系统生成纯数字编码；历史异常编码不参与编号计算，避免阻塞立项。
+            }
+        }
+        return maxCode + 1;
     }
 
     /** 校验操作者可编辑且项目处于申请草稿状态。 */
