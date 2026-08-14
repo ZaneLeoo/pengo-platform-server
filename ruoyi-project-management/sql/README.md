@@ -7,3 +7,4 @@
 25. `25_professional_role.sql`：全局专业角色表、预置角色及项目成员标准化角色字段。
 26. `26_professional_role_menu.sql`：专业角色配置菜单及按钮权限。
 27. `27_project_menu_order.sql`：项目管理子菜单排序，并暂时隐藏任务管理菜单。
+28. `28_project_initiation_attachment.sql`：立项申请支撑材料及审批版本绑定关系。
