@@ -45,6 +45,14 @@ public class ProjectPersonController extends BaseController {
         return success(personService.selectEnabledPersonOptions(keyword));
     }
 
+    /** 查询可绑定到人员档案的系统账号。 */
+    @PreAuthorize("@ss.hasAnyPermi('projectManagement:person:add,projectManagement:person:edit')")
+    @GetMapping("/account-options")
+    public AjaxResult accountOptions(@RequestParam(required = false) Long personId,
+            @RequestParam(required = false) String keyword) {
+        return success(personService.selectAvailableUserOptions(personId, keyword));
+    }
+
     @PreAuthorize("@ss.hasPermi('projectManagement:person:export')")
     @Log(title = "项目人员档案", businessType = BusinessType.EXPORT)
     @PostMapping("/export")

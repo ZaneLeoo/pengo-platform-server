@@ -8,3 +8,5 @@
 26. `26_professional_role_menu.sql`：专业角色配置菜单及按钮权限。
 27. `27_project_menu_order.sql`：项目管理子菜单排序，并暂时隐藏任务管理菜单。
 28. `28_project_initiation_attachment.sql`：立项申请支撑材料及审批版本绑定关系。
+29. `29_project_person_user_binding.sql`：项目人员档案与系统登录账号的一对一绑定。
+30. `30_project_management_test_accounts.sql`：本地联调使用的多账号测试数据（密码仅用于开发环境）。

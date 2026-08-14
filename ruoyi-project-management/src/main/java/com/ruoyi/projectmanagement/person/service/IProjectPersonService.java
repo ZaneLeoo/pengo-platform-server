@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.person.service;
 
 import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
+import com.ruoyi.projectmanagement.person.domain.ProjectUserOption;
 import java.util.List;
 
 /**
@@ -16,6 +17,9 @@ public interface IProjectPersonService {
 
     /** 根据ID查询人员档案。 */
     ProjectPerson selectProjectPersonById(Long personId);
+
+    /** 查询可绑定的系统登录账号。 */
+    List<ProjectUserOption> selectAvailableUserOptions(Long personId, String keyword);
 
     /** 校验人员编码是否唯一。 */
     boolean checkPersonCodeUnique(ProjectPerson person);

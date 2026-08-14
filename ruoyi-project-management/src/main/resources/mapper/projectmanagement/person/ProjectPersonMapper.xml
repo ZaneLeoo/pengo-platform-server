@@ -6,6 +6,9 @@
         <result property="personCode" column="person_code"/>
         <result property="personName" column="person_name"/>
         <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userStatus" column="user_status"/>
         <result property="deptName" column="dept_name"/>
         <result property="positionName" column="position_name"/>
         <result property="email" column="email"/>
@@ -19,11 +22,13 @@
     </resultMap>
 
     <sql id="selectProjectPersonVo">
-        select p.person_id, p.person_code, p.person_name, p.dept_id, d.dept_name,
+        select p.person_id, p.person_code, p.person_name, p.dept_id, p.user_id,
+               u.user_name, u.status as user_status, d.dept_name,
                p.position_name, p.email, p.mobile, p.status, p.create_by, p.create_time,
                p.update_by, p.update_time, p.remark
         from pm_person p
         left join sys_dept d on d.dept_id = p.dept_id
+        left join sys_user u on u.user_id = p.user_id and u.del_flag = '0'
     </sql>
 
     <select id="selectProjectPersonList" parameterType="ProjectPerson" resultMap="ProjectPersonResult">
@@ -59,17 +64,39 @@
         <include refid="selectProjectPersonVo"/> where p.person_code = #{personCode} limit 1
     </select>
 
+    <select id="selectAvailableUserOptions" resultType="com.ruoyi.projectmanagement.person.domain.ProjectUserOption">
+        select u.user_id, u.user_name, u.nick_name, u.status
+        from sys_user u
+        where u.del_flag = '0'
+          and (u.status = '0' or u.user_id = (select user_id from pm_person where person_id = #{personId}))
+          and not exists (
+              select 1 from pm_person p
+              where p.user_id = u.user_id
+                and (#{personId} is null or p.person_id &lt;&gt; #{personId})
+          )
+          <if test="keyword != null and keyword != ''">
+              and (u.user_name like concat('%', #{keyword}, '%')
+                   or u.nick_name like concat('%', #{keyword}, '%'))
+          </if>
+        order by u.user_name, u.user_id
+        limit 100
+    </select>
+
+    <select id="selectProjectPersonByUserId" parameterType="Long" resultMap="ProjectPersonResult">
+        <include refid="selectProjectPersonVo"/> where p.user_id = #{userId} limit 1
+    </select>
+
     <insert id="insertProjectPerson" parameterType="ProjectPerson" useGeneratedKeys="true" keyProperty="personId">
-        insert into pm_person(person_code, person_name, dept_id, position_name, email, mobile, status,
+        insert into pm_person(person_code, person_name, dept_id, user_id, position_name, email, mobile, status,
                               remark, create_by, create_time)
-        values(#{personCode}, #{personName}, #{deptId}, #{positionName}, #{email}, #{mobile},
+        values(#{personCode}, #{personName}, #{deptId}, #{userId}, #{positionName}, #{email}, #{mobile},
                #{status}, #{remark}, #{createBy}, sysdate())
     </insert>
 
     <update id="updateProjectPerson" parameterType="ProjectPerson">
         update pm_person
         <set>
-            person_code = #{personCode}, person_name = #{personName}, dept_id = #{deptId},
+            person_code = #{personCode}, person_name = #{personName}, dept_id = #{deptId}, user_id = #{userId},
             position_name = #{positionName}, email = #{email}, mobile = #{mobile}, status = #{status},
             remark = #{remark}, update_by = #{updateBy}, update_time = sysdate()
         </set>

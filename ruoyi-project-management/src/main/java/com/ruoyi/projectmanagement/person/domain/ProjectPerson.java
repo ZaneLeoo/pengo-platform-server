@@ -39,6 +39,16 @@ public class ProjectPerson extends BaseEntity {
      */
     private Long deptId;
 
+    /** 关联系统登录账号ID，可为空；一个系统账号最多绑定一份人员档案。 */
+    private Long userId;
+
+    /** 关联系统账号名称，仅用于查询展示。 */
+    @Excel(name = "登录账号")
+    private String userName;
+
+    /** 关联系统账号状态，仅用于查询展示。 */
+    private String userStatus;
+
     /**
      * 所属部门名称，仅用于查询展示。
      */
