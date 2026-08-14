@@ -6,3 +6,4 @@
 24. `24_deliverable_type_menu.sql`：交付物类型与格式配置菜单及按钮权限。
 25. `25_professional_role.sql`：全局专业角色表、预置角色及项目成员标准化角色字段。
 26. `26_professional_role_menu.sql`：专业角色配置菜单及按钮权限。
+27. `27_project_menu_order.sql`：项目管理子菜单排序，并暂时隐藏任务管理菜单。
