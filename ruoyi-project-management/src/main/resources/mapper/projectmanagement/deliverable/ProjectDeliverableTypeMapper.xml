@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableTypeMapper">
+    <resultMap id="type" type="ProjectDeliverableType">
+        <id property="typeId" column="type_id"/>
+        <result property="typeCode" column="type_code"/>
+        <result property="typeName" column="type_name"/>
+        <result property="submissionMode" column="submission_mode"/>
+        <result property="defaultApprovalRequired" column="default_approval_required"/>
+        <result property="status" column="status"/>
+        <result property="sortOrder" column="sort_order"/>
+        <collection property="allowedExtensions" ofType="string" column="type_id" select="selectFormats"/>
+    </resultMap>
+    <select id="selectList" resultMap="type">
+        select * from pm_project_deliverable_type
+        <where><if test="status != null and status != ''">and status = #{status}</if></where>
+        order by sort_order, type_id
+    </select>
+    <select id="selectById" resultMap="type">select * from pm_project_deliverable_type where type_id=#{id}</select>
+    <select id="selectByCode" resultMap="type">select * from pm_project_deliverable_type where type_code=#{code}</select>
+    <select id="selectFormats" resultType="string">select file_extension from pm_project_deliverable_type_format where type_id=#{typeId} order by file_extension</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="typeId">insert into pm_project_deliverable_type(type_code,type_name,submission_mode,default_approval_required,status,sort_order,create_by,create_time) values(#{typeCode},#{typeName},#{submissionMode},#{defaultApprovalRequired},#{status},#{sortOrder},#{createBy},sysdate())</insert>
+    <update id="update">update pm_project_deliverable_type set type_code=#{typeCode},type_name=#{typeName},submission_mode=#{submissionMode},default_approval_required=#{defaultApprovalRequired},status=#{status},sort_order=#{sortOrder},update_by=#{updateBy},update_time=sysdate() where type_id=#{typeId}</update>
+    <delete id="deleteById">delete from pm_project_deliverable_type where type_id=#{id}</delete>
+    <delete id="deleteFormats">delete from pm_project_deliverable_type_format where type_id=#{typeId}</delete>
+    <insert id="insertFormat">insert into pm_project_deliverable_type_format(type_id,file_extension) values(#{typeId},#{extension})</insert>
+</mapper>
