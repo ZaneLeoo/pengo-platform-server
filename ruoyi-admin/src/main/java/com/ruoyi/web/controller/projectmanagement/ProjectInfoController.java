@@ -8,6 +8,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
+import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import java.util.List;
@@ -132,6 +133,33 @@ public class ProjectInfoController extends BaseController {
     @GetMapping("/{id}/initiation/approvals/{approvalId}")
     public AjaxResult snapshot(@PathVariable Long id, @PathVariable Long approvalId) {
         return success(service.approvalSnapshot(id, approvalId));
+    }
+
+    /** 查询当前立项申请支撑材料。 */
+    @GetMapping("/{id}/initiation/attachments")
+    public AjaxResult initiationAttachments(@PathVariable Long id, String sectionCode) {
+        return success(service.initiationAttachments(id, sectionCode));
+    }
+
+    /** 查询指定立项审批版本的支撑材料。 */
+    @GetMapping("/{id}/initiation/approvals/{approvalId}/attachments")
+    public AjaxResult initiationApprovalAttachments(@PathVariable Long id, @PathVariable Long approvalId,
+            String sectionCode) {
+        return success(service.initiationApprovalAttachments(id, approvalId, sectionCode));
+    }
+
+    /** 新增立项申请支撑材料。 */
+    @PostMapping("/{id}/initiation/attachments")
+    public AjaxResult addInitiationAttachment(@PathVariable Long id,
+            @Validated @RequestBody ProjectInitiationAttachment attachment) {
+        attachment.setProjectId(id);
+        return toAjax(service.addInitiationAttachment(attachment, getUsername()));
+    }
+
+    /** 删除当前草稿支撑材料。 */
+    @DeleteMapping("/{id}/initiation/attachments/{attachmentId}")
+    public AjaxResult deleteInitiationAttachment(@PathVariable Long id, @PathVariable Long attachmentId) {
+        return toAjax(service.deleteInitiationAttachment(id, attachmentId, getUsername()));
     }
 
     /** 批量删除项目。 */

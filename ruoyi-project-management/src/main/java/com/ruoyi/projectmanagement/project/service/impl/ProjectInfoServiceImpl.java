@@ -16,13 +16,17 @@ import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
+import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectInitiationApproval;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
+import com.ruoyi.projectmanagement.project.mapper.ProjectInitiationAttachmentMapper;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.mapper.ProjectTaskMapper;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
+import com.ruoyi.projectmanagement.team.domain.ProjectMember;
+import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
@@ -50,12 +54,14 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     private final ProjectWbsMapper wbsMapper;
     private final ProjectTaskMapper taskMapper;
     private final ProjectDeliverableMapper deliverableMapper;
+    private final ProjectInitiationAttachmentMapper attachmentMapper;
     private final ObjectMapper objectMapper;
 
     public ProjectInfoServiceImpl(ProjectInfoMapper projectMapper, ProjectCategoryMapper categoryMapper,
             ProjectPersonMapper personMapper, IProjectTeamService teamService, IProjectWbsService wbsService,
             ProjectWbsMapper wbsMapper, ProjectTaskMapper taskMapper,
-            ProjectDeliverableMapper deliverableMapper, ObjectMapper objectMapper) {
+            ProjectDeliverableMapper deliverableMapper, ProjectInitiationAttachmentMapper attachmentMapper,
+            ObjectMapper objectMapper) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -64,6 +70,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         this.wbsMapper = wbsMapper;
         this.taskMapper = taskMapper;
         this.deliverableMapper = deliverableMapper;
+        this.attachmentMapper = attachmentMapper;
         this.objectMapper = objectMapper;
     }
 
@@ -402,12 +409,23 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         approval.setVersionNo(version);
         approval.setSubmitBy(operator);
         approval.setStatus(InitiationApprovalStatus.PENDING.getCode());
+        ProjectMember teamFilter = new ProjectMember();
+        teamFilter.setProjectId(id);
+        teamFilter.setStatus(ProjectMemberStatus.ACTIVE.getCode());
+        List<ProjectMember> team = teamService.members(teamFilter);
+        List<ProjectInitiationAttachment> attachments = attachmentMapper.selectDraft(id, null);
+        attachments.forEach(x -> x.setVersionNo(version));
         try {
-            approval.setSnapshotJson(objectMapper.writeValueAsString(Map.of("project", project, "wbsOutlines", plans)));
+            approval.setSnapshotJson(objectMapper.writeValueAsString(Map.of(
+                    "project", project,
+                    "team", team,
+                    "wbsOutlines", plans,
+                    "attachments", attachments)));
         } catch (Exception e) {
             throw new ServiceException("生成立项申请快照失败");
         }
         projectMapper.insertApproval(approval);
+        attachmentMapper.bindDraft(id, approval.getApprovalId(), version);
         project.setStatus(ProjectStatus.PENDING_APPROVAL.getCode());
         project.setInitiationVersion(version);
         project.setUpdateBy(operator);
@@ -447,6 +465,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         projectMapper.updateInitiationState(project);
         if (approved) {
             convertPlans(project, operator);
+        } else {
+            // 退回后复制为新的草稿记录，保证原审批版本的附件不可变且草稿可编辑。
+            attachmentMapper.copyToDraft(approval.getApprovalId(), approval.getVersionNo(), operator);
         }
         return rows;
     }
@@ -464,6 +485,60 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
                 .filter(x -> x.getApprovalId().equals(approvalId))
                 .findFirst()
                 .orElseThrow(() -> new ServiceException("审批记录不存在"));
+    }
+
+    /** 查询当前立项申请附件；草稿使用未绑定记录，审批中/已立项使用对应版本记录。 */
+    @Override
+    public List<ProjectInitiationAttachment> initiationAttachments(Long projectId, String sectionCode) {
+        ProjectInfo project = requiredProject(projectId);
+        if (ProjectStatus.DRAFT.matches(project.getStatus())) {
+            return attachmentMapper.selectDraft(projectId, sectionCode);
+        }
+        if (ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
+            ProjectInitiationApproval pending = projectMapper.selectPendingApproval(projectId);
+            return pending == null ? List.of() : attachmentMapper.selectByApproval(pending.getApprovalId(), sectionCode);
+        }
+        return attachmentMapper.selectLatestApproved(projectId, sectionCode);
+    }
+
+    /** 查询指定审批版本附件，供审批记录查看。 */
+    @Override
+    public List<ProjectInitiationAttachment> initiationApprovalAttachments(Long projectId, Long approvalId,
+            String sectionCode) {
+        boolean exists = projectMapper.selectApprovals(projectId).stream()
+                .anyMatch(x -> approvalId.equals(x.getApprovalId()));
+        if (!exists) {
+            throw new ServiceException("审批记录不存在");
+        }
+        return attachmentMapper.selectByApproval(approvalId, sectionCode);
+    }
+
+    /** 新增当前草稿附件。 */
+    @Override
+    public int addInitiationAttachment(ProjectInitiationAttachment attachment, String operator) {
+        ProjectInfo project = editable(attachment.getProjectId(), operator);
+        validateAttachmentSection(attachment.getSectionCode());
+        attachment.setApprovalId(null);
+        attachment.setVersionNo(0);
+        attachment.setUploadBy(operator);
+        return attachmentMapper.insert(attachment);
+    }
+
+    /** 删除当前草稿附件。 */
+    @Override
+    public int deleteInitiationAttachment(Long projectId, Long attachmentId, String operator) {
+        editable(projectId, operator);
+        int rows = attachmentMapper.deleteDraft(projectId, attachmentId);
+        if (rows == 0) {
+            throw new ServiceException("附件不存在或已进入审批版本，不能删除");
+        }
+        return rows;
+    }
+
+    private void validateAttachmentSection(String sectionCode) {
+        if (!List.of("BASIC_SCHEME", "RESOURCE_BUDGET", "RISK_ASSESSMENT").contains(sectionCode)) {
+            throw new ServiceException("附件所属页签不正确");
+        }
     }
 
     /** 立项通过后把WBS概要转换为正式WBS节点。 */

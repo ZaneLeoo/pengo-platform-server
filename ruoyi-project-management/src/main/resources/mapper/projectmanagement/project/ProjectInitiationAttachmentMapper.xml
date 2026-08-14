@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.project.mapper.ProjectInitiationAttachmentMapper">
+
+    <resultMap id="attachment" type="ProjectInitiationAttachment">
+        <id property="attachmentId" column="attachment_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="approvalId" column="approval_id"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="sectionCode" column="section_code"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="fileExt" column="file_ext"/>
+        <result property="mimeType" column="mime_type"/>
+        <result property="description" column="description"/>
+        <result property="uploadBy" column="upload_by"/>
+        <result property="uploadTime" column="upload_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        attachment_id, project_id, approval_id, version_no, section_code, file_name, file_url,
+        file_size, file_ext, mime_type, description, upload_by, upload_time
+    </sql>
+
+    <select id="selectDraft" resultMap="attachment">
+        select <include refid="columns"/> from pm_project_initiation_attachment
+        where project_id = #{projectId} and approval_id is null
+        <if test="sectionCode != null and sectionCode != ''">and section_code = #{sectionCode}</if>
+        order by upload_time, attachment_id
+    </select>
+
+    <select id="selectByApproval" resultMap="attachment">
+        select <include refid="columns"/> from pm_project_initiation_attachment
+        where approval_id = #{approvalId}
+        <if test="sectionCode != null and sectionCode != ''">and section_code = #{sectionCode}</if>
+        order by upload_time, attachment_id
+    </select>
+
+    <select id="selectLatestApproved" resultMap="attachment">
+        select <include refid="columns"/> from pm_project_initiation_attachment
+        where project_id = #{projectId}
+          and approval_id = (select a.approval_id from pm_project_initiation_approval a
+                             where a.project_id = #{projectId} and a.status = 'APPROVED'
+                             order by a.version_no desc limit 1)
+        <if test="sectionCode != null and sectionCode != ''">and section_code = #{sectionCode}</if>
+        order by upload_time, attachment_id
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="attachmentId">
+        insert into pm_project_initiation_attachment(
+            project_id, approval_id, version_no, section_code, file_name, file_url,
+            file_size, file_ext, mime_type, description, upload_by, upload_time
+        ) values (
+            #{projectId}, null, 0, #{sectionCode}, #{fileName}, #{fileUrl},
+            #{fileSize}, #{fileExt}, #{mimeType}, #{description}, #{uploadBy}, sysdate()
+        )
+    </insert>
+
+    <update id="bindDraft">
+        update pm_project_initiation_attachment
+        set approval_id = #{approvalId}, version_no = #{versionNo}
+        where project_id = #{projectId} and approval_id is null
+    </update>
+
+    <insert id="copyToDraft">
+        insert into pm_project_initiation_attachment(
+            project_id, approval_id, version_no, section_code, file_name, file_url,
+            file_size, file_ext, mime_type, description, upload_by, upload_time
+        )
+        select project_id, null, #{versionNo}, section_code, file_name, file_url,
+               file_size, file_ext, mime_type, description, upload_by, upload_time
+        from pm_project_initiation_attachment
+        where approval_id = #{approvalId}
+    </insert>
+
+    <delete id="deleteDraft">
+        delete from pm_project_initiation_attachment
+        where project_id = #{projectId} and attachment_id = #{attachmentId} and approval_id is null
+    </delete>
+</mapper>
