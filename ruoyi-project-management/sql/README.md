@@ -10,3 +10,4 @@
 28. `28_project_initiation_attachment.sql`：立项申请支撑材料及审批版本绑定关系。
 29. `29_project_person_user_binding.sql`：项目人员档案与系统登录账号的一对一绑定。
 30. `30_project_management_test_accounts.sql`：本地联调使用的多账号测试数据（密码仅用于开发环境）。
+31. `31_ivs_project_team_accounts.sql`：智能装配视觉检测工作站研发项目团队账号与权限。
