@@ -25,6 +25,9 @@ public class ProjectDeliverable extends BaseEntity {
     /** 项目名称（冗余展示字段）。 */
     private String projectName;
 
+    /** 项目状态（列表展示与操作控制字段）。 */
+    private String projectStatus;
+
     /** 所属工作包ID。 */
     @NotNull(message = "所属工作包不能为空")
     private Long workPackageId;

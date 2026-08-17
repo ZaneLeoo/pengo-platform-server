@@ -6,6 +6,7 @@
         <id property="deliverableId" column="deliverable_id"/>
         <result property="projectId" column="project_id"/>
         <result property="projectName" column="project_name"/>
+        <result property="projectStatus" column="project_status"/>
         <result property="workPackageId" column="work_package_id"/>
         <result property="workPackageName" column="work_package_name"/>
         <result property="workPackageOwnerName" column="work_package_owner_name"/>
@@ -43,7 +44,7 @@
     </resultMap>
 
     <sql id="vo">
-        select d.*, p.project_name, w.wbs_name work_package_name, t.type_name deliverable_type_name,
+        select d.*, p.project_name, p.status project_status, w.wbs_name work_package_name, t.type_name deliverable_type_name,
                o.person_name work_package_owner_name, o.person_code work_package_owner_code
         from pm_project_deliverable d
         join pm_project p on p.project_id = d.project_id

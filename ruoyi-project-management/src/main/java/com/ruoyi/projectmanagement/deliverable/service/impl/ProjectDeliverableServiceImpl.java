@@ -62,7 +62,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
 
     @Override
     public int insert(ProjectDeliverable entity) {
-        assertProjectAllowed(entity.getProjectId());
+        assertRequirementMutable(entity.getProjectId());
         prepare(entity);
         assertPackageEditable(entity.getWorkPackageId());
         return mapper.insert(entity);
@@ -70,7 +70,13 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
 
     @Override
     public int update(ProjectDeliverable entity) {
-        assertProjectAllowed(entity.getProjectId());
+        ProjectDeliverable old = required(entity.getDeliverableId());
+        entity.setProjectId(old.getProjectId());
+        entity.setWorkPackageId(old.getWorkPackageId());
+        assertRequirementMutable(old.getProjectId());
+        if (!DeliverableStatus.PENDING.matches(old.getStatus()) && !DeliverableStatus.RETURNED.matches(old.getStatus())) {
+            throw new ServiceException("已提交或已通过的交付要求不能直接修改");
+        }
         prepare(entity);
         assertPackageEditable(entity.getWorkPackageId());
         return mapper.update(entity);
@@ -80,7 +86,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     public int deleteByIds(Long[] ids) {
         for (Long id : ids) {
             ProjectDeliverable d = required(id);
-            assertProjectAllowed(d.getProjectId());
+            assertRequirementMutable(d.getProjectId());
             assertPackageEditable(d.getWorkPackageId());
         }
         return mapper.deleteByIds(ids);
@@ -233,6 +239,18 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         requiredPackage(id);
     }
 
+    /** 正式交付要求属于计划基线，只能在启动前维护。 */
+    private void assertRequirementMutable(Long projectId) {
+        ProjectInfo project = projectMapper.selectProjectInfoById(projectId);
+        if (project == null) {
+            throw new ServiceException("所属项目不存在");
+        }
+        if (!ProjectStatus.APPROVED.matches(project.getStatus())) {
+            throw new ServiceException("正式交付要求仅允许在项目已立项待启动阶段维护；执行中调整请走项目变更");
+        }
+    }
+
+    /** 执行事实（提交、审批）不属于计划修改，保留原有可用状态范围。 */
     private void assertProjectAllowed(Long projectId) {
         ProjectInfo project = projectMapper.selectProjectInfoById(projectId);
         if (project == null) {
