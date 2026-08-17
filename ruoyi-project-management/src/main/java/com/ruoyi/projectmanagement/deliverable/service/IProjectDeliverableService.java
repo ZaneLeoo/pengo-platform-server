@@ -11,6 +11,7 @@ public interface IProjectDeliverableService {
 
     /** 查询交付物列表。 */
     List<ProjectDeliverable> selectList(ProjectDeliverable entity);
+    List<ProjectDeliverable> selectMine(Long userId, ProjectDeliverable entity);
 
     /** 根据ID查询交付物。 */
     ProjectDeliverable selectById(Long id);

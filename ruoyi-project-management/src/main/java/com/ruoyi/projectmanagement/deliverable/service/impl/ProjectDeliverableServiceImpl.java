@@ -56,6 +56,19 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     }
 
     @Override
+    public List<ProjectDeliverable> selectMine(Long userId, ProjectDeliverable entity) {
+        ProjectPerson person = personMapper.selectProjectPersonByUserId(userId);
+        if (person == null) {
+            return List.of();
+        }
+        if (entity == null) {
+            entity = new ProjectDeliverable();
+        }
+        entity.setWorkPackageOwnerId(person.getPersonId());
+        return mapper.selectList(entity);
+    }
+
+    @Override
     public ProjectDeliverable selectById(Long id) {
         return mapper.selectById(id);
     }

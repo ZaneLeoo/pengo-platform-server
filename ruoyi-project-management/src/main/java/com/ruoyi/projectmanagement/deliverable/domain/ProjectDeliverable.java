@@ -44,6 +44,9 @@ public class ProjectDeliverable extends BaseEntity {
     /** 工作包负责人编码（冗余展示字段，用于提交权限判断）。 */
     private String workPackageOwnerCode;
 
+    /** 工作包负责人ID（我的待交付筛选字段）。 */
+    private Long workPackageOwnerId;
+
     /** 交付物名称。 */
     @NotBlank(message = "交付物名称不能为空")
     private String deliverableName;

@@ -39,6 +39,13 @@ public class ProjectDeliverableController extends BaseController {
         return getDataTable(service.selectList(entity));
     }
 
+    /** 查询当前人员作为工作包负责人的正式交付物。 */
+    @GetMapping("/mine")
+    public TableDataInfo mine(ProjectDeliverable entity) {
+        startPage();
+        return getDataTable(service.selectMine(getUserId(), entity));
+    }
+
     /** 查询交付物详细。 */
     @PreAuthorize("@ss.hasPermi('projectManagement:workItem:query')")
     @GetMapping("/{id}")
