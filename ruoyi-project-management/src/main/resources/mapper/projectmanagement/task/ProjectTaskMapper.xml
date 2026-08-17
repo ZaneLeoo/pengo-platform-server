@@ -123,11 +123,13 @@
     </delete>
 
     <select id="selectOperationLogs" resultType="ProjectTaskOperationLog">
-        select log_id, task_id, action, from_status, to_status, remark,
-               operator_user_id, operator_name, operation_time
-        from pm_project_task_operation_log
-        where task_id = #{taskId}
-        order by operation_time desc, log_id desc
+        select l.log_id, l.task_id, l.action, l.from_status, l.to_status, l.remark,
+               l.operator_user_id, coalesce(nullif(u.nick_name, ''), l.operator_name) operator_name,
+               l.operation_time
+        from pm_project_task_operation_log l
+        left join sys_user u on u.user_id = l.operator_user_id
+        where l.task_id = #{taskId}
+        order by l.operation_time desc, l.log_id desc
     </select>
 
     <insert id="insertOperationLog">
