@@ -34,7 +34,7 @@
         select t.*, i.project_name, w.wbs_name work_package_name, p.person_name assignee_name, p.person_code assignee_code,
                (select count(*) from pm_project_task c where c.parent_task_id = t.task_id) child_count
         from pm_project_task t
-        join pm_project_info i on i.project_id = t.project_id
+        join pm_project i on i.project_id = t.project_id
         join pm_project_wbs_node w on w.wbs_id = t.work_package_id
         left join pm_person p on p.person_id = t.assignee_id
     </sql>
