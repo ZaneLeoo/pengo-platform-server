@@ -35,13 +35,12 @@
     </resultMap>
 
     <sql id="vo">
-        select w.*, o.person_name owner_name, o.person_code owner_code, u.user_name owner_user_name,
+        select w.*, u.nick_name owner_name, u.user_name owner_code, u.user_name owner_user_name,
                (select count(*) from pm_project_wbs_node c where c.parent_id = w.wbs_id) child_count,
                (select count(*) from pm_project_task t where t.work_package_id = w.wbs_id) task_count,
                (select count(*) from pm_project_deliverable d where d.work_package_id = w.wbs_id) deliverable_count
         from pm_project_wbs_node w
-        left join pm_person o on o.person_id = w.owner_id
-        left join sys_user u on u.user_id = o.user_id and u.del_flag = '0'
+        left join sys_user u on u.user_id = w.owner_user_id and u.del_flag = '0'
     </sql>
 
     <select id="selectList" resultMap="result">
@@ -67,12 +66,12 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="wbsId">
         insert into pm_project_wbs_node(project_id, parent_id, wbs_code, node_type, wbs_name, scope_description,
-                                        owner_id, plan_start_date, plan_end_date, target_start_date, target_end_date,
+                                        owner_id, owner_user_id, plan_start_date, plan_end_date, target_start_date, target_end_date,
                                         target_milestone, acceptance_criteria, definition_of_done, deliverable_required, priority,
                                         estimated_hours, budget_amount, status, progress, sort_order,
                                         create_by, create_time)
         values(#{projectId}, #{parentId}, #{wbsCode}, #{nodeType}, #{wbsName}, #{scopeDescription},
-               #{ownerId}, #{planStartDate}, #{planEndDate}, #{targetStartDate}, #{targetEndDate},
+               #{ownerId}, #{ownerId}, #{planStartDate}, #{planEndDate}, #{targetStartDate}, #{targetEndDate},
                #{targetMilestone}, #{acceptanceCriteria}, #{definitionOfDone}, #{deliverableRequired}, #{priority},
                #{estimatedHours}, #{budgetAmount}, #{status}, #{progress}, #{sortOrder},
                #{createBy}, sysdate())
@@ -81,7 +80,7 @@
     <update id="update">
         update pm_project_wbs_node
         set parent_id = #{parentId}, node_type = #{nodeType}, wbs_name = #{wbsName},
-            scope_description = #{scopeDescription}, owner_id = #{ownerId},
+            scope_description = #{scopeDescription}, owner_id = #{ownerId}, owner_user_id = #{ownerId},
             plan_start_date = #{planStartDate}, plan_end_date = #{planEndDate},
             acceptance_criteria = #{acceptanceCriteria}, definition_of_done = #{definitionOfDone},
             deliverable_required = #{deliverableRequired},

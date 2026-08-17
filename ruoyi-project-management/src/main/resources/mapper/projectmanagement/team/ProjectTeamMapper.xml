@@ -37,26 +37,26 @@
     </resultMap>
 
     <sql id="memberVo">
-        select m.member_id, m.project_id, m.person_id, m.role_id, m.professional_role_id,
+        select m.member_id, m.project_id, m.user_id person_id, m.role_id, m.professional_role_id,
                coalesce(pr.role_name, m.specialty_role) as specialty_role,
                pr.role_code as professional_role_code,
                pr.role_name as professional_role_name,
                m.responsibility, m.join_date, m.exit_date, m.status, m.remark,
                m.create_by, m.create_time, m.update_by, m.update_time,
-               p.person_code, p.person_name, d.dept_name, r.role_code, r.role_name,
+               u.user_name person_code, u.nick_name person_name, d.dept_name, r.role_code, r.role_name,
                (select count(*) from pm_project_task i
-                 where i.project_id = m.project_id and i.assignee_id = m.person_id
+                 where i.project_id = m.project_id and i.assignee_user_id = m.user_id
                    and i.task_type = 'EXECUTION') task_count,
                (select count(*) from pm_project_task i
-                 where i.project_id = m.project_id and i.assignee_id = m.person_id
+                 where i.project_id = m.project_id and i.assignee_user_id = m.user_id
                    and i.task_type = 'EXECUTION' and i.status = 'COMPLETED') completed_task_count,
                (select count(*) from pm_project_task i
-                 where i.project_id = m.project_id and i.assignee_id = m.person_id
+                 where i.project_id = m.project_id and i.assignee_user_id = m.user_id
                    and i.task_type = 'EXECUTION' and i.status &lt;&gt; 'COMPLETED'
                    and i.plan_end_date &lt; curdate()) overdue_task_count
         from pm_project_member m
-        join pm_person p on p.person_id = m.person_id
-        left join sys_dept d on d.dept_id = p.dept_id
+        join sys_user u on u.user_id = m.user_id and u.del_flag = '0'
+        left join sys_dept d on d.dept_id = u.dept_id
         join pm_project_role r on r.role_id = m.role_id
         left join pm_professional_role pr on pr.professional_role_id = m.professional_role_id
     </sql>
@@ -77,12 +77,12 @@
 
     <select id="selectActiveMember" resultMap="member">
         <include refid="memberVo"/>
-        where m.project_id = #{projectId} and m.person_id = #{personId} and m.status = 'ACTIVE'
+        where m.project_id = #{projectId} and m.user_id = #{personId} and m.status = 'ACTIVE'
         limit 1
     </select>
 
     <insert id="insertMember" useGeneratedKeys="true" keyProperty="memberId">
-        insert into pm_project_member(project_id, person_id, role_id, professional_role_id, specialty_role, responsibility,
+        insert into pm_project_member(project_id, user_id, role_id, professional_role_id, specialty_role, responsibility,
                                       join_date, status, remark, create_by, create_time)
         values(#{projectId}, #{personId}, #{roleId}, #{professionalRoleId}, #{specialtyRole}, #{responsibility},
                #{joinDate}, #{status}, #{remark}, #{createBy}, sysdate())
@@ -114,7 +114,7 @@
 
     <select id="countIncompleteTasks" resultType="int">
         select count(*) from pm_project_task
-        where project_id = #{projectId} and assignee_id = #{personId}
+        where project_id = #{projectId} and assignee_user_id = #{personId}
           and task_type = 'EXECUTION' and status &lt;&gt; 'COMPLETED'
     </select>
 

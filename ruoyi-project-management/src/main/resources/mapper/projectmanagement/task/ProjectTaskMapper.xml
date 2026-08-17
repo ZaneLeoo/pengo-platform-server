@@ -69,16 +69,16 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="taskId">
         insert into pm_project_task(project_id, work_package_id, parent_task_id, task_code, task_type, task_name,
-                                    description, assignee_id, plan_start_date, plan_end_date, estimated_hours,
+                                    description, assignee_id, assignee_user_id, plan_start_date, plan_end_date, estimated_hours,
                                     actual_hours, priority, status, progress, sort_order, create_by, create_time)
         values(#{projectId}, #{workPackageId}, #{parentTaskId}, #{taskCode}, #{taskType}, #{taskName},
-               #{description}, #{assigneeId}, #{planStartDate}, #{planEndDate}, #{estimatedHours},
+               #{description}, #{assigneeId}, #{assigneeId}, #{planStartDate}, #{planEndDate}, #{estimatedHours},
                #{actualHours}, #{priority}, #{status}, #{progress}, #{sortOrder}, #{createBy}, sysdate())
     </insert>
 
     <update id="update">
         update pm_project_task
-        set task_name = #{taskName}, description = #{description}, assignee_id = #{assigneeId},
+        set task_name = #{taskName}, description = #{description}, assignee_id = #{assigneeId}, assignee_user_id = #{assigneeId},
             plan_start_date = #{planStartDate}, plan_end_date = #{planEndDate},
             estimated_hours = #{estimatedHours}, actual_hours = #{actualHours}, priority = #{priority},
             sort_order = #{sortOrder}, update_by = #{updateBy}, update_time = sysdate()
