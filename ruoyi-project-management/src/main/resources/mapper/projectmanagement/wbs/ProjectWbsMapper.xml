@@ -11,6 +11,7 @@
         <result property="wbsName" column="wbs_name"/>
         <result property="scopeDescription" column="scope_description"/>
         <result property="ownerId" column="owner_id"/>
+        <result property="ownerUserId" column="owner_user_id"/>
         <result property="ownerName" column="owner_name"/>
         <result property="ownerCode" column="owner_code"/>
         <result property="ownerUserName" column="owner_user_name"/>

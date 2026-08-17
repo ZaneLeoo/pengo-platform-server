@@ -13,6 +13,7 @@
         <result property="workPackageOwnerCode" column="work_package_owner_code"/>
         <result property="workPackageOwnerUserName" column="work_package_owner_user_name"/>
         <result property="workPackageOwnerId" column="work_package_owner_id"/>
+        <result property="workPackageOwnerUserId" column="work_package_owner_user_id"/>
         <result property="deliverableName" column="deliverable_name"/>
         <result property="deliverableType" column="deliverable_type"/>
         <result property="deliverableTypeId" column="deliverable_type_id"/>
@@ -47,7 +48,7 @@
 
     <sql id="vo">
         select d.*, p.project_name, p.status project_status, w.wbs_name work_package_name, t.type_name deliverable_type_name,
-               w.owner_id work_package_owner_id, o.person_name work_package_owner_name, o.person_code work_package_owner_code,
+               w.owner_id work_package_owner_id, w.owner_user_id work_package_owner_user_id, o.person_name work_package_owner_name, o.person_code work_package_owner_code,
                u.user_name work_package_owner_user_name
         from pm_project_deliverable d
         join pm_project p on p.project_id = d.project_id
@@ -63,6 +64,7 @@
             <if test="projectId != null">and d.project_id = #{projectId}</if>
             <if test="workPackageId != null">and d.work_package_id = #{workPackageId}</if>
             <if test="workPackageOwnerId != null">and w.owner_id = #{workPackageOwnerId}</if>
+            <if test="workPackageOwnerUserId != null">and w.owner_user_id = #{workPackageOwnerUserId}</if>
             <if test="workPackageIds != null and workPackageIds.size() > 0">
                 and d.work_package_id in
                 <foreach collection="workPackageIds" item="workPackageId" open="(" separator="," close=")">

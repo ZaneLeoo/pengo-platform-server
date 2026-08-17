@@ -11,8 +11,6 @@ import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableType;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableTypeMapper;
 import com.ruoyi.projectmanagement.deliverable.service.IProjectDeliverableService;
-import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
-import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
@@ -37,17 +35,14 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     private final ProjectWbsMapper wbsMapper;
     private final IProjectTaskService taskService;
     private final ProjectDeliverableTypeMapper typeMapper;
-    private final ProjectPersonMapper personMapper;
 
     public ProjectDeliverableServiceImpl(ProjectDeliverableMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper,
-            ProjectPersonMapper personMapper) {
+            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.wbsMapper = wbsMapper;
         this.taskService = taskService;
         this.typeMapper = typeMapper;
-        this.personMapper = personMapper;
     }
 
     @Override
@@ -57,14 +52,10 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
 
     @Override
     public List<ProjectDeliverable> selectMine(Long userId, ProjectDeliverable entity) {
-        ProjectPerson person = personMapper.selectProjectPersonByUserId(userId);
-        if (person == null) {
-            return List.of();
-        }
         if (entity == null) {
             entity = new ProjectDeliverable();
         }
-        entity.setWorkPackageOwnerId(person.getPersonId());
+        entity.setWorkPackageOwnerUserId(userId);
         return mapper.selectList(entity);
     }
 
@@ -185,8 +176,7 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         if ("admin".equals(username)) {
             return;
         }
-        ProjectPerson person = personMapper.selectProjectPersonByUserId(SecurityUtils.getUserId());
-        if (person == null || !person.getPersonId().equals(workPackage.getOwnerId())) {
+        if (!SecurityUtils.getUserId().equals(workPackage.getOwnerUserId())) {
             throw new ServiceException("只有工作包负责人可以提交交付物");
         }
     }

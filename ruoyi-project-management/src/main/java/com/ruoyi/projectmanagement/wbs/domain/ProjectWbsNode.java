@@ -43,6 +43,9 @@ public class ProjectWbsNode extends BaseEntity {
     /** 负责人ID（仅工作包）。 */
     private Long ownerId;
 
+    /** 负责人系统用户ID。 */
+    private Long ownerUserId;
+
     /** 负责人姓名（冗余展示字段）。 */
     private String ownerName;
 
