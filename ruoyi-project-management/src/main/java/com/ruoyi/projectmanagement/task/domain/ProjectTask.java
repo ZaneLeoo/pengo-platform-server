@@ -53,11 +53,17 @@ public class ProjectTask extends BaseEntity {
     /** 执行人ID（仅执行任务）。 */
     private Long assigneeId;
 
+    /** 执行人系统用户ID。 */
+    private Long assigneeUserId;
+
     /** 执行人姓名（冗余展示字段）。 */
     private String assigneeName;
 
-    /** 执行人登录编码，用于操作权限校验。 */
+    /** 执行人档案编码。 */
     private String assigneeCode;
+
+    /** 执行人登录账号。 */
+    private String assigneeUserName;
 
     /** 计划开始日期。 */
     @JsonFormat(pattern = "yyyy-MM-dd")

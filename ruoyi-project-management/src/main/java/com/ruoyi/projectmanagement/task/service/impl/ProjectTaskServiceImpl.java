@@ -13,8 +13,6 @@ import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
-import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
-import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOperationLog;
@@ -40,18 +38,16 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     private final ProjectTaskMapper mapper;
     private final ProjectWbsMapper wbsMapper;
     private final ProjectInfoMapper projectMapper;
-    private final ProjectPersonMapper personMapper;
     private final IProjectTeamService teamService;
     private final IProjectWbsService wbsService;
     private final ProjectDeliverableMapper deliverableMapper;
 
     public ProjectTaskServiceImpl(ProjectTaskMapper mapper, ProjectWbsMapper wbsMapper,
-            ProjectInfoMapper projectMapper, ProjectPersonMapper personMapper, IProjectTeamService teamService,
+            ProjectInfoMapper projectMapper, IProjectTeamService teamService,
             IProjectWbsService wbsService, ProjectDeliverableMapper deliverableMapper) {
         this.mapper = mapper;
         this.wbsMapper = wbsMapper;
         this.projectMapper = projectMapper;
-        this.personMapper = personMapper;
         this.teamService = teamService;
         this.wbsService = wbsService;
         this.deliverableMapper = deliverableMapper;
@@ -66,14 +62,10 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     /** 查询当前登录人员被分配的执行任务。 */
     @Override
     public List<ProjectTask> listMine(Long userId, ProjectTask filter) {
-        ProjectPerson person = personMapper.selectProjectPersonByUserId(userId);
-        if (person == null) {
-            return List.of();
-        }
         if (filter == null) {
             filter = new ProjectTask();
         }
-        filter.setAssigneeId(person.getPersonId());
+        filter.setAssigneeUserId(userId);
         filter.setTaskType(TaskType.EXECUTION.getCode());
         return mapper.selectList(filter);
     }
@@ -406,8 +398,7 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         if (SecurityUtils.isAdmin(userId)) {
             return;
         }
-        ProjectPerson person = personMapper.selectProjectPersonByUserId(userId);
-        if (person == null || !person.getPersonId().equals(task.getAssigneeId())) {
+        if (!userId.equals(task.getAssigneeUserId())) {
             throw new ServiceException("只有任务执行人或管理员可以执行此操作");
         }
     }
