@@ -4,6 +4,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.IssueSeverity;
 import com.ruoyi.projectmanagement.common.enums.IssueStatus;
+import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.issue.domain.ProjectIssue;
 import com.ruoyi.projectmanagement.issue.mapper.ProjectIssueMapper;
 import com.ruoyi.projectmanagement.issue.service.IProjectIssueService;
@@ -58,6 +59,7 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
     @Override
     public int add(ProjectIssue issue, String operator) {
         validate(issue);
+        assertMutable(issue.getProjectId());
         issue.setIssueCode(nextCode(issue.getProjectId()));
         if (StringUtils.isBlank(issue.getSeverity())) {
             issue.setSeverity(IssueSeverity.MEDIUM.getCode());
@@ -76,6 +78,7 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         issue.setProjectId(old.getProjectId());
         issue.setIssueCode(old.getIssueCode());
         validate(issue);
+        assertMutable(issue.getProjectId());
         issue.setUpdateBy(operator);
         return mapper.update(issue);
     }
@@ -84,7 +87,8 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
     @Override
     public int remove(Long[] ids, String operator) {
         for (Long id : ids) {
-            get(id);
+            ProjectIssue issue = get(id);
+            assertMutable(issue.getProjectId());
         }
         return mapper.delete(ids);
     }
@@ -121,6 +125,14 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         }
         if (issue.getOwnerId() != null && !teamService.isActiveMember(issue.getProjectId(), issue.getOwnerId())) {
             throw new ServiceException("问题负责人必须是当前项目在组成员");
+        }
+    }
+
+    /** 立项审批期间材料冻结，问题追踪只读。 */
+    private void assertMutable(Long projectId) {
+        ProjectInfo project = projectMapper.selectProjectInfoById(projectId);
+        if (project != null && ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
+            throw new ServiceException("项目正在立项审批，问题追踪暂时只读");
         }
     }
 }
