@@ -11,6 +11,7 @@
         <result property="workPackageName" column="work_package_name"/>
         <result property="workPackageOwnerName" column="work_package_owner_name"/>
         <result property="workPackageOwnerCode" column="work_package_owner_code"/>
+        <result property="workPackageOwnerUserName" column="work_package_owner_user_name"/>
         <result property="workPackageOwnerId" column="work_package_owner_id"/>
         <result property="deliverableName" column="deliverable_name"/>
         <result property="deliverableType" column="deliverable_type"/>
@@ -46,12 +47,14 @@
 
     <sql id="vo">
         select d.*, p.project_name, p.status project_status, w.wbs_name work_package_name, t.type_name deliverable_type_name,
-               w.owner_id work_package_owner_id, o.person_name work_package_owner_name, o.person_code work_package_owner_code
+               w.owner_id work_package_owner_id, o.person_name work_package_owner_name, o.person_code work_package_owner_code,
+               u.user_name work_package_owner_user_name
         from pm_project_deliverable d
         join pm_project p on p.project_id = d.project_id
         join pm_project_wbs_node w on w.wbs_id = d.work_package_id
         left join pm_project_deliverable_type t on t.type_id = d.deliverable_type_id
         left join pm_person o on o.person_id = w.owner_id
+        left join sys_user u on u.user_id = o.user_id and u.del_flag = '0'
     </sql>
 
     <select id="selectList" parameterType="ProjectDeliverable" resultMap="deliverable">

@@ -46,8 +46,11 @@ public class ProjectWbsNode extends BaseEntity {
     /** 负责人姓名（冗余展示字段）。 */
     private String ownerName;
 
-    /** 负责人登录编码，用于操作权限校验。 */
+    /** 负责人档案编码。 */
     private String ownerCode;
+
+    /** 负责人登录账号，用于前端操作权限判断。 */
+    private String ownerUserName;
 
     /** 计划开始日期（工作包必填）。 */
     @JsonFormat(pattern = "yyyy-MM-dd")

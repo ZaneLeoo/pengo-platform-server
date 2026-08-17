@@ -41,8 +41,11 @@ public class ProjectDeliverable extends BaseEntity {
     /** 工作包负责人姓名（冗余展示字段）。 */
     private String workPackageOwnerName;
 
-    /** 工作包负责人编码（冗余展示字段，用于提交权限判断）。 */
+    /** 工作包负责人档案编码（冗余展示字段）。 */
     private String workPackageOwnerCode;
+
+    /** 工作包负责人登录账号（前端展示提交入口时的权限判断字段）。 */
+    private String workPackageOwnerUserName;
 
     /** 工作包负责人ID（我的待交付筛选字段）。 */
     private Long workPackageOwnerId;
