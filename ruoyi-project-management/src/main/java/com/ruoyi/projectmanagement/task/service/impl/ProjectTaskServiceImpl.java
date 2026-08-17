@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.task.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.LifecycleAction;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
@@ -62,12 +63,14 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
 
     /** 查询当前登录人员被分配的执行任务。 */
     @Override
-    public List<ProjectTask> listMine(Long userId) {
+    public List<ProjectTask> listMine(Long userId, ProjectTask filter) {
         ProjectPerson person = personMapper.selectProjectPersonByUserId(userId);
         if (person == null) {
             return List.of();
         }
-        ProjectTask filter = new ProjectTask();
+        if (filter == null) {
+            filter = new ProjectTask();
+        }
         filter.setAssigneeId(person.getPersonId());
         filter.setTaskType(TaskType.EXECUTION.getCode());
         return mapper.selectList(filter);
@@ -135,11 +138,12 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     /** 执行任务生命周期动作（开始/暂停/恢复/完成）。 */
     @Override
     @Transactional
-    public int lifecycle(Long id, LifecycleActionRequest request, String operator) {
+    public int lifecycle(Long id, LifecycleActionRequest request, String operator, Long userId) {
         ProjectTask task = required(id);
         if (!TaskType.EXECUTION.matches(task.getTaskType())) {
             throw new ServiceException("汇总任务由下级自动汇总，不能执行生命周期动作");
         }
+        assertTaskExecutor(task, userId);
         ProjectInfo project = projectMapper.selectProjectInfoById(task.getProjectId());
         if (project == null || !ProjectStatus.ACTIVE.matches(project.getStatus())) {
             throw new ServiceException("项目未执行中，不能执行任务动作");
@@ -199,7 +203,7 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     /** 新增任务成果，仅执行任务且任务未完成时可上传。 */
     @Override
     @Transactional
-    public int addOutput(ProjectTaskOutput output, String operator) {
+    public int addOutput(ProjectTaskOutput output, String operator, Long userId) {
         ProjectTask task = required(output.getTaskId());
         if (!TaskType.EXECUTION.matches(task.getTaskType())) {
             throw new ServiceException("只有执行任务可以上传任务成果");
@@ -207,6 +211,7 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         if (WorkItemStatus.COMPLETED.matches(task.getStatus())) {
             throw new ServiceException("已完成任务的成果仅可查看");
         }
+        assertTaskExecutor(task, userId);
         output.setCreateBy(operator);
         return mapper.insertOutput(output);
     }
@@ -214,7 +219,7 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     /** 删除任务成果，仅任务执行人或admin可操作。 */
     @Override
     @Transactional
-    public int removeOutput(Long id, String operator) {
+    public int removeOutput(Long id, String operator, Long userId) {
         ProjectTaskOutput output = mapper.selectOutput(id);
         if (output == null) {
             throw new ServiceException("任务成果不存在");
@@ -223,6 +228,7 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         if (WorkItemStatus.COMPLETED.matches(task.getStatus())) {
             throw new ServiceException("已完成任务的成果仅可查看");
         }
+        assertTaskExecutor(task, userId);
         return mapper.deleteOutput(id);
     }
 
@@ -374,6 +380,17 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
             throw new ServiceException("任务不存在");
         }
         return task;
+    }
+
+    /** 执行人本人或系统管理员才可推进任务及维护任务成果。 */
+    private void assertTaskExecutor(ProjectTask task, Long userId) {
+        if (SecurityUtils.isAdmin(userId)) {
+            return;
+        }
+        ProjectPerson person = personMapper.selectProjectPersonByUserId(userId);
+        if (person == null || !person.getPersonId().equals(task.getAssigneeId())) {
+            throw new ServiceException("只有任务执行人或管理员可以执行此操作");
+        }
     }
 
     /** 校验项目处于已立项待启动状态，允许调整任务结构。 */

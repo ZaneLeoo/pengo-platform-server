@@ -38,9 +38,9 @@ public class ProjectTaskController extends BaseController {
 
     /** 查询当前登录人员的执行任务。 */
     @GetMapping("/mine")
-    public TableDataInfo mine() {
+    public TableDataInfo mine(ProjectTask filter) {
         startPage();
-        return getDataTable(service.listMine(getUserId()));
+        return getDataTable(service.listMine(getUserId(), filter));
     }
 
     /** 查询任务详细。 */
@@ -70,6 +70,6 @@ public class ProjectTaskController extends BaseController {
     /** 执行任务生命周期动作。 */
     @PostMapping("/{id}/lifecycle")
     public AjaxResult lifecycle(@PathVariable Long id, @Validated @RequestBody LifecycleActionRequest request) {
-        return toAjax(service.lifecycle(id, request, getUsername()));
+        return toAjax(service.lifecycle(id, request, getUsername(), getUserId()));
     }
 }

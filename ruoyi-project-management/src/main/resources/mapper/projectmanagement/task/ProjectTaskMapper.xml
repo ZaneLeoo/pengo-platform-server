@@ -5,6 +5,7 @@
     <resultMap id="r" type="ProjectTask">
         <id property="taskId" column="task_id"/>
         <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_name"/>
         <result property="workPackageId" column="work_package_id"/>
         <result property="workPackageName" column="work_package_name"/>
         <result property="parentTaskId" column="parent_task_id"/>
@@ -30,9 +31,10 @@
     </resultMap>
 
     <sql id="vo">
-        select t.*, w.wbs_name work_package_name, p.person_name assignee_name, p.person_code assignee_code,
+        select t.*, i.project_name, w.wbs_name work_package_name, p.person_name assignee_name, p.person_code assignee_code,
                (select count(*) from pm_project_task c where c.parent_task_id = t.task_id) child_count
         from pm_project_task t
+        join pm_project_info i on i.project_id = t.project_id
         join pm_project_wbs_node w on w.wbs_id = t.work_package_id
         left join pm_person p on p.person_id = t.assignee_id
     </sql>
@@ -44,6 +46,8 @@
             <if test="workPackageId != null">and t.work_package_id = #{workPackageId}</if>
             <if test="taskType != null and taskType != ''">and t.task_type = #{taskType}</if>
             <if test="assigneeId != null">and t.assignee_id = #{assigneeId}</if>
+            <if test="taskName != null and taskName != ''">and t.task_name like concat('%', #{taskName}, '%')</if>
+            <if test="status != null and status != ''">and t.status = #{status}</if>
         </where>
         order by t.task_code
     </select>

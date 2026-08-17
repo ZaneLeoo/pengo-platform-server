@@ -35,12 +35,12 @@ public class ProjectTaskOutputController extends BaseController {
     /** 新增任务成果。 */
     @PostMapping
     public AjaxResult add(@Validated @RequestBody ProjectTaskOutput output) {
-        return toAjax(service.addOutput(output, getUsername()));
+        return toAjax(service.addOutput(output, getUsername(), getUserId()));
     }
 
     /** 删除任务成果。 */
     @DeleteMapping("/{id}")
     public AjaxResult remove(@PathVariable Long id) {
-        return toAjax(service.removeOutput(id, getUsername()));
+        return toAjax(service.removeOutput(id, getUsername(), getUserId()));
     }
 }

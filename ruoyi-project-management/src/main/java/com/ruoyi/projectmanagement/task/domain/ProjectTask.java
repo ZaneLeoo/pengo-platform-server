@@ -23,6 +23,9 @@ public class ProjectTask extends BaseEntity {
     @NotNull(message = "所属项目不能为空")
     private Long projectId;
 
+    /** 所属项目名称（冗余展示字段）。 */
+    private String projectName;
+
     /** 所属工作包ID。 */
     @NotNull(message = "所属工作包不能为空")
     private Long workPackageId;

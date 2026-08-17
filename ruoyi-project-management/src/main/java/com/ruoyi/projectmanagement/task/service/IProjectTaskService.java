@@ -14,7 +14,7 @@ public interface IProjectTaskService {
     List<ProjectTask> list(ProjectTask filter);
 
     /** 查询当前登录人员被分配的执行任务。 */
-    List<ProjectTask> listMine(Long userId);
+    List<ProjectTask> listMine(Long userId, ProjectTask filter);
 
     /** 查询任务详细。 */
     ProjectTask get(Long id);
@@ -29,16 +29,16 @@ public interface IProjectTaskService {
     int remove(Long id, String operator);
 
     /** 执行任务生命周期动作。 */
-    int lifecycle(Long id, LifecycleActionRequest request, String operator);
+    int lifecycle(Long id, LifecycleActionRequest request, String operator, Long userId);
 
     /** 查询任务成果列表。 */
     List<ProjectTaskOutput> outputs(Long taskId);
 
     /** 新增任务成果。 */
-    int addOutput(ProjectTaskOutput output, String operator);
+    int addOutput(ProjectTaskOutput output, String operator, Long userId);
 
     /** 删除任务成果。 */
-    int removeOutput(Long id, String operator);
+    int removeOutput(Long id, String operator, Long userId);
 
     /** 刷新工作包汇总状态与进度。 */
     void refreshPackage(Long packageId);
