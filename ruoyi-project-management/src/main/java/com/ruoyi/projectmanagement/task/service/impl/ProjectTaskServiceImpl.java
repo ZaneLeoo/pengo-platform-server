@@ -17,6 +17,7 @@ import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
+import com.ruoyi.projectmanagement.task.domain.ProjectTaskOperationLog;
 import com.ruoyi.projectmanagement.task.mapper.ProjectTaskMapper;
 import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
@@ -24,6 +25,7 @@ import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -189,8 +191,25 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         task.setStatus(to);
         task.setUpdateBy(operator);
         int rows = mapper.updateLifecycle(task);
+        ProjectTaskOperationLog log = new ProjectTaskOperationLog();
+        log.setTaskId(task.getTaskId());
+        log.setAction(action.getCode());
+        log.setFromStatus(from);
+        log.setToStatus(to);
+        log.setRemark(LifecycleAction.PAUSE == action ? request.getReason() : null);
+        log.setOperatorUserId(userId);
+        log.setOperatorName(operator);
+        log.setOperationTime(LocalDateTime.now());
+        mapper.insertOperationLog(log);
         refreshPackage(task.getWorkPackageId());
         return rows;
+    }
+
+    /** 查询执行任务的生命周期记录。 */
+    @Override
+    public List<ProjectTaskOperationLog> operationLogs(Long taskId) {
+        required(taskId);
+        return mapper.selectOperationLogs(taskId);
     }
 
     /** 查询任务成果列表。 */

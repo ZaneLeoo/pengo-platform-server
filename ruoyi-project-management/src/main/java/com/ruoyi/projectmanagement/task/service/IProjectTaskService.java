@@ -3,6 +3,7 @@ package com.ruoyi.projectmanagement.task.service;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
+import com.ruoyi.projectmanagement.task.domain.ProjectTaskOperationLog;
 import java.util.List;
 
 /**
@@ -39,6 +40,9 @@ public interface IProjectTaskService {
 
     /** 删除任务成果。 */
     int removeOutput(Long id, String operator, Long userId);
+
+    /** 查询执行任务的操作历史。 */
+    List<ProjectTaskOperationLog> operationLogs(Long taskId);
 
     /** 刷新工作包汇总状态与进度。 */
     void refreshPackage(Long packageId);

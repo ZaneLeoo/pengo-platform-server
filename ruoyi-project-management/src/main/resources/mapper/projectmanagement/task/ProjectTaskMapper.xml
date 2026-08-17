@@ -121,4 +121,19 @@
     <delete id="deleteOutput">
         delete from pm_project_task_output where output_id = #{id}
     </delete>
+
+    <select id="selectOperationLogs" resultType="ProjectTaskOperationLog">
+        select log_id, task_id, action, from_status, to_status, remark,
+               operator_user_id, operator_name, operation_time
+        from pm_project_task_operation_log
+        where task_id = #{taskId}
+        order by operation_time desc, log_id desc
+    </select>
+
+    <insert id="insertOperationLog">
+        insert into pm_project_task_operation_log(task_id, action, from_status, to_status, remark,
+                                                  operator_user_id, operator_name, operation_time)
+        values(#{taskId}, #{action}, #{fromStatus}, #{toStatus}, #{remark},
+               #{operatorUserId}, #{operatorName}, #{operationTime})
+    </insert>
 </mapper>

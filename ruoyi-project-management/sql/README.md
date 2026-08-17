@@ -12,3 +12,4 @@
 30. `30_project_management_test_accounts.sql`：本地联调使用的多账号测试数据（密码仅用于开发环境）。
 31. `31_ivs_project_team_accounts.sql`：智能装配视觉检测工作站研发项目团队账号与权限。
 33. `33_ivs_project_plan_demo_layers.sql`：智能装配视觉检测工作站研发项目的 WBS、工作包、任务与交付物示例数据。
+34. `34_task_operation_log.sql`：执行任务的开始、暂停、恢复、完成操作记录。

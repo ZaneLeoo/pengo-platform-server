@@ -49,6 +49,12 @@ public class ProjectTaskController extends BaseController {
         return success(service.get(id));
     }
 
+    /** 查询执行任务的开始、暂停、恢复、完成记录。 */
+    @GetMapping("/{id}/operation-logs")
+    public AjaxResult operationLogs(@PathVariable Long id) {
+        return success(service.operationLogs(id));
+    }
+
     /** 新增任务，返回新任务ID。 */
     @PostMapping
     public AjaxResult add(@Validated @RequestBody ProjectTask task) {

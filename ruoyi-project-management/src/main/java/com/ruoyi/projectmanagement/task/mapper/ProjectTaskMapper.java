@@ -2,6 +2,7 @@ package com.ruoyi.projectmanagement.task.mapper;
 
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
+import com.ruoyi.projectmanagement.task.domain.ProjectTaskOperationLog;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,4 +23,6 @@ public interface ProjectTaskMapper {
     ProjectTaskOutput selectOutput(Long id);
     int insertOutput(ProjectTaskOutput output);
     int deleteOutput(Long id);
+    List<ProjectTaskOperationLog> selectOperationLogs(Long taskId);
+    int insertOperationLog(ProjectTaskOperationLog log);
 }
