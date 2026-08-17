@@ -6,6 +6,7 @@ import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import com.ruoyi.projectmanagement.common.enums.WbsStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
+import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableDraft;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
@@ -77,25 +78,38 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         if (!WbsNodeType.WORK_PACKAGE.matches(workPackage.getNodeType())) {
             throw new ServiceException("该接口仅用于创建工作包");
         }
-        List<ProjectDeliverable> deliverables = request.getDeliverables() == null
-                ? Collections.<ProjectDeliverable>emptyList() : request.getDeliverables();
+        List<ProjectDeliverableDraft> drafts = request.getDeliverables() == null
+                ? Collections.<ProjectDeliverableDraft>emptyList() : request.getDeliverables();
         if ("1".equals(workPackage.getDeliverableRequired())
-                && deliverables.stream().noneMatch(x -> "1".equals(x.getRequiredFlag()))) {
+                && drafts.stream().noneMatch(x -> "1".equals(x.getRequiredFlag()))) {
             throw new ServiceException("已开启正式交付物，请至少配置一项必交交付物");
         }
         Long workPackageId = add(workPackage, operator);
-        for (ProjectDeliverable deliverable : deliverables) {
-            deliverable.setProjectId(workPackage.getProjectId());
-            deliverable.setWorkPackageId(workPackageId);
-            deliverable.setCreateBy(operator);
-            deliverable.setRequiredFlag(deliverable.getRequiredFlag() == null ? "1" : deliverable.getRequiredFlag());
-            deliverable.setApprovalRequired(deliverable.getApprovalRequired() == null ? "0" : deliverable.getApprovalRequired());
-            deliverable.setStatus(DeliverableStatus.PENDING.getCode());
-            if (deliverableMapper.insert(deliverable) == 0) {
+        for (ProjectDeliverableDraft draft : drafts) {
+            if (deliverableMapper.insert(toDeliverable(draft, workPackage, workPackageId, operator)) == 0) {
                 throw new ServiceException("新增工作包交付要求失败");
             }
         }
         return workPackageId;
+    }
+
+    /** 将初始交付要求映射为交付物实体，所属项目、工作包与状态由本方法回填。 */
+    private ProjectDeliverable toDeliverable(ProjectDeliverableDraft draft, ProjectWbsNode workPackage,
+            Long workPackageId, String operator) {
+        ProjectDeliverable deliverable = new ProjectDeliverable();
+        deliverable.setProjectId(workPackage.getProjectId());
+        deliverable.setWorkPackageId(workPackageId);
+        deliverable.setDeliverableName(draft.getDeliverableName());
+        deliverable.setDeliverableType(draft.getDeliverableType());
+        deliverable.setSubmissionMode(draft.getSubmissionMode());
+        deliverable.setAllowedExtensions(draft.getAllowedExtensions());
+        deliverable.setDescription(draft.getDescription());
+        deliverable.setPlannedDate(draft.getPlannedDate());
+        deliverable.setRequiredFlag(draft.getRequiredFlag() == null ? "1" : draft.getRequiredFlag());
+        deliverable.setApprovalRequired(draft.getApprovalRequired() == null ? "0" : draft.getApprovalRequired());
+        deliverable.setStatus(DeliverableStatus.PENDING.getCode());
+        deliverable.setCreateBy(operator);
+        return deliverable;
     }
 
     /** 修改WBS节点，移动节点时重排受影响分支编码。 */

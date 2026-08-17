@@ -36,6 +36,13 @@ public class ProjectTaskController extends BaseController {
         return getDataTable(service.list(filter));
     }
 
+    /** 查询当前登录人员的执行任务。 */
+    @GetMapping("/mine")
+    public TableDataInfo mine() {
+        startPage();
+        return getDataTable(service.listMine(getUserId()));
+    }
+
     /** 查询任务详细。 */
     @GetMapping("/{id}")
     public AjaxResult get(@PathVariable Long id) {

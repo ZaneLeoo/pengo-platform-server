@@ -13,6 +13,9 @@ public interface IProjectTaskService {
     /** 查询任务列表。 */
     List<ProjectTask> list(ProjectTask filter);
 
+    /** 查询当前登录人员被分配的执行任务。 */
+    List<ProjectTask> listMine(Long userId);
+
     /** 查询任务详细。 */
     ProjectTask get(Long id);
 

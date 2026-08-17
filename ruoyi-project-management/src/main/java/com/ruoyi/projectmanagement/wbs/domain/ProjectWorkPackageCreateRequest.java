@@ -1,6 +1,6 @@
 package com.ruoyi.projectmanagement.wbs.domain;
 
-import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
+import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableDraft;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class ProjectWorkPackageCreateRequest {
     @NotNull(message = "工作包信息不能为空")
     private ProjectWbsNode workPackage;
 
-    /** 创建时一并定义的正式交付要求。 */
+    /** 创建时一并定义的正式交付要求（所属项目与工作包由服务端回填）。 */
     @Valid
-    private List<ProjectDeliverable> deliverables = new ArrayList<>();
+    private List<ProjectDeliverableDraft> deliverables = new ArrayList<>();
 }

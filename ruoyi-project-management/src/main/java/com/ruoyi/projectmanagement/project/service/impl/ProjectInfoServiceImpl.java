@@ -560,6 +560,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             wbs.setTargetMilestone(plan.getMilestoneName());
             wbs.setStatus(WbsStatus.NOT_STARTED.getCode());
             wbs.setProgress(0);
+            // 顶层WBS概要默认不需要正式交付物
+            wbs.setDeliverableRequired("0");
             wbs.setSortOrder(plan.getSortOrder());
             wbs.setCreateBy(operator);
             wbsMapper.insert(wbs);

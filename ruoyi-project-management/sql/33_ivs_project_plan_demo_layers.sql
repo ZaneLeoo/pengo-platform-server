@@ -132,15 +132,20 @@ where @ivs_wp_511 is not null
   and not exists(select 1 from pm_project_deliverable where project_id=@ivs_project_id and work_package_id=@ivs_wp_511 and deliverable_name='客户试用总结与量产移交清单');
 
 -- 脚本可重复执行：将已生成的示例节点同步回各顶层 WBS 的立项批准目标窗口内。
+-- 顶层 WBS 的汇总开始日期需一并同步，否则会早于目标窗口导致启动前检查失败。
 update pm_project_wbs_node
 set plan_start_date = case wbs_code
+    when '2' then '2026-09-22'
     when '2.1' then '2026-09-22' when '2.1.1' then '2026-09-22'
+    when '3' then '2026-11-16'
     when '3.1' then '2026-11-16' when '3.1.1' then '2026-11-16'
+    when '4' then '2027-01-21'
     when '4.1' then '2027-01-21' when '4.1.1' then '2027-01-21'
+    when '5' then '2027-03-01'
     when '5.1' then '2027-03-01' when '5.1.1' then '2027-03-01'
 end
 where project_id = @ivs_project_id
-  and wbs_code in ('2.1','2.1.1','3.1','3.1.1','4.1','4.1.1','5.1','5.1.1');
+  and wbs_code in ('2','2.1','2.1.1','3','3.1','3.1.1','4','4.1','4.1.1','5','5.1','5.1.1');
 
 update pm_project_task
 set plan_start_date = case task_code

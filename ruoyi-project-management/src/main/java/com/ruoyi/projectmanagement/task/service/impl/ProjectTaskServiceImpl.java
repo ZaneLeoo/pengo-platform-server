@@ -12,6 +12,8 @@ import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
+import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
+import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
 import com.ruoyi.projectmanagement.task.mapper.ProjectTaskMapper;
@@ -35,16 +37,18 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     private final ProjectTaskMapper mapper;
     private final ProjectWbsMapper wbsMapper;
     private final ProjectInfoMapper projectMapper;
+    private final ProjectPersonMapper personMapper;
     private final IProjectTeamService teamService;
     private final IProjectWbsService wbsService;
     private final ProjectDeliverableMapper deliverableMapper;
 
     public ProjectTaskServiceImpl(ProjectTaskMapper mapper, ProjectWbsMapper wbsMapper,
-            ProjectInfoMapper projectMapper, IProjectTeamService teamService, IProjectWbsService wbsService,
-            ProjectDeliverableMapper deliverableMapper) {
+            ProjectInfoMapper projectMapper, ProjectPersonMapper personMapper, IProjectTeamService teamService,
+            IProjectWbsService wbsService, ProjectDeliverableMapper deliverableMapper) {
         this.mapper = mapper;
         this.wbsMapper = wbsMapper;
         this.projectMapper = projectMapper;
+        this.personMapper = personMapper;
         this.teamService = teamService;
         this.wbsService = wbsService;
         this.deliverableMapper = deliverableMapper;
@@ -53,6 +57,19 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     /** 查询任务列表。 */
     @Override
     public List<ProjectTask> list(ProjectTask filter) {
+        return mapper.selectList(filter);
+    }
+
+    /** 查询当前登录人员被分配的执行任务。 */
+    @Override
+    public List<ProjectTask> listMine(Long userId) {
+        ProjectPerson person = personMapper.selectProjectPersonByUserId(userId);
+        if (person == null) {
+            return List.of();
+        }
+        ProjectTask filter = new ProjectTask();
+        filter.setAssigneeId(person.getPersonId());
+        filter.setTaskType(TaskType.EXECUTION.getCode());
         return mapper.selectList(filter);
     }
 

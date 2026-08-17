@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.deliverable.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
@@ -10,6 +11,8 @@ import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableType;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableTypeMapper;
 import com.ruoyi.projectmanagement.deliverable.service.IProjectDeliverableService;
+import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
+import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
@@ -34,14 +37,17 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     private final ProjectWbsMapper wbsMapper;
     private final IProjectTaskService taskService;
     private final ProjectDeliverableTypeMapper typeMapper;
+    private final ProjectPersonMapper personMapper;
 
     public ProjectDeliverableServiceImpl(ProjectDeliverableMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper) {
+            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper,
+            ProjectPersonMapper personMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.wbsMapper = wbsMapper;
         this.taskService = taskService;
         this.typeMapper = typeMapper;
+        this.personMapper = personMapper;
     }
 
     @Override
@@ -121,7 +127,8 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     public void submit(Long id, ProjectDeliverableSubmission submission, String username) {
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
-        requiredPackage(d.getWorkPackageId());
+        ProjectWbsNode workPackage = requiredPackage(d.getWorkPackageId());
+        assertSubmitterAllowed(workPackage, username);
         if (!DeliverableStatus.PENDING.matches(d.getStatus()) && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
         }
@@ -152,6 +159,17 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         d.setLatestExternalUrl(submission.getExternalUrl());
         mapper.updateStatus(d);
         taskService.refreshPackage(d.getWorkPackageId());
+    }
+
+    /** 校验提交人必须是工作包负责人或admin，防止绕过前端直接调用接口。 */
+    private void assertSubmitterAllowed(ProjectWbsNode workPackage, String username) {
+        if ("admin".equals(username)) {
+            return;
+        }
+        ProjectPerson person = personMapper.selectProjectPersonByUserId(SecurityUtils.getUserId());
+        if (person == null || !person.getPersonId().equals(workPackage.getOwnerId())) {
+            throw new ServiceException("只有工作包负责人可以提交交付物");
+        }
     }
 
     /**
