@@ -76,10 +76,15 @@ alter table pm_project_initiation_approval add column workflow_instance_id bigin
 alter table pm_project_deliverable_submission add column workflow_instance_id bigint null after submission_id;
 
 -- 配置菜单；业务审批入口由“我的审批”和页头铃铛提供。
-insert into sys_menu(menu_name,parent_id,order_num,path,component,query_param,route_name,is_frame,is_cache,menu_type,
+insert into sys_menu(menu_name,parent_id,order_num,path,component,query,route_name,is_frame,is_cache,menu_type,
                      visible,status,perms,icon,create_by,create_time,remark)
 select '审批流程配置', m.menu_id, 90, 'workflow-definition', 'projectManagement/workflow/definition/index', null,
        'WorkflowDefinition', 1, 0, 'C', '0', '0', 'projectManagement:workflow:config', 'apartment', 'admin', sysdate(),
        '项目管理V2轻量审批流配置'
 from sys_menu m where m.path = 'projectManagement'
   and not exists(select 1 from sys_menu where perms = 'projectManagement:workflow:config');
+
+insert ignore into sys_role_menu(role_id, menu_id)
+select r.role_id, m.menu_id from sys_role r
+join sys_menu m on m.perms='projectManagement:workflow:config'
+where r.role_key='admin';

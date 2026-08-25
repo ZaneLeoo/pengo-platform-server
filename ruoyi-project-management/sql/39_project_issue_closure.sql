@@ -25,7 +25,7 @@ set perms = 'projectManagement:issue:list'
 where path = 'issue' and menu_name = '问题跟踪';
 
 set @issue_menu=(select menu_id from sys_menu where path='issue' and menu_name='问题跟踪' limit 1);
-insert into sys_menu(menu_name,parent_id,order_num,path,component,query_param,route_name,is_frame,is_cache,menu_type,
+insert into sys_menu(menu_name,parent_id,order_num,path,component,query,route_name,is_frame,is_cache,menu_type,
  visible,status,perms,icon,create_by,create_time,remark)
 select action_name,@issue_menu,sort_no,'','',null,'',1,0,'F','0','0',permission,'#','admin',sysdate(),''
 from (
