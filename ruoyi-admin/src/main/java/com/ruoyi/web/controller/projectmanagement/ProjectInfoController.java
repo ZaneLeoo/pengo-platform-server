@@ -8,6 +8,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
+import com.ruoyi.projectmanagement.project.domain.ProjectManagerChangeRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
@@ -76,6 +77,15 @@ public class ProjectInfoController extends BaseController {
         }
         project.setUpdateBy(getUsername());
         return toAjax(service.updateProjectInfo(project));
+    }
+
+    /** 变更项目负责人。 */
+    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    @Log(title = "项目负责人变更", businessType = BusinessType.UPDATE)
+    @PostMapping("/{id}/manager")
+    public AjaxResult changeManager(@PathVariable Long id,
+            @Validated @RequestBody ProjectManagerChangeRequest request) {
+        return toAjax(service.changeProjectManager(id, request.getManagerId(), getUsername()));
     }
 
     /** 执行项目生命周期动作（启动/暂停/恢复/完成）。 */

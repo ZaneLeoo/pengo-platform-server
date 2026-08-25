@@ -28,6 +28,10 @@ public interface ProjectInfoMapper {
     /** 修改项目基本信息。 */
     int updateProjectInfo(ProjectInfo project);
 
+    /** 仅变更项目负责人。 */
+    int updateManager(@Param("projectId") Long projectId, @Param("managerId") Long managerId,
+            @Param("operator") String operator);
+
     /** 批量删除项目。 */
     int deleteProjectInfoByIds(Long[] projectIds);
 

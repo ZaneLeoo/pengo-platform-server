@@ -136,6 +136,33 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         return rows;
     }
 
+    /**
+     * 变更项目负责人。执行中的项目仅允许通过此入口变更负责人，避免误改其他基础资料。
+     */
+    @Override
+    @Transactional
+    public int changeProjectManager(Long projectId, Long managerId, String operator) {
+        ProjectInfo old = requiredProject(projectId);
+        if (ProjectStatus.PENDING_APPROVAL.matches(old.getStatus())) {
+            throw new ServiceException("项目正在立项审批中，不能变更负责人");
+        }
+        if (ProjectStatus.COMPLETED.matches(old.getStatus())) {
+            throw new ServiceException("项目已完成，不能变更负责人");
+        }
+        if (old.getManagerId().equals(managerId)) {
+            throw new ServiceException("请选择不同的项目负责人");
+        }
+        ProjectPerson manager = personMapper.selectProjectPersonById(managerId);
+        if (manager == null || !"0".equals(manager.getStatus())) {
+            throw new ServiceException("请选择启用状态的项目负责人");
+        }
+        int rows = projectMapper.updateManager(projectId, managerId, operator);
+        if (rows > 0) {
+            teamService.ensureManager(projectId, managerId, old.getManagerId(), operator);
+        }
+        return rows;
+    }
+
     /** 批量删除项目。 */
     @Override
     public int deleteProjectInfoByIds(Long[] ids) {
