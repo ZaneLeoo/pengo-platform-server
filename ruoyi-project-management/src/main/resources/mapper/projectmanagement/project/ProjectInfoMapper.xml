@@ -105,12 +105,6 @@
         where project_id = #{projectId}
     </update>
 
-    <update id="updateManager">
-        update pm_project
-        set manager_user_id = #{managerId}, update_by = #{operator}, update_time = sysdate()
-        where project_id = #{projectId}
-    </update>
-
     <update id="updateLifecycle">
         update pm_project
         set status = #{status}, progress = #{progress}, actual_start_date = #{actualStartDate},

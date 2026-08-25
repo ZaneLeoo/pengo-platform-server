@@ -29,9 +29,6 @@ public interface IProjectInfoService {
     /** 修改项目基本信息。 */
     int updateProjectInfo(ProjectInfo project);
 
-    /** 变更项目负责人。 */
-    int changeProjectManager(Long projectId, Long managerId, String operator);
-
     /** 批量删除项目。 */
     int deleteProjectInfoByIds(Long[] projectIds);
 

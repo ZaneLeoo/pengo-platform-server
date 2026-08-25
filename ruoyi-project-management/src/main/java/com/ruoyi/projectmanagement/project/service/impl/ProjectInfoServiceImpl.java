@@ -123,6 +123,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         if (!ProjectStatus.DRAFT.matches(old.getStatus()) && !ProjectStatus.APPROVED.matches(old.getStatus())) {
             throw new ServiceException("当前项目状态不能修改基本信息");
         }
+        if (ProjectStatus.APPROVED.matches(old.getStatus()) && !old.getManagerId().equals(project.getManagerId())) {
+            throw new ServiceException("项目立项后变更负责人请走项目变更申请");
+        }
         project.setStatus(old.getStatus());
         project.setActualStartDate(old.getActualStartDate());
         project.setActualEndDate(old.getActualEndDate());
@@ -132,33 +135,6 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         if (rows > 0 && !old.getManagerId().equals(project.getManagerId())) {
             teamService.ensureManager(project.getProjectId(), project.getManagerId(), old.getManagerId(),
                     project.getUpdateBy());
-        }
-        return rows;
-    }
-
-    /**
-     * 变更项目负责人。执行中的项目仅允许通过此入口变更负责人，避免误改其他基础资料。
-     */
-    @Override
-    @Transactional
-    public int changeProjectManager(Long projectId, Long managerId, String operator) {
-        ProjectInfo old = requiredProject(projectId);
-        if (ProjectStatus.PENDING_APPROVAL.matches(old.getStatus())) {
-            throw new ServiceException("项目正在立项审批中，不能变更负责人");
-        }
-        if (ProjectStatus.COMPLETED.matches(old.getStatus())) {
-            throw new ServiceException("项目已完成，不能变更负责人");
-        }
-        if (old.getManagerId().equals(managerId)) {
-            throw new ServiceException("请选择不同的项目负责人");
-        }
-        ProjectPerson manager = personMapper.selectProjectPersonById(managerId);
-        if (manager == null || !"0".equals(manager.getStatus())) {
-            throw new ServiceException("请选择启用状态的项目负责人");
-        }
-        int rows = projectMapper.updateManager(projectId, managerId, operator);
-        if (rows > 0) {
-            teamService.ensureManager(projectId, managerId, old.getManagerId(), operator);
         }
         return rows;
     }
