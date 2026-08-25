@@ -161,7 +161,7 @@
     </insert>
 
     <select id="selectApprovals" resultType="ProjectInitiationApproval">
-        select approval_id, project_id, version_no, submit_by, submit_time, status,
+        select approval_id, workflow_instance_id, project_id, version_no, submit_by, submit_time, status,
                review_by, review_time, review_comment
         from pm_project_initiation_approval where project_id = #{projectId}
         order by version_no desc

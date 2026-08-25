@@ -66,6 +66,11 @@ public class WorkflowController extends BaseController {
         return success(service.taskDetail(id, getUserId()));
     }
 
+    @GetMapping("/instances/{id}")
+    public AjaxResult instance(@PathVariable Long id) {
+        return success(service.instanceDetail(id, getUserId()));
+    }
+
     @PutMapping("/tasks/{id}/action")
     public AjaxResult action(@PathVariable Long id, @Valid @RequestBody WorkflowActionRequest request) {
         service.act(id, request, getUsername(), getUserId());

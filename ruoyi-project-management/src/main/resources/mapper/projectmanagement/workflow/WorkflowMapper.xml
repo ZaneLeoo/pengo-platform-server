@@ -82,6 +82,14 @@
         where t.task_id=#{taskId} and (i.initiator_user_id=#{userId} or t.acted_by_user_id=#{userId}
           or exists(select 1 from pm_workflow_task_candidate c where c.task_id=t.task_id and c.user_id=#{userId}))
     </select>
+    <select id="canViewInstance" resultType="int">
+        select count(*) from pm_workflow_instance i
+        where i.instance_id=#{instanceId} and (i.initiator_user_id=#{userId}
+          or exists(select 1 from pm_workflow_task t join pm_workflow_task_candidate c on c.task_id=t.task_id
+                    where t.instance_id=i.instance_id and c.user_id=#{userId})
+          or exists(select 1 from pm_project_member m where m.project_id=i.project_id
+                    and m.user_id=#{userId} and m.status='ACTIVE'))
+    </select>
     <select id="selectTasks" resultType="WorkflowTask"><include refid="taskVo"/> where t.instance_id=#{instanceId} order by t.node_order</select>
     <select id="selectInbox" resultType="WorkflowTask">
         select t.*, i.title, i.business_type, i.project_id, i.status instance_status, i.initiator_user_id,

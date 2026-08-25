@@ -16,6 +16,7 @@ public interface IWorkflowService {
             String operator, Long initiatorUserId);
     List<WorkflowTask> tasks(Long userId, String scope);
     WorkflowInstance taskDetail(Long taskId, Long userId);
+    WorkflowInstance instanceDetail(Long instanceId, Long userId);
     int unreadCount(Long userId);
     void act(Long taskId, WorkflowActionRequest request, String operator, Long userId);
 }

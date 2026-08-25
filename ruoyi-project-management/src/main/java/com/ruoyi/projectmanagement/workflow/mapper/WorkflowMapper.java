@@ -28,6 +28,7 @@ public interface WorkflowMapper {
     List<Long> selectRoleUsers(@Param("projectId") Long projectId, @Param("roleCode") String roleCode);
     WorkflowTask selectTask(Long taskId);
     int canViewTask(@Param("taskId") Long taskId, @Param("userId") Long userId);
+    int canViewInstance(@Param("instanceId") Long instanceId, @Param("userId") Long userId);
     List<WorkflowTask> selectTasks(Long instanceId);
     List<WorkflowTask> selectInbox(@Param("userId") Long userId, @Param("scope") String scope);
     int markRead(@Param("taskId") Long taskId, @Param("userId") Long userId);

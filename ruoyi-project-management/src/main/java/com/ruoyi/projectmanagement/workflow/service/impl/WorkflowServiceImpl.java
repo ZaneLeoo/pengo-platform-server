@@ -2,6 +2,7 @@ package com.ruoyi.projectmanagement.workflow.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.projectmanagement.workflow.domain.WorkflowActionRequest;
 import com.ruoyi.projectmanagement.workflow.domain.WorkflowDefinition;
 import com.ruoyi.projectmanagement.workflow.domain.WorkflowInstance;
@@ -126,6 +127,20 @@ public class WorkflowServiceImpl implements IWorkflowService {
         mapper.markRead(taskId, userId);
         WorkflowInstance instance = mapper.selectInstance(task.getInstanceId());
         instance.setTasks(mapper.selectTasks(instance.getInstanceId()));
+        return instance;
+    }
+
+    /** 查询完整审批实例，供业务历史记录展示流程图。 */
+    @Override
+    public WorkflowInstance instanceDetail(Long instanceId, Long userId) {
+        if (!SecurityUtils.isAdmin(userId) && mapper.canViewInstance(instanceId, userId) == 0) {
+            throw new ServiceException("您无权查看该审批流程");
+        }
+        WorkflowInstance instance = mapper.selectInstance(instanceId);
+        if (instance == null) {
+            throw new ServiceException("审批流程不存在");
+        }
+        instance.setTasks(mapper.selectTasks(instanceId));
         return instance;
     }
 
