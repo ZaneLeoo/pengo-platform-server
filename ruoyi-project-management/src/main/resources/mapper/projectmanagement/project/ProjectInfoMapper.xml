@@ -171,6 +171,9 @@
         select * from pm_project_initiation_approval
         where project_id = #{projectId} and approval_id = #{approvalId}
     </select>
+    <select id="selectApproval" resultType="ProjectInitiationApproval">
+        select * from pm_project_initiation_approval where approval_id=#{approvalId}
+    </select>
 
     <select id="selectPendingApproval" resultType="ProjectInitiationApproval">
         select * from pm_project_initiation_approval
@@ -183,6 +186,10 @@
         set status = #{status}, review_by = #{reviewBy}, review_time = sysdate(),
             review_comment = #{reviewComment}
         where approval_id = #{approvalId} and status = 'PENDING'
+    </update>
+    <update id="bindApprovalWorkflow">
+        update pm_project_initiation_approval set workflow_instance_id=#{workflowInstanceId}
+        where approval_id=#{approvalId}
     </update>
 
     <update id="updateInitiationState">

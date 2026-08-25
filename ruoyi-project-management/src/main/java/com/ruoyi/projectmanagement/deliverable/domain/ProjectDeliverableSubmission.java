@@ -12,6 +12,8 @@ public class ProjectDeliverableSubmission {
 
     private Long submissionId;
 
+    private Long workflowInstanceId;
+
     private Long deliverableId;
 
     private Integer versionNo;

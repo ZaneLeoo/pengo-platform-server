@@ -44,6 +44,10 @@ public interface ProjectDeliverableMapper {
     /** 更新提交记录的审核结果。 */
     int updateSubmissionReview(ProjectDeliverableSubmission entity);
 
+    ProjectDeliverableSubmission selectSubmissionById(Long submissionId);
+
+    int bindSubmissionWorkflow(ProjectDeliverableSubmission entity);
+
     /** 查询交付物下一个版本号。 */
     Integer selectNextVersion(Long deliverableId);
 }

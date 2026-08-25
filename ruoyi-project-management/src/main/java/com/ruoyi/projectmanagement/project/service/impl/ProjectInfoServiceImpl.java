@@ -30,6 +30,8 @@ import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
+import com.ruoyi.projectmanagement.workflow.service.IWorkflowService;
+import com.ruoyi.projectmanagement.workflow.service.WorkflowBusinessCallback;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
@@ -44,7 +47,7 @@ import tools.jackson.databind.ObjectMapper;
  * 项目主档、立项和项目生命周期业务。
  */
 @Service
-public class ProjectInfoServiceImpl implements IProjectInfoService {
+public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusinessCallback {
 
     private final ProjectInfoMapper projectMapper;
     private final ProjectCategoryMapper categoryMapper;
@@ -56,12 +59,13 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     private final ProjectDeliverableMapper deliverableMapper;
     private final ProjectInitiationAttachmentMapper attachmentMapper;
     private final ObjectMapper objectMapper;
+    private final IWorkflowService workflowService;
 
     public ProjectInfoServiceImpl(ProjectInfoMapper projectMapper, ProjectCategoryMapper categoryMapper,
             ProjectPersonMapper personMapper, IProjectTeamService teamService, IProjectWbsService wbsService,
             ProjectWbsMapper wbsMapper, ProjectTaskMapper taskMapper,
             ProjectDeliverableMapper deliverableMapper, ProjectInitiationAttachmentMapper attachmentMapper,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper, @Lazy IWorkflowService workflowService) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -72,6 +76,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         this.deliverableMapper = deliverableMapper;
         this.attachmentMapper = attachmentMapper;
         this.objectMapper = objectMapper;
+        this.workflowService = workflowService;
     }
 
     /** 查询项目列表。 */
@@ -375,7 +380,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     /** 提交立项审批，校验立项材料完整性并生成审批快照。 */
     @Override
     @Transactional
-    public int submitInitiation(Long id, String operator) {
+    public int submitInitiation(Long id, String operator, Long userId) {
         ProjectInfo project = editable(id, operator);
         List<ProjectPreliminaryPlan> plans = projectMapper.selectPreliminaryPlans(id);
         List<String> missing = new ArrayList<>();
@@ -428,6 +433,11 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
             throw new ServiceException("生成立项申请快照失败");
         }
         projectMapper.insertApproval(approval);
+        Long instanceId = workflowService.start("PROJECT_INITIATION", approval.getApprovalId(), id,
+                "项目立项：" + project.getProjectName() + "（V" + version + "）", approval.getSnapshotJson(),
+                operator, userId);
+        approval.setWorkflowInstanceId(instanceId);
+        projectMapper.bindApprovalWorkflow(approval);
         attachmentMapper.bindDraft(id, approval.getApprovalId(), version);
         project.setStatus(ProjectStatus.PENDING_APPROVAL.getCode());
         project.setInitiationVersion(version);
@@ -439,29 +449,39 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     @Override
     @Transactional
     public int reviewInitiation(Long id, InitiationReviewRequest request, String operator) {
-        if (!"admin".equalsIgnoreCase(operator)) {
-            throw new ServiceException("只有admin可以审批立项申请");
+        throw new ServiceException("请在审批中心处理立项申请");
+    }
+
+    @Override
+    public String businessType() {
+        return "PROJECT_INITIATION";
+    }
+
+    /** 工作流全部节点通过后完成立项。 */
+    @Override
+    @Transactional
+    public void approved(Long approvalId, String operator, String opinion) {
+        finishInitiation(approvalId, true, operator, opinion);
+    }
+
+    /** 工作流任一节点驳回后退回立项草稿。 */
+    @Override
+    @Transactional
+    public void rejected(Long approvalId, String operator, String opinion) {
+        finishInitiation(approvalId, false, operator, opinion);
+    }
+
+    private void finishInitiation(Long approvalId, boolean approved, String operator, String opinion) {
+        ProjectInitiationApproval approval = projectMapper.selectApproval(approvalId);
+        if (approval == null || !InitiationApprovalStatus.PENDING.matches(approval.getStatus())) {
+            throw new ServiceException("待审批立项版本不存在");
         }
-        ProjectInfo project = requiredProject(id);
-        if (!ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
-            throw new ServiceException("项目不在立项审批中");
-        }
-        ProjectInitiationApproval approval = projectMapper.selectPendingApproval(id);
-        if (approval == null) {
-            throw new ServiceException("待审批记录不存在");
-        }
-        String result = request.getResult().trim().toUpperCase();
-        boolean approved = InitiationApprovalStatus.APPROVED.matches(result);
-        if (!approved && !InitiationApprovalStatus.RETURNED.matches(result)) {
-            throw new ServiceException("审批结果不正确");
-        }
-        if (!approved && StringUtils.isBlank(request.getComment())) {
-            throw new ServiceException("退回必须填写审批意见");
-        }
-        approval.setStatus(result);
+        ProjectInfo project = requiredProject(approval.getProjectId());
+        approval.setStatus(approved ? InitiationApprovalStatus.APPROVED.getCode()
+                : InitiationApprovalStatus.RETURNED.getCode());
         approval.setReviewBy(operator);
-        approval.setReviewComment(request.getComment());
-        int rows = projectMapper.reviewApproval(approval);
+        approval.setReviewComment(opinion);
+        projectMapper.reviewApproval(approval);
         project.setStatus(approved ? ProjectStatus.APPROVED.getCode() : ProjectStatus.DRAFT.getCode());
         project.setInitiationTime(approved ? LocalDateTime.now() : null);
         project.setUpdateBy(operator);
@@ -469,10 +489,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
         if (approved) {
             convertPlans(project, operator);
         } else {
-            // 退回后复制为新的草稿记录，保证原审批版本的附件不可变且草稿可编辑。
-            attachmentMapper.copyToDraft(approval.getApprovalId(), approval.getVersionNo(), operator);
+            attachmentMapper.copyToDraft(approvalId, approval.getVersionNo(), operator);
         }
-        return rows;
     }
 
     /** 查询立项审批历史。 */

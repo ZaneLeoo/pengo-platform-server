@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.issue.mapper;
 
 import com.ruoyi.projectmanagement.issue.domain.ProjectIssue;
+import com.ruoyi.projectmanagement.issue.domain.ProjectIssueActivity;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,4 +13,7 @@ public interface ProjectIssueMapper {
     int update(ProjectIssue issue);
     int delete(Long[] ids);
     int countByProject(Long projectId);
+    int updateStatus(ProjectIssue issue);
+    int insertActivity(ProjectIssueActivity activity);
+    List<ProjectIssueActivity> selectActivities(Long issueId);
 }

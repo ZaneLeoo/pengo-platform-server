@@ -114,7 +114,7 @@ public class ProjectInfoController extends BaseController {
     /** 提交立项审批。 */
     @PostMapping("/{id}/initiation/submit")
     public AjaxResult submit(@PathVariable Long id) {
-        return toAjax(service.submitInitiation(id, getUsername()));
+        return toAjax(service.submitInitiation(id, getUsername(), getUserId()));
     }
 
     /** 立项审批。 */

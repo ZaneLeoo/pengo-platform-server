@@ -48,7 +48,7 @@ public interface IProjectInfoService {
     int deletePreliminaryPlan(Long planId, String operator);
 
     /** 提交立项申请。 */
-    int submitInitiation(Long projectId, String operator);
+    int submitInitiation(Long projectId, String operator, Long userId);
 
     /** 审批立项申请。 */
     int reviewInitiation(Long projectId, InitiationReviewRequest request, String operator);

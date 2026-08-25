@@ -150,4 +150,11 @@
             review_by = #{reviewBy}, review_time = sysdate()
         where submission_id = #{submissionId}
     </update>
+    <select id="selectSubmissionById" resultType="ProjectDeliverableSubmission">
+        select * from pm_project_deliverable_submission where submission_id=#{submissionId}
+    </select>
+    <update id="bindSubmissionWorkflow">
+        update pm_project_deliverable_submission set workflow_instance_id=#{workflowInstanceId}
+        where submission_id=#{submissionId}
+    </update>
 </mapper>

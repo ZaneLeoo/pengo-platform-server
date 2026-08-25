@@ -11,6 +11,8 @@ public class ProjectInitiationApproval {
 
     private Long approvalId;
 
+    private Long workflowInstanceId;
+
     private Long projectId;
 
     /** 审批版本号。 */

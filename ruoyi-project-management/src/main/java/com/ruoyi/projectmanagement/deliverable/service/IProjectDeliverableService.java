@@ -26,7 +26,7 @@ public interface IProjectDeliverableService {
     int deleteByIds(Long[] ids);
 
     /** 提交交付物（含文件或外部链接）。 */
-    void submit(Long id, ProjectDeliverableSubmission submission, String username);
+    void submit(Long id, ProjectDeliverableSubmission submission, String username, Long userId);
 
     /** 审核交付物提交（approve 或驳回）。 */
     void review(Long id, ProjectDeliverableSubmission submission, String username);

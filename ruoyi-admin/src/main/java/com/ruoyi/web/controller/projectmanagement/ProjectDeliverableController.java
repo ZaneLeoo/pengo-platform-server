@@ -83,7 +83,7 @@ public class ProjectDeliverableController extends BaseController {
     @Log(title = "提交交付物", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/submit")
     public AjaxResult submit(@PathVariable Long id, @RequestBody ProjectDeliverableSubmission entity) {
-        service.submit(id, entity, getUsername());
+        service.submit(id, entity, getUsername(), getUserId());
         return success();
     }
 

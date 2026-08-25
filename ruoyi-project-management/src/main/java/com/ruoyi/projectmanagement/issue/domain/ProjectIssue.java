@@ -44,6 +44,12 @@ public class ProjectIssue extends BaseEntity {
     /** 问题说明。 */
     private String description;
 
+    /** 提出人用户ID，由当前登录用户写入。 */
+    private Long reporterUserId;
+
+    /** 提出人姓名（展示字段）。 */
+    private String reporterName;
+
     /** 负责人ID，必须是当前项目在组成员。 */
     private Long ownerId;
 
@@ -62,4 +68,7 @@ public class ProjectIssue extends BaseEntity {
 
     /** 解决方案。 */
     private String resolution;
+
+    /** 是否已逾期（展示字段）。 */
+    private Boolean overdue;
 }

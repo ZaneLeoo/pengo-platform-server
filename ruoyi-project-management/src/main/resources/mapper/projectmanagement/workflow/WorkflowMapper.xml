@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.workflow.mapper.WorkflowMapper">
+    <resultMap id="definition" type="WorkflowDefinition">
+        <id property="definitionId" column="definition_id"/>
+        <result property="definitionName" column="definition_name"/>
+        <result property="businessType" column="business_type"/>
+        <result property="activeVersionId" column="active_version_id"/>
+        <result property="status" column="status"/>
+        <result property="versionId" column="version_id"/>
+        <result property="versionNo" column="version_no"/>
+        <result property="versionStatus" column="version_status"/>
+        <result property="graphJson" column="graph_json"/>
+    </resultMap>
+
+    <sql id="definitionVo">
+        select d.*, v.version_id, v.version_no, v.version_status, v.graph_json
+        from pm_workflow_definition d
+        left join pm_workflow_definition_version v on v.version_id = coalesce(
+          (select max(dv.version_id) from pm_workflow_definition_version dv
+           where dv.definition_id = d.definition_id and dv.version_status = 'DRAFT'), d.active_version_id)
+    </sql>
+    <select id="selectDefinitions" resultMap="definition"><include refid="definitionVo"/> order by d.definition_id</select>
+    <select id="selectDefinition" resultMap="definition"><include refid="definitionVo"/> where d.definition_id=#{definitionId}</select>
+    <select id="selectActiveDefinition" resultMap="definition">
+        select d.*, v.version_id, v.version_no, v.version_status, v.graph_json
+        from pm_workflow_definition d join pm_workflow_definition_version v on v.version_id=d.active_version_id
+        where d.business_type=#{businessType} and d.status='ENABLED'
+    </select>
+    <insert id="insertDefinition" useGeneratedKeys="true" keyProperty="definitionId">
+        insert into pm_workflow_definition(definition_name,business_type,status,create_by,create_time)
+        values(#{definitionName},#{businessType},'ENABLED',#{createBy},sysdate())
+    </insert>
+    <update id="updateDefinition">
+        update pm_workflow_definition set definition_name=#{definitionName},status=#{status},update_by=#{updateBy},update_time=sysdate()
+        where definition_id=#{definitionId}
+    </update>
+    <insert id="insertVersion" useGeneratedKeys="true" keyProperty="definition.versionId">
+        insert into pm_workflow_definition_version(definition_id,version_no,version_status,graph_json,create_by,create_time)
+        select #{definition.definitionId},coalesce(max(version_no),0)+1,'DRAFT',#{graphJson},#{definition.createBy},sysdate()
+        from pm_workflow_definition_version where definition_id=#{definition.definitionId}
+    </insert>
+    <update id="publishVersion">
+        update pm_workflow_definition_version set version_status='PUBLISHED',publish_by=#{operator},publish_time=sysdate()
+        where version_id=#{versionId} and version_status='DRAFT'
+    </update>
+    <update id="activateVersion">
+        update pm_workflow_definition set active_version_id=#{versionId},update_by=#{operator},update_time=sysdate()
+        where definition_id=#{definitionId}
+    </update>
+    <insert id="insertInstance" useGeneratedKeys="true" keyProperty="instanceId">
+        insert into pm_workflow_instance(business_type,business_id,project_id,definition_version_id,title,
+          initiator_user_id,status,current_node_key,business_snapshot_json,create_by,create_time)
+        values(#{businessType},#{businessId},#{projectId},#{definitionVersionId},#{title},#{initiatorUserId},
+          #{status},#{currentNodeKey},#{businessSnapshotJson},#{createBy},sysdate())
+    </insert>
+    <sql id="instanceVo">
+        select i.*, u.nick_name initiator_name from pm_workflow_instance i
+        left join sys_user u on u.user_id=i.initiator_user_id
+    </sql>
+    <select id="selectInstance" resultType="WorkflowInstance"><include refid="instanceVo"/> where i.instance_id=#{instanceId}</select>
+    <select id="selectInstanceByBusiness" resultType="WorkflowInstance">
+        <include refid="instanceVo"/> where i.business_type=#{businessType} and i.business_id=#{businessId}
+        order by i.instance_id desc limit 1
+    </select>
+    <insert id="insertTask" useGeneratedKeys="true" keyProperty="taskId">
+        insert into pm_workflow_task(instance_id,node_key,node_name,node_order,status,create_time)
+        values(#{instanceId},#{nodeKey},#{nodeName},#{nodeOrder},#{status},sysdate())
+    </insert>
+    <insert id="insertCandidate">insert into pm_workflow_task_candidate(task_id,user_id) values(#{taskId},#{userId})</insert>
+    <select id="selectRoleUsers" resultType="long">
+        select distinct m.user_id from pm_project_member m join pm_project_role r on r.role_id=m.role_id
+        where m.project_id=#{projectId} and m.status='ACTIVE' and r.role_code=#{roleCode}
+    </select>
+    <sql id="taskVo">
+        select t.*, actor.nick_name acted_by_name from pm_workflow_task t
+        left join sys_user actor on actor.user_id=t.acted_by_user_id
+    </sql>
+    <select id="selectTask" resultType="WorkflowTask"><include refid="taskVo"/> where t.task_id=#{taskId}</select>
+    <select id="canViewTask" resultType="int">
+        select count(*) from pm_workflow_task t join pm_workflow_instance i on i.instance_id=t.instance_id
+        where t.task_id=#{taskId} and (i.initiator_user_id=#{userId} or t.acted_by_user_id=#{userId}
+          or exists(select 1 from pm_workflow_task_candidate c where c.task_id=t.task_id and c.user_id=#{userId}))
+    </select>
+    <select id="selectTasks" resultType="WorkflowTask"><include refid="taskVo"/> where t.instance_id=#{instanceId} order by t.node_order</select>
+    <select id="selectInbox" resultType="WorkflowTask">
+        select t.*, i.title, i.business_type, i.project_id, i.status instance_status, i.initiator_user_id,
+          i.create_time instance_create_time, u.nick_name initiator_name
+        from pm_workflow_task t join pm_workflow_instance i on i.instance_id=t.instance_id
+        left join pm_workflow_task_candidate c on c.task_id=t.task_id
+        left join sys_user u on u.user_id=i.initiator_user_id
+        <where>
+          <choose>
+            <when test="scope == 'initiated'">i.initiator_user_id=#{userId}</when>
+            <when test="scope == 'processed'">t.acted_by_user_id=#{userId}</when>
+            <otherwise>c.user_id=#{userId} and t.status='PENDING'</otherwise>
+          </choose>
+        </where>
+        order by i.create_time desc,t.node_order
+    </select>
+    <update id="markRead">update pm_workflow_task_candidate set read_time=coalesce(read_time,sysdate()) where task_id=#{taskId} and user_id=#{userId}</update>
+    <select id="countUnread" resultType="int">
+        select count(*) from pm_workflow_task_candidate c join pm_workflow_task t on t.task_id=c.task_id
+        where c.user_id=#{userId} and c.read_time is null and t.status='PENDING'
+    </select>
+    <update id="actTask">
+        update pm_workflow_task set status=#{status},acted_by_user_id=#{userId},opinion=#{opinion},acted_time=sysdate()
+        where task_id=#{taskId} and status='PENDING' and exists(
+          select 1 from pm_workflow_task_candidate c where c.task_id=#{taskId} and c.user_id=#{userId})
+    </update>
+    <update id="activateNextTask">
+        update pm_workflow_task set status='PENDING' where instance_id=#{instanceId} and status='WAITING'
+        order by node_order limit 1
+    </update>
+    <update id="cancelWaitingTasks">update pm_workflow_task set status='CANCELLED' where instance_id=#{instanceId} and status='WAITING'</update>
+    <update id="finishInstance">
+        update pm_workflow_instance set status=#{status},current_node_key=null,finish_time=sysdate(),update_by=#{operator},update_time=sysdate()
+        where instance_id=#{instanceId} and status='RUNNING'
+    </update>
+    <insert id="insertEvent">
+        insert into pm_workflow_event_log(instance_id,task_id,event_type,operator_user_id,content,create_time)
+        values(#{instanceId},#{taskId},#{eventType},#{userId},#{content},sysdate())
+    </insert>
+</mapper>

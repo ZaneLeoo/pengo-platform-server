@@ -17,6 +17,8 @@ import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
+import com.ruoyi.projectmanagement.workflow.service.IWorkflowService;
+import com.ruoyi.projectmanagement.workflow.service.WorkflowBusinessCallback;
 import java.net.URI;
 import java.util.List;
 import java.util.Arrays;
@@ -24,26 +26,34 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * 项目交付物业务实现。
  */
 @Service
-public class ProjectDeliverableServiceImpl implements IProjectDeliverableService {
+public class ProjectDeliverableServiceImpl implements IProjectDeliverableService, WorkflowBusinessCallback {
 
     private final ProjectDeliverableMapper mapper;
     private final ProjectInfoMapper projectMapper;
     private final ProjectWbsMapper wbsMapper;
     private final IProjectTaskService taskService;
     private final ProjectDeliverableTypeMapper typeMapper;
+    private final IWorkflowService workflowService;
+    private final ObjectMapper objectMapper;
 
     public ProjectDeliverableServiceImpl(ProjectDeliverableMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper) {
+            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper,
+            @Lazy IWorkflowService workflowService, ObjectMapper objectMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.wbsMapper = wbsMapper;
         this.taskService = taskService;
         this.typeMapper = typeMapper;
+        this.workflowService = workflowService;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -135,7 +145,8 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     }
 
     @Override
-    public void submit(Long id, ProjectDeliverableSubmission submission, String username) {
+    @Transactional
+    public void submit(Long id, ProjectDeliverableSubmission submission, String username, Long userId) {
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
         ProjectWbsNode workPackage = requiredPackage(d.getWorkPackageId());
@@ -168,6 +179,20 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         submission.setReviewResult("1".equals(d.getApprovalRequired())
                 ? DeliverableSubmissionStatus.SUBMITTED.getCode() : DeliverableSubmissionStatus.DELIVERED.getCode());
         mapper.insertSubmission(submission);
+        if ("1".equals(d.getApprovalRequired())) {
+            String snapshot;
+            try {
+                snapshot = objectMapper.writeValueAsString(java.util.Map.of("deliverable", d,
+                        "submission", submission));
+            } catch (Exception exception) {
+                throw new ServiceException("生成交付物审批快照失败");
+            }
+            Long instanceId = workflowService.start("DELIVERABLE_APPROVAL", submission.getSubmissionId(),
+                    d.getProjectId(), "交付物审批：" + d.getDeliverableName() + "（V" + submission.getVersionNo() + "）",
+                    snapshot, username, userId);
+            submission.setWorkflowInstanceId(instanceId);
+            mapper.bindSubmissionWorkflow(submission);
+        }
         d.setStatus("1".equals(d.getApprovalRequired()) ? DeliverableStatus.PENDING_APPROVAL.getCode()
                 : DeliverableStatus.DELIVERED.getCode());
         d.setSubmitBy(username);
@@ -203,29 +228,34 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
      */
     @Override
     public void review(Long id, ProjectDeliverableSubmission submission, String username) {
-        if (!"admin".equals(username)) {
-            throw new ServiceException("仅 admin 可以审核交付物");
+        throw new ServiceException("请在审批中心处理交付物审批");
+    }
+
+    @Override
+    public String businessType() {
+        return "DELIVERABLE_APPROVAL";
+    }
+
+    @Override
+    @Transactional
+    public void approved(Long submissionId, String operator, String opinion) {
+        finishSubmission(submissionId, true, operator, opinion);
+    }
+
+    @Override
+    @Transactional
+    public void rejected(Long submissionId, String operator, String opinion) {
+        finishSubmission(submissionId, false, operator, opinion);
+    }
+
+    private void finishSubmission(Long submissionId, boolean approved, String operator, String opinion) {
+        ProjectDeliverableSubmission last = mapper.selectSubmissionById(submissionId);
+        if (last == null || !DeliverableSubmissionStatus.SUBMITTED.matches(last.getReviewResult())) {
+            throw new ServiceException("待审批交付物版本不存在");
         }
-        ProjectDeliverable deliverable = required(id);
-        assertProjectAllowed(deliverable.getProjectId());
-        if (!DeliverableStatus.PENDING_APPROVAL.matches(deliverable.getStatus())) {
-            throw new ServiceException("当前交付物不在待审批状态");
-        }
-        String result = submission.getReviewResult() == null ? null : submission.getReviewResult().trim();
-        boolean approved = DeliverableSubmissionStatus.APPROVED.matches(result);
-        if (!approved && !DeliverableSubmissionStatus.RETURNED.matches(result)) {
-            throw new ServiceException("审核结果不正确");
-        }
-        if (!approved && (submission.getReviewComment() == null || submission.getReviewComment().trim().isEmpty())) {
-            throw new ServiceException("驳回时必须填写意见");
-        }
-        List<ProjectDeliverableSubmission> history = mapper.selectSubmissions(id);
-        if (history.isEmpty()) {
-            throw new ServiceException("未找到待审批提交记录");
-        }
-        ProjectDeliverableSubmission last = history.get(0);
-        last.setReviewBy(username);
-        last.setReviewComment(submission.getReviewComment());
+        ProjectDeliverable deliverable = required(last.getDeliverableId());
+        last.setReviewBy(operator);
+        last.setReviewComment(opinion);
         last.setReviewResult(approved ? DeliverableSubmissionStatus.APPROVED.getCode()
                 : DeliverableSubmissionStatus.RETURNED.getCode());
         mapper.updateSubmissionReview(last);

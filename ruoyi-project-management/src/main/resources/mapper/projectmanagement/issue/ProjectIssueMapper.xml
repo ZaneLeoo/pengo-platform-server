@@ -3,11 +3,14 @@
 <mapper namespace="com.ruoyi.projectmanagement.issue.mapper.ProjectIssueMapper">
 
     <sql id="vo">
-        select i.*, w.wbs_name work_package_name, t.task_name, u.nick_name owner_name
+        select i.*, w.wbs_name work_package_name, t.task_name, u.nick_name owner_name,
+               reporter.nick_name reporter_name,
+               case when i.status not in ('RESOLVED','CLOSED') and i.due_date &lt; curdate() then true else false end overdue
         from pm_project_issue i
         left join pm_project_wbs_node w on w.wbs_id = i.work_package_id
         left join pm_project_task t on t.task_id = i.task_id
         left join sys_user u on u.user_id = i.owner_user_id and u.del_flag = '0'
+        left join sys_user reporter on reporter.user_id = i.reporter_user_id and reporter.del_flag = '0'
     </sql>
 
     <select id="selectList" resultType="ProjectIssue">
@@ -32,9 +35,9 @@
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="issueId">
-        insert into pm_project_issue(project_id, work_package_id, task_id, issue_code, issue_name, description,
+        insert into pm_project_issue(project_id, work_package_id, task_id, issue_code, issue_name, description, reporter_user_id,
                                      owner_id, owner_user_id, severity, status, due_date, resolution, create_by, create_time)
-        values(#{projectId}, #{workPackageId}, #{taskId}, #{issueCode}, #{issueName}, #{description},
+        values(#{projectId}, #{workPackageId}, #{taskId}, #{issueCode}, #{issueName}, #{description}, #{reporterUserId},
                #{ownerId}, #{ownerId}, #{severity}, #{status}, #{dueDate}, #{resolution}, #{createBy}, sysdate())
     </insert>
 
@@ -46,6 +49,30 @@
             update_by = #{updateBy}, update_time = sysdate()
         where issue_id = #{issueId}
     </update>
+
+    <update id="updateStatus">
+        update pm_project_issue
+        set status = #{status}, resolution = #{resolution},
+            resolved_time = case when #{status} = 'RESOLVED' then sysdate() when #{status} = 'PROCESSING' then null else resolved_time end,
+            closed_time = case when #{status} = 'CLOSED' then sysdate() else null end,
+            update_by = #{updateBy}, update_time = sysdate()
+        where issue_id = #{issueId}
+    </update>
+
+    <insert id="insertActivity" useGeneratedKeys="true" keyProperty="activityId">
+        insert into pm_project_issue_activity(issue_id, activity_type, content, from_status, to_status,
+          attachment_name, attachment_url, operator_user_id, create_by, create_time)
+        values(#{issueId}, #{activityType}, #{content}, #{fromStatus}, #{toStatus},
+          #{attachmentName}, #{attachmentUrl}, #{operatorUserId}, #{createBy}, sysdate())
+    </insert>
+
+    <select id="selectActivities" resultType="ProjectIssueActivity">
+        select a.*, u.nick_name operator_name
+        from pm_project_issue_activity a
+        left join sys_user u on u.user_id = a.operator_user_id
+        where a.issue_id = #{issueId}
+        order by a.create_time, a.activity_id
+    </select>
 
     <delete id="delete">
         delete from pm_project_issue where issue_id in

@@ -63,12 +63,16 @@ public interface ProjectInfoMapper {
     /** 查询指定立项审批快照。 */
     ProjectInitiationApproval selectApprovalById(@Param("projectId") Long projectId,
             @Param("approvalId") Long approvalId);
+    ProjectInitiationApproval selectApproval(Long approvalId);
 
     /** 查询待审批的立项记录。 */
     ProjectInitiationApproval selectPendingApproval(Long projectId);
 
     /** 更新立项审批结果。 */
     int reviewApproval(ProjectInitiationApproval approval);
+
+    /** 绑定立项申请产生的工作流实例。 */
+    int bindApprovalWorkflow(ProjectInitiationApproval approval);
 
     /** 更新项目立项状态。 */
     int updateInitiationState(ProjectInfo project);
