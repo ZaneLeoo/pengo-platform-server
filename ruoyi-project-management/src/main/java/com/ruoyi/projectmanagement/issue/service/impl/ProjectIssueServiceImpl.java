@@ -128,11 +128,14 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         }
     }
 
-    /** 立项审批期间材料冻结，问题追踪只读。 */
+    /** 问题跟踪仅在项目执行中开放维护。 */
     private void assertMutable(Long projectId) {
         ProjectInfo project = projectMapper.selectProjectInfoById(projectId);
-        if (project != null && ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
-            throw new ServiceException("项目正在立项审批，问题追踪暂时只读");
+        if (project == null) {
+            throw new ServiceException("项目不存在");
+        }
+        if (!ProjectStatus.ACTIVE.matches(project.getStatus())) {
+            throw new ServiceException("仅执行中的项目允许维护问题");
         }
     }
 }
