@@ -82,6 +82,7 @@ public class CommonController {
             ajax.put("originalFilename", file.getOriginalFilename());
             return ajax;
         } catch (Exception e) {
+            log.error("通用文件上传失败", e);
             return AjaxResult.error(e.getMessage());
         }
     }

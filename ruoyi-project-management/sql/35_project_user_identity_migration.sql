@@ -15,7 +15,15 @@ end $$
 delimiter ;
 
 call pm_add_column_if_missing('pm_project', 'manager_user_id', 'bigint null after manager_id');
+
+-- manager_id 为历史 pm_person 主键；新建项目已改用 manager_user_id（sys_user 主键）。
+-- 保留旧字段供历史数据兼容，但不再要求新记录写入。
+ALTER TABLE pm_project MODIFY COLUMN manager_id BIGINT NULL;
 call pm_add_column_if_missing('pm_project_member', 'user_id', 'bigint null after person_id');
+
+-- person_id 为历史 pm_person 主键；当前团队成员已改用 user_id（sys_user 主键）。
+-- 保留旧字段供历史数据兼容，但不再要求新记录写入。
+ALTER TABLE pm_project_member MODIFY COLUMN person_id BIGINT NULL;
 call pm_add_column_if_missing('pm_project_wbs_node', 'owner_user_id', 'bigint null after owner_id');
 call pm_add_column_if_missing('pm_project_task', 'assignee_user_id', 'bigint null after assignee_id');
 call pm_add_column_if_missing('pm_project_issue', 'owner_user_id', 'bigint null after owner_id');

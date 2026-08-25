@@ -161,8 +161,15 @@
     </insert>
 
     <select id="selectApprovals" resultType="ProjectInitiationApproval">
-        select * from pm_project_initiation_approval where project_id = #{projectId}
+        select approval_id, project_id, version_no, submit_by, submit_time, status,
+               review_by, review_time, review_comment
+        from pm_project_initiation_approval where project_id = #{projectId}
         order by version_no desc
+    </select>
+
+    <select id="selectApprovalById" resultType="ProjectInitiationApproval">
+        select * from pm_project_initiation_approval
+        where project_id = #{projectId} and approval_id = #{approvalId}
     </select>
 
     <select id="selectPendingApproval" resultType="ProjectInitiationApproval">

@@ -24,7 +24,13 @@
     <sql id="selectProjectPersonVo">
         select u.user_id person_id, u.user_name person_code, u.nick_name person_name, u.dept_id, u.user_id,
                u.user_name, u.status as user_status, d.dept_name,
-               u.post_id position_name, u.email, u.phonenumber mobile, u.status, u.create_by, u.create_time,
+               COALESCE((
+                   SELECT GROUP_CONCAT(p.post_name ORDER BY p.post_id SEPARATOR ', ')
+                   FROM sys_user_post up
+                   INNER JOIN sys_post p ON p.post_id = up.post_id
+                   WHERE up.user_id = u.user_id
+               ), '') AS position_name,
+               u.email, u.phonenumber mobile, u.status, u.create_by, u.create_time,
                u.update_by, u.update_time, u.remark
         from sys_user u
         left join sys_dept d on d.dept_id = u.dept_id

@@ -60,6 +60,10 @@ public interface ProjectInfoMapper {
     /** 查询立项审批历史。 */
     List<ProjectInitiationApproval> selectApprovals(Long projectId);
 
+    /** 查询指定立项审批快照。 */
+    ProjectInitiationApproval selectApprovalById(@Param("projectId") Long projectId,
+            @Param("approvalId") Long approvalId);
+
     /** 查询待审批的立项记录。 */
     ProjectInitiationApproval selectPendingApproval(Long projectId);
 

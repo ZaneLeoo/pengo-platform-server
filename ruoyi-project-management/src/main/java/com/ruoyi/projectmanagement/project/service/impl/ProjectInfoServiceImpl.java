@@ -481,10 +481,11 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     /** 查询立项审批快照。 */
     @Override
     public ProjectInitiationApproval approvalSnapshot(Long projectId, Long approvalId) {
-        return projectMapper.selectApprovals(projectId).stream()
-                .filter(x -> x.getApprovalId().equals(approvalId))
-                .findFirst()
-                .orElseThrow(() -> new ServiceException("审批记录不存在"));
+        ProjectInitiationApproval approval = projectMapper.selectApprovalById(projectId, approvalId);
+        if (approval == null) {
+            throw new ServiceException("审批记录不存在");
+        }
+        return approval;
     }
 
     /** 查询当前立项申请附件；草稿使用未绑定记录，审批中/已立项使用对应版本记录。 */
@@ -505,9 +506,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService {
     @Override
     public List<ProjectInitiationAttachment> initiationApprovalAttachments(Long projectId, Long approvalId,
             String sectionCode) {
-        boolean exists = projectMapper.selectApprovals(projectId).stream()
-                .anyMatch(x -> approvalId.equals(x.getApprovalId()));
-        if (!exists) {
+        if (projectMapper.selectApprovalById(projectId, approvalId) == null) {
             throw new ServiceException("审批记录不存在");
         }
         return attachmentMapper.selectByApproval(approvalId, sectionCode);
