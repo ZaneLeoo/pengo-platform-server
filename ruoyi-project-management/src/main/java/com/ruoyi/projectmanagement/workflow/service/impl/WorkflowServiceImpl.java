@@ -126,7 +126,7 @@ public class WorkflowServiceImpl implements IWorkflowService {
         }
         mapper.markRead(taskId, userId);
         WorkflowInstance instance = mapper.selectInstance(task.getInstanceId());
-        instance.setTasks(mapper.selectTasks(instance.getInstanceId()));
+        instance.setTasks(enrichTasks(instance, mapper.selectTasks(instance.getInstanceId())));
         return instance;
     }
 
@@ -140,8 +140,31 @@ public class WorkflowServiceImpl implements IWorkflowService {
         if (instance == null) {
             throw new ServiceException("审批流程不存在");
         }
-        instance.setTasks(mapper.selectTasks(instanceId));
+        instance.setTasks(enrichTasks(instance, mapper.selectTasks(instanceId)));
         return instance;
+    }
+
+    /** 使用实例绑定的流程版本补充审批来源；候选人则始终读取实例创建时的固定快照。 */
+    private List<WorkflowTask> enrichTasks(WorkflowInstance instance, List<WorkflowTask> tasks) {
+        WorkflowDefinition version = mapper.selectDefinitionVersion(instance.getDefinitionVersionId());
+        if (version == null) {
+            return tasks;
+        }
+        deserializeNodes(version);
+        Map<String, WorkflowNode> nodes = version.getNodes().stream()
+                .collect(Collectors.toMap(WorkflowNode::getKey, Function.identity()));
+        tasks.forEach(task -> {
+            WorkflowNode node = nodes.get(task.getNodeKey());
+            if (node == null) {
+                return;
+            }
+            task.setApproverType(node.getApproverType());
+            String roleName = "PROJECT_ROLE".equals(node.getApproverType())
+                    ? mapper.selectRoleName(node.getApproverValue()) : null;
+            task.setApproverLabel("PROJECT_ROLE".equals(node.getApproverType())
+                    ? (StringUtils.isNotBlank(roleName) ? roleName : node.getApproverValue()) : "指定用户");
+        });
+        return tasks;
     }
 
     @Override

@@ -27,6 +27,14 @@
         from pm_workflow_definition d join pm_workflow_definition_version v on v.version_id=d.active_version_id
         where d.business_type=#{businessType} and d.status='ENABLED'
     </select>
+    <select id="selectDefinitionVersion" resultMap="definition">
+        select d.*, v.version_id, v.version_no, v.version_status, v.graph_json
+        from pm_workflow_definition d join pm_workflow_definition_version v on v.definition_id=d.definition_id
+        where v.version_id=#{versionId}
+    </select>
+    <select id="selectRoleName" resultType="string">
+        select role_name from pm_project_role where role_code=#{roleCode} limit 1
+    </select>
     <insert id="insertDefinition" useGeneratedKeys="true" keyProperty="definitionId">
         insert into pm_workflow_definition(definition_name,business_type,status,create_by,create_time)
         values(#{definitionName},#{businessType},'ENABLED',#{createBy},sysdate())
@@ -73,7 +81,11 @@
         where m.project_id=#{projectId} and m.status='ACTIVE' and r.role_code=#{roleCode}
     </select>
     <sql id="taskVo">
-        select t.*, actor.nick_name acted_by_name from pm_workflow_task t
+        select t.*, actor.nick_name acted_by_name,
+          (select group_concat(candidate.nick_name order by candidate.nick_name separator '、')
+           from pm_workflow_task_candidate c join sys_user candidate on candidate.user_id=c.user_id
+           where c.task_id=t.task_id) candidate_names
+        from pm_workflow_task t
         left join sys_user actor on actor.user_id=t.acted_by_user_id
     </sql>
     <select id="selectTask" resultType="WorkflowTask"><include refid="taskVo"/> where t.task_id=#{taskId}</select>

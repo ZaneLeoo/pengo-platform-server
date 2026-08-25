@@ -17,6 +17,12 @@ public class WorkflowTask {
     private String opinion;
     private LocalDateTime actedTime;
     private LocalDateTime createTime;
+    /** 发起实例时固定下来的候选审批人姓名，使用顿号分隔。 */
+    private String candidateNames;
+    /** 审批来源：USER、PROJECT_ROLE。 */
+    private String approverType;
+    /** 审批来源的可读名称。 */
+    private String approverLabel;
     private WorkflowInstance instance;
     /** 待办列表中的流程标题。 */
     private String title;

@@ -13,6 +13,8 @@ public interface WorkflowMapper {
     List<WorkflowDefinition> selectDefinitions();
     WorkflowDefinition selectDefinition(Long definitionId);
     WorkflowDefinition selectActiveDefinition(String businessType);
+    WorkflowDefinition selectDefinitionVersion(Long versionId);
+    String selectRoleName(String roleCode);
     int insertDefinition(WorkflowDefinition definition);
     int updateDefinition(WorkflowDefinition definition);
     int insertVersion(@Param("definition") WorkflowDefinition definition, @Param("graphJson") String graphJson);
