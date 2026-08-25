@@ -17,6 +17,7 @@ import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
+import java.net.URI;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Locale;
@@ -151,6 +152,11 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
             submission.setExternalUrl(null);
         } else if ("LINK".equals(d.getSubmissionMode())) {
             if (submission.getExternalUrl() == null || submission.getExternalUrl().isBlank()) throw new ServiceException("请填写外部链接");
+            String externalUrl = submission.getExternalUrl().trim();
+            if (!isHttpUrl(externalUrl)) {
+                throw new ServiceException("外部链接必须是有效的 http 或 https 地址");
+            }
+            submission.setExternalUrl(externalUrl);
             submission.setFileUrl(null);
         } else {
             throw new ServiceException("当前交付物提交方式暂不支持");
@@ -178,6 +184,17 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         }
         if (!SecurityUtils.getUserId().equals(workPackage.getOwnerUserId())) {
             throw new ServiceException("只有工作包负责人可以提交交付物");
+        }
+    }
+
+    /** 外链仅接受带主机名的 http/https 地址，避免保存无效或不安全的链接。 */
+    private boolean isHttpUrl(String value) {
+        try {
+            URI uri = URI.create(value);
+            return ("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+                    && uri.getHost() != null;
+        } catch (IllegalArgumentException e) {
+            return false;
         }
     }
 
