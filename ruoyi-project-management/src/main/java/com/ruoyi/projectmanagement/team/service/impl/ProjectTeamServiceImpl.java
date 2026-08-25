@@ -208,11 +208,8 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
 
     private void assertMutable(Long id) {
         String status = projectMapper.selectProjectInfoById(id).getStatus();
-        if (ProjectStatus.COMPLETED.matches(status)) {
-            throw new ServiceException("项目已完成，团队仅可查看");
-        }
-        if (ProjectStatus.PENDING_APPROVAL.matches(status)) {
-            throw new ServiceException("项目正在立项审批中，拟定团队不能修改");
+        if (!ProjectStatus.DRAFT.matches(status) && !ProjectStatus.APPROVED.matches(status)) {
+            throw new ServiceException("仅项目草稿或已立项待启动阶段可以维护团队");
         }
     }
 
