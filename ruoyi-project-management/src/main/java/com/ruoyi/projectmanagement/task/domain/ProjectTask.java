@@ -33,6 +33,9 @@ public class ProjectTask extends BaseEntity {
     /** 工作包名称（冗余展示字段）。 */
     private String workPackageName;
 
+    /** 所属WBS名称（工作包的上级范围）。 */
+    private String wbsName;
+
     /** 上级任务ID，0表示工作包下的顶层任务。 */
     private Long parentTaskId;
 
