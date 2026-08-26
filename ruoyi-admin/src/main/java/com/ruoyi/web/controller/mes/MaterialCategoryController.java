@@ -8,6 +8,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.mes.base.domain.MaterialCategory;
 import com.ruoyi.mes.base.service.IMaterialCategoryService;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -20,8 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * 物料分类控制器。
  *
@@ -31,12 +30,9 @@ import java.util.List;
 @RequestMapping("/mes/base/materialCategory")
 public class MaterialCategoryController extends BaseController {
 
-    @Autowired
-    private IMaterialCategoryService categoryService;
+    @Autowired private IMaterialCategoryService categoryService;
 
-    /**
-     * 查询物料分类列表。
-     */
+    /** 查询物料分类列表。 */
     @PreAuthorize("@ss.hasPermi('base:materialCategory:list')")
     @GetMapping("/list")
     public AjaxResult list(MaterialCategory category) {
@@ -44,9 +40,7 @@ public class MaterialCategoryController extends BaseController {
         return success(list);
     }
 
-    /**
-     * 导出物料分类。
-     */
+    /** 导出物料分类。 */
     @Log(title = "物料分类", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('base:materialCategory:export')")
     @PostMapping("/export")
@@ -56,18 +50,14 @@ public class MaterialCategoryController extends BaseController {
         util.exportExcel(response, list, "物料分类数据");
     }
 
-    /**
-     * 获取物料分类详情。
-     */
+    /** 获取物料分类详情。 */
     @PreAuthorize("@ss.hasPermi('base:materialCategory:query')")
     @GetMapping("/{categoryId}")
     public AjaxResult getInfo(@PathVariable Long categoryId) {
         return success(categoryService.selectCategoryById(categoryId));
     }
 
-    /**
-     * 新增物料分类。
-     */
+    /** 新增物料分类。 */
     @PreAuthorize("@ss.hasPermi('base:materialCategory:add')")
     @Log(title = "物料分类", businessType = BusinessType.INSERT)
     @PostMapping
@@ -79,9 +69,7 @@ public class MaterialCategoryController extends BaseController {
         return toAjax(categoryService.insertCategory(category));
     }
 
-    /**
-     * 修改物料分类。
-     */
+    /** 修改物料分类。 */
     @PreAuthorize("@ss.hasPermi('base:materialCategory:edit')")
     @Log(title = "物料分类", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -93,9 +81,7 @@ public class MaterialCategoryController extends BaseController {
         return toAjax(categoryService.updateCategory(category));
     }
 
-    /**
-     * 删除物料分类。
-     */
+    /** 删除物料分类。 */
     @PreAuthorize("@ss.hasPermi('base:materialCategory:remove')")
     @Log(title = "物料分类", businessType = BusinessType.DELETE)
     @DeleteMapping("/{categoryId}")
@@ -103,9 +89,7 @@ public class MaterialCategoryController extends BaseController {
         return toAjax(categoryService.deleteCategoryById(categoryId));
     }
 
-    /**
-     * 查询物料分类树选项。
-     */
+    /** 查询物料分类树选项。 */
     @GetMapping("/treeSelect")
     public AjaxResult treeselect(MaterialCategory category) {
         return success(categoryService.selectCategoryList(category));

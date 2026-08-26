@@ -24,19 +24,26 @@ public class SupplierToolService {
         SupplierToolQuery query = request == null ? new SupplierToolQuery(null, false) : request;
         String status = query.getIncludeDisabled() ? null : ACTIVE_STATUS;
         List<Supplier> matched = supplierService.selectListForAgent(query.getKeyword(), status);
-        List<SupplierToolItem> data = matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
-        AgentToolMeta meta = AgentToolMeta.collection(matched.size(), matched.size() > MAX_RESULT_SIZE);
+        List<SupplierToolItem> data =
+                matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
+        AgentToolMeta meta =
+                AgentToolMeta.collection(matched.size(), matched.size() > MAX_RESULT_SIZE);
         if (data.isEmpty()) {
-            return AgentToolResults.noResult(SupplierToolResultCode.SUPPLIER_NOT_FOUND,
-                    "未找到符合条件的供应商", data, meta);
+            return AgentToolResults.noResult(
+                    SupplierToolResultCode.SUPPLIER_NOT_FOUND, "未找到符合条件的供应商", data, meta);
         }
-        return AgentToolResults.success(SupplierToolResultCode.SUPPLIER_QUERY_SUCCESS,
-                "供应商查询成功", data, meta);
+        return AgentToolResults.success(
+                SupplierToolResultCode.SUPPLIER_QUERY_SUCCESS, "供应商查询成功", data, meta);
     }
 
     /** 转换为工具最小输出模型。 */
     private SupplierToolItem toItem(Supplier supplier) {
-        return new SupplierToolItem(supplier.getId(), supplier.getSupplierCode(), supplier.getSupplierName(),
-                supplier.getCurrency(), supplier.getTaxRate(), supplier.getStatus());
+        return new SupplierToolItem(
+                supplier.getId(),
+                supplier.getSupplierCode(),
+                supplier.getSupplierName(),
+                supplier.getCurrency(),
+                supplier.getTaxRate(),
+                supplier.getStatus());
     }
 }

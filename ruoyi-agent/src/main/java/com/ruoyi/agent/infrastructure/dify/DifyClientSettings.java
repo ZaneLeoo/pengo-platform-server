@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 public class DifyClientSettings {
     private String baseUrl;
     private String apiKey;
-
 }

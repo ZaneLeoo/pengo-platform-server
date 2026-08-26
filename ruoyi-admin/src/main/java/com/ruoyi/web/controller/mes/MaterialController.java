@@ -9,6 +9,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.mes.base.domain.Material;
 import com.ruoyi.mes.base.service.IMaterialService;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -21,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 /**
  * 物料主数据控制器。
  *
@@ -32,12 +31,9 @@ import java.util.List;
 @RequestMapping("/mes/base/material")
 public class MaterialController extends BaseController {
 
-    @Autowired
-    private IMaterialService materialService;
+    @Autowired private IMaterialService materialService;
 
-    /**
-     * 查询物料列表。
-     */
+    /** 查询物料列表。 */
     @PreAuthorize("@ss.hasPermi('base:material:list')")
     @GetMapping("/list")
     public TableDataInfo list(Material material) {
@@ -46,9 +42,7 @@ public class MaterialController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 导出物料列表。
-     */
+    /** 导出物料列表。 */
     @Log(title = "物料主数据", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('base:material:export')")
     @PostMapping("/export")
@@ -58,18 +52,14 @@ public class MaterialController extends BaseController {
         util.exportExcel(response, list, "物料主数据");
     }
 
-    /**
-     * 获取物料详情。
-     */
+    /** 获取物料详情。 */
     @PreAuthorize("@ss.hasPermi('base:material:query')")
     @GetMapping("/{materialId}")
     public AjaxResult getInfo(@PathVariable Long materialId) {
         return success(materialService.selectMaterialById(materialId));
     }
 
-    /**
-     * 新增物料。
-     */
+    /** 新增物料。 */
     @PreAuthorize("@ss.hasPermi('base:material:add')")
     @Log(title = "物料主数据", businessType = BusinessType.INSERT)
     @PostMapping
@@ -81,9 +71,7 @@ public class MaterialController extends BaseController {
         return toAjax(materialService.insertMaterial(material));
     }
 
-    /**
-     * 修改物料。
-     */
+    /** 修改物料。 */
     @PreAuthorize("@ss.hasPermi('base:material:edit')")
     @Log(title = "物料主数据", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -95,9 +83,7 @@ public class MaterialController extends BaseController {
         return toAjax(materialService.updateMaterial(material));
     }
 
-    /**
-     * 删除物料。
-     */
+    /** 删除物料。 */
     @PreAuthorize("@ss.hasPermi('base:material:remove')")
     @Log(title = "物料主数据", businessType = BusinessType.DELETE)
     @DeleteMapping("/{materialIds}")

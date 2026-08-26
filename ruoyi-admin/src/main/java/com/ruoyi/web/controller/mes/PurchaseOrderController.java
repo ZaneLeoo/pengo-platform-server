@@ -7,8 +7,8 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.mes.common.enums.PurchaseDocumentStatus;
 import com.ruoyi.mes.purchase.domain.PurchaseOrder;
-import com.ruoyi.mes.purchase.service.IPurchaseOrderService;
 import com.ruoyi.mes.purchase.service.IPurchaseFlowService;
+import com.ruoyi.mes.purchase.service.IPurchaseOrderService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +27,8 @@ public class PurchaseOrderController extends BaseController {
     private final IPurchaseOrderService orderService;
     private final IPurchaseFlowService flowService;
 
-    public PurchaseOrderController(IPurchaseOrderService orderService, IPurchaseFlowService flowService) {
+    public PurchaseOrderController(
+            IPurchaseOrderService orderService, IPurchaseFlowService flowService) {
         this.orderService = orderService;
         this.flowService = flowService;
     }
@@ -52,8 +53,7 @@ public class PurchaseOrderController extends BaseController {
     @Log(title = "采购订单", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody PurchaseOrder order) {
-        if (!orderService.checkOrderCodeUnique(order))
-            return error("采购订单编号已存在");
+        if (!orderService.checkOrderCodeUnique(order)) return error("采购订单编号已存在");
         order.setCreateBy(getUsername());
         return toAjax(orderService.insertPurchaseOrder(order));
     }
@@ -64,12 +64,10 @@ public class PurchaseOrderController extends BaseController {
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody PurchaseOrder order) {
         PurchaseOrder existing = orderService.selectPurchaseOrderById(order.getId());
-        if (existing == null)
-            return error("采购订单不存在");
+        if (existing == null) return error("采购订单不存在");
         if (!PurchaseDocumentStatus.DRAFT.getCode().equals(existing.getStatus()))
             return error("已审核采购订单不允许编辑");
-        if (!orderService.checkOrderCodeUnique(order))
-            return error("采购订单编号已存在");
+        if (!orderService.checkOrderCodeUnique(order)) return error("采购订单编号已存在");
         order.setUpdateBy(getUsername());
         return toAjax(orderService.updatePurchaseOrder(order));
     }
@@ -81,7 +79,8 @@ public class PurchaseOrderController extends BaseController {
     public AjaxResult remove(@PathVariable Long[] ids) {
         for (Long id : ids) {
             PurchaseOrder existing = orderService.selectPurchaseOrderById(id);
-            if (existing != null && !PurchaseDocumentStatus.DRAFT.getCode().equals(existing.getStatus()))
+            if (existing != null
+                    && !PurchaseDocumentStatus.DRAFT.getCode().equals(existing.getStatus()))
                 return error("已审核采购订单不允许删除");
         }
         return toAjax(orderService.deletePurchaseOrderByIds(ids));

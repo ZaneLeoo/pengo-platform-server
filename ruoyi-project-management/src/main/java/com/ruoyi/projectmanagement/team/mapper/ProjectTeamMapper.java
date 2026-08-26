@@ -6,9 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-/**
- * 项目团队数据访问接口。
- */
+/** 项目团队数据访问接口。 */
 @Mapper
 public interface ProjectTeamMapper {
 
@@ -19,7 +17,8 @@ public interface ProjectTeamMapper {
     ProjectMember selectMemberById(Long id);
 
     /** 查询项目中的活跃成员。 */
-    ProjectMember selectActiveMember(@Param("projectId") Long projectId, @Param("personId") Long personId);
+    ProjectMember selectActiveMember(
+            @Param("projectId") Long projectId, @Param("personId") Long personId);
 
     /** 新增项目成员。 */
     int insertMember(ProjectMember member);

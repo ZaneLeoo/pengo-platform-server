@@ -1,8 +1,8 @@
 package com.ruoyi.common.utils.http;
 
+import com.ruoyi.common.utils.StringUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.ruoyi.common.utils.StringUtils;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 
@@ -20,11 +20,14 @@ public class UserAgentUtils {
     private static final Pattern EDGE_PATTERN = Pattern.compile("Edg(?:e)?/(\\d+)(?:\\.\\d+)*");
     private static final Pattern SAFARI_PATTERN = Pattern.compile("Version/(\\d+)(?:\\.\\d+)*");
     private static final Pattern OPERA_PATTERN = Pattern.compile("Opera/(\\d+)(?:\\.\\d+)*");
-    private static final Pattern IE_PATTERN = Pattern.compile("(?:MSIE |Trident/.*rv:)(\\d+)(?:\\.\\d+)*");
-    private static final Pattern SAMSUNG_PATTERN = Pattern.compile("SamsungBrowser/(\\d+)(?:\\.\\d+)*");
+    private static final Pattern IE_PATTERN =
+            Pattern.compile("(?:MSIE |Trident/.*rv:)(\\d+)(?:\\.\\d+)*");
+    private static final Pattern SAMSUNG_PATTERN =
+            Pattern.compile("SamsungBrowser/(\\d+)(?:\\.\\d+)*");
     private static final Pattern UC_PATTERN = Pattern.compile("UCBrowser/(\\d+)(?:\\.\\d+)*");
     private static final Pattern QQ_PATTERN = Pattern.compile("QQBrowser/(\\d+)(?:\\.\\d+)*");
-    private static final Pattern WECHAT_PATTERN = Pattern.compile("MicroMessenger/(\\d+)(?:\\.\\d+)*");
+    private static final Pattern WECHAT_PATTERN =
+            Pattern.compile("MicroMessenger/(\\d+)(?:\\.\\d+)*");
     private static final Pattern BAIDU_PATTERN = Pattern.compile("baidubrowser/(\\d+)(?:\\.\\d+)*");
 
     // 操作系统正则表达式模式
@@ -35,17 +38,16 @@ public class UserAgentUtils {
     private static final Pattern LINUX_PATTERN = Pattern.compile("Linux");
     private static final Pattern CHROMEOS_PATTERN = Pattern.compile("CrOS");
 
-    private static final UserAgentAnalyzer userAgentAnalyzer = UserAgentAnalyzer
-            .newBuilder().hideMatcherLoadStats()
-            .withCache(5000)
-            .showMinimalVersion()
-            .withField(UserAgent.AGENT_NAME_VERSION)
-            .withField(UserAgent.OPERATING_SYSTEM_NAME_VERSION)
-            .build();
+    private static final UserAgentAnalyzer userAgentAnalyzer =
+            UserAgentAnalyzer.newBuilder()
+                    .hideMatcherLoadStats()
+                    .withCache(5000)
+                    .showMinimalVersion()
+                    .withField(UserAgent.AGENT_NAME_VERSION)
+                    .withField(UserAgent.OPERATING_SYSTEM_NAME_VERSION)
+                    .build();
 
-    /**
-     * 获取客户端浏览器
-     */
+    /** 获取客户端浏览器 */
     public static String getBrowser(String userAgent) {
         UserAgent.ImmutableUserAgent iua = userAgentAnalyzer.parse(userAgent);
         String agentNameVersion = iua.get(UserAgent.AGENT_NAME_VERSION).getValue();
@@ -55,21 +57,19 @@ public class UserAgentUtils {
         return agentNameVersion;
     }
 
-    /**
-     * 获取客户端操作系统
-     */
+    /** 获取客户端操作系统 */
     public static String getOperatingSystem(String userAgent) {
         UserAgent.ImmutableUserAgent iua = userAgentAnalyzer.parse(userAgent);
-        String operatingSystemNameVersion = iua.get(UserAgent.OPERATING_SYSTEM_NAME_VERSION).getValue();
-        if (StringUtils.isBlank(operatingSystemNameVersion) || operatingSystemNameVersion.contains("??")) {
+        String operatingSystemNameVersion =
+                iua.get(UserAgent.OPERATING_SYSTEM_NAME_VERSION).getValue();
+        if (StringUtils.isBlank(operatingSystemNameVersion)
+                || operatingSystemNameVersion.contains("??")) {
             return formatOperatingSystem(userAgent);
         }
         return operatingSystemNameVersion;
     }
 
-    /**
-     * 全面浏览器检测
-     */
+    /** 全面浏览器检测 */
     private static String formatBrowser(String browser) {
         // Chrome系列浏览器
         Matcher chromeMatcher = CHROME_PATTERN.matcher(browser);
@@ -129,9 +129,7 @@ public class UserAgentUtils {
         return UNKNOWN;
     }
 
-    /**
-     * 检测操作系统
-     */
+    /** 检测操作系统 */
     private static String formatOperatingSystem(String operatingSystem) {
         // Windows系统
         Matcher windowsMatcher = WINDOWS_PATTERN.matcher(operatingSystem);
@@ -151,7 +149,8 @@ public class UserAgentUtils {
         }
         // iOS系统
         Matcher iosMatcher = IOS_PATTERN.matcher(operatingSystem);
-        if (iosMatcher.find() && (operatingSystem.contains("iPhone") || operatingSystem.contains("iPad"))) {
+        if (iosMatcher.find()
+                && (operatingSystem.contains("iPhone") || operatingSystem.contains("iPad"))) {
             return "iOS" + extractMajorVersion(iosMatcher.group(1));
         }
         // Linux系统
@@ -165,9 +164,7 @@ public class UserAgentUtils {
         return UNKNOWN;
     }
 
-    /**
-     * 提取优化的主版本号
-     */
+    /** 提取优化的主版本号 */
     private static String extractMajorVersion(String fullVersion) {
         if (StringUtils.isEmpty(fullVersion)) {
             return StringUtils.EMPTY;
@@ -194,26 +191,24 @@ public class UserAgentUtils {
         return fullVersion;
     }
 
-    /**
-     * Windows版本号显示优化
-     */
+    /** Windows版本号显示优化 */
     private static String getWindowsVersionDisplay(String version) {
         switch (version) {
-            case "10.0" :
+            case "10.0":
                 return "10";
-            case "6.3" :
+            case "6.3":
                 return "8.1";
-            case "6.2" :
+            case "6.2":
                 return "8";
-            case "6.1" :
+            case "6.1":
                 return "7";
-            case "6.0" :
+            case "6.0":
                 return "Vista";
-            case "5.1" :
+            case "5.1":
                 return "XP";
-            case "5.0" :
+            case "5.0":
                 return "2000";
-            default :
+            default:
                 return extractMajorVersion(version);
         }
     }

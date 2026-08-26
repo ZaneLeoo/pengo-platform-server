@@ -62,7 +62,8 @@ class DifyAppConfigServiceTest {
         assertThrows(ServiceException.class, () -> service.requireSettings("BOM_OCR"));
     }
 
-    private static DifyAppConfig config(String code, String baseUrl, String apiKey, String enabled) {
+    private static DifyAppConfig config(
+            String code, String baseUrl, String apiKey, String enabled) {
         DifyAppConfig config = new DifyAppConfig();
         config.setAppCode(code);
         config.setApiBaseUrl(baseUrl);
@@ -78,19 +79,24 @@ class DifyAppConfigServiceTest {
         public List<DifyAppConfig> selectDifyAppConfigList(DifyAppConfig value) {
             return Collections.emptyList();
         }
+
         public DifyAppConfig selectDifyAppConfigById(Long id) {
             return config;
         }
+
         public DifyAppConfig selectDifyAppConfigByCode(String appCode) {
             return config;
         }
+
         public int insertDifyAppConfig(DifyAppConfig value) {
             return 1;
         }
+
         public int updateDifyAppConfig(DifyAppConfig value) {
             updated = value;
             return 1;
         }
+
         public int deleteDifyAppConfigByIds(Long[] ids) {
             return 1;
         }

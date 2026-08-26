@@ -23,9 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 项目台账控制器。
- */
+/** 项目台账控制器。 */
 @RestController
 @RequestMapping("/projectManagement/project")
 public class ProjectInfoController extends BaseController {
@@ -82,7 +80,8 @@ public class ProjectInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
     @Log(title = "项目生命周期", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/lifecycle")
-    public AjaxResult lifecycle(@PathVariable Long id, @Validated @RequestBody LifecycleActionRequest request) {
+    public AjaxResult lifecycle(
+            @PathVariable Long id, @Validated @RequestBody LifecycleActionRequest request) {
         return toAjax(service.applyLifecycleAction(id, request, getUsername()));
     }
 
@@ -94,7 +93,8 @@ public class ProjectInfoController extends BaseController {
 
     /** 新增初步计划。 */
     @PostMapping("/{id}/preliminary-plans")
-    public AjaxResult addPlan(@PathVariable Long id, @Validated @RequestBody ProjectPreliminaryPlan plan) {
+    public AjaxResult addPlan(
+            @PathVariable Long id, @Validated @RequestBody ProjectPreliminaryPlan plan) {
         plan.setProjectId(id);
         return toAjax(service.addPreliminaryPlan(plan, getUsername()));
     }
@@ -119,7 +119,8 @@ public class ProjectInfoController extends BaseController {
 
     /** 立项审批。 */
     @PostMapping("/{id}/initiation/review")
-    public AjaxResult review(@PathVariable Long id, @Validated @RequestBody InitiationReviewRequest request) {
+    public AjaxResult review(
+            @PathVariable Long id, @Validated @RequestBody InitiationReviewRequest request) {
         return toAjax(service.reviewInitiation(id, request, getUsername()));
     }
 
@@ -143,22 +144,23 @@ public class ProjectInfoController extends BaseController {
 
     /** 查询指定立项审批版本的支撑材料。 */
     @GetMapping("/{id}/initiation/approvals/{approvalId}/attachments")
-    public AjaxResult initiationApprovalAttachments(@PathVariable Long id, @PathVariable Long approvalId,
-            String sectionCode) {
+    public AjaxResult initiationApprovalAttachments(
+            @PathVariable Long id, @PathVariable Long approvalId, String sectionCode) {
         return success(service.initiationApprovalAttachments(id, approvalId, sectionCode));
     }
 
     /** 新增立项申请支撑材料。 */
     @PostMapping("/{id}/initiation/attachments")
-    public AjaxResult addInitiationAttachment(@PathVariable Long id,
-            @Validated @RequestBody ProjectInitiationAttachment attachment) {
+    public AjaxResult addInitiationAttachment(
+            @PathVariable Long id, @Validated @RequestBody ProjectInitiationAttachment attachment) {
         attachment.setProjectId(id);
         return toAjax(service.addInitiationAttachment(attachment, getUsername()));
     }
 
     /** 删除当前草稿支撑材料。 */
     @DeleteMapping("/{id}/initiation/attachments/{attachmentId}")
-    public AjaxResult deleteInitiationAttachment(@PathVariable Long id, @PathVariable Long attachmentId) {
+    public AjaxResult deleteInitiationAttachment(
+            @PathVariable Long id, @PathVariable Long attachmentId) {
         return toAjax(service.deleteInitiationAttachment(id, attachmentId, getUsername()));
     }
 

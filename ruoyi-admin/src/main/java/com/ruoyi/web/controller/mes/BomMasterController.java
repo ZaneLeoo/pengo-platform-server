@@ -9,11 +9,11 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.mes.base.domain.BomMaster;
 import com.ruoyi.mes.base.service.IBomMasterService;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 /**
  * BOM主表控制器。
@@ -23,12 +23,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/mes/base/bomMaster")
 public class BomMasterController extends BaseController {
-    @Autowired
-    private IBomMasterService bomMasterService;
+    @Autowired private IBomMasterService bomMasterService;
 
-    /**
-     * 查询BOM主表列表。
-     */
+    /** 查询BOM主表列表。 */
     @PreAuthorize("@ss.hasPermi('base:bomMaster:list')")
     @GetMapping("/list")
     public TableDataInfo list(BomMaster bomMaster) {
@@ -36,9 +33,7 @@ public class BomMasterController extends BaseController {
         return getDataTable(bomMasterService.selectBomMasterList(bomMaster));
     }
 
-    /**
-     * 导出BOM主表。
-     */
+    /** 导出BOM主表。 */
     @PreAuthorize("@ss.hasPermi('base:bomMaster:export')")
     @Log(title = "BOM主表", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
@@ -47,18 +42,14 @@ public class BomMasterController extends BaseController {
         new ExcelUtil<>(BomMaster.class).exportExcel(response, list, "BOM主表数据");
     }
 
-    /**
-     * 获取BOM主表详情。
-     */
+    /** 获取BOM主表详情。 */
     @PreAuthorize("@ss.hasPermi('base:bomMaster:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(bomMasterService.selectBomMasterById(id));
     }
 
-    /**
-     * 新增BOM主表。
-     */
+    /** 新增BOM主表。 */
     @PreAuthorize("@ss.hasPermi('base:bomMaster:add')")
     @Log(title = "BOM主表", businessType = BusinessType.INSERT)
     @PostMapping
@@ -70,9 +61,7 @@ public class BomMasterController extends BaseController {
         return toAjax(bomMasterService.insertBomMaster(bomMaster));
     }
 
-    /**
-     * 修改BOM主表。
-     */
+    /** 修改BOM主表。 */
     @PreAuthorize("@ss.hasPermi('base:bomMaster:edit')")
     @Log(title = "BOM主表", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -84,9 +73,7 @@ public class BomMasterController extends BaseController {
         return toAjax(bomMasterService.updateBomMaster(bomMaster));
     }
 
-    /**
-     * 删除BOM主表。
-     */
+    /** 删除BOM主表。 */
     @PreAuthorize("@ss.hasPermi('base:bomMaster:remove')")
     @Log(title = "BOM主表", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")

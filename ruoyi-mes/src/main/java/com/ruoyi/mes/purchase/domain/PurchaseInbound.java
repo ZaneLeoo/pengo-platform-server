@@ -17,20 +17,26 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class PurchaseInbound extends BaseEntity {
     private Long id;
+
     @NotBlank(message = "入库单编号不能为空")
     private String inboundCode;
+
     @NotBlank(message = "入库日期不能为空")
     private String inboundDate;
+
     @NotBlank(message = "入库单状态不能为空")
     private String status;
+
     private String approvedBy;
     private Date approvedTime;
+
     /** 单据类型：DIRECT / RECEIPT */
     private String billType;
 
     @NotNull(message = "入库总数量不能为空")
     @DecimalMin(value = "0.0", message = "入库总数量不能小于0")
     private BigDecimal totalQuantity;
+
     @Valid
     @NotEmpty(message = "入库单至少需要一条明细")
     private List<PurchaseInboundLine> lines;

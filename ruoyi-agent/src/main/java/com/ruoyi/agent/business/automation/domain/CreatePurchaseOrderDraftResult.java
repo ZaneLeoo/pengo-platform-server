@@ -12,5 +12,4 @@ public class CreatePurchaseOrderDraftResult {
     private Long orderId;
     private String orderCode;
     private boolean duplicated;
-
 }

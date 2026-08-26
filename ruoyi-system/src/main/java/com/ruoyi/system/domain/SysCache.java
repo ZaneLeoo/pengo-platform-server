@@ -20,9 +20,7 @@ public class SysCache {
     /** 备注 */
     private String remark = "";
 
-    public SysCache() {
-
-    }
+    public SysCache() {}
 
     public SysCache(String cacheName, String remark) {
         this.cacheName = cacheName;

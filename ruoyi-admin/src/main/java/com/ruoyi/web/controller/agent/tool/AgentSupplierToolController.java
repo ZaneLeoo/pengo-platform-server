@@ -22,7 +22,8 @@ public class AgentSupplierToolController {
 
     /** 查询供应商。 */
     @PostMapping("/query")
-    public AgentToolResult<List<SupplierToolItem>> query(@RequestBody(required = false) SupplierToolQuery request) {
+    public AgentToolResult<List<SupplierToolItem>> query(
+            @RequestBody(required = false) SupplierToolQuery request) {
         return toolService.query(request);
     }
 }

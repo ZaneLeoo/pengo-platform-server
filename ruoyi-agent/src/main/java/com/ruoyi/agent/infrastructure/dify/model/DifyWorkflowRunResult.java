@@ -1,10 +1,9 @@
 package com.ruoyi.agent.infrastructure.dify.model;
 
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
 
 /** Dify 工作流阻塞执行结果。 */
 @Data
@@ -17,5 +16,4 @@ public class DifyWorkflowRunResult {
     private Map<String, Object> outputs;
     private String error;
     private String rawResponse;
-
 }

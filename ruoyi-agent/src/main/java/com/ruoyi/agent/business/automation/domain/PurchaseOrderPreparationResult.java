@@ -1,10 +1,9 @@
 package com.ruoyi.agent.business.automation.domain;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /** 采购订单准备工具的结构化响应。 */
 @Data
@@ -16,5 +15,4 @@ public class PurchaseOrderPreparationResult {
     private List<String> missingFields;
     private List<AutomationCandidate> candidates;
     private PurchaseOrderDraft draft;
-
 }

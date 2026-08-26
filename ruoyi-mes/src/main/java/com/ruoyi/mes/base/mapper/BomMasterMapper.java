@@ -11,14 +11,23 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface BomMasterMapper {
     /** 按 Agent 查询语义匹配 BOM 编码或母件信息。 */
-    List<BomMaster> selectBomMasterListForAgent(@Param("keyword") String keyword,
-            @Param("bomType") String bomType, @Param("status") String status);
+    List<BomMaster> selectBomMasterListForAgent(
+            @Param("keyword") String keyword,
+            @Param("bomType") String bomType,
+            @Param("status") String status);
+
     List<BomMaster> selectBomMasterList(BomMaster bomMaster);
+
     BomMaster selectBomMasterById(Long id);
+
     BomMaster selectBomMasterByCode(String bomCode);
-    BomMaster selectBomMasterByParentItem(@Param("parentItemId") Long parentItemId,
-            @Param("bomType") String bomType);
+
+    BomMaster selectBomMasterByParentItem(
+            @Param("parentItemId") Long parentItemId, @Param("bomType") String bomType);
+
     int insertBomMaster(BomMaster bomMaster);
+
     int updateBomMaster(BomMaster bomMaster);
+
     int deleteBomMasterByIds(Long[] ids);
 }

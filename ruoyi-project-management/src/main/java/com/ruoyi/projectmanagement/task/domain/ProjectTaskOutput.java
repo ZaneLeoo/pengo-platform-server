@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 执行任务的过程成果（附件或工作证据），不参与正式交付物审批。
- */
+/** 执行任务的过程成果（附件或工作证据），不参与正式交付物审批。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectTaskOutput extends BaseEntity {

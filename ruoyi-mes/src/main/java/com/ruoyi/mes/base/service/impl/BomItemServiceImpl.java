@@ -5,10 +5,10 @@ import com.ruoyi.mes.base.domain.BomItem;
 import com.ruoyi.mes.base.mapper.BomItemMapper;
 import com.ruoyi.mes.base.service.IBomItemService;
 import com.ruoyi.mes.common.enums.SupplyType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * BOM子件明细业务处理。
@@ -17,8 +17,7 @@ import java.util.List;
  */
 @Service
 public class BomItemServiceImpl implements IBomItemService {
-    @Autowired
-    private BomItemMapper bomItemMapper;
+    @Autowired private BomItemMapper bomItemMapper;
 
     @Override
     public List<BomItem> selectBomItemList(BomItem bomItem) {
@@ -33,7 +32,8 @@ public class BomItemServiceImpl implements IBomItemService {
     @Override
     public boolean checkLineNoUnique(BomItem bomItem) {
         Long id = bomItem.getId() == null ? 0L : bomItem.getId();
-        BomItem info = bomItemMapper.selectBomItemByLineNo(bomItem.getBomVersionId(), bomItem.getLineNo());
+        BomItem info =
+                bomItemMapper.selectBomItemByLineNo(bomItem.getBomVersionId(), bomItem.getLineNo());
         return StringUtils.isNull(info) || info.getId().equals(id);
     }
 
@@ -67,8 +67,7 @@ public class BomItemServiceImpl implements IBomItemService {
     /**
      * 准备默认值与派生字段。
      *
-     * @param bomItem
-     *            BOM明细
+     * @param bomItem BOM明细
      */
     private void prepareDefaults(BomItem bomItem) {
         if (bomItem.getFixedLossQty() == null) {

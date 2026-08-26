@@ -22,7 +22,8 @@ public class AgentMaterialToolController {
 
     /** 查询物料。 */
     @PostMapping("/query")
-    public AgentToolResult<List<MaterialToolItem>> query(@RequestBody(required = false) MaterialToolQuery request) {
+    public AgentToolResult<List<MaterialToolItem>> query(
+            @RequestBody(required = false) MaterialToolQuery request) {
         return toolService.query(request);
     }
 }

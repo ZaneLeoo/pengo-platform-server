@@ -7,9 +7,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-/**
- * 项目主档数据访问接口。
- */
+/** 项目主档数据访问接口。 */
 @Mapper
 public interface ProjectInfoMapper {
 
@@ -35,9 +33,13 @@ public interface ProjectInfoMapper {
     int updateLifecycle(ProjectInfo project);
 
     /** 记录项目生命周期操作日志。 */
-    int insertLifecycleLog(@Param("projectId") Long projectId, @Param("action") String action,
-            @Param("fromStatus") String fromStatus, @Param("toStatus") String toStatus,
-            @Param("reason") String reason, @Param("operator") String operator);
+    int insertLifecycleLog(
+            @Param("projectId") Long projectId,
+            @Param("action") String action,
+            @Param("fromStatus") String fromStatus,
+            @Param("toStatus") String toStatus,
+            @Param("reason") String reason,
+            @Param("operator") String operator);
 
     /** 查询项目初步计划列表。 */
     List<ProjectPreliminaryPlan> selectPreliminaryPlans(Long projectId);
@@ -61,8 +63,9 @@ public interface ProjectInfoMapper {
     List<ProjectInitiationApproval> selectApprovals(Long projectId);
 
     /** 查询指定立项审批快照。 */
-    ProjectInitiationApproval selectApprovalById(@Param("projectId") Long projectId,
-            @Param("approvalId") Long approvalId);
+    ProjectInitiationApproval selectApprovalById(
+            @Param("projectId") Long projectId, @Param("approvalId") Long approvalId);
+
     ProjectInitiationApproval selectApproval(Long approvalId);
 
     /** 查询待审批的立项记录。 */

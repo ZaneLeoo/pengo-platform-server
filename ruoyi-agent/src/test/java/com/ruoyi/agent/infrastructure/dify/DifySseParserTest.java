@@ -3,19 +3,20 @@ package com.ruoyi.agent.infrastructure.dify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
 
 class DifySseParserTest {
     private final DifySseParser parser = new DifySseParser();
 
     @Test
     void shouldParseMessageEvent() {
-        String line = "data: {\"event\":\"message\",\"task_id\":\"task-1\","
-                + "\"message_id\":\"message-1\",\"conversation_id\":\"conversation-1\","
-                + "\"answer\":\"你好\"}";
+        String line =
+                "data: {\"event\":\"message\",\"task_id\":\"task-1\","
+                        + "\"message_id\":\"message-1\",\"conversation_id\":\"conversation-1\","
+                        + "\"answer\":\"你好\"}";
 
         DifyStreamEvent event = parser.parseDataLine(line).orElseThrow();
 
@@ -28,9 +29,10 @@ class DifySseParserTest {
 
     @Test
     void shouldPreserveWorkflowData() {
-        String line = "data: {\"event\":\"node_finished\",\"workflow_run_id\":\"run-1\","
-                + "\"data\":{\"title\":\"问题分类器\",\"status\":\"succeeded\","
-                + "\"outputs\":{\"category\":\"BI分析\"}}}";
+        String line =
+                "data: {\"event\":\"node_finished\",\"workflow_run_id\":\"run-1\","
+                        + "\"data\":{\"title\":\"问题分类器\",\"status\":\"succeeded\","
+                        + "\"outputs\":{\"category\":\"BI分析\"}}}";
 
         DifyStreamEvent event = parser.parseDataLine(line).orElseThrow();
 
@@ -56,10 +58,11 @@ class DifySseParserTest {
 
     @Test
     void shouldParseDifyMessageEndMetadata() {
-        String line = "data: {\"event\":\"message_end\",\"message_id\":\"message-1\","
-                + "\"metadata\":{\"retriever_resources\":[{\"document_name\":\"sale.txt\","
-                + "\"score\":0.79,\"content\":\"客户首次咨询后 24 小时内完成首次跟进。\"}],"
-                + "\"usage\":{\"total_tokens\":1369}}}";
+        String line =
+                "data: {\"event\":\"message_end\",\"message_id\":\"message-1\","
+                        + "\"metadata\":{\"retriever_resources\":[{\"document_name\":\"sale.txt\","
+                        + "\"score\":0.79,\"content\":\"客户首次咨询后 24 小时内完成首次跟进。\"}],"
+                        + "\"usage\":{\"total_tokens\":1369}}}";
 
         DifyStreamEvent event = parser.parseDataLine(line).orElseThrow();
 

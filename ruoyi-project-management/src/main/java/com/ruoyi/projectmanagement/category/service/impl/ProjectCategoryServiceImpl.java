@@ -11,9 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
-/**
- * 项目分类业务实现。
- */
+/** 项目分类业务实现。 */
 @Service
 public class ProjectCategoryServiceImpl implements IProjectCategoryService {
 
@@ -30,11 +28,15 @@ public class ProjectCategoryServiceImpl implements IProjectCategoryService {
 
     @Override
     public List<ProjectCategory> selectProjectCategoryTree() {
-        List<ProjectCategory> categories = categoryMapper.selectProjectCategoryList(new ProjectCategory());
-        Map<Long, List<ProjectCategory>> childrenByParent = categories.stream()
-                .collect(Collectors.groupingBy(ProjectCategory::getParentId));
-        categories.forEach(category -> category
-                .setChildren(childrenByParent.getOrDefault(category.getCategoryId(), new ArrayList<>())));
+        List<ProjectCategory> categories =
+                categoryMapper.selectProjectCategoryList(new ProjectCategory());
+        Map<Long, List<ProjectCategory>> childrenByParent =
+                categories.stream().collect(Collectors.groupingBy(ProjectCategory::getParentId));
+        categories.forEach(
+                category ->
+                        category.setChildren(
+                                childrenByParent.getOrDefault(
+                                        category.getCategoryId(), new ArrayList<>())));
         return childrenByParent.getOrDefault(0L, new ArrayList<>());
     }
 
@@ -45,15 +47,19 @@ public class ProjectCategoryServiceImpl implements IProjectCategoryService {
 
     @Override
     public boolean checkCategoryCodeUnique(ProjectCategory category) {
-        Long categoryId = StringUtils.isNull(category.getCategoryId()) ? -1L : category.getCategoryId();
-        ProjectCategory existing = categoryMapper.selectProjectCategoryByCode(category.getCategoryCode());
-        return StringUtils.isNull(existing) || existing.getCategoryId().longValue() == categoryId.longValue();
+        Long categoryId =
+                StringUtils.isNull(category.getCategoryId()) ? -1L : category.getCategoryId();
+        ProjectCategory existing =
+                categoryMapper.selectProjectCategoryByCode(category.getCategoryCode());
+        return StringUtils.isNull(existing)
+                || existing.getCategoryId().longValue() == categoryId.longValue();
     }
 
     @Override
     public int insertProjectCategory(ProjectCategory category) {
         ProjectCategory parent = getParent(category.getParentId());
-        category.setAncestors(parent == null ? "0" : parent.getAncestors() + "," + parent.getCategoryId());
+        category.setAncestors(
+                parent == null ? "0" : parent.getAncestors() + "," + parent.getCategoryId());
         return categoryMapper.insertProjectCategory(category);
     }
 
@@ -63,7 +69,8 @@ public class ProjectCategoryServiceImpl implements IProjectCategoryService {
             throw new ServiceException("分类不能选择自己作为上级");
         }
         ProjectCategory parent = getParent(category.getParentId());
-        category.setAncestors(parent == null ? "0" : parent.getAncestors() + "," + parent.getCategoryId());
+        category.setAncestors(
+                parent == null ? "0" : parent.getAncestors() + "," + parent.getCategoryId());
         return categoryMapper.updateProjectCategory(category);
     }
 

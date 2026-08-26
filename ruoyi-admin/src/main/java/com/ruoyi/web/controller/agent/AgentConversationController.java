@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/agent/conversations")
 public class AgentConversationController extends BaseController {
     private final AgentConversationService conversationService;
+
     public AgentConversationController(AgentConversationService service) {
         this.conversationService = service;
     }

@@ -4,8 +4,10 @@ package com.ruoyi.projectmanagement.workflow.service;
 public interface WorkflowBusinessCallback {
     /** 对应业务类型。 */
     String businessType();
+
     /** 全部节点同意后的业务回写。 */
     void approved(Long businessId, String operator, String opinion);
+
     /** 任一节点驳回后的业务回写。 */
     void rejected(Long businessId, String operator, String opinion);
 }

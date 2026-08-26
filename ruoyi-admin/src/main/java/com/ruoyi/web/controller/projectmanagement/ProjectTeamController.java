@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 项目团队接口。
- */
+/** 项目团队接口。 */
 @RestController
 @RequestMapping("/projectManagement/team")
 public class ProjectTeamController extends BaseController {
@@ -34,7 +32,8 @@ public class ProjectTeamController extends BaseController {
     /** 查询项目成员列表。 */
     @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
     @GetMapping("/{projectId}/members")
-    public AjaxResult members(@PathVariable Long projectId, @RequestParam(required = false) String status) {
+    public AjaxResult members(
+            @PathVariable Long projectId, @RequestParam(required = false) String status) {
         ProjectMember filter = new ProjectMember();
         filter.setProjectId(projectId);
         filter.setStatus(status);

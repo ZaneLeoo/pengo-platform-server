@@ -1,10 +1,9 @@
 package com.ruoyi.mes.purchase.domain.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /** AI 工具使用的固定分页结果。 */
 @Data
@@ -16,5 +15,4 @@ public class InventoryToolPage<T> {
     private int pageSize;
     private long total;
     private boolean hasMore;
-
 }

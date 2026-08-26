@@ -5,9 +5,7 @@ import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmissi
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * 项目交付物数据访问接口。
- */
+/** 项目交付物数据访问接口。 */
 @Mapper
 public interface ProjectDeliverableMapper {
 

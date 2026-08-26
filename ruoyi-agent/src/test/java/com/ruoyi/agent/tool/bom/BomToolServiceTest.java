@@ -36,26 +36,32 @@ class BomToolServiceTest {
     @Test
     void shouldReturnBomAndAllVersions() {
         BomMaster master = master();
-        when(masterService.selectBomMasterListForAgent("灯杆", null, "ACTIVE")).thenReturn(List.of(master));
-        when(versionService.selectBomVersionList(any())).thenReturn(List.of(version(10L, "V1", 1),
-                version(11L, "V2", 0)));
+        when(masterService.selectBomMasterListForAgent("灯杆", null, "ACTIVE"))
+                .thenReturn(List.of(master));
+        when(versionService.selectBomVersionList(any()))
+                .thenReturn(List.of(version(10L, "V1", 1), version(11L, "V2", 0)));
         BomToolQuery query = new BomToolQuery("灯杆", null, false);
 
         AgentToolResult<List<BomToolItem>> result = toolService.query(query);
 
         assertThat(result.getStatus()).isEqualTo(AgentToolStatus.SUCCESS);
-        assertThat(result.getData()).singleElement().satisfies(item -> {
-            assertThat(item.getCode()).isEqualTo("BOM-LAMPPOST");
-            assertThat(item.getVersions()).extracting(BomVersionToolItem::getCode).containsExactly("V1", "V2");
-        });
+        assertThat(result.getData())
+                .singleElement()
+                .satisfies(
+                        item -> {
+                            assertThat(item.getCode()).isEqualTo("BOM-LAMPPOST");
+                            assertThat(item.getVersions())
+                                    .extracting(BomVersionToolItem::getCode)
+                                    .containsExactly("V1", "V2");
+                        });
     }
 
     @Test
     void shouldUseDefaultVersionAndReturnComponents() {
         BomMaster master = master();
         when(masterService.selectBomMasterById(1L)).thenReturn(master);
-        when(versionService.selectBomVersionList(any())).thenReturn(List.of(version(10L, "V1", 1),
-                version(11L, "V2", 0)));
+        when(versionService.selectBomVersionList(any()))
+                .thenReturn(List.of(version(10L, "V1", 1), version(11L, "V2", 0)));
         when(itemService.selectBomItemList(any())).thenReturn(List.of(component()));
         BomStructureQuery query = new BomStructureQuery();
         query.setBomId(1L);
@@ -64,15 +70,17 @@ class BomToolServiceTest {
 
         assertThat(result.getStatus()).isEqualTo(AgentToolStatus.SUCCESS);
         assertThat(result.getData().getVersion().getCode()).isEqualTo("V1");
-        assertThat(result.getData().getComponents()).singleElement()
-                .extracting(BomComponentToolItem::getMaterialCode).isEqualTo("PCB-CTRL");
+        assertThat(result.getData().getComponents())
+                .singleElement()
+                .extracting(BomComponentToolItem::getMaterialCode)
+                .isEqualTo("PCB-CTRL");
     }
 
     @Test
     void shouldAskForVersionWhenNoDefaultCanBeSelected() {
         when(masterService.selectBomMasterById(1L)).thenReturn(master());
-        when(versionService.selectBomVersionList(any())).thenReturn(List.of(version(10L, "V1", 0),
-                version(11L, "V2", 0)));
+        when(versionService.selectBomVersionList(any()))
+                .thenReturn(List.of(version(10L, "V1", 0), version(11L, "V2", 0)));
         BomStructureQuery query = new BomStructureQuery();
         query.setBomId(1L);
 
@@ -80,10 +88,13 @@ class BomToolServiceTest {
 
         assertThat(result.getStatus()).isEqualTo(AgentToolStatus.AMBIGUOUS);
         assertThat(result.getNextAction()).isEqualTo(AgentToolNextAction.SELECT_CANDIDATE);
-        assertThat(result.getIssues()).singleElement().satisfies(issue -> {
-            assertThat(issue.getField()).isEqualTo("versionId");
-            assertThat(issue.getCandidates()).hasSize(2);
-        });
+        assertThat(result.getIssues())
+                .singleElement()
+                .satisfies(
+                        issue -> {
+                            assertThat(issue.getField()).isEqualTo("versionId");
+                            assertThat(issue.getCandidates()).hasSize(2);
+                        });
     }
 
     private BomMaster master() {

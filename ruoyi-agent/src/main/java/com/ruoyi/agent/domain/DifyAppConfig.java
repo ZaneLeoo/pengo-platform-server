@@ -30,6 +30,7 @@ public class DifyAppConfig extends BaseEntity {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -37,6 +38,7 @@ public class DifyAppConfig extends BaseEntity {
     public String getAppCode() {
         return appCode;
     }
+
     public void setAppCode(String appCode) {
         this.appCode = appCode;
     }
@@ -44,6 +46,7 @@ public class DifyAppConfig extends BaseEntity {
     public String getAppName() {
         return appName;
     }
+
     public void setAppName(String appName) {
         this.appName = appName;
     }
@@ -51,6 +54,7 @@ public class DifyAppConfig extends BaseEntity {
     public String getAppType() {
         return appType;
     }
+
     public void setAppType(String appType) {
         this.appType = appType;
     }
@@ -58,6 +62,7 @@ public class DifyAppConfig extends BaseEntity {
     public String getApiBaseUrl() {
         return apiBaseUrl;
     }
+
     public void setApiBaseUrl(String apiBaseUrl) {
         this.apiBaseUrl = apiBaseUrl;
     }
@@ -65,6 +70,7 @@ public class DifyAppConfig extends BaseEntity {
     public String getApiKey() {
         return apiKey;
     }
+
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
@@ -72,6 +78,7 @@ public class DifyAppConfig extends BaseEntity {
     public String getEnabled() {
         return enabled;
     }
+
     public void setEnabled(String enabled) {
         this.enabled = enabled;
     }

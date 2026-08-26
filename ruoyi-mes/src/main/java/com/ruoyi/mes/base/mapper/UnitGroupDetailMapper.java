@@ -1,10 +1,9 @@
 package com.ruoyi.mes.base.mapper;
 
 import com.ruoyi.mes.base.domain.UnitGroupDetail;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * 计量单位组明细数据访问接口。
@@ -19,8 +18,8 @@ public interface UnitGroupDetailMapper {
     List<UnitGroupDetail> selectByGroupId(@Param("groupId") Long groupId);
 
     /** 按单位编码和组ID查明细 */
-    UnitGroupDetail selectByGroupAndUnit(@Param("groupId") Long groupId,
-                                          @Param("unitCode") String unitCode);
+    UnitGroupDetail selectByGroupAndUnit(
+            @Param("groupId") Long groupId, @Param("unitCode") String unitCode);
 
     List<UnitGroupDetail> selectDetailList(UnitGroupDetail detail);
 

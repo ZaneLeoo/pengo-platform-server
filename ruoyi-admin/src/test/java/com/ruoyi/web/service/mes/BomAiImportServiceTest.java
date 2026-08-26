@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ruoyi.agent.application.DifyAppConfigService;
@@ -34,9 +34,9 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Test;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -49,40 +49,31 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(MockitoExtension.class)
 class BomAiImportServiceTest {
 
-    @Mock
-    private DifyWorkflowClient difyWorkflowClient;
+    @Mock private DifyWorkflowClient difyWorkflowClient;
 
-    @Mock
-    private DifyAppConfigService difyAppConfigService;
+    @Mock private DifyAppConfigService difyAppConfigService;
 
-    @Mock
-    private IBomMasterService bomMasterService;
+    @Mock private IBomMasterService bomMasterService;
 
-    @Mock
-    private IBomVersionService bomVersionService;
+    @Mock private IBomVersionService bomVersionService;
 
-    @Mock
-    private IBomItemService bomItemService;
+    @Mock private IBomItemService bomItemService;
 
-    @Mock
-    private IMaterialService materialService;
+    @Mock private IMaterialService materialService;
 
-    @Mock
-    private BomMasterMapper bomMasterMapper;
+    @Mock private BomMasterMapper bomMasterMapper;
 
-    @Mock
-    private BomAiImportTraceService bomAiImportTraceService;
+    @Mock private BomAiImportTraceService bomAiImportTraceService;
 
-    @Mock
-    private ISysConfigService sysConfigService;
+    @Mock private ISysConfigService sysConfigService;
 
-    @InjectMocks
-    private BomAiImportService service;
+    @InjectMocks private BomAiImportService service;
 
     @Test
     void sendsImageFilesToBomImages() throws Exception {
-        DifyWorkflowRunRequest request = recognizeAndCapture(new MockMultipartFile("files", "drawing.png", "image/png",
-                new byte[] { 1 }));
+        DifyWorkflowRunRequest request =
+                recognizeAndCapture(
+                        new MockMultipartFile("files", "drawing.png", "image/png", new byte[] {1}));
 
         Map<String, Object> inputs = request.getInputs();
         assertTrue(inputs.containsKey("bom_images"));
@@ -97,8 +88,10 @@ class BomAiImportServiceTest {
 
     @Test
     void sendsPdfFileToBomPdf() throws Exception {
-        DifyWorkflowRunRequest request = recognizeAndCapture(new MockMultipartFile("files", "drawing.pdf",
-                "application/pdf", pdfBytes(1)));
+        DifyWorkflowRunRequest request =
+                recognizeAndCapture(
+                        new MockMultipartFile(
+                                "files", "drawing.pdf", "application/pdf", pdfBytes(1)));
 
         Map<String, Object> inputs = request.getInputs();
         assertFalse(inputs.containsKey("bom_images"));
@@ -114,9 +107,14 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsMultiplePdfFiles() throws Exception {
-        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
-                new MockMultipartFile("files", "drawing-1.pdf", "application/pdf", pdfBytes(1)),
-                new MockMultipartFile("files", "drawing-2.pdf", "application/pdf", pdfBytes(1)) });
+        BomAiPreviewResult result =
+                service.recognize(
+                        new MultipartFile[] {
+                            new MockMultipartFile(
+                                    "files", "drawing-1.pdf", "application/pdf", pdfBytes(1)),
+                            new MockMultipartFile(
+                                    "files", "drawing-2.pdf", "application/pdf", pdfBytes(1))
+                        });
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：一次仅支持上传 1 个 PDF", result.getError());
@@ -124,9 +122,14 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsMixedImageAndPdfInput() {
-        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
-                new MockMultipartFile("files", "drawing.png", "image/png", new byte[] { 1 }),
-                new MockMultipartFile("files", "drawing.pdf", "application/pdf", new byte[] { 2 }) });
+        BomAiPreviewResult result =
+                service.recognize(
+                        new MultipartFile[] {
+                            new MockMultipartFile(
+                                    "files", "drawing.png", "image/png", new byte[] {1}),
+                            new MockMultipartFile(
+                                    "files", "drawing.pdf", "application/pdf", new byte[] {2})
+                        });
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：一次只能上传多张图片或 1 个 PDF，不能混合上传", result.getError());
@@ -134,8 +137,12 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsPdfOverTwentyPages() throws Exception {
-        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
-                new MockMultipartFile("files", "drawing.pdf", "application/pdf", pdfBytes(21)) });
+        BomAiPreviewResult result =
+                service.recognize(
+                        new MultipartFile[] {
+                            new MockMultipartFile(
+                                    "files", "drawing.pdf", "application/pdf", pdfBytes(21))
+                        });
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：PDF 页数不能超过 20 页", result.getError());
@@ -144,8 +151,10 @@ class BomAiImportServiceTest {
     @Test
     void confirmsBomMasterAsManufacturingAndEnabled() {
         when(bomMasterMapper.selectBomMasterByCode(any())).thenReturn(null);
-        when(materialService.selectMaterialByCode("PARENT-001")).thenReturn(material("PARENT-001", 1L));
-        when(materialService.selectMaterialByCode("COMPONENT-001")).thenReturn(material("COMPONENT-001", 2L));
+        when(materialService.selectMaterialByCode("PARENT-001"))
+                .thenReturn(material("PARENT-001", 1L));
+        when(materialService.selectMaterialByCode("COMPONENT-001"))
+                .thenReturn(material("COMPONENT-001", 2L));
 
         BomAiImportHeader header = new BomAiImportHeader();
         header.setParentItemCode("PARENT-001");
@@ -182,7 +191,8 @@ class BomAiImportServiceTest {
         BomAiImportConfirmRequest request = new BomAiImportConfirmRequest();
         request.setDocuments(List.of(document));
 
-        when(materialService.selectMaterialByCode("PARENT-001")).thenReturn(material("PARENT-001", 1L));
+        when(materialService.selectMaterialByCode("PARENT-001"))
+                .thenReturn(material("PARENT-001", 1L));
 
         assertFalse(service.confirm(request).isSuccess());
     }
@@ -193,8 +203,10 @@ class BomAiImportServiceTest {
         existing.setId(9L);
         existing.setBomCode("BOM-PARENT-001");
         when(bomMasterMapper.selectBomMasterByParentItem(1L, "MANUFACTURING")).thenReturn(existing);
-        when(materialService.selectMaterialByCode("PARENT-001")).thenReturn(material("PARENT-001", 1L));
-        when(materialService.selectMaterialByCode("COMPONENT-001")).thenReturn(material("COMPONENT-001", 2L));
+        when(materialService.selectMaterialByCode("PARENT-001"))
+                .thenReturn(material("PARENT-001", 1L));
+        when(materialService.selectMaterialByCode("COMPONENT-001"))
+                .thenReturn(material("COMPONENT-001", 2L));
         BomVersion v10 = new BomVersion();
         v10.setVersionCode("V1.0");
         BomVersion v12 = new BomVersion();
@@ -224,34 +236,52 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsNonBomDocumentReturnedByWorkflow() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("files", "random.jpg", "image/jpeg", new byte[] { 1 });
+        MockMultipartFile file =
+                new MockMultipartFile("files", "random.jpg", "image/jpeg", new byte[] {1});
         when(difyAppConfigService.requireSettings("BOM_OCR"))
                 .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
         when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
         when(difyWorkflowClient.uploadFile(any(), any()))
-                .thenReturn(new DifyFileUploadResult("uploaded-file-id", file.getOriginalFilename(), 1, null, null));
-        when(difyWorkflowClient.runBlocking(any(), any())).thenReturn(new DifyWorkflowRunResult(null, null, "succeeded",
-                Map.of("text", "{\"documents\":[{\"pageNo\":1,\"error\":\"非制造业BOM数据\"}]}"), null, null));
+                .thenReturn(
+                        new DifyFileUploadResult(
+                                "uploaded-file-id", file.getOriginalFilename(), 1, null, null));
+        when(difyWorkflowClient.runBlocking(any(), any()))
+                .thenReturn(
+                        new DifyWorkflowRunResult(
+                                null,
+                                null,
+                                "succeeded",
+                                Map.of(
+                                        "text",
+                                        "{\"documents\":[{\"pageNo\":1,\"error\":\"非制造业BOM数据\"}]}"),
+                                null,
+                                null));
 
-        BomAiPreviewResult result = service.recognize(new MockMultipartFile[] { file });
+        BomAiPreviewResult result = service.recognize(new MockMultipartFile[] {file});
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：第 1 页：非制造业BOM数据", result.getError());
     }
 
-    private DifyWorkflowRunRequest recognizeAndCapture(MockMultipartFile... files) throws Exception {
+    private DifyWorkflowRunRequest recognizeAndCapture(MockMultipartFile... files)
+            throws Exception {
         when(difyAppConfigService.requireSettings("BOM_OCR"))
                 .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
         when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
         when(difyWorkflowClient.uploadFile(any(), any()))
-                .thenReturn(new DifyFileUploadResult("uploaded-file-id", files[0].getOriginalFilename(), 1, null, null));
+                .thenReturn(
+                        new DifyFileUploadResult(
+                                "uploaded-file-id", files[0].getOriginalFilename(), 1, null, null));
         when(difyWorkflowClient.runBlocking(any(), any()))
-                .thenReturn(new DifyWorkflowRunResult(null, null, "succeeded", Collections.emptyMap(), null, null));
+                .thenReturn(
+                        new DifyWorkflowRunResult(
+                                null, null, "succeeded", Collections.emptyMap(), null, null));
 
         BomAiPreviewResult result = service.recognize(files);
         assertFalse(result.isSuccess());
 
-        ArgumentCaptor<DifyWorkflowRunRequest> captor = ArgumentCaptor.forClass(DifyWorkflowRunRequest.class);
+        ArgumentCaptor<DifyWorkflowRunRequest> captor =
+                ArgumentCaptor.forClass(DifyWorkflowRunRequest.class);
         verify(difyWorkflowClient).runBlocking(any(), captor.capture());
         return captor.getValue();
     }
@@ -278,7 +308,8 @@ class BomAiImportServiceTest {
     }
 
     private byte[] pdfBytes(int pageCount) throws Exception {
-        try (PDDocument document = new PDDocument(); ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+        try (PDDocument document = new PDDocument();
+                ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             for (int index = 0; index < pageCount; index++) {
                 document.addPage(new PDPage());
             }

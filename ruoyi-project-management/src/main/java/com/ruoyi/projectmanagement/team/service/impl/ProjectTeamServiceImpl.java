@@ -7,7 +7,6 @@ import com.ruoyi.projectmanagement.common.enums.TeamRoleCode;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.professionalrole.domain.ProfessionalRole;
 import com.ruoyi.projectmanagement.professionalrole.mapper.ProfessionalRoleMapper;
-import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.team.domain.ProjectMember;
 import com.ruoyi.projectmanagement.team.domain.ProjectRole;
@@ -18,9 +17,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 项目团队业务实现。
- */
+/** 项目团队业务实现。 */
 @Service
 public class ProjectTeamServiceImpl implements IProjectTeamService {
 
@@ -29,8 +26,11 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
     private final ProjectPersonMapper personMapper;
     private final ProfessionalRoleMapper professionalRoleMapper;
 
-    public ProjectTeamServiceImpl(ProjectTeamMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectPersonMapper personMapper, ProfessionalRoleMapper professionalRoleMapper) {
+    public ProjectTeamServiceImpl(
+            ProjectTeamMapper mapper,
+            ProjectInfoMapper projectMapper,
+            ProjectPersonMapper personMapper,
+            ProfessionalRoleMapper professionalRoleMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.personMapper = personMapper;
@@ -147,7 +147,8 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
 
     @Override
     @Transactional
-    public void ensureManager(Long projectId, Long managerId, Long previousManagerId, String operator) {
+    public void ensureManager(
+            Long projectId, Long managerId, Long previousManagerId, String operator) {
         ProjectRole manager = mapper.selectSystemRole(TeamRoleCode.PROJECT_MANAGER.getCode());
         ProjectRole core = mapper.selectSystemRole(TeamRoleCode.CORE_MEMBER.getCode());
         // 原负责人降为核心成员
@@ -187,7 +188,9 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
 
     private void validateRole(Long projectId, Long roleId) {
         ProjectRole role = mapper.selectRoleById(roleId);
-        if (role == null || (!Long.valueOf(0).equals(role.getProjectId()) && !projectId.equals(role.getProjectId()))) {
+        if (role == null
+                || (!Long.valueOf(0).equals(role.getProjectId())
+                        && !projectId.equals(role.getProjectId()))) {
             throw new ServiceException("项目角色不可用");
         }
     }

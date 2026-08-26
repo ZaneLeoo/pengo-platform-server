@@ -12,8 +12,11 @@ public interface BomAiImportTraceMapper {
 
     int update(BomAiImportTrace trace);
 
-    int transitionStatus(@Param("id") Long id, @Param("expectedStatus") String expectedStatus,
-            @Param("targetStatus") String targetStatus, @Param("operator") String operator);
+    int transitionStatus(
+            @Param("id") Long id,
+            @Param("expectedStatus") String expectedStatus,
+            @Param("targetStatus") String targetStatus,
+            @Param("operator") String operator);
 
     int expireRecognized();
 
@@ -21,7 +24,8 @@ public interface BomAiImportTraceMapper {
 
     BomAiImportTrace selectById(Long id);
 
-    List<BomAiImportTrace> selectImportedByFingerprint(@Param("sourceFingerprint") String sourceFingerprint,
+    List<BomAiImportTrace> selectImportedByFingerprint(
+            @Param("sourceFingerprint") String sourceFingerprint,
             @Param("excludeId") Long excludeId);
 
     List<BomAiImportTrace> selectList(BomAiImportTrace trace);

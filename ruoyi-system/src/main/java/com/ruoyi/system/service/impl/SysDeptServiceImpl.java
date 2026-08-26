@@ -1,12 +1,5 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.TreeSelect;
@@ -20,6 +13,13 @@ import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.mapper.SysDeptMapper;
 import com.ruoyi.system.mapper.SysRoleMapper;
 import com.ruoyi.system.service.ISysDeptService;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 部门管理 服务实现
@@ -28,17 +28,14 @@ import com.ruoyi.system.service.ISysDeptService;
  */
 @Service
 public class SysDeptServiceImpl implements ISysDeptService {
-    @Autowired
-    private SysDeptMapper deptMapper;
+    @Autowired private SysDeptMapper deptMapper;
 
-    @Autowired
-    private SysRoleMapper roleMapper;
+    @Autowired private SysRoleMapper roleMapper;
 
     /**
      * 查询部门管理数据
      *
-     * @param dept
-     *            部门信息
+     * @param dept 部门信息
      * @return 部门信息集合
      */
     @Override
@@ -50,8 +47,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 查询部门树结构信息
      *
-     * @param dept
-     *            部门信息
+     * @param dept 部门信息
      * @return 部门树信息集合
      */
     @Override
@@ -63,8 +59,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 构建前端所需要树结构
      *
-     * @param depts
-     *            部门列表
+     * @param depts 部门列表
      * @return 树结构列表
      */
     @Override
@@ -87,8 +82,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 构建前端所需要下拉树结构
      *
-     * @param depts
-     *            部门列表
+     * @param depts 部门列表
      * @return 下拉树结构列表
      */
     @Override
@@ -100,8 +94,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 根据角色ID查询部门树信息
      *
-     * @param roleId
-     *            角色ID
+     * @param roleId 角色ID
      * @return 选中部门列表
      */
     @Override
@@ -113,8 +106,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 根据部门ID查询信息
      *
-     * @param deptId
-     *            部门ID
+     * @param deptId 部门ID
      * @return 部门信息
      */
     @Override
@@ -125,8 +117,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 根据ID查询所有子部门（正常状态）
      *
-     * @param deptId
-     *            部门ID
+     * @param deptId 部门ID
      * @return 子部门数
      */
     @Override
@@ -137,8 +128,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 是否存在子节点
      *
-     * @param deptId
-     *            部门ID
+     * @param deptId 部门ID
      * @return 结果
      */
     @Override
@@ -150,8 +140,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 查询部门是否存在用户
      *
-     * @param deptId
-     *            部门ID
+     * @param deptId 部门ID
      * @return 结果 true 存在 false 不存在
      */
     @Override
@@ -163,8 +152,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 校验部门名称是否唯一
      *
-     * @param dept
-     *            部门信息
+     * @param dept 部门信息
      * @return 结果
      */
     @Override
@@ -180,8 +168,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 校验部门是否有数据权限
      *
-     * @param deptId
-     *            部门id
+     * @param deptId 部门id
      */
     @Override
     public void checkDeptDataScope(Long deptId) {
@@ -198,8 +185,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 新增保存部门信息
      *
-     * @param dept
-     *            部门信息
+     * @param dept 部门信息
      * @return 结果
      */
     @Override
@@ -216,8 +202,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 修改保存部门信息
      *
-     * @param dept
-     *            部门信息
+     * @param dept 部门信息
      * @return 结果
      */
     @Override
@@ -231,7 +216,8 @@ public class SysDeptServiceImpl implements ISysDeptService {
             updateDeptChildren(dept.getDeptId(), newAncestors, oldAncestors);
         }
         int result = deptMapper.updateDept(dept);
-        if (UserConstants.DEPT_NORMAL.equals(dept.getStatus()) && StringUtils.isNotEmpty(dept.getAncestors())
+        if (UserConstants.DEPT_NORMAL.equals(dept.getStatus())
+                && StringUtils.isNotEmpty(dept.getAncestors())
                 && !StringUtils.equals("0", dept.getAncestors())) {
             // 如果该部门是启用状态，则启用该部门的所有上级部门
             updateParentDeptStatusNormal(dept);
@@ -242,8 +228,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 修改该部门的父级部门状态
      *
-     * @param dept
-     *            当前部门
+     * @param dept 当前部门
      */
     private void updateParentDeptStatusNormal(SysDept dept) {
         String ancestors = dept.getAncestors();
@@ -254,12 +239,9 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 修改子元素关系
      *
-     * @param deptId
-     *            被修改的部门ID
-     * @param newAncestors
-     *            新的父ID集合
-     * @param oldAncestors
-     *            旧的父ID集合
+     * @param deptId 被修改的部门ID
+     * @param newAncestors 新的父ID集合
+     * @param oldAncestors 旧的父ID集合
      */
     public void updateDeptChildren(Long deptId, String newAncestors, String oldAncestors) {
         List<SysDept> children = deptMapper.selectChildrenDeptById(deptId);
@@ -274,10 +256,8 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 保存部门排序
      *
-     * @param deptIds
-     *            部门ID数组
-     * @param orderNums
-     *            排序数组
+     * @param deptIds 部门ID数组
+     * @param orderNums 排序数组
      */
     @Override
     @Transactional
@@ -297,8 +277,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 根据父部门ID懒加载子部门列表（含hasChildren标记）
      *
-     * @param parentId
-     *            父部门ID
+     * @param parentId 父部门ID
      * @return 子部门列表
      */
     @Override
@@ -309,8 +288,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 根据父部门ID懒加载部门树（含hasChildren标记）
      *
-     * @param parentId
-     *            父部门ID
+     * @param parentId 父部门ID
      * @return 子部门列表
      */
     @Override
@@ -321,8 +299,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     /**
      * 删除部门管理信息
      *
-     * @param deptId
-     *            部门ID
+     * @param deptId 部门ID
      * @return 结果
      */
     @Override
@@ -330,9 +307,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
         return deptMapper.deleteDeptById(deptId);
     }
 
-    /**
-     * 递归列表
-     */
+    /** 递归列表 */
     private void recursionFn(List<SysDept> list, SysDept t) {
         // 得到子节点列表
         List<SysDept> childList = getChildList(list, t);
@@ -344,24 +319,21 @@ public class SysDeptServiceImpl implements ISysDeptService {
         }
     }
 
-    /**
-     * 得到子节点列表
-     */
+    /** 得到子节点列表 */
     private List<SysDept> getChildList(List<SysDept> list, SysDept t) {
         List<SysDept> tlist = new ArrayList<SysDept>();
         Iterator<SysDept> it = list.iterator();
         while (it.hasNext()) {
             SysDept n = (SysDept) it.next();
-            if (StringUtils.isNotNull(n.getParentId()) && n.getParentId().longValue() == t.getDeptId().longValue()) {
+            if (StringUtils.isNotNull(n.getParentId())
+                    && n.getParentId().longValue() == t.getDeptId().longValue()) {
                 tlist.add(n);
             }
         }
         return tlist;
     }
 
-    /**
-     * 判断是否有子节点
-     */
+    /** 判断是否有子节点 */
     private boolean hasChild(List<SysDept> list, SysDept t) {
         return getChildList(list, t).size() > 0;
     }

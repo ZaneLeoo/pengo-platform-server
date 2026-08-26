@@ -10,5 +10,6 @@ import com.ruoyi.mes.purchase.domain.dto.InventoryTransactionToolItem;
 public interface IInventoryAssistantQueryService {
     InventoryToolPage<InventoryBalanceToolItem> queryBalances(InventoryBalanceQuery query);
 
-    InventoryToolPage<InventoryTransactionToolItem> queryTransactions(InventoryTransactionQuery query);
+    InventoryToolPage<InventoryTransactionToolItem> queryTransactions(
+            InventoryTransactionQuery query);
 }

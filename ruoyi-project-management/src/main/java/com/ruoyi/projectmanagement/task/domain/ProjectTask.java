@@ -9,9 +9,7 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 工作包内的任务节点；汇总任务由下级自动汇总，执行任务承载具体工作。
- */
+/** 工作包内的任务节点；汇总任务由下级自动汇总，执行任务承载具体工作。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectTask extends BaseEntity {

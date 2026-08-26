@@ -1,10 +1,9 @@
 package com.ruoyi.mes.purchase.domain.dto;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 /** 单个物料的供应商报价推荐结果。 */
 @Data
@@ -30,5 +29,4 @@ public class PurchaseQuoteRecommendation {
     private Integer leadTimeDays;
     private String expireDate;
     private String reason;
-
 }

@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -29,14 +29,13 @@ public class AgentToolKeyInterceptor implements HandlerInterceptor {
 
     /** 在进入任何工具 Controller 前执行统一鉴权。 */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+    public boolean preHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod()))
-            return true;
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true;
         String configuredKey = configService.selectConfigByKey(TOOL_KEY_CONFIG);
         String providedKey = request.getHeader(TOOL_KEY_HEADER);
-        if (matches(configuredKey, providedKey))
-            return true;
+        if (matches(configuredKey, providedKey)) return true;
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
@@ -47,9 +46,9 @@ public class AgentToolKeyInterceptor implements HandlerInterceptor {
 
     /** 使用常量时间比较，避免泄露工具密钥的前缀匹配信息。 */
     private boolean matches(String configuredKey, String providedKey) {
-        if (StringUtils.isBlank(configuredKey) || StringUtils.isBlank(providedKey))
-            return false;
-        return MessageDigest.isEqual(configuredKey.getBytes(StandardCharsets.UTF_8),
+        if (StringUtils.isBlank(configuredKey) || StringUtils.isBlank(providedKey)) return false;
+        return MessageDigest.isEqual(
+                configuredKey.getBytes(StandardCharsets.UTF_8),
                 providedKey.getBytes(StandardCharsets.UTF_8));
     }
 }

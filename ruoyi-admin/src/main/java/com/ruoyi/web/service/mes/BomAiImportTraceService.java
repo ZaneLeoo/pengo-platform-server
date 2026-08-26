@@ -2,19 +2,19 @@ package com.ruoyi.web.service.mes;
 
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.mes.base.domain.BomMaster;
+import com.ruoyi.mes.base.domain.BomVersion;
+import com.ruoyi.mes.base.mapper.BomMasterMapper;
+import com.ruoyi.mes.base.mapper.BomVersionMapper;
 import com.ruoyi.web.domain.BomAiImportTrace;
 import com.ruoyi.web.domain.dto.BomAiImportSourceFile;
 import com.ruoyi.web.domain.dto.BomAiImportedBom;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
 import com.ruoyi.web.domain.enums.BomAiImportTraceStatus;
 import com.ruoyi.web.mapper.mes.BomAiImportTraceMapper;
-import com.ruoyi.mes.base.domain.BomMaster;
-import com.ruoyi.mes.base.domain.BomVersion;
-import com.ruoyi.mes.base.mapper.BomMasterMapper;
-import com.ruoyi.mes.base.mapper.BomVersionMapper;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,15 +30,19 @@ import org.springframework.web.multipart.MultipartFile;
 /** 管理 BOM AI 导入的原始图纸、识别输出及最终 BOM 关联。 */
 @Service
 public class BomAiImportTraceService {
-    private static final DateTimeFormatter IMPORT_NO_TIME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final DateTimeFormatter IMPORT_NO_TIME =
+            DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     private final BomAiImportTraceMapper traceMapper;
     private final BomAiImportFileStorage fileStorage;
     private final BomMasterMapper bomMasterMapper;
     private final BomVersionMapper bomVersionMapper;
 
-    public BomAiImportTraceService(BomAiImportTraceMapper traceMapper, BomAiImportFileStorage fileStorage,
-            BomMasterMapper bomMasterMapper, BomVersionMapper bomVersionMapper) {
+    public BomAiImportTraceService(
+            BomAiImportTraceMapper traceMapper,
+            BomAiImportFileStorage fileStorage,
+            BomMasterMapper bomMasterMapper,
+            BomVersionMapper bomVersionMapper) {
         this.traceMapper = traceMapper;
         this.fileStorage = fileStorage;
         this.bomMasterMapper = bomMasterMapper;
@@ -66,7 +70,9 @@ public class BomAiImportTraceService {
             sourceFile.setMediaType(file.getContentType());
             sourceFile.setFileSize((long) content.length);
             sourceFile.setFileHash(sha256(content));
-            sourceFile.setStoragePath(fileStorage.persist(resourceId, extension(sourceFile.getOriginalFilename()), content));
+            sourceFile.setStoragePath(
+                    fileStorage.persist(
+                            resourceId, extension(sourceFile.getOriginalFilename()), content));
             sourceFiles.add(sourceFile);
         }
         BomAiImportTrace trace = new BomAiImportTrace();
@@ -82,14 +88,20 @@ public class BomAiImportTraceService {
     }
 
     /** 记录 Dify 文件 ID、原始输出和解析后的预览结果。 */
-    public void markRecognized(BomAiImportTrace trace, List<String> difyFileIds, Map<String, Object> outputs,
-            BomAiPreviewResult preview, String operator, long recognitionDurationMs) {
+    public void markRecognized(
+            BomAiImportTrace trace,
+            List<String> difyFileIds,
+            Map<String, Object> outputs,
+            BomAiPreviewResult preview,
+            String operator,
+            long recognitionDurationMs) {
         List<BomAiImportSourceFile> sourceFiles = parseSourceFiles(trace.getSourceFiles());
         for (int i = 0; i < sourceFiles.size() && i < difyFileIds.size(); i++) {
             sourceFiles.get(i).setDifyFileId(difyFileIds.get(i));
         }
         trace.setStatus(BomAiImportTraceStatus.RECOGNIZED.name());
-        trace.setRecognizedBomCount(preview.getDocuments() == null ? 0 : preview.getDocuments().size());
+        trace.setRecognizedBomCount(
+                preview.getDocuments() == null ? 0 : preview.getDocuments().size());
         trace.setRecognitionDurationMs(recognitionDurationMs);
         trace.setSourceFiles(JSON.toJSONString(sourceFiles));
         trace.setRawDifyOutputs(JSON.toJSONString(outputs));
@@ -108,7 +120,11 @@ public class BomAiImportTraceService {
     }
 
     /** 将确认导入生成的 BOM 关联回识别批次。 */
-    public void markImported(Long traceId, List<BomAiImportedBom> importedBoms, String operator, String reimportReason) {
+    public void markImported(
+            Long traceId,
+            List<BomAiImportedBom> importedBoms,
+            String operator,
+            String reimportReason) {
         if (traceId == null) {
             return;
         }
@@ -117,8 +133,8 @@ public class BomAiImportTraceService {
             throw new ServiceException("AI 导入追溯记录不存在：" + traceId);
         }
         if (!BomAiImportTraceStatus.IMPORTING.name().equals(trace.getStatus())) {
-            throw new ServiceException("当前 AI 导入批次不能确认导入，状态为："
-                    + BomAiImportTraceStatus.labelOf(trace.getStatus()));
+            throw new ServiceException(
+                    "当前 AI 导入批次不能确认导入，状态为：" + BomAiImportTraceStatus.labelOf(trace.getStatus()));
         }
         List<Long> masterIds = new ArrayList<>();
         List<Long> versionIds = new ArrayList<>();
@@ -143,8 +159,12 @@ public class BomAiImportTraceService {
             throw new ServiceException("缺少 AI 导入追溯记录");
         }
         expireStale();
-        int updated = traceMapper.transitionStatus(traceId, BomAiImportTraceStatus.RECOGNIZED.name(),
-                BomAiImportTraceStatus.IMPORTING.name(), operator);
+        int updated =
+                traceMapper.transitionStatus(
+                        traceId,
+                        BomAiImportTraceStatus.RECOGNIZED.name(),
+                        BomAiImportTraceStatus.IMPORTING.name(),
+                        operator);
         BomAiImportTrace trace = selectById(traceId);
         if (updated == 1) {
             return trace;
@@ -152,21 +172,25 @@ public class BomAiImportTraceService {
         if (BomAiImportTraceStatus.IMPORTED.name().equals(trace.getStatus())) {
             return trace;
         }
-        throw new ServiceException("当前 AI 导入批次不能确认导入，状态为："
-                + BomAiImportTraceStatus.labelOf(trace.getStatus()));
+        throw new ServiceException(
+                "当前 AI 导入批次不能确认导入，状态为：" + BomAiImportTraceStatus.labelOf(trace.getStatus()));
     }
 
     /** 主动放弃一条待确认记录。 */
     public void cancel(Long traceId, String operator) {
-        int updated = traceMapper.transitionStatus(traceId, BomAiImportTraceStatus.RECOGNIZED.name(),
-                BomAiImportTraceStatus.CANCELLED.name(), operator);
+        int updated =
+                traceMapper.transitionStatus(
+                        traceId,
+                        BomAiImportTraceStatus.RECOGNIZED.name(),
+                        BomAiImportTraceStatus.CANCELLED.name(),
+                        operator);
         if (updated != 1) {
             BomAiImportTrace trace = selectById(traceId);
             if (BomAiImportTraceStatus.CANCELLED.name().equals(trace.getStatus())) {
                 return;
             }
-            throw new ServiceException("只有待确认的 AI 导入批次可以放弃，当前状态："
-                    + BomAiImportTraceStatus.labelOf(trace.getStatus()));
+            throw new ServiceException(
+                    "只有待确认的 AI 导入批次可以放弃，当前状态：" + BomAiImportTraceStatus.labelOf(trace.getStatus()));
         }
         BomAiImportTrace trace = selectById(traceId);
         trace.setCancelledTime(new Date());
@@ -178,8 +202,9 @@ public class BomAiImportTraceService {
     public BomAiPreviewResult resume(Long traceId) {
         BomAiImportTrace trace = selectById(traceId);
         if (!BomAiImportTraceStatus.RECOGNIZED.name().equals(trace.getStatus())) {
-            throw new ServiceException("只有待确认的 AI 导入批次可以继续确认，当前状态："
-                    + BomAiImportTraceStatus.labelOf(trace.getStatus()));
+            throw new ServiceException(
+                    "只有待确认的 AI 导入批次可以继续确认，当前状态："
+                            + BomAiImportTraceStatus.labelOf(trace.getStatus()));
         }
         if (trace.getPreviewPayload() == null || trace.getPreviewPayload().isBlank()) {
             throw new ServiceException("该批次没有可恢复的识别预览");
@@ -191,7 +216,9 @@ public class BomAiImportTraceService {
         if (trace == null || trace.getSourceFingerprint() == null) {
             return null;
         }
-        return traceMapper.selectImportedByFingerprint(trace.getSourceFingerprint(), trace.getId()).stream()
+        return traceMapper
+                .selectImportedByFingerprint(trace.getSourceFingerprint(), trace.getId())
+                .stream()
                 .filter(this::hasLiveImportedBomVersion)
                 .findFirst()
                 .orElse(null);
@@ -199,14 +226,16 @@ public class BomAiImportTraceService {
 
     /** 只有历史批次实际生成的 BOM 版本仍存在时，才阻止相同原始文件再次导入。 */
     private boolean hasLiveImportedBomVersion(BomAiImportTrace trace) {
-        if (trace.getImportedBomVersionIds() == null || trace.getImportedBomVersionIds().isBlank()) {
+        if (trace.getImportedBomVersionIds() == null
+                || trace.getImportedBomVersionIds().isBlank()) {
             return false;
         }
         List<Long> versionIds = JSON.parseArray(trace.getImportedBomVersionIds(), Long.class);
         if (versionIds.isEmpty()) {
             return false;
         }
-        return versionIds.stream().anyMatch(versionId -> bomVersionMapper.selectBomVersionById(versionId) != null);
+        return versionIds.stream()
+                .anyMatch(versionId -> bomVersionMapper.selectBomVersionById(versionId) != null);
     }
 
     /** 查询一条 AI 导入追溯记录。 */
@@ -232,7 +261,8 @@ public class BomAiImportTraceService {
     }
 
     private void hydrateImportedBoms(BomAiImportTrace trace) {
-        if (trace.getImportedBomVersionIds() == null || trace.getImportedBomVersionIds().isBlank()) {
+        if (trace.getImportedBomVersionIds() == null
+                || trace.getImportedBomVersionIds().isBlank()) {
             trace.setImportedBoms(new ArrayList<>());
             return;
         }
@@ -262,10 +292,11 @@ public class BomAiImportTraceService {
     /** 获取某个原始图纸的安全本地路径及元数据。 */
     public StoredSourceFile resolveSourceFile(Long traceId, String resourceId) {
         BomAiImportTrace trace = selectById(traceId);
-        BomAiImportSourceFile sourceFile = parseSourceFiles(trace.getSourceFiles()).stream()
-                .filter(file -> resourceId.equals(file.getResourceId()))
-                .findFirst()
-                .orElseThrow(() -> new ServiceException("原始图纸不存在：" + resourceId));
+        BomAiImportSourceFile sourceFile =
+                parseSourceFiles(trace.getSourceFiles()).stream()
+                        .filter(file -> resourceId.equals(file.getResourceId()))
+                        .findFirst()
+                        .orElseThrow(() -> new ServiceException("原始图纸不存在：" + resourceId));
         Path path = fileStorage.resolve(sourceFile.getStoragePath());
         if (path == null) {
             throw new ServiceException("原始图纸文件已丢失：" + sourceFile.getOriginalFilename());
@@ -281,13 +312,18 @@ public class BomAiImportTraceService {
     }
 
     private String nextImportNo() {
-        return "BOMAI-" + IMPORT_NO_TIME.format(LocalDateTime.now()) + "-"
+        return "BOMAI-"
+                + IMPORT_NO_TIME.format(LocalDateTime.now())
+                + "-"
                 + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
 
     private String safeFilename(String filename) {
         String value = filename == null ? "图纸" : filename.replace('\\', '/');
-        value = value.substring(value.lastIndexOf('/') + 1).replaceAll("[\\r\\n\\/:*?\"<>|]", "_").trim();
+        value =
+                value.substring(value.lastIndexOf('/') + 1)
+                        .replaceAll("[\\r\\n\\/:*?\"<>|]", "_")
+                        .trim();
         return value.isBlank() ? "图纸" : value;
     }
 
@@ -305,11 +341,12 @@ public class BomAiImportTraceService {
     }
 
     private String batchFingerprint(List<BomAiImportSourceFile> sourceFiles) {
-        String canonical = sourceFiles.stream()
-                .map(BomAiImportSourceFile::getFileHash)
-                .filter(hash -> hash != null && !hash.isBlank())
-                .sorted(Comparator.naturalOrder())
-                .reduce("", (left, right) -> left + right + "\n");
+        String canonical =
+                sourceFiles.stream()
+                        .map(BomAiImportSourceFile::getFileHash)
+                        .filter(hash -> hash != null && !hash.isBlank())
+                        .sorted(Comparator.naturalOrder())
+                        .reduce("", (left, right) -> left + right + "\n");
         return sha256(canonical.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     }
 

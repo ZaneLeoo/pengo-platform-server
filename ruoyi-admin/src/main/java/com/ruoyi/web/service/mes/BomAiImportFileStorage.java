@@ -19,8 +19,11 @@ public class BomAiImportFileStorage {
         String profilePath = environment.getRequiredProperty("ruoyi.profile");
         Path profile = Path.of(profilePath).toAbsolutePath().normalize();
         Path parent = profile.getParent();
-        this.storageRoot = (parent == null ? profile.resolve("bom-ai-import-store")
-                : parent.resolve("bom-ai-import-store")).normalize();
+        this.storageRoot =
+                (parent == null
+                                ? profile.resolve("bom-ai-import-store")
+                                : parent.resolve("bom-ai-import-store"))
+                        .normalize();
     }
 
     /** 持久化原始图纸，并返回受控的相对路径。 */
@@ -64,7 +67,9 @@ public class BomAiImportFileStorage {
 
     private Path dailyDirectory() {
         LocalDate date = LocalDate.now();
-        return storageRoot.resolve(String.valueOf(date.getYear())).resolve(String.format("%02d", date.getMonthValue()))
+        return storageRoot
+                .resolve(String.valueOf(date.getYear()))
+                .resolve(String.format("%02d", date.getMonthValue()))
                 .resolve(String.format("%02d", date.getDayOfMonth()));
     }
 

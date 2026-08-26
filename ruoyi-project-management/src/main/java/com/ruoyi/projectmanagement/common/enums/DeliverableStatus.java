@@ -9,7 +9,16 @@ public enum DeliverableStatus {
     RETURNED("RETURNED");
 
     private final String code;
-    DeliverableStatus(String code) { this.code = code; }
-    public String getCode() { return code; }
-    public boolean matches(String value) { return code.equals(value); }
+
+    DeliverableStatus(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public boolean matches(String value) {
+        return code.equals(value);
+    }
 }

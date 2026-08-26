@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 项目交付物接口。
- */
+/** 项目交付物接口。 */
 @RestController
 @RequestMapping("/projectManagement/deliverable")
 public class ProjectDeliverableController extends BaseController {
@@ -82,7 +80,8 @@ public class ProjectDeliverableController extends BaseController {
     @PreAuthorize("@ss.hasPermi('projectManagement:workItem:edit')")
     @Log(title = "提交交付物", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/submit")
-    public AjaxResult submit(@PathVariable Long id, @RequestBody ProjectDeliverableSubmission entity) {
+    public AjaxResult submit(
+            @PathVariable Long id, @RequestBody ProjectDeliverableSubmission entity) {
         service.submit(id, entity, getUsername(), getUserId());
         return success();
     }
@@ -91,7 +90,8 @@ public class ProjectDeliverableController extends BaseController {
     @PreAuthorize("@ss.hasPermi('projectManagement:workItem:edit')")
     @Log(title = "审核交付物", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/review")
-    public AjaxResult review(@PathVariable Long id, @RequestBody ProjectDeliverableSubmission entity) {
+    public AjaxResult review(
+            @PathVariable Long id, @RequestBody ProjectDeliverableSubmission entity) {
         service.review(id, entity, getUsername());
         return success();
     }

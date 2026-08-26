@@ -19,18 +19,32 @@ public class PurchaseQuoteToolService {
     }
 
     /** 比较当前有效报价，不执行采购写操作。 */
-    public AgentToolResult<PurchaseQuoteCompareResult> compare(PurchaseQuoteCompareRequest request) {
+    public AgentToolResult<PurchaseQuoteCompareResult> compare(
+            PurchaseQuoteCompareRequest request) {
         PurchaseQuoteCompareResult result = quoteService.compare(request);
         PurchaseQuoteToolResultCode code = new PurchaseQuoteToolResultCode(result.getResultCode());
-        List<AgentToolIssue> issues = result.getIssues().stream()
-                .map(field -> AgentToolIssue.of(result.getResultCode(), field, result.getMessage(), field))
-                .toList();
+        List<AgentToolIssue> issues =
+                result.getIssues().stream()
+                        .map(
+                                field ->
+                                        AgentToolIssue.of(
+                                                result.getResultCode(),
+                                                field,
+                                                result.getMessage(),
+                                                field))
+                        .toList();
         return switch (result.getStatus()) {
-            case "READY" -> AgentToolResults.present(code, result.getMessage(), result, null,
-                    "请展示推荐供应商、可比单价、报价有效期、交货周期和其他候选项；"
-                            + "不要直接创建采购订单，等待用户确认后再调用采购订单准备工具。");
-            case "NEED_INPUT" -> AgentToolResults.needInput(code, result.getMessage(), issues, result);
-            case "NO_CANDIDATE" -> AgentToolResults.noResult(code, result.getMessage(), result, null);
+            case "READY" ->
+                    AgentToolResults.present(
+                            code,
+                            result.getMessage(),
+                            result,
+                            null,
+                            "请展示推荐供应商、可比单价、报价有效期、交货周期和其他候选项；" + "不要直接创建采购订单，等待用户确认后再调用采购订单准备工具。");
+            case "NEED_INPUT" ->
+                    AgentToolResults.needInput(code, result.getMessage(), issues, result);
+            case "NO_CANDIDATE" ->
+                    AgentToolResults.noResult(code, result.getMessage(), result, null);
             default -> AgentToolResults.rejected(code, result.getMessage(), issues, result);
         };
     }

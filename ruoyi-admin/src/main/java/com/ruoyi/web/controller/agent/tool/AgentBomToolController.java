@@ -24,7 +24,8 @@ public class AgentBomToolController {
 
     /** 查询 BOM 及版本摘要。 */
     @PostMapping("/query")
-    public AgentToolResult<List<BomToolItem>> query(@RequestBody(required = false) BomToolQuery request) {
+    public AgentToolResult<List<BomToolItem>> query(
+            @RequestBody(required = false) BomToolQuery request) {
         return toolService.query(request);
     }
 

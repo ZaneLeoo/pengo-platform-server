@@ -8,7 +8,16 @@ public enum WorkItemStatus {
     COMPLETED("COMPLETED");
 
     private final String code;
-    WorkItemStatus(String code) { this.code = code; }
-    public String getCode() { return code; }
-    public boolean matches(String value) { return code.equals(value); }
+
+    WorkItemStatus(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public boolean matches(String value) {
+        return code.equals(value);
+    }
 }

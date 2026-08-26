@@ -20,12 +20,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/mes/base/bomVersion")
 public class BomVersionController extends BaseController {
-    @Autowired
-    private IBomVersionService bomVersionService;
+    @Autowired private IBomVersionService bomVersionService;
 
-    /**
-     * 查询BOM版本列表。
-     */
+    /** 查询BOM版本列表。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:list')")
     @GetMapping("/list")
     public TableDataInfo list(BomVersion bomVersion) {
@@ -33,36 +30,29 @@ public class BomVersionController extends BaseController {
         return getDataTable(bomVersionService.selectBomVersionList(bomVersion));
     }
 
-    /**
-     * 获取BOM版本详情。
-     */
+    /** 获取BOM版本详情。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:query')")
     @GetMapping("/{id}")
     public AjaxResult getInfo(@PathVariable Long id) {
         return success(bomVersionService.selectBomVersionById(id));
     }
 
-    /**
-     * BOM版本完整性检查。
-     */
+    /** BOM版本完整性检查。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:query')")
     @GetMapping("/{id}/check")
     public AjaxResult check(@PathVariable Long id) {
         return success(bomVersionService.checkBomVersion(id));
     }
 
-    /**
-     * BOM版本差异对比。
-     */
+    /** BOM版本差异对比。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:query')")
     @GetMapping("/compare")
-    public AjaxResult compare(@RequestParam Long baseVersionId, @RequestParam Long targetVersionId) {
+    public AjaxResult compare(
+            @RequestParam Long baseVersionId, @RequestParam Long targetVersionId) {
         return success(bomVersionService.compareBomVersion(baseVersionId, targetVersionId));
     }
 
-    /**
-     * 新增BOM版本。
-     */
+    /** 新增BOM版本。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:add')")
     @Log(title = "BOM版本", businessType = BusinessType.INSERT)
     @PostMapping
@@ -74,9 +64,7 @@ public class BomVersionController extends BaseController {
         return toAjax(bomVersionService.insertBomVersion(bomVersion));
     }
 
-    /**
-     * 修改BOM版本。
-     */
+    /** 修改BOM版本。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:edit')")
     @Log(title = "BOM版本", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -128,9 +116,7 @@ public class BomVersionController extends BaseController {
         return toAjax(bomVersionService.setDefaultBomVersion(id, getUsername()));
     }
 
-    /**
-     * 删除BOM版本。
-     */
+    /** 删除BOM版本。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:remove')")
     @Log(title = "BOM版本", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
@@ -138,9 +124,7 @@ public class BomVersionController extends BaseController {
         return toAjax(bomVersionService.deleteBomVersionByIds(ids));
     }
 
-    /**
-     * 复制BOM版本及关联子件明细。
-     */
+    /** 复制BOM版本及关联子件明细。 */
     @PreAuthorize("@ss.hasPermi('base:bomVersion:add')")
     @Log(title = "BOM版本", businessType = BusinessType.INSERT)
     @PostMapping("/copy")
@@ -157,7 +141,8 @@ public class BomVersionController extends BaseController {
         String targetVersionCode = codeObj.toString();
         String targetVersionName = nameObj != null ? nameObj.toString() : "";
 
-        bomVersionService.copyBomVersion(sourceVersionId, targetVersionCode, targetVersionName, getUsername());
+        bomVersionService.copyBomVersion(
+                sourceVersionId, targetVersionCode, targetVersionName, getUsername());
         return success();
     }
 }

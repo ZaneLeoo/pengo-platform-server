@@ -16,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 项目任务接口。
- */
+/** 项目任务接口。 */
 @RestController
 @RequestMapping("/projectManagement/task")
 public class ProjectTaskController extends BaseController {
@@ -75,7 +73,8 @@ public class ProjectTaskController extends BaseController {
 
     /** 执行任务生命周期动作。 */
     @PostMapping("/{id}/lifecycle")
-    public AjaxResult lifecycle(@PathVariable Long id, @Validated @RequestBody LifecycleActionRequest request) {
+    public AjaxResult lifecycle(
+            @PathVariable Long id, @Validated @RequestBody LifecycleActionRequest request) {
         return toAjax(service.lifecycle(id, request, getUsername(), getUserId()));
     }
 }

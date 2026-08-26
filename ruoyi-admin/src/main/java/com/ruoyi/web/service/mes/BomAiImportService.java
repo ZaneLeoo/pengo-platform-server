@@ -31,6 +31,15 @@ import com.ruoyi.web.domain.dto.BomAiImportItem;
 import com.ruoyi.web.domain.dto.BomAiImportedBom;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
 import com.ruoyi.web.domain.enums.BomAiImportTraceStatus;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,19 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.math.BigDecimal;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-/**
- * BOM AI 图纸导入核心服务。
- */
+/** BOM AI 图纸导入核心服务。 */
 @Service
 public class BomAiImportService {
 
@@ -66,24 +63,15 @@ public class BomAiImportService {
     private static final int DEFAULT_MAX_FILE_SIZE_MB = 10;
     private static final int DEFAULT_MAX_REQUEST_SIZE_MB = 100;
 
-    @Autowired
-    private DifyWorkflowClient difyWorkflowClient;
-    @Autowired
-    private DifyAppConfigService difyAppConfigService;
-    @Autowired
-    private IMaterialService materialService;
-    @Autowired
-    private IBomMasterService bomMasterService;
-    @Autowired
-    private IBomVersionService bomVersionService;
-    @Autowired
-    private IBomItemService bomItemService;
-    @Autowired
-    private BomMasterMapper bomMasterMapper;
-    @Autowired
-    private BomAiImportTraceService bomAiImportTraceService;
-    @Autowired
-    private ISysConfigService sysConfigService;
+    @Autowired private DifyWorkflowClient difyWorkflowClient;
+    @Autowired private DifyAppConfigService difyAppConfigService;
+    @Autowired private IMaterialService materialService;
+    @Autowired private IBomMasterService bomMasterService;
+    @Autowired private IBomVersionService bomVersionService;
+    @Autowired private IBomItemService bomItemService;
+    @Autowired private BomMasterMapper bomMasterMapper;
+    @Autowired private BomAiImportTraceService bomAiImportTraceService;
+    @Autowired private ISysConfigService sysConfigService;
 
     /** 返回当前生效的导入限制，供前端展示和提前校验。 */
     public Map<String, Integer> getImportLimits() {
@@ -96,16 +84,12 @@ public class BomAiImportService {
         return result;
     }
 
-    /**
-     * 上传图纸 → Dify 识别 → 物料匹配 → 返回预览数据。
-     */
+    /** 上传图纸 → Dify 识别 → 物料匹配 → 返回预览数据。 */
     public BomAiPreviewResult recognize(MultipartFile[] files) {
         return recognize(files, "admin");
     }
 
-    /**
-     * 上传图纸、调用 Dify 并保存本次识别的可追溯信息。
-     */
+    /** 上传图纸、调用 Dify 并保存本次识别的可追溯信息。 */
     public BomAiPreviewResult recognize(MultipartFile[] files, String operator) {
         BomAiPreviewResult result = new BomAiPreviewResult();
         BomAiImportTrace trace = null;
@@ -135,12 +119,14 @@ public class BomAiImportService {
                     continue;
                 }
                 log.info("Uploading drawing {} to Dify", file.getOriginalFilename());
-                DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
-                        new DifyFileUploadRequest(
-                                file.getOriginalFilename(),
-                                file.getContentType(),
-                                file.getBytes(),
-                                DIFY_APP_CODE));
+                DifyFileUploadResult upload =
+                        difyWorkflowClient.uploadFile(
+                                settings,
+                                new DifyFileUploadRequest(
+                                        file.getOriginalFilename(),
+                                        file.getContentType(),
+                                        file.getBytes(),
+                                        DIFY_APP_CODE));
                 if (StringUtils.isBlank(upload.getId())) {
                     throw new ServiceException("Dify 文件上传未返回文件 ID：" + file.getOriginalFilename());
                 }
@@ -170,12 +156,15 @@ public class BomAiImportService {
                 // Dify 的文件变量即使只有一个 PDF，也要求以文件列表传入。
                 inputs.put("bom_pdf", List.of(difyPdf));
             }
-            DifyWorkflowRunResult workflow = difyWorkflowClient.runBlocking(settings,
-                    new DifyWorkflowRunRequest(inputs, DIFY_APP_CODE));
+            DifyWorkflowRunResult workflow =
+                    difyWorkflowClient.runBlocking(
+                            settings, new DifyWorkflowRunRequest(inputs, DIFY_APP_CODE));
 
             if (!"succeeded".equals(workflow.getStatus())) {
                 result.setSuccess(false);
-                result.setError("AI 识别失败：" + (workflow.getError() != null ? workflow.getError() : "工作流未成功返回"));
+                result.setError(
+                        "AI 识别失败："
+                                + (workflow.getError() != null ? workflow.getError() : "工作流未成功返回"));
                 return result;
             }
 
@@ -194,7 +183,12 @@ public class BomAiImportService {
                 result.setDuplicateImportedImportNo(duplicate.getImportNo());
             }
             result.setSuccess(true);
-            bomAiImportTraceService.markRecognized(trace, difyFileIds, outputs, result, operator,
+            bomAiImportTraceService.markRecognized(
+                    trace,
+                    difyFileIds,
+                    outputs,
+                    result,
+                    operator,
                     System.currentTimeMillis() - recognitionStartedAt);
 
         } catch (Exception e) {
@@ -213,17 +207,13 @@ public class BomAiImportService {
         return result;
     }
 
-    /**
-     * 确认导入 → 一次事务写入多个独立的 bom_master + bom_version + bom_item。
-     */
+    /** 确认导入 → 一次事务写入多个独立的 bom_master + bom_version + bom_item。 */
     @Transactional(rollbackFor = Exception.class)
     public BomAiConfirmResult confirm(BomAiImportConfirmRequest request) {
         return confirm(request, "admin");
     }
 
-    /**
-     * 确认导入并将生成的 BOM 回写至识别追溯记录。
-     */
+    /** 确认导入并将生成的 BOM 回写至识别追溯记录。 */
     @Transactional(rollbackFor = Exception.class)
     public BomAiConfirmResult confirm(BomAiImportConfirmRequest request, String operator) {
         BomAiConfirmResult result = new BomAiConfirmResult();
@@ -272,8 +262,10 @@ public class BomAiImportService {
             }
             BomAiImportTrace duplicate = bomAiImportTraceService.findImportedDuplicate(trace);
             if (duplicate != null && !request.isForceNewVersion()) {
-                throw new ServiceException("相同原始图纸已通过批次 " + duplicate.getImportNo()
-                        + " 导入，请查看已有 BOM；如确认内容有调整，请选择作为新版本导入");
+                throw new ServiceException(
+                        "相同原始图纸已通过批次 "
+                                + duplicate.getImportNo()
+                                + " 导入，请查看已有 BOM；如确认内容有调整，请选择作为新版本导入");
             }
             if (duplicate != null && StringUtils.isBlank(request.getReimportReason())) {
                 throw new ServiceException("作为新版本重复导入时必须填写原因");
@@ -285,8 +277,8 @@ public class BomAiImportService {
             for (BomAiDocument document : documents) {
                 importedBoms.add(persistDocument(document));
             }
-            bomAiImportTraceService.markImported(request.getTraceId(), importedBoms, operator,
-                    request.getReimportReason());
+            bomAiImportTraceService.markImported(
+                    request.getTraceId(), importedBoms, operator, request.getReimportReason());
             result.setSuccess(true);
             result.setBoms(importedBoms);
             if (!importedBoms.isEmpty()) {
@@ -297,7 +289,8 @@ public class BomAiImportService {
             }
         } catch (Exception e) {
             log.error("BOM AI 批量导入确认异常", e);
-            throw new ServiceException("导入失败：" + (e.getMessage() == null ? "数据库写入失败" : e.getMessage()));
+            throw new ServiceException(
+                    "导入失败：" + (e.getMessage() == null ? "数据库写入失败" : e.getMessage()));
         }
         return result;
     }
@@ -308,10 +301,12 @@ public class BomAiImportService {
             return prefix + "缺少母件信息";
         }
         BomAiImportHeader header = document.getHeader();
-        if (StringUtils.isBlank(firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode()))) {
+        if (StringUtils.isBlank(
+                firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode()))) {
             return prefix + "母件编码不能为空";
         }
-        if (StringUtils.isBlank(firstNonBlank(header.getFinalParentItemName(), header.getParentItemName()))) {
+        if (StringUtils.isBlank(
+                firstNonBlank(header.getFinalParentItemName(), header.getParentItemName()))) {
             return prefix + "母件名称不能为空";
         }
         List<BomAiImportItem> items = document.getItems();
@@ -323,13 +318,15 @@ public class BomAiImportService {
             if (item == null) {
                 return prefix + "第 " + (i + 1) + " 行为空";
             }
-            if (StringUtils.isBlank(firstNonBlank(item.getFinalItemCode(), item.getComponentCode()))) {
+            if (StringUtils.isBlank(
+                    firstNonBlank(item.getFinalItemCode(), item.getComponentCode()))) {
                 return prefix + "第 " + (i + 1) + " 行子件编码不能为空";
             }
             if (StringUtils.isBlank(firstNonBlank(item.getFinalItemName(), item.getItemName()))) {
                 return prefix + "第 " + (i + 1) + " 行子件名称不能为空";
             }
-            BigDecimal quantity = item.getFinalQuantity() != null ? item.getFinalQuantity() : item.getQuantity();
+            BigDecimal quantity =
+                    item.getFinalQuantity() != null ? item.getFinalQuantity() : item.getQuantity();
             if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
                 return prefix + "第 " + (i + 1) + " 行子件数量必须大于 0";
             }
@@ -337,13 +334,12 @@ public class BomAiImportService {
         return null;
     }
 
-    /**
-     * 以物料编码精确查询物料库并重新绑定，避免客户端提交的匹配结果失真。
-     */
+    /** 以物料编码精确查询物料库并重新绑定，避免客户端提交的匹配结果失真。 */
     private String bindMaterialsByCode(BomAiDocument document, int index) {
         String prefix = "第 " + (index + 1) + " 个 BOM";
         BomAiImportHeader header = document.getHeader();
-        String parentCode = firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode());
+        String parentCode =
+                firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode());
         Material parentMaterial = materialService.selectMaterialByCode(parentCode);
         if (!isEnabled(parentMaterial)) {
             return prefix + "母件物料编码未匹配或已停用：" + parentCode;
@@ -365,13 +361,20 @@ public class BomAiImportService {
 
     private BomAiImportedBom persistDocument(BomAiDocument document) {
         BomAiImportHeader header = document.getHeader();
-        String parentCode = firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode());
-        String parentName = firstNonBlank(header.getFinalParentItemName(), header.getParentItemName());
-        String parentSpec = firstNonBlank(header.getFinalParentItemSpec(), header.getParentItemSpec());
+        String parentCode =
+                firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode());
+        String parentName =
+                firstNonBlank(header.getFinalParentItemName(), header.getParentItemName());
+        String parentSpec =
+                firstNonBlank(header.getFinalParentItemSpec(), header.getParentItemSpec());
 
-        Long parentMaterialId = header.getFinalParentMaterialId() != null
-                ? header.getFinalParentMaterialId() : header.getMatchedMaterialId();
-        BomMaster master = bomMasterMapper.selectBomMasterByParentItem(parentMaterialId, BomType.MANUFACTURING.getCode());
+        Long parentMaterialId =
+                header.getFinalParentMaterialId() != null
+                        ? header.getFinalParentMaterialId()
+                        : header.getMatchedMaterialId();
+        BomMaster master =
+                bomMasterMapper.selectBomMasterByParentItem(
+                        parentMaterialId, BomType.MANUFACTURING.getCode());
         if (master == null) {
             String bomCode = generateBomCode(parentCode);
             master = new BomMaster();
@@ -388,7 +391,8 @@ public class BomAiImportService {
         }
         String bomCode = master.getBomCode();
 
-        BigDecimal baseQty = header.getFinalBaseQty() != null ? header.getFinalBaseQty() : header.getBaseQty();
+        BigDecimal baseQty =
+                header.getFinalBaseQty() != null ? header.getFinalBaseQty() : header.getBaseQty();
         BomVersion version = new BomVersion();
         version.setBomMasterId(master.getId());
         version.setVersionCode(nextVersionCode(master.getId()));
@@ -415,7 +419,10 @@ public class BomAiImportService {
             String name = firstNonBlank(aiItem.getFinalItemName(), aiItem.getItemName());
             String spec = firstNonBlank(aiItem.getFinalSpec(), aiItem.getSpec());
             String unit = firstNonBlank(aiItem.getFinalUnit(), aiItem.getUnit());
-            BigDecimal qty = aiItem.getFinalQuantity() != null ? aiItem.getFinalQuantity() : aiItem.getQuantity();
+            BigDecimal qty =
+                    aiItem.getFinalQuantity() != null
+                            ? aiItem.getFinalQuantity()
+                            : aiItem.getQuantity();
 
             bomItem.setComponentItemCode(code);
             bomItem.setComponentItemName(name);
@@ -463,7 +470,10 @@ public class BomAiImportService {
         List<Long> masterIds = JSON.parseArray(trace.getImportedBomMasterIds(), Long.class);
         List<Long> versionIds = JSON.parseArray(trace.getImportedBomVersionIds(), Long.class);
         List<BomAiImportedBom> imported = new ArrayList<>();
-        int count = Math.min(masterIds == null ? 0 : masterIds.size(), versionIds == null ? 0 : versionIds.size());
+        int count =
+                Math.min(
+                        masterIds == null ? 0 : masterIds.size(),
+                        versionIds == null ? 0 : versionIds.size());
         for (int i = 0; i < count; i++) {
             BomAiImportedBom item = new BomAiImportedBom();
             item.setBomMasterId(masterIds.get(i));
@@ -487,7 +497,8 @@ public class BomAiImportService {
         List<BomAiDocument> documents = parseDocuments(payload);
 
         // 兼容旧版工作流直接返回 document + items 的格式。
-        if (documents.isEmpty() && (outputs.get("document") != null || outputs.get("items") != null)) {
+        if (documents.isEmpty()
+                && (outputs.get("document") != null || outputs.get("items") != null)) {
             Map<String, Object> legacy = new LinkedHashMap<>();
             legacy.put("pageNo", 1);
             legacy.put("document", outputs.get("document"));
@@ -536,7 +547,8 @@ public class BomAiImportService {
         }
         for (String key : List.of("result", "output", "text", "answer")) {
             Object candidate = parseJsonValue(outputs.get(key));
-            if (candidate instanceof Map && ((Map<String, Object>) candidate).get("documents") != null) {
+            if (candidate instanceof Map
+                    && ((Map<String, Object>) candidate).get("documents") != null) {
                 return candidate;
             }
         }
@@ -774,7 +786,12 @@ public class BomAiImportService {
                 continue;
             }
             if (file.getSize() > limits.maxFileSizeMb * 1024L * 1024L) {
-                throw new ServiceException("文件 " + file.getOriginalFilename() + " 不能超过 " + limits.maxFileSizeMb + "MB");
+                throw new ServiceException(
+                        "文件 "
+                                + file.getOriginalFilename()
+                                + " 不能超过 "
+                                + limits.maxFileSizeMb
+                                + "MB");
             }
             totalSize += file.getSize();
             if (totalSize > limits.maxRequestSizeMb * 1024L * 1024L) {
@@ -829,7 +846,9 @@ public class BomAiImportService {
             return false;
         }
         String lowercaseName = filename.toLowerCase();
-        return lowercaseName.endsWith(".png") || lowercaseName.endsWith(".jpg") || lowercaseName.endsWith(".jpeg");
+        return lowercaseName.endsWith(".png")
+                || lowercaseName.endsWith(".jpg")
+                || lowercaseName.endsWith(".jpeg");
     }
 
     private ImportLimits resolveImportLimits() {
@@ -859,7 +878,8 @@ public class BomAiImportService {
         private final int maxFileSizeMb;
         private final int maxRequestSizeMb;
 
-        private ImportLimits(int maxImageCount, int maxPdfPages, int maxFileSizeMb, int maxRequestSizeMb) {
+        private ImportLimits(
+                int maxImageCount, int maxPdfPages, int maxFileSizeMb, int maxRequestSizeMb) {
             this.maxImageCount = maxImageCount;
             this.maxPdfPages = maxPdfPages;
             this.maxFileSizeMb = maxFileSizeMb;
@@ -881,13 +901,21 @@ public class BomAiImportService {
         if (v == null) return null;
         if (v instanceof BigDecimal) return (BigDecimal) v;
         if (v instanceof Number) return BigDecimal.valueOf(((Number) v).doubleValue());
-        try { return new BigDecimal(v.toString().trim()); } catch (Exception e) { return null; }
+        try {
+            return new BigDecimal(v.toString().trim());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private static Integer intObj(Object v) {
         if (v == null) return null;
         if (v instanceof Integer) return (Integer) v;
         if (v instanceof Number) return ((Number) v).intValue();
-        try { return Integer.parseInt(v.toString().trim()); } catch (Exception e) { return null; }
+        try {
+            return Integer.parseInt(v.toString().trim());
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

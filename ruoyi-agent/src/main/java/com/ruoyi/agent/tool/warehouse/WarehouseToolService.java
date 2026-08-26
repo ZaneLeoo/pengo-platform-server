@@ -25,20 +25,31 @@ public class WarehouseToolService {
         Warehouse condition = new Warehouse();
         condition.setWarehouseCode(query.getWarehouseCode());
         condition.setWarehouseName(query.getWarehouseName());
-        condition.setStatus(Boolean.TRUE.equals(query.getIncludeDisabled()) ? null : ENABLED_STATUS);
+        condition.setStatus(
+                Boolean.TRUE.equals(query.getIncludeDisabled()) ? null : ENABLED_STATUS);
         List<Warehouse> matched = warehouseService.selectList(condition);
-        List<WarehouseToolItem> data = matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
-        AgentToolMeta meta = AgentToolMeta.collection(matched.size(), matched.size() > MAX_RESULT_SIZE);
+        List<WarehouseToolItem> data =
+                matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
+        AgentToolMeta meta =
+                AgentToolMeta.collection(matched.size(), matched.size() > MAX_RESULT_SIZE);
         if (data.isEmpty()) {
-            return AgentToolResults.noResult(WarehouseToolResultCode.WAREHOUSE_NOT_FOUND,
-                    "未找到符合条件的仓库", data, meta);
+            return AgentToolResults.noResult(
+                    WarehouseToolResultCode.WAREHOUSE_NOT_FOUND, "未找到符合条件的仓库", data, meta);
         }
-        return AgentToolResults.success(WarehouseToolResultCode.WAREHOUSE_QUERY_SUCCESS,
-                "查询到 " + data.size() + " 个仓库", data, meta);
+        return AgentToolResults.success(
+                WarehouseToolResultCode.WAREHOUSE_QUERY_SUCCESS,
+                "查询到 " + data.size() + " 个仓库",
+                data,
+                meta);
     }
 
     private WarehouseToolItem toItem(Warehouse warehouse) {
-        return new WarehouseToolItem(warehouse.getId(), warehouse.getWarehouseCode(), warehouse.getWarehouseName(),
-                warehouse.getAddress(), warehouse.getManager(), warehouse.getStatus());
+        return new WarehouseToolItem(
+                warehouse.getId(),
+                warehouse.getWarehouseCode(),
+                warehouse.getWarehouseName(),
+                warehouse.getAddress(),
+                warehouse.getManager(),
+                warehouse.getStatus());
     }
 }

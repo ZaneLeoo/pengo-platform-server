@@ -1,8 +1,6 @@
 package com.ruoyi.projectmanagement.common.enums;
 
-/**
- * 问题跟踪状态。
- */
+/** 问题跟踪状态。 */
 public enum IssueStatus {
     OPEN("OPEN"),
     PROCESSING("PROCESSING"),
@@ -11,9 +9,15 @@ public enum IssueStatus {
 
     private final String code;
 
-    IssueStatus(String code) { this.code = code; }
+    IssueStatus(String code) {
+        this.code = code;
+    }
 
-    public String getCode() { return code; }
+    public String getCode() {
+        return code;
+    }
 
-    public boolean matches(String value) { return code.equals(value); }
+    public boolean matches(String value) {
+        return code.equals(value);
+    }
 }

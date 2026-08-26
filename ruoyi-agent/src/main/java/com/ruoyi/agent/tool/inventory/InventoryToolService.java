@@ -22,35 +22,45 @@ public class InventoryToolService {
     }
 
     /** 查询库存余额。 */
-    public AgentToolResult<List<InventoryBalanceToolItem>> queryBalances(InventoryBalanceQuery request) {
-        InventoryBalanceQuery query = request == null
-                ? new InventoryBalanceQuery(null, null, null, null, null, null, null, null)
-                : request;
-        return pageResult(inventoryQueryService.queryBalances(query),
+    public AgentToolResult<List<InventoryBalanceToolItem>> queryBalances(
+            InventoryBalanceQuery request) {
+        InventoryBalanceQuery query =
+                request == null
+                        ? new InventoryBalanceQuery(null, null, null, null, null, null, null, null)
+                        : request;
+        return pageResult(
+                inventoryQueryService.queryBalances(query),
                 InventoryToolResultCode.INVENTORY_BALANCE_QUERY_SUCCESS,
-                InventoryToolResultCode.INVENTORY_BALANCE_NOT_FOUND, "库存余额");
+                InventoryToolResultCode.INVENTORY_BALANCE_NOT_FOUND,
+                "库存余额");
     }
 
     /** 查询库存变动流水。 */
-    public AgentToolResult<List<InventoryTransactionToolItem>> queryTransactions(InventoryTransactionQuery request) {
-        InventoryTransactionQuery query = request == null
-                ? new InventoryTransactionQuery(null, null, null, null, null, null, null, null, null)
-                : request;
-        return pageResult(inventoryQueryService.queryTransactions(query),
+    public AgentToolResult<List<InventoryTransactionToolItem>> queryTransactions(
+            InventoryTransactionQuery request) {
+        InventoryTransactionQuery query =
+                request == null
+                        ? new InventoryTransactionQuery(
+                                null, null, null, null, null, null, null, null, null)
+                        : request;
+        return pageResult(
+                inventoryQueryService.queryTransactions(query),
                 InventoryToolResultCode.INVENTORY_TRANSACTION_QUERY_SUCCESS,
-                InventoryToolResultCode.INVENTORY_TRANSACTION_NOT_FOUND, "库存流水");
+                InventoryToolResultCode.INVENTORY_TRANSACTION_NOT_FOUND,
+                "库存流水");
     }
 
     /** 统一分页结果和无数据语义。 */
-    private <T> AgentToolResult<List<T>> pageResult(InventoryToolPage<T> page,
+    private <T> AgentToolResult<List<T>> pageResult(
+            InventoryToolPage<T> page,
             InventoryToolResultCode successCode,
             InventoryToolResultCode emptyCode,
             String subject) {
-        AgentToolMeta meta = AgentToolMeta.page(page.getPageNum(), page.getPageSize(), page.getTotal(),
-                page.isHasMore());
+        AgentToolMeta meta =
+                AgentToolMeta.page(
+                        page.getPageNum(), page.getPageSize(), page.getTotal(), page.isHasMore());
         if (page.getData().isEmpty()) {
-            return AgentToolResults.noResult(emptyCode, "未找到符合条件的" + subject,
-                    page.getData(), meta);
+            return AgentToolResults.noResult(emptyCode, "未找到符合条件的" + subject, page.getData(), meta);
         }
         return AgentToolResults.success(successCode, subject + "查询成功", page.getData(), meta);
     }

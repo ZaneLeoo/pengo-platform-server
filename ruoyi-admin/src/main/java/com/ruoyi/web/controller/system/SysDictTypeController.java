@@ -1,7 +1,15 @@
 package com.ruoyi.web.controller.system;
 
-import java.util.List;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysDictType;
+import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.service.ISysDictTypeService;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -13,14 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.entity.SysDictType;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.service.ISysDictTypeService;
 
 /**
  * 数据字典信息
@@ -30,8 +30,7 @@ import com.ruoyi.system.service.ISysDictTypeService;
 @RestController
 @RequestMapping("/system/dict/type")
 public class SysDictTypeController extends BaseController {
-    @Autowired
-    private ISysDictTypeService dictTypeService;
+    @Autowired private ISysDictTypeService dictTypeService;
 
     @PreAuthorize("@ss.hasPermi('system:dict:list')")
     @GetMapping("/list")
@@ -50,18 +49,14 @@ public class SysDictTypeController extends BaseController {
         util.exportExcel(response, list, "字典类型");
     }
 
-    /**
-     * 查询字典类型详细
-     */
+    /** 查询字典类型详细 */
     @PreAuthorize("@ss.hasPermi('system:dict:query')")
     @GetMapping(value = "/{dictId}")
     public AjaxResult getInfo(@PathVariable Long dictId) {
         return success(dictTypeService.selectDictTypeById(dictId));
     }
 
-    /**
-     * 新增字典类型
-     */
+    /** 新增字典类型 */
     @PreAuthorize("@ss.hasPermi('system:dict:add')")
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
@@ -73,9 +68,7 @@ public class SysDictTypeController extends BaseController {
         return toAjax(dictTypeService.insertDictType(dict));
     }
 
-    /**
-     * 修改字典类型
-     */
+    /** 修改字典类型 */
     @PreAuthorize("@ss.hasPermi('system:dict:edit')")
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -87,9 +80,7 @@ public class SysDictTypeController extends BaseController {
         return toAjax(dictTypeService.updateDictType(dict));
     }
 
-    /**
-     * 删除字典类型
-     */
+    /** 删除字典类型 */
     @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
@@ -98,9 +89,7 @@ public class SysDictTypeController extends BaseController {
         return success();
     }
 
-    /**
-     * 刷新字典缓存
-     */
+    /** 刷新字典缓存 */
     @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
@@ -109,9 +98,7 @@ public class SysDictTypeController extends BaseController {
         return success();
     }
 
-    /**
-     * 获取字典选择框列表
-     */
+    /** 获取字典选择框列表 */
     @GetMapping("/optionselect")
     public AjaxResult optionselect() {
         List<SysDictType> dictTypes = dictTypeService.selectDictTypeAll();

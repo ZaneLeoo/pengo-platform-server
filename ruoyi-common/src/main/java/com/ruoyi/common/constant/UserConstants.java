@@ -6,9 +6,7 @@ package com.ruoyi.common.constant;
  * @author ruoyi
  */
 public class UserConstants {
-    /**
-     * 平台内系统用户的唯一标志
-     */
+    /** 平台内系统用户的唯一标志 */
     public static final String SYS_USER = "SYS_USER";
 
     /** 正常状态 */
@@ -54,27 +52,26 @@ public class UserConstants {
     public static final String TYPE_BUTTON = "F";
 
     /** Layout组件标识 */
-    public final static String LAYOUT = "Layout";
+    public static final String LAYOUT = "Layout";
 
     /** ParentView组件标识 */
-    public final static String PARENT_VIEW = "ParentView";
+    public static final String PARENT_VIEW = "ParentView";
 
     /** InnerLink组件标识 */
-    public final static String INNER_LINK = "InnerLink";
+    public static final String INNER_LINK = "InnerLink";
 
     /** 校验是否唯一的返回标识 */
-    public final static boolean UNIQUE = true;
-    public final static boolean NOT_UNIQUE = false;
+    public static final boolean UNIQUE = true;
 
-    /**
-     * 用户名长度限制
-     */
+    public static final boolean NOT_UNIQUE = false;
+
+    /** 用户名长度限制 */
     public static final int USERNAME_MIN_LENGTH = 2;
+
     public static final int USERNAME_MAX_LENGTH = 20;
 
-    /**
-     * 密码长度限制
-     */
+    /** 密码长度限制 */
     public static final int PASSWORD_MIN_LENGTH = 5;
+
     public static final int PASSWORD_MAX_LENGTH = 20;
 }

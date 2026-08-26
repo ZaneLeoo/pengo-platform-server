@@ -1,10 +1,9 @@
 package com.ruoyi.mes.purchase.domain.dto;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 /** 返回给 AI 的可比较报价候选项。 */
 @Data
@@ -26,5 +25,4 @@ public class PurchaseQuoteCandidate {
     private BigDecimal totalAmount;
     private Integer leadTimeDays;
     private String expireDate;
-
 }

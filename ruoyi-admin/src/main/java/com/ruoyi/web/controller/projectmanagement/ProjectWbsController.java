@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 项目WBS接口。
- */
+/** 项目WBS接口。 */
 @RestController
 @RequestMapping("/projectManagement/wbs")
 public class ProjectWbsController extends BaseController {
@@ -49,7 +47,8 @@ public class ProjectWbsController extends BaseController {
 
     /** 创建工作包并一并定义初始交付要求。 */
     @PostMapping("/work-package")
-    public AjaxResult addWorkPackage(@Validated @RequestBody ProjectWorkPackageCreateRequest request) {
+    public AjaxResult addWorkPackage(
+            @Validated @RequestBody ProjectWorkPackageCreateRequest request) {
         request.getWorkPackage().setCreateBy(getUsername());
         return AjaxResult.success("新增成功", service.addWorkPackage(request, getUsername()));
     }

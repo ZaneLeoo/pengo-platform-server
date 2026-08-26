@@ -6,9 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-/**
- * 项目人员档案数据访问接口。
- */
+/** 项目人员档案数据访问接口。 */
 @Mapper
 public interface ProjectPersonMapper {
 
@@ -25,8 +23,8 @@ public interface ProjectPersonMapper {
     ProjectPerson selectProjectPersonByCode(String personCode);
 
     /** 查询未被其他人员档案绑定的启用系统账号。 */
-    List<ProjectUserOption> selectAvailableUserOptions(@Param("personId") Long personId,
-            @Param("keyword") String keyword);
+    List<ProjectUserOption> selectAvailableUserOptions(
+            @Param("personId") Long personId, @Param("keyword") String keyword);
 
     /** 查询已经绑定到其他人员档案的记录。 */
     ProjectPerson selectProjectPersonByUserId(Long userId);

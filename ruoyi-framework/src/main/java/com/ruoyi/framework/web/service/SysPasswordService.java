@@ -1,10 +1,5 @@
 package com.ruoyi.framework.web.service;
 
-import java.util.concurrent.TimeUnit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -12,6 +7,11 @@ import com.ruoyi.common.exception.user.UserPasswordNotMatchException;
 import com.ruoyi.common.exception.user.UserPasswordRetryLimitExceedException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.security.context.AuthenticationContextHolder;
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Component;
 
 /**
  * 登录密码方法
@@ -20,8 +20,7 @@ import com.ruoyi.framework.security.context.AuthenticationContextHolder;
  */
 @Component
 public class SysPasswordService {
-    @Autowired
-    private RedisCache redisCache;
+    @Autowired private RedisCache redisCache;
 
     @Value(value = "${user.password.maxRetryCount}")
     private int maxRetryCount;
@@ -32,8 +31,7 @@ public class SysPasswordService {
     /**
      * 登录账户密码错误次数缓存键名
      *
-     * @param username
-     *            用户名
+     * @param username 用户名
      * @return 缓存键key
      */
     private String getCacheKey(String username) {
@@ -41,7 +39,8 @@ public class SysPasswordService {
     }
 
     public void validate(SysUser user) {
-        Authentication usernamePasswordAuthenticationToken = AuthenticationContextHolder.getContext();
+        Authentication usernamePasswordAuthenticationToken =
+                AuthenticationContextHolder.getContext();
         String username = usernamePasswordAuthenticationToken.getName();
         String password = usernamePasswordAuthenticationToken.getCredentials().toString();
 
@@ -57,7 +56,8 @@ public class SysPasswordService {
 
         if (!matches(user, password)) {
             retryCount = retryCount + 1;
-            redisCache.setCacheObject(getCacheKey(username), retryCount, lockTime, TimeUnit.MINUTES);
+            redisCache.setCacheObject(
+                    getCacheKey(username), retryCount, lockTime, TimeUnit.MINUTES);
             throw new UserPasswordNotMatchException();
         } else {
             clearLoginRecordCache(username);

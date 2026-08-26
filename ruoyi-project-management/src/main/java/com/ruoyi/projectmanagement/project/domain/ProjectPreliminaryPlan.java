@@ -8,9 +8,7 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 立项申请中的WBS概要。
- */
+/** 立项申请中的WBS概要。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectPreliminaryPlan extends BaseEntity {
@@ -20,8 +18,7 @@ public class ProjectPreliminaryPlan extends BaseEntity {
     /** 所属项目ID，由接口路径或旧记录提供。 */
     private Long projectId;
 
-    @NotBlank
-    private String outlineName;
+    @NotBlank private String outlineName;
 
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -31,8 +28,7 @@ public class ProjectPreliminaryPlan extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    @NotBlank
-    private String milestoneName;
+    @NotBlank private String milestoneName;
 
     private String outlineDescription;
 

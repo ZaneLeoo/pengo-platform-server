@@ -1,23 +1,22 @@
 package com.ruoyi.mes.purchase.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ruoyi.mes.base.domain.UnitGroupDetail;
 import com.ruoyi.mes.base.dto.ConversionResult;
 import com.ruoyi.mes.base.service.UnitConversionService;
 import com.ruoyi.mes.purchase.domain.PurchaseOrder;
 import com.ruoyi.mes.purchase.domain.PurchaseOrderLine;
 import com.ruoyi.mes.purchase.mapper.PurchaseOrderMapper;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
 
 class PurchaseOrderServiceImplTest {
 
@@ -25,7 +24,8 @@ class PurchaseOrderServiceImplTest {
     void savesPurchaseLineUsingInputUnitAndInputQuantity() {
         PurchaseOrderMapper orderMapper = mock(PurchaseOrderMapper.class);
         UnitConversionService conversionService = mock(UnitConversionService.class);
-        PurchaseOrderServiceImpl service = new PurchaseOrderServiceImpl(orderMapper, conversionService);
+        PurchaseOrderServiceImpl service =
+                new PurchaseOrderServiceImpl(orderMapper, conversionService);
 
         PurchaseOrderLine line = new PurchaseOrderLine();
         line.setLineNo(1);
@@ -38,10 +38,8 @@ class PurchaseOrderServiceImplTest {
         line.setInputQty(new BigDecimal("2"));
         line.setUnitPrice(new BigDecimal("12.50"));
 
-        List<UnitGroupDetail> details = List.of(
-                detail("SQ", "平方米"),
-                detail("ROL", "卷"),
-                detail("BOX", "箱"));
+        List<UnitGroupDetail> details =
+                List.of(detail("SQ", "平方米"), detail("ROL", "卷"), detail("BOX", "箱"));
         Map<String, ConversionResult> results = new LinkedHashMap<>();
         results.put("SQ", result("SQ", "平方米", "157.4"));
         results.put("ROL", result("ROL", "卷", "2"));
@@ -74,7 +72,8 @@ class PurchaseOrderServiceImplTest {
     void savesPurchaseLineWithTwoUnitGroupMembers() {
         PurchaseOrderMapper orderMapper = mock(PurchaseOrderMapper.class);
         UnitConversionService conversionService = mock(UnitConversionService.class);
-        PurchaseOrderServiceImpl service = new PurchaseOrderServiceImpl(orderMapper, conversionService);
+        PurchaseOrderServiceImpl service =
+                new PurchaseOrderServiceImpl(orderMapper, conversionService);
 
         PurchaseOrderLine line = new PurchaseOrderLine();
         line.setLineNo(1);
@@ -88,9 +87,7 @@ class PurchaseOrderServiceImplTest {
         line.setUnit3Qty(new BigDecimal("99"));
         line.setUnitPrice(new BigDecimal("8"));
 
-        List<UnitGroupDetail> details = List.of(
-                detail("M", "米"),
-                detail("ROLL", "卷"));
+        List<UnitGroupDetail> details = List.of(detail("M", "米"), detail("ROLL", "卷"));
         Map<String, ConversionResult> results = new LinkedHashMap<>();
         results.put("M", result("M", "米", "5"));
         results.put("ROLL", result("ROLL", "卷", "0.5"));

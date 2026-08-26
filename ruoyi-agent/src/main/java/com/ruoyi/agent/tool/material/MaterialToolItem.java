@@ -20,5 +20,4 @@ public class MaterialToolItem {
     private String unit;
     private String version;
     private String status;
-
 }

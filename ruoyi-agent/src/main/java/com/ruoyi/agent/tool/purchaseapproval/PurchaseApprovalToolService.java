@@ -33,16 +33,28 @@ public class PurchaseApprovalToolService {
     private AgentToolResult<PurchaseApprovalDraft> prepare(Supplier supplier) {
         try {
             PurchaseApprovalDraft draft = supplier.get();
-            return AgentToolResults.confirm(PurchaseApprovalToolResultCode.PURCHASE_APPROVAL_READY,
-                    "单据审核信息已准备", draft, "由 agent-ui 展示审核确认卡片；未获得用户确认前禁止审核。");
+            return AgentToolResults.confirm(
+                    PurchaseApprovalToolResultCode.PURCHASE_APPROVAL_READY,
+                    "单据审核信息已准备",
+                    draft,
+                    "由 agent-ui 展示审核确认卡片；未获得用户确认前禁止审核。");
         } catch (ServiceException exception) {
-            AgentToolIssue issue = AgentToolIssue.of("APPROVAL_VALIDATION_FAILED", "documentCode",
-                    exception.getMessage(), "核对单据编号、状态和审核前置信息");
-            return AgentToolResults.rejected(PurchaseApprovalToolResultCode.PURCHASE_APPROVAL_REJECTED,
-                    exception.getMessage(), List.of(issue), null);
+            AgentToolIssue issue =
+                    AgentToolIssue.of(
+                            "APPROVAL_VALIDATION_FAILED",
+                            "documentCode",
+                            exception.getMessage(),
+                            "核对单据编号、状态和审核前置信息");
+            return AgentToolResults.rejected(
+                    PurchaseApprovalToolResultCode.PURCHASE_APPROVAL_REJECTED,
+                    exception.getMessage(),
+                    List.of(issue),
+                    null);
         }
     }
 
     @FunctionalInterface
-    private interface Supplier { PurchaseApprovalDraft get(); }
+    private interface Supplier {
+        PurchaseApprovalDraft get();
+    }
 }

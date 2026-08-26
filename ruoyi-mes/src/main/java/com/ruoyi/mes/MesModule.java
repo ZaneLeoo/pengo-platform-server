@@ -9,8 +9,7 @@ public final class MesModule {
 
     private static final String MODULE_NAME = "ruoyi-mes";
 
-    private MesModule() {
-    }
+    private MesModule() {}
 
     /**
      * 获取模块名称。

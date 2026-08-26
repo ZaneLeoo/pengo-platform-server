@@ -1,13 +1,12 @@
 package com.ruoyi.mes.purchase.domain.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /** AI 查询库存流水的筛选条件。 */
 @Data
@@ -22,6 +21,6 @@ public class InventoryTransactionQuery {
     private LocalDate beginDate;
     private LocalDate endDate;
     private @Min(value = 1, message = "页码必须大于0") Integer pageNum;
-    private @Min(value = 1, message = "每页数量必须大于0") @Max(value = 50, message = "每页数量不能超过50") Integer pageSize;
-
+    private @Min(value = 1, message = "每页数量必须大于0") @Max(value = 50, message = "每页数量不能超过50") Integer
+            pageSize;
 }

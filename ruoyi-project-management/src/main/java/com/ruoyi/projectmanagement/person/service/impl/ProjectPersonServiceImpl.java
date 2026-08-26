@@ -1,7 +1,7 @@
 package com.ruoyi.projectmanagement.person.service.impl;
 
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.domain.ProjectUserOption;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
@@ -9,9 +9,7 @@ import com.ruoyi.projectmanagement.person.service.IProjectPersonService;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
-/**
- * 项目人员档案业务实现。
- */
+/** 项目人员档案业务实现。 */
 @Service
 public class ProjectPersonServiceImpl implements IProjectPersonService {
     private final ProjectPersonMapper personMapper;
@@ -44,7 +42,8 @@ public class ProjectPersonServiceImpl implements IProjectPersonService {
     public boolean checkPersonCodeUnique(ProjectPerson person) {
         Long personId = StringUtils.isNull(person.getPersonId()) ? -1L : person.getPersonId();
         ProjectPerson existing = personMapper.selectProjectPersonByCode(person.getPersonCode());
-        return StringUtils.isNull(existing) || existing.getPersonId().longValue() == personId.longValue();
+        return StringUtils.isNull(existing)
+                || existing.getPersonId().longValue() == personId.longValue();
     }
 
     @Override

@@ -25,14 +25,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class BomVersionServiceImplTest {
 
-    @Mock
-    private BomVersionMapper bomVersionMapper;
+    @Mock private BomVersionMapper bomVersionMapper;
 
-    @Mock
-    private BomItemMapper bomItemMapper;
+    @Mock private BomItemMapper bomItemMapper;
 
-    @InjectMocks
-    private BomVersionServiceImpl service;
+    @InjectMocks private BomVersionServiceImpl service;
 
     @Test
     void activatesOnlyCompleteDraftVersion() {
@@ -53,7 +50,8 @@ class BomVersionServiceImplTest {
         BomVersion version = version("EFFECTIVE", "APPROVED", 0);
         when(bomVersionMapper.selectBomVersionById(1L)).thenReturn(version);
 
-        ServiceException error = assertThrows(ServiceException.class, () -> service.updateBomVersion(version));
+        ServiceException error =
+                assertThrows(ServiceException.class, () -> service.updateBomVersion(version));
 
         assertEquals("已审核的BOM版本不能编辑，请先弃审", error.getMessage());
         verify(bomVersionMapper, never()).updateBomVersion(any());
@@ -61,10 +59,13 @@ class BomVersionServiceImplTest {
 
     @Test
     void refusesToDeleteNonDraftVersion() {
-        when(bomVersionMapper.selectBomVersionById(1L)).thenReturn(version("EFFECTIVE", "PENDING", 0));
+        when(bomVersionMapper.selectBomVersionById(1L))
+                .thenReturn(version("EFFECTIVE", "PENDING", 0));
 
-        ServiceException error = assertThrows(ServiceException.class,
-                () -> service.deleteBomVersionByIds(new Long[] { 1L }));
+        ServiceException error =
+                assertThrows(
+                        ServiceException.class,
+                        () -> service.deleteBomVersionByIds(new Long[] {1L}));
 
         assertEquals("只有草稿状态的BOM版本可以删除", error.getMessage());
         verify(bomItemMapper, never()).deleteBomItemByVersionIds(any());

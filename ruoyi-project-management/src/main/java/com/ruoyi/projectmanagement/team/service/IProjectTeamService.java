@@ -4,9 +4,7 @@ import com.ruoyi.projectmanagement.team.domain.ProjectMember;
 import com.ruoyi.projectmanagement.team.domain.ProjectRole;
 import java.util.List;
 
-/**
- * 项目团队服务接口。
- */
+/** 项目团队服务接口。 */
 public interface IProjectTeamService {
 
     /** 查询项目成员列表。 */

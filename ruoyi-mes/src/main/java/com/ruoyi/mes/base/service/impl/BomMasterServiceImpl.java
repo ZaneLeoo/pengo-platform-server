@@ -6,9 +6,9 @@ import com.ruoyi.mes.base.mapper.BomItemMapper;
 import com.ruoyi.mes.base.mapper.BomMasterMapper;
 import com.ruoyi.mes.base.mapper.BomVersionMapper;
 import com.ruoyi.mes.base.service.IBomMasterService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 /**
  * BOM主表业务处理。
@@ -17,14 +17,11 @@ import java.util.List;
  */
 @Service
 public class BomMasterServiceImpl implements IBomMasterService {
-    @Autowired
-    private BomMasterMapper bomMasterMapper;
+    @Autowired private BomMasterMapper bomMasterMapper;
 
-    @Autowired
-    private BomVersionMapper bomVersionMapper;
+    @Autowired private BomVersionMapper bomVersionMapper;
 
-    @Autowired
-    private BomItemMapper bomItemMapper;
+    @Autowired private BomItemMapper bomItemMapper;
 
     @Override
     public List<BomMaster> selectBomMasterList(BomMaster bomMaster) {
@@ -32,7 +29,8 @@ public class BomMasterServiceImpl implements IBomMasterService {
     }
 
     @Override
-    public List<BomMaster> selectBomMasterListForAgent(String keyword, String bomType, String status) {
+    public List<BomMaster> selectBomMasterListForAgent(
+            String keyword, String bomType, String status) {
         return bomMasterMapper.selectBomMasterListForAgent(keyword, bomType, status);
     }
 

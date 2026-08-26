@@ -53,8 +53,11 @@ public class PurchaseFlowAutomationService {
     private final PurchaseReceiptMapper receiptMapper;
     private final AutomationActionMapper actionMapper;
 
-    public PurchaseFlowAutomationService(IPurchaseFlowService flowService, PurchaseDocumentDraftService draftService,
-            PurchaseReceiptMapper receiptMapper, AutomationActionMapper actionMapper) {
+    public PurchaseFlowAutomationService(
+            IPurchaseFlowService flowService,
+            PurchaseDocumentDraftService draftService,
+            PurchaseReceiptMapper receiptMapper,
+            AutomationActionMapper actionMapper) {
         this.flowService = flowService;
         this.draftService = draftService;
         this.receiptMapper = receiptMapper;
@@ -62,7 +65,8 @@ public class PurchaseFlowAutomationService {
     }
 
     /** 查询仍可到货的已审核采购订单明细。 */
-    public List<ReceiptReferenceLine> receiptCandidates(String orderCode, String supplierName, String materialCode) {
+    public List<ReceiptReferenceLine> receiptCandidates(
+            String orderCode, String supplierName, String materialCode) {
         return flowService.selectReceiptReferenceLines(orderCode, supplierName, materialCode);
     }
 
@@ -72,7 +76,8 @@ public class PurchaseFlowAutomationService {
             throw new ServiceException("缺少到货明细 lines");
         String receiptDate = defaultDate(request.getReceiptDate(), "receiptDate");
         Map<Long, ReceiptReferenceLine> candidates = new HashMap<>();
-        receiptCandidates(null, null, null).forEach(item -> candidates.put(item.getSourceOrderLineId(), item));
+        receiptCandidates(null, null, null)
+                .forEach(item -> candidates.put(item.getSourceOrderLineId(), item));
         List<PurchaseReceiptLine> lines = new ArrayList<>();
         String supplierCode = null;
         String supplierName = null;
@@ -83,11 +88,16 @@ public class PurchaseFlowAutomationService {
                 throw new ServiceException("第 " + (index + 1) + " 行缺少 sourceOrderLineId");
             ReceiptReferenceLine source = candidates.get(input.getSourceOrderLineId());
             if (source == null)
-                throw new ServiceException("采购订单行 " + input.getSourceOrderLineId() + " 不存在或已无可到货数量");
-            requirePositive(input.getReceivedQuantity(), "第 " + (index + 1) + " 行 receivedQuantity");
+                throw new ServiceException(
+                        "采购订单行 " + input.getSourceOrderLineId() + " 不存在或已无可到货数量");
+            requirePositive(
+                    input.getReceivedQuantity(), "第 " + (index + 1) + " 行 receivedQuantity");
             if (input.getReceivedQuantity().compareTo(source.getRemainingQuantity()) > 0)
-                throw new ServiceException("物料 " + source.getMaterialCode() + " 到货数量不能超过剩余可到货数量 "
-                        + source.getRemainingQuantity());
+                throw new ServiceException(
+                        "物料 "
+                                + source.getMaterialCode()
+                                + " 到货数量不能超过剩余可到货数量 "
+                                + source.getRemainingQuantity());
             if (supplierCode != null && !supplierCode.equals(source.getSupplierCode()))
                 throw new ServiceException("一张到货单只能包含同一供应商的采购订单明细");
             supplierCode = source.getSupplierCode();
@@ -107,7 +117,9 @@ public class PurchaseFlowAutomationService {
 
     /** 根据已审核到货单准备质检结果，不写入业务单据。 */
     public InspectionDraft prepareInspection(InspectionDraftRequest request) {
-        if (request == null || (request.getReceiptId() == null && StringUtils.isBlank(request.getReceiptCode())))
+        if (request == null
+                || (request.getReceiptId() == null
+                        && StringUtils.isBlank(request.getReceiptCode())))
             throw new ServiceException("缺少 receiptId 或 receiptCode");
         PurchaseReceipt receipt = findReceipt(request.getReceiptId(), request.getReceiptCode());
         if (!PurchaseDocumentStatus.APPROVED.getCode().equals(receipt.getStatus()))
@@ -126,8 +138,8 @@ public class PurchaseFlowAutomationService {
     }
 
     /** 查询已质检且仍可入库的到货明细。 */
-    public List<InboundReferenceLine> inboundCandidates(String receiptCode, String warehouseCode,
-            String materialCode) {
+    public List<InboundReferenceLine> inboundCandidates(
+            String receiptCode, String warehouseCode, String materialCode) {
         return flowService.selectInboundReferenceLines(receiptCode, warehouseCode, materialCode);
     }
 
@@ -137,7 +149,8 @@ public class PurchaseFlowAutomationService {
             throw new ServiceException("缺少入库明细 lines");
         String inboundDate = defaultDate(request.getInboundDate(), "inboundDate");
         Map<Long, InboundReferenceLine> candidates = new HashMap<>();
-        inboundCandidates(null, null, null).forEach(item -> candidates.put(item.getSourceReceiptLineId(), item));
+        inboundCandidates(null, null, null)
+                .forEach(item -> candidates.put(item.getSourceReceiptLineId(), item));
         List<PurchaseInboundLine> lines = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
         for (int index = 0; index < request.getLines().size(); index++) {
@@ -146,15 +159,21 @@ public class PurchaseFlowAutomationService {
                 throw new ServiceException("第 " + (index + 1) + " 行缺少 sourceReceiptLineId");
             InboundReferenceLine source = candidates.get(input.getSourceReceiptLineId());
             if (source == null)
-                throw new ServiceException("到货行 " + input.getSourceReceiptLineId() + " 不存在或已无可入库数量");
+                throw new ServiceException(
+                        "到货行 " + input.getSourceReceiptLineId() + " 不存在或已无可入库数量");
             requirePositive(input.getInboundQuantity(), "第 " + (index + 1) + " 行 inboundQuantity");
             if (input.getInboundQuantity().compareTo(source.getRemainingQuantity()) > 0)
-                throw new ServiceException("物料 " + source.getMaterialCode() + " 入库数量不能超过剩余可入库数量 "
-                        + source.getRemainingQuantity());
+                throw new ServiceException(
+                        "物料 "
+                                + source.getMaterialCode()
+                                + " 入库数量不能超过剩余可入库数量 "
+                                + source.getRemainingQuantity());
             PurchaseInboundLine line = toInboundLine(index + 1, input, source);
             if (StringUtils.isBlank(line.getWarehouseCode()))
-                throw new ServiceException("第 " + (index + 1)
-                        + " 行缺少入库仓库 warehouseCode，请先调用 queryWarehouses 获取真实仓库编码");
+                throw new ServiceException(
+                        "第 "
+                                + (index + 1)
+                                + " 行缺少入库仓库 warehouseCode，请先调用 queryWarehouses 获取真实仓库编码");
             lines.add(line);
             total = total.add(input.getInboundQuantity());
         }
@@ -168,52 +187,77 @@ public class PurchaseFlowAutomationService {
 
     /** 用户确认后创建到货草稿。 */
     @Transactional(rollbackFor = Exception.class)
-    public AutomationDocumentResult createReceipt(ConfirmedActionRequest<ReceiptDraft> request, Long userId,
-            String username) {
+    public AutomationDocumentResult createReceipt(
+            ConfirmedActionRequest<ReceiptDraft> request, Long userId, String username) {
         requireConfirmedRequest(request);
         String key = actionKey("RC", request.getRequestId());
-        return executeOnce(key, "PURCHASE_RECEIPT_CREATE", userId, () -> {
-            ReceiptDraft prepared = prepareReceipt(toReceiptRequest(request.getDraft()));
-            PurchaseReceipt receipt = toReceipt(prepared, key);
-            draftService.createReceiptDraft(receipt, username);
-            return new AutomationDocumentResult(receipt.getId(), receipt.getReceiptCode(),
-                    PurchaseDocumentStatus.DRAFT.getCode(), false);
-        });
+        return executeOnce(
+                key,
+                "PURCHASE_RECEIPT_CREATE",
+                userId,
+                () -> {
+                    ReceiptDraft prepared = prepareReceipt(toReceiptRequest(request.getDraft()));
+                    PurchaseReceipt receipt = toReceipt(prepared, key);
+                    draftService.createReceiptDraft(receipt, username);
+                    return new AutomationDocumentResult(
+                            receipt.getId(),
+                            receipt.getReceiptCode(),
+                            PurchaseDocumentStatus.DRAFT.getCode(),
+                            false);
+                });
     }
 
     /** 用户确认后提交到货质检。 */
     @Transactional(rollbackFor = Exception.class)
-    public AutomationDocumentResult inspectReceipt(ConfirmedActionRequest<InspectionDraft> request, Long userId,
-            String username) {
+    public AutomationDocumentResult inspectReceipt(
+            ConfirmedActionRequest<InspectionDraft> request, Long userId, String username) {
         requireConfirmedRequest(request);
         validateInspectionDraft(request.getDraft());
         String key = actionKey("QI", request.getRequestId());
-        return executeOnce(key, "PURCHASE_RECEIPT_INSPECT", userId, () -> {
-            InspectionRequest inspection = new InspectionRequest();
-            inspection.setLines(request.getDraft().getLines());
-            flowService.inspectReceipt(request.getDraft().getReceiptId(), inspection, username);
-            PurchaseReceipt receipt = requiredReceipt(request.getDraft().getReceiptId());
-            return new AutomationDocumentResult(receipt.getId(), receipt.getReceiptCode(),
-                    receipt.getInspectionStatus(), false);
-        });
+        return executeOnce(
+                key,
+                "PURCHASE_RECEIPT_INSPECT",
+                userId,
+                () -> {
+                    InspectionRequest inspection = new InspectionRequest();
+                    inspection.setLines(request.getDraft().getLines());
+                    flowService.inspectReceipt(
+                            request.getDraft().getReceiptId(), inspection, username);
+                    PurchaseReceipt receipt = requiredReceipt(request.getDraft().getReceiptId());
+                    return new AutomationDocumentResult(
+                            receipt.getId(),
+                            receipt.getReceiptCode(),
+                            receipt.getInspectionStatus(),
+                            false);
+                });
     }
 
     /** 用户确认后创建入库草稿。 */
     @Transactional(rollbackFor = Exception.class)
-    public AutomationDocumentResult createInbound(ConfirmedActionRequest<InboundDraft> request, Long userId,
-            String username) {
+    public AutomationDocumentResult createInbound(
+            ConfirmedActionRequest<InboundDraft> request, Long userId, String username) {
         requireConfirmedRequest(request);
         String key = actionKey("IC", request.getRequestId());
-        return executeOnce(key, "PURCHASE_INBOUND_CREATE", userId, () -> {
-            InboundDraft prepared = prepareInbound(toInboundRequest(request.getDraft()));
-            PurchaseInbound inbound = toInbound(prepared, key);
-            draftService.createInboundDraft(inbound, username);
-            return new AutomationDocumentResult(inbound.getId(), inbound.getInboundCode(),
-                    PurchaseDocumentStatus.DRAFT.getCode(), false);
-        });
+        return executeOnce(
+                key,
+                "PURCHASE_INBOUND_CREATE",
+                userId,
+                () -> {
+                    InboundDraft prepared = prepareInbound(toInboundRequest(request.getDraft()));
+                    PurchaseInbound inbound = toInbound(prepared, key);
+                    draftService.createInboundDraft(inbound, username);
+                    return new AutomationDocumentResult(
+                            inbound.getId(),
+                            inbound.getInboundCode(),
+                            PurchaseDocumentStatus.DRAFT.getCode(),
+                            false);
+                });
     }
 
-    private PurchaseReceiptLine toReceiptLine(int lineNo, ReceiptDraftLineRequest input, ReceiptReferenceLine source,
+    private PurchaseReceiptLine toReceiptLine(
+            int lineNo,
+            ReceiptDraftLineRequest input,
+            ReceiptReferenceLine source,
             ReceiptDraftRequest request) {
         PurchaseReceiptLine line = new PurchaseReceiptLine();
         line.setLineNo(lineNo);
@@ -241,7 +285,8 @@ public class PurchaseFlowAutomationService {
         return line;
     }
 
-    private PurchaseInboundLine toInboundLine(int lineNo, InboundDraftLineRequest input, InboundReferenceLine source) {
+    private PurchaseInboundLine toInboundLine(
+            int lineNo, InboundDraftLineRequest input, InboundReferenceLine source) {
         PurchaseInboundLine line = new PurchaseInboundLine();
         line.setLineNo(lineNo);
         line.setSourceReceiptId(source.getSourceReceiptId());
@@ -297,17 +342,21 @@ public class PurchaseFlowAutomationService {
         ReceiptDraftRequest request = new ReceiptDraftRequest();
         request.setReceiptDate(draft.getReceiptDate());
         request.setRemark(draft.getRemark());
-        List<ReceiptDraftLineRequest> lines = draft.getLines().stream().map(line -> {
-            ReceiptDraftLineRequest item = new ReceiptDraftLineRequest();
-            item.setSourceOrderLineId(line.getSourceOrderLineId());
-            item.setReceivedQuantity(line.getReceivedQuantity());
-            item.setLotNo(line.getLotNo());
-            item.setProductionDate(line.getProductionDate());
-            item.setExpiryDate(line.getExpiryDate());
-            item.setLocationCode(line.getLocationCode());
-            item.setLocationName(line.getLocationName());
-            return item;
-        }).toList();
+        List<ReceiptDraftLineRequest> lines =
+                draft.getLines().stream()
+                        .map(
+                                line -> {
+                                    ReceiptDraftLineRequest item = new ReceiptDraftLineRequest();
+                                    item.setSourceOrderLineId(line.getSourceOrderLineId());
+                                    item.setReceivedQuantity(line.getReceivedQuantity());
+                                    item.setLotNo(line.getLotNo());
+                                    item.setProductionDate(line.getProductionDate());
+                                    item.setExpiryDate(line.getExpiryDate());
+                                    item.setLocationCode(line.getLocationCode());
+                                    item.setLocationName(line.getLocationName());
+                                    return item;
+                                })
+                        .toList();
         request.setLines(lines);
         PurchaseReceiptLine first = draft.getLines().get(0);
         request.setWarehouseCode(first.getWarehouseCode());
@@ -319,26 +368,31 @@ public class PurchaseFlowAutomationService {
         InboundDraftRequest request = new InboundDraftRequest();
         request.setInboundDate(draft.getInboundDate());
         request.setRemark(draft.getRemark());
-        request.setLines(draft.getLines().stream().map(line -> {
-            InboundDraftLineRequest item = new InboundDraftLineRequest();
-            item.setSourceReceiptLineId(line.getSourceReceiptLineId());
-            item.setInboundQuantity(line.getInboundQuantity());
-            item.setWarehouseCode(line.getWarehouseCode());
-            item.setWarehouseName(line.getWarehouseName());
-            item.setLocationCode(line.getLocationCode());
-            item.setLocationName(line.getLocationName());
-            return item;
-        }).toList());
+        request.setLines(
+                draft.getLines().stream()
+                        .map(
+                                line -> {
+                                    InboundDraftLineRequest item = new InboundDraftLineRequest();
+                                    item.setSourceReceiptLineId(line.getSourceReceiptLineId());
+                                    item.setInboundQuantity(line.getInboundQuantity());
+                                    item.setWarehouseCode(line.getWarehouseCode());
+                                    item.setWarehouseName(line.getWarehouseName());
+                                    item.setLocationCode(line.getLocationCode());
+                                    item.setLocationName(line.getLocationName());
+                                    return item;
+                                })
+                        .toList());
         return request;
     }
 
     private PurchaseReceipt findReceipt(Long id, String code) {
-        if (id != null)
-            return requiredReceipt(id);
+        if (id != null) return requiredReceipt(id);
         PurchaseReceipt query = new PurchaseReceipt();
         query.setReceiptCode(code);
-        List<PurchaseReceipt> matches = receiptMapper.selectList(query).stream()
-                .filter(item -> code.equals(item.getReceiptCode())).toList();
+        List<PurchaseReceipt> matches =
+                receiptMapper.selectList(query).stream()
+                        .filter(item -> code.equals(item.getReceiptCode()))
+                        .toList();
         if (matches.size() != 1)
             throw new ServiceException(matches.isEmpty() ? "未找到到货单：" + code : "到货单编号不唯一：" + code);
         return matches.get(0);
@@ -346,35 +400,46 @@ public class PurchaseFlowAutomationService {
 
     private PurchaseReceipt requiredReceipt(Long id) {
         PurchaseReceipt receipt = receiptMapper.selectById(id);
-        if (receipt == null)
-            throw new ServiceException("到货单不存在");
+        if (receipt == null) throw new ServiceException("到货单不存在");
         receipt.setLines(receiptMapper.selectLines(id));
         return receipt;
     }
 
     private void validateInspectionDraft(InspectionDraft draft) {
-        if (draft == null || draft.getReceiptId() == null || draft.getLines() == null || draft.getLines().isEmpty())
-            throw new ServiceException("确认质检时缺少到货单或质检明细");
+        if (draft == null
+                || draft.getReceiptId() == null
+                || draft.getLines() == null
+                || draft.getLines().isEmpty()) throw new ServiceException("确认质检时缺少到货单或质检明细");
         Map<Long, PurchaseReceiptLine> source = new HashMap<>();
-        requiredReceipt(draft.getReceiptId()).getLines().forEach(line -> source.put(line.getId(), line));
-        if (draft.getLines().size() != source.size())
-            throw new ServiceException("质检必须提交到货单的全部明细行");
-        draft.getLines().forEach(line -> {
-            PurchaseReceiptLine receiptLine = source.get(line.getReceiptLineId());
-            if (receiptLine == null)
-                throw new ServiceException("质检明细不属于当前到货单");
-            if (line.getQualifiedQuantity() == null || line.getRejectedQuantity() == null
-                    || line.getQualifiedQuantity().compareTo(BigDecimal.ZERO) < 0
-                    || line.getRejectedQuantity().compareTo(BigDecimal.ZERO) < 0)
-                throw new ServiceException("质检数量不能为空或小于 0");
-            if (line.getQualifiedQuantity().add(line.getRejectedQuantity())
-                    .compareTo(receiptLine.getReceivedQuantity()) != 0)
-                throw new ServiceException("物料 " + receiptLine.getMaterialCode() + " 的合格与不合格数量之和必须等于到货数量");
-        });
+        requiredReceipt(draft.getReceiptId())
+                .getLines()
+                .forEach(line -> source.put(line.getId(), line));
+        if (draft.getLines().size() != source.size()) throw new ServiceException("质检必须提交到货单的全部明细行");
+        draft.getLines()
+                .forEach(
+                        line -> {
+                            PurchaseReceiptLine receiptLine = source.get(line.getReceiptLineId());
+                            if (receiptLine == null) throw new ServiceException("质检明细不属于当前到货单");
+                            if (line.getQualifiedQuantity() == null
+                                    || line.getRejectedQuantity() == null
+                                    || line.getQualifiedQuantity().compareTo(BigDecimal.ZERO) < 0
+                                    || line.getRejectedQuantity().compareTo(BigDecimal.ZERO) < 0)
+                                throw new ServiceException("质检数量不能为空或小于 0");
+                            if (line.getQualifiedQuantity()
+                                            .add(line.getRejectedQuantity())
+                                            .compareTo(receiptLine.getReceivedQuantity())
+                                    != 0)
+                                throw new ServiceException(
+                                        "物料 "
+                                                + receiptLine.getMaterialCode()
+                                                + " 的合格与不合格数量之和必须等于到货数量");
+                        });
     }
 
     private <T> void requireConfirmedRequest(ConfirmedActionRequest<T> request) {
-        if (request == null || StringUtils.isBlank(request.getRequestId()) || request.getDraft() == null)
+        if (request == null
+                || StringUtils.isBlank(request.getRequestId())
+                || request.getDraft() == null)
             throw new ServiceException("确认执行时缺少 requestId 或 draft");
     }
 
@@ -406,21 +471,31 @@ public class PurchaseFlowAutomationService {
 
     private String generateCode(String prefix, String key) {
         String suffix = key.replaceAll("[^A-Za-z0-9]", "").toUpperCase(Locale.ROOT);
-        if (suffix.length() > 20)
-            suffix = suffix.substring(suffix.length() - 20);
+        if (suffix.length() > 20) suffix = suffix.substring(suffix.length() - 20);
         if (suffix.isBlank())
-            suffix = UUID.randomUUID().toString().replace("-", "").substring(0, 20).toUpperCase(Locale.ROOT);
-        return prefix + '-' + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE) + '-' + suffix;
+            suffix =
+                    UUID.randomUUID()
+                            .toString()
+                            .replace("-", "")
+                            .substring(0, 20)
+                            .toUpperCase(Locale.ROOT);
+        return prefix
+                + '-'
+                + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
+                + '-'
+                + suffix;
     }
 
-    private AutomationDocumentResult executeOnce(String key, String type, Long userId, Action action) {
+    private AutomationDocumentResult executeOnce(
+            String key, String type, Long userId, Action action) {
         synchronized ((type + ':' + key).intern()) {
             AutomationAction existed = actionMapper.selectByActionKey(key);
             if (existed != null) {
                 if (!userId.equals(existed.getUserId()))
                     throw new ServiceException("该自动化请求不属于当前用户");
                 if (COMPLETED.equals(existed.getStatus()))
-                    return new AutomationDocumentResult(existed.getTargetId(), existed.getTargetCode(), COMPLETED, true);
+                    return new AutomationDocumentResult(
+                            existed.getTargetId(), existed.getTargetCode(), COMPLETED, true);
                 throw new ServiceException("该自动化动作正在执行，请勿重复提交");
             }
             AutomationAction record = new AutomationAction();

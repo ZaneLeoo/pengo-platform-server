@@ -235,10 +235,10 @@
                             <include>src/main/java/**/*.java</include>
                             <include>src/test/java/**/*.java</include>
                         </includes>
-                        <eclipse>
-                            <version>4.33</version>
-                                <file>${maven.multiModuleProjectDirectory}/config/formatter/java-eclipse-formatter.xml</file>
-                        </eclipse>
+                        <googleJavaFormat>
+                            <version>1.23.0</version>
+                            <style>AOSP</style>
+                        </googleJavaFormat>
                         <removeUnusedImports/>
                         <trimTrailingWhitespace/>
                         <endWithNewline/>

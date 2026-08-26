@@ -32,7 +32,8 @@ public class ProjectDeliverableTypeServiceImpl implements IProjectDeliverableTyp
     @Override
     @Transactional
     public int add(ProjectDeliverableType entity, String operator) {
-        if (mapper.selectByCode(entity.getTypeCode()) != null) throw new ServiceException("交付物类型编码已存在");
+        if (mapper.selectByCode(entity.getTypeCode()) != null)
+            throw new ServiceException("交付物类型编码已存在");
         normalize(entity);
         int rows = mapper.insert(entity);
         saveFormats(entity);
@@ -43,7 +44,8 @@ public class ProjectDeliverableTypeServiceImpl implements IProjectDeliverableTyp
     @Transactional
     public int edit(ProjectDeliverableType entity, String operator) {
         ProjectDeliverableType old = get(entity.getTypeId());
-        if (!old.getTypeCode().equals(entity.getTypeCode()) && mapper.selectByCode(entity.getTypeCode()) != null) {
+        if (!old.getTypeCode().equals(entity.getTypeCode())
+                && mapper.selectByCode(entity.getTypeCode()) != null) {
             throw new ServiceException("交付物类型编码已存在");
         }
         normalize(entity);
@@ -74,8 +76,14 @@ public class ProjectDeliverableTypeServiceImpl implements IProjectDeliverableTyp
     }
 
     private void saveFormats(ProjectDeliverableType entity) {
-        for (String extension : entity.getAllowedExtensions() == null ? List.<String>of() : entity.getAllowedExtensions()) {
-            String normalized = extension == null ? "" : extension.trim().replaceFirst("^\\.", "").toLowerCase();
+        for (String extension :
+                entity.getAllowedExtensions() == null
+                        ? List.<String>of()
+                        : entity.getAllowedExtensions()) {
+            String normalized =
+                    extension == null
+                            ? ""
+                            : extension.trim().replaceFirst("^\\.", "").toLowerCase();
             if (!normalized.isBlank()) mapper.insertFormat(entity.getTypeId(), normalized);
         }
     }

@@ -29,9 +29,10 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
     private static String[] parsePatterns = {
-            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
-            "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
-            "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
+        "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
+        "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
+        "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"
+    };
 
     /**
      * 获取当前Date型日期
@@ -79,25 +80,19 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
     }
 
-    /**
-     * 日期路径 即年/月/日 如2018/08/08
-     */
+    /** 日期路径 即年/月/日 如2018/08/08 */
     public static final String datePath() {
         Date now = new Date();
         return DateFormatUtils.format(now, "yyyy/MM/dd");
     }
 
-    /**
-     * 日期路径 即年/月/日 如20180808
-     */
+    /** 日期路径 即年/月/日 如20180808 */
     public static final String dateTime() {
         Date now = new Date();
         return DateFormatUtils.format(now, "yyyyMMdd");
     }
 
-    /**
-     * 日期型字符串转化为日期 格式
-     */
+    /** 日期型字符串转化为日期 格式 */
     public static Date parseDate(Object str) {
         if (str == null) {
             return null;
@@ -109,17 +104,13 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
     }
 
-    /**
-     * 获取服务器启动时间
-     */
+    /** 获取服务器启动时间 */
     public static Date getServerStartDate() {
         long time = ManagementFactory.getRuntimeMXBean().getStartTime();
         return new Date(time);
     }
 
-    /**
-     * 计算相差天数
-     */
+    /** 计算相差天数 */
     public static int differentDaysByMillisecond(Date date1, Date date2) {
         return Math.abs((int) ((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24)));
     }
@@ -127,10 +118,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 计算时间差
      *
-     * @param endDate
-     *            最后时间
-     * @param startTime
-     *            开始时间
+     * @param endDate 最后时间
+     * @param startTime 开始时间
      * @return 时间差（天/小时/分钟）
      */
     public static String timeDistance(Date endDate, Date startTime) {
@@ -151,17 +140,13 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return day + "天" + hour + "小时" + min + "分钟";
     }
 
-    /**
-     * 增加 LocalDateTime ==> Date
-     */
+    /** 增加 LocalDateTime ==> Date */
     public static Date toDate(LocalDateTime temporalAccessor) {
         ZonedDateTime zdt = temporalAccessor.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
 
-    /**
-     * 增加 LocalDate ==> Date
-     */
+    /** 增加 LocalDate ==> Date */
     public static Date toDate(LocalDate temporalAccessor) {
         LocalDateTime localDateTime = LocalDateTime.of(temporalAccessor, LocalTime.of(0, 0, 0));
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());

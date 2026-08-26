@@ -21,8 +21,10 @@ class AgentToolDisplayResolverTest {
     void aggregatesRepeatedToolNamesWithLocalizedLabel() {
         DifyStreamEvent event = new DifyStreamEvent();
         event.setTool("queryMaterials;queryMaterials;queryMaterials");
-        event.setToolLabels(Map.of("queryMaterials",
-                Map.of("en_US", "queryMaterials", "zh_Hans", "queryMaterials")));
+        event.setToolLabels(
+                Map.of(
+                        "queryMaterials",
+                        Map.of("en_US", "queryMaterials", "zh_Hans", "queryMaterials")));
 
         assertEquals("查询物料 × 3", resolver.resolveLabel(event));
     }

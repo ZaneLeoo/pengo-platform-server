@@ -10,12 +10,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.UUID;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Service;
 
@@ -64,20 +64,29 @@ public class KnowledgeBaseService {
         String datasetId = normalizeDatasetId(toolName);
         String baseUrl = configService.selectConfigByKey(API_BASE_URL_KEY);
         String apiKey = configService.selectConfigByKey(API_KEY_KEY);
-        if (StringUtils.isBlank(datasetId) || StringUtils.isBlank(query)
-                || StringUtils.isBlank(baseUrl) || StringUtils.isBlank(apiKey)) {
+        if (StringUtils.isBlank(datasetId)
+                || StringUtils.isBlank(query)
+                || StringUtils.isBlank(baseUrl)
+                || StringUtils.isBlank(apiKey)) {
             return Collections.emptyList();
         }
         try {
             String body = JSON.toJSONString(Map.of("query", query));
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl.replaceAll("/+$", "") + "/datasets/" + datasetId + "/retrieve"))
-                    .timeout(Duration.ofSeconds(15))
-                    .header("Authorization", "Bearer " + apiKey)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpRequest request =
+                    HttpRequest.newBuilder()
+                            .uri(
+                                    URI.create(
+                                            baseUrl.replaceAll("/+$", "")
+                                                    + "/datasets/"
+                                                    + datasetId
+                                                    + "/retrieve"))
+                            .timeout(Duration.ofSeconds(15))
+                            .header("Authorization", "Bearer " + apiKey)
+                            .header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(body))
+                            .build();
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 return Collections.emptyList();
             }
@@ -109,14 +118,20 @@ public class KnowledgeBaseService {
             return StringUtils.EMPTY;
         }
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(baseUrl.replaceAll("/+$", "") + "/datasets/" + datasetId))
-                    .timeout(Duration.ofSeconds(10))
-                    .header("Authorization", "Bearer " + apiKey)
-                    .header("Accept", "application/json")
-                    .GET()
-                    .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpRequest request =
+                    HttpRequest.newBuilder()
+                            .uri(
+                                    URI.create(
+                                            baseUrl.replaceAll("/+$", "")
+                                                    + "/datasets/"
+                                                    + datasetId))
+                            .timeout(Duration.ofSeconds(10))
+                            .header("Authorization", "Bearer " + apiKey)
+                            .header("Accept", "application/json")
+                            .GET()
+                            .build();
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
                 return StringUtils.EMPTY;
             }
@@ -133,22 +148,25 @@ public class KnowledgeBaseService {
             return Collections.emptyList();
         }
         List<Map<String, Object>> sources = new ArrayList<>();
-        result.getJSONArray("records").stream().limit(5).forEach(item -> {
-            if (!(item instanceof JSONObject record))
-                return;
-            JSONObject segment = record.getJSONObject("segment");
-            if (segment == null)
-                return;
-            JSONObject document = segment.getJSONObject("document");
-            Map<String, Object> source = new LinkedHashMap<>();
-            source.put("sourceId", segment.getString("id"));
-            source.put("segmentId", segment.getString("id"));
-            source.put("documentId", segment.getString("document_id"));
-            source.put("documentName", document == null ? "文档片段" : document.getString("name"));
-            source.put("content", segment.getString("content"));
-            source.put("score", record.getBigDecimal("score"));
-            sources.add(source);
-        });
+        result.getJSONArray("records").stream()
+                .limit(5)
+                .forEach(
+                        item -> {
+                            if (!(item instanceof JSONObject record)) return;
+                            JSONObject segment = record.getJSONObject("segment");
+                            if (segment == null) return;
+                            JSONObject document = segment.getJSONObject("document");
+                            Map<String, Object> source = new LinkedHashMap<>();
+                            source.put("sourceId", segment.getString("id"));
+                            source.put("segmentId", segment.getString("id"));
+                            source.put("documentId", segment.getString("document_id"));
+                            source.put(
+                                    "documentName",
+                                    document == null ? "文档片段" : document.getString("name"));
+                            source.put("content", segment.getString("content"));
+                            source.put("score", record.getBigDecimal("score"));
+                            sources.add(source);
+                        });
         return sources;
     }
 }

@@ -1,15 +1,15 @@
 package com.ruoyi.web.service.agent;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.agent.api.AgentChatRequest;
 import com.ruoyi.agent.application.DifyAppConfigService;
-import com.ruoyi.agent.domain.enums.DifyAppCode;
 import com.ruoyi.agent.domain.enums.AgentStreamEventType;
+import com.ruoyi.agent.domain.enums.DifyAppCode;
 import com.ruoyi.agent.infrastructure.dify.DifyChatflowClient;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyChatRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.exception.ServiceException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -32,7 +32,9 @@ public class AgentChatService {
     private final AgentInputFileService inputFileService;
     private final Executor executor;
 
-    public AgentChatService(DifyChatflowClient difyClient, DifyAppConfigService configService,
+    public AgentChatService(
+            DifyChatflowClient difyClient,
+            DifyAppConfigService configService,
             KnowledgeBaseService knowledgeBaseService,
             AgentToolDisplayResolver toolDisplayResolver,
             AgentFileService fileService,
@@ -56,18 +58,27 @@ public class AgentChatService {
 
     private void forward(SseEmitter emitter, AgentChatRequest request, Long userId) {
         try {
-            DifyClientSettings settings = configService.requireSettings(DifyAppCode.AGENT_SUPERVISOR.getCode());
-            AgentInputFileService.PreparedInput preparedInput = inputFileService.prepare(request.getFiles(), userId);
+            DifyClientSettings settings =
+                    configService.requireSettings(DifyAppCode.AGENT_SUPERVISOR.getCode());
+            AgentInputFileService.PreparedInput preparedInput =
+                    inputFileService.prepare(request.getFiles(), userId);
             String enrichedQuery = inputFileService.enrichQuery(request.getQuery(), preparedInput);
-            DifyChatRequest difyRequest = new DifyChatRequest(enrichedQuery, request.getInputs(),
-                    request.getDifyConversationId(), inputFileService.user(userId), preparedInput.getDifyFiles());
-            AgentFileService.StreamContext fileContext = fileService.newStreamContext(preparedInput.getDifyFileIds());
-            difyClient.stream(settings, difyRequest,
+            DifyChatRequest difyRequest =
+                    new DifyChatRequest(
+                            enrichedQuery,
+                            request.getInputs(),
+                            request.getDifyConversationId(),
+                            inputFileService.user(userId),
+                            preparedInput.getDifyFiles());
+            AgentFileService.StreamContext fileContext =
+                    fileService.newStreamContext(preparedInput.getDifyFileIds());
+            difyClient.stream(
+                    settings,
+                    difyRequest,
                     event -> forwardEvent(emitter, event, settings, userId, fileContext));
             List<Map<String, Object>> files = fileService.materializedFiles(fileContext);
             Map<String, Object> doneData = new LinkedHashMap<>();
-            if (!files.isEmpty())
-                doneData.put("files", files);
+            if (!files.isEmpty()) doneData.put("files", files);
             send(emitter, AgentStreamEventType.DONE, doneData);
             emitter.complete();
         } catch (InterruptedException e) {
@@ -80,8 +91,12 @@ public class AgentChatService {
         }
     }
 
-    private void forwardEvent(SseEmitter emitter, DifyStreamEvent event, DifyClientSettings settings,
-            Long userId, AgentFileService.StreamContext fileContext) {
+    private void forwardEvent(
+            SseEmitter emitter,
+            DifyStreamEvent event,
+            DifyClientSettings settings,
+            Long userId,
+            AgentFileService.StreamContext fileContext) {
         fileService.capture(event, fileContext);
         if ("agent_thought".equals(event.getEvent())) {
             forwardToolEvent(emitter, event);
@@ -97,23 +112,21 @@ public class AgentChatService {
             return;
         }
         if ("message_end".equals(event.getEvent())) {
-            List<Map<String, Object>> files = fileService.materialize(settings, event, userId, fileContext);
+            List<Map<String, Object>> files =
+                    fileService.materialize(settings, event, userId, fileContext);
             Map<String, Object> data = new LinkedHashMap<>();
             if (event.getConversationId() != null)
                 data.put("conversationId", event.getConversationId());
-            if (event.getTaskId() != null)
-                data.put("taskId", event.getTaskId());
+            if (event.getTaskId() != null) data.put("taskId", event.getTaskId());
             // 文件同时放入 metadata 作为兼容兜底，前端优先处理独立 file 事件并按 resourceId 去重。
-            if (!files.isEmpty())
-                data.put("files", files);
+            if (!files.isEmpty()) data.put("files", files);
             send(emitter, AgentStreamEventType.METADATA, data);
             for (Map<String, Object> file : files) {
                 send(emitter, AgentStreamEventType.FILE, file);
             }
             return;
         }
-        if ("error".equals(event.getEvent()))
-            throw new ServiceException(safeMessage(event));
+        if ("error".equals(event.getEvent())) throw new ServiceException(safeMessage(event));
     }
 
     /** 将 Dify 工具执行状态转换为前端稳定的 tool 事件。 */
@@ -127,27 +140,32 @@ public class AgentChatService {
         }
         boolean knowledgeEvent = event.getTool().startsWith("dataset_");
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("phase", event.getObservation() == null || event.getObservation().isBlank() ? "started" : "finished");
+        data.put(
+                "phase",
+                event.getObservation() == null || event.getObservation().isBlank()
+                        ? "started"
+                        : "finished");
         data.put("callId", event.getId());
         data.put(knowledgeEvent ? "datasetId" : "toolName", event.getTool());
-        data.put(knowledgeEvent ? "datasetLabel" : "toolLabel",
+        data.put(
+                knowledgeEvent ? "datasetLabel" : "toolLabel",
                 knowledgeEvent
                         ? knowledgeBaseService.resolveName(event.getTool())
                         : toolDisplayResolver.resolveLabel(event));
         if (!knowledgeEvent) {
             String description = toolDisplayResolver.resolveDescription(event.getTool());
-            if (!description.isBlank())
-                data.put("toolDescription", description);
+            if (!description.isBlank()) data.put("toolDescription", description);
         }
-        if (event.getPosition() != null)
-            data.put("position", event.getPosition());
+        if (event.getPosition() != null) data.put("position", event.getPosition());
         if (event.getToolInput() != null && !event.getToolInput().isBlank()) {
             Object input = parseStructuredValue(event.getToolInput());
             if (knowledgeEvent) {
                 String query = extractKnowledgeQuery(input, event.getTool());
                 data.put("query", query);
                 if (hasMeaningfulKnowledgeResult(event.getObservation())) {
-                    data.put("sources", knowledgeBaseService.retrieveSources(event.getTool(), query));
+                    data.put(
+                            "sources",
+                            knowledgeBaseService.retrieveSources(event.getTool(), query));
                 }
             } else {
                 data.put("input", input);
@@ -156,7 +174,10 @@ public class AgentChatService {
         if (event.getObservation() != null && !event.getObservation().isBlank()) {
             data.put("output", normalizeToolOutput(event));
         }
-        send(emitter, knowledgeEvent ? AgentStreamEventType.KNOWLEDGE : AgentStreamEventType.TOOL, data);
+        send(
+                emitter,
+                knowledgeEvent ? AgentStreamEventType.KNOWLEDGE : AgentStreamEventType.TOOL,
+                data);
     }
 
     /** 只有 Dify 的知识库工具确实返回内容时，才允许补充并展示引用片段。 */
@@ -198,19 +219,16 @@ public class AgentChatService {
         JSONObject outputs = parseObject(event.getObservation());
         for (String toolName : event.getTool().split(";")) {
             String chartType = chartType(toolName);
-            if (chartType == null)
-                continue;
+            if (chartType == null) continue;
             Map<String, Object> data = new LinkedHashMap<>();
             data.put("phase", outputs == null ? "started" : "finished");
             data.put("callId", event.getId() + "-" + toolName);
             data.put("toolName", toolName);
             data.put("toolLabel", toolDisplayResolver.resolveSingleLabel(toolName));
             String description = toolDisplayResolver.resolveDescription(toolName);
-            if (!description.isBlank())
-                data.put("toolDescription", description);
+            if (!description.isBlank()) data.put("toolDescription", description);
             data.put("chartType", chartType);
-            if (event.getPosition() != null)
-                data.put("position", event.getPosition());
+            if (event.getPosition() != null) data.put("position", event.getPosition());
             JSONObject toolInput = nestedObject(inputs, toolName);
             if (toolInput != null && toolInput.getString("title") != null) {
                 data.put("title", toolInput.getString("title"));
@@ -218,8 +236,7 @@ public class AgentChatService {
             if (outputs != null) {
                 String option = outputs.getString(toolName);
                 JSONObject optionJson = extractEchartsOption(option);
-                if (optionJson != null)
-                    data.put("option", optionJson);
+                if (optionJson != null) data.put("option", optionJson);
             }
             send(emitter, AgentStreamEventType.CHART, data);
         }
@@ -228,8 +245,7 @@ public class AgentChatService {
     /** 判断是否包含受支持的图表工具。 */
     private boolean isChartTool(String toolNames) {
         for (String toolName : toolNames.split(";")) {
-            if (chartType(toolName) != null)
-                return true;
+            if (chartType(toolName) != null) return true;
         }
         return false;
     }
@@ -246,8 +262,7 @@ public class AgentChatService {
 
     /** 解析 Dify 工具输入或输出对象。 */
     private JSONObject parseObject(String value) {
-        if (value == null || value.isBlank())
-            return null;
+        if (value == null || value.isBlank()) return null;
         try {
             return JSON.parseObject(value);
         } catch (RuntimeException ignored) {
@@ -257,27 +272,22 @@ public class AgentChatService {
 
     /** 读取并行工具对象中的单个工具参数。 */
     private JSONObject nestedObject(JSONObject object, String key) {
-        if (object == null)
-            return null;
+        if (object == null) return null;
         Object value = object.get(key);
-        if (value instanceof JSONObject json)
-            return json;
-        if (value instanceof String text)
-            return parseObject(text);
+        if (value instanceof JSONObject json) return json;
+        if (value instanceof String text) return parseObject(text);
         return null;
     }
 
     /** 从 ```echarts 代码块中提取并解析图表 option。 */
     private JSONObject extractEchartsOption(String output) {
-        if (output == null || output.isBlank())
-            return null;
+        if (output == null || output.isBlank()) return null;
         String normalized = output.trim();
         int start = normalized.indexOf("```echarts");
         if (start >= 0) {
             normalized = normalized.substring(start + "```echarts".length());
             int end = normalized.indexOf("```");
-            if (end >= 0)
-                normalized = normalized.substring(0, end);
+            if (end >= 0) normalized = normalized.substring(0, end);
         }
         return parseObject(normalized.trim());
     }
@@ -285,16 +295,13 @@ public class AgentChatService {
     /**
      * 解包 Dify 以工具名包裹的 observation，向前端输出稳定的工具原始响应。
      *
-     * <p>
-     * Dify 某些模型会把同一个 JSON 响应重复拼接成字符串，本方法只解析第一个完整 JSON 值， 避免前端无法识别自动化草稿等结构化工具结果。
-     * </p>
+     * <p>Dify 某些模型会把同一个 JSON 响应重复拼接成字符串，本方法只解析第一个完整 JSON 值， 避免前端无法识别自动化草稿等结构化工具结果。
      */
     private Object normalizeToolOutput(DifyStreamEvent event) {
         Object parsed = parseStructuredValue(event.getObservation());
         if (parsed instanceof Map<?, ?> values && values.containsKey(event.getTool())) {
             Object nested = values.get(event.getTool());
-            if (nested instanceof String text)
-                return parseStructuredValue(text);
+            if (nested instanceof String text) return parseStructuredValue(text);
             return nested;
         }
         return parsed;
@@ -319,33 +326,25 @@ public class AgentChatService {
 
     /** 从 Dify 拼接的响应中截取第一个完整 JSON 对象或数组。 */
     private String extractLeadingJsonValue(String value) {
-        if (value == null)
-            return null;
+        if (value == null) return null;
         String text = value.trim();
-        if (text.isEmpty() || (text.charAt(0) != '{' && text.charAt(0) != '['))
-            return null;
+        if (text.isEmpty() || (text.charAt(0) != '{' && text.charAt(0) != '[')) return null;
         int depth = 0;
         boolean inString = false;
         boolean escaped = false;
         for (int index = 0; index < text.length(); index++) {
             char current = text.charAt(index);
             if (inString) {
-                if (escaped)
-                    escaped = false;
-                else if (current == '\\')
-                    escaped = true;
-                else if (current == '"')
-                    inString = false;
+                if (escaped) escaped = false;
+                else if (current == '\\') escaped = true;
+                else if (current == '"') inString = false;
                 continue;
             }
-            if (current == '"')
-                inString = true;
-            else if (current == '{' || current == '[')
-                depth++;
+            if (current == '"') inString = true;
+            else if (current == '{' || current == '[') depth++;
             else if (current == '}' || current == ']') {
                 depth--;
-                if (depth == 0)
-                    return text.substring(0, index + 1);
+                if (depth == 0) return text.substring(0, index + 1);
             }
         }
         return null;
@@ -358,8 +357,7 @@ public class AgentChatService {
             if (datasetInput instanceof Map<?, ?> queryValues && queryValues.get("query") != null) {
                 return queryValues.get("query").toString();
             }
-            if (datasetInput != null)
-                return datasetInput.toString();
+            if (datasetInput != null) return datasetInput.toString();
         }
         return input == null ? "" : input.toString();
     }
@@ -383,10 +381,14 @@ public class AgentChatService {
     }
 
     private String safeMessage(Exception error) {
-        return error.getMessage() == null || error.getMessage().isBlank() ? "Dify 服务调用失败" : error.getMessage();
+        return error.getMessage() == null || error.getMessage().isBlank()
+                ? "Dify 服务调用失败"
+                : error.getMessage();
     }
 
     private String safeMessage(DifyStreamEvent event) {
-        return event.getMessage() == null || event.getMessage().isBlank() ? "Dify 返回错误" : event.getMessage();
+        return event.getMessage() == null || event.getMessage().isBlank()
+                ? "Dify 返回错误"
+                : event.getMessage();
     }
 }

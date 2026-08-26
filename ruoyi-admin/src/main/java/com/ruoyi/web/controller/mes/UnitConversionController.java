@@ -2,8 +2,8 @@ package com.ruoyi.web.controller.mes;
 
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.mes.base.domain.UnitConversionFormula;
 import com.ruoyi.mes.base.domain.Unit;
+import com.ruoyi.mes.base.domain.UnitConversionFormula;
 import com.ruoyi.mes.base.domain.UnitGroup;
 import com.ruoyi.mes.base.domain.UnitGroupDetail;
 import com.ruoyi.mes.base.dto.ConversionRequest;
@@ -14,36 +14,26 @@ import com.ruoyi.mes.base.mapper.UnitGroupMapper;
 import com.ruoyi.mes.base.mapper.UnitMapper;
 import com.ruoyi.mes.base.service.UnitConversionService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-/**
- * 计量单位换算 Controller。
- * 提供：单位组 CRUD + 公式配置 + 核心换算 API。
- */
+/** 计量单位换算 Controller。 提供：单位组 CRUD + 公式配置 + 核心换算 API。 */
 @RestController
 @RequestMapping("/mes/base/unit")
 public class UnitConversionController extends BaseController {
 
     private static final int DEFAULT_DECIMAL_SCALE = 4;
-    private static final Set<String> VALID_ROUNDING_MODES = Set.of(
-            "HALF_UP", "DOWN", "UP");
+    private static final Set<String> VALID_ROUNDING_MODES = Set.of("HALF_UP", "DOWN", "UP");
 
-    @Autowired
-    private UnitGroupMapper unitGroupMapper;
-    @Autowired
-    private UnitMapper unitMapper;
-    @Autowired
-    private UnitGroupDetailMapper detailMapper;
-    @Autowired
-    private UnitConversionFormulaMapper formulaMapper;
-    @Autowired
-    private UnitConversionService conversionService;
+    @Autowired private UnitGroupMapper unitGroupMapper;
+    @Autowired private UnitMapper unitMapper;
+    @Autowired private UnitGroupDetailMapper detailMapper;
+    @Autowired private UnitConversionFormulaMapper formulaMapper;
+    @Autowired private UnitConversionService conversionService;
 
     // ==================== 计量单位主档 CRUD ====================
 
@@ -221,10 +211,12 @@ public class UnitConversionController extends BaseController {
         if (Objects.equals(formula.getInputUnit(), formula.getOutputUnit())) {
             return "源单位和目标单位不能相同";
         }
-        if (detailMapper.selectByGroupAndUnit(formula.getUnitGroupId(), formula.getInputUnit()) == null) {
+        if (detailMapper.selectByGroupAndUnit(formula.getUnitGroupId(), formula.getInputUnit())
+                == null) {
             return "源单位不属于当前计量单位组";
         }
-        if (detailMapper.selectByGroupAndUnit(formula.getUnitGroupId(), formula.getOutputUnit()) == null) {
+        if (detailMapper.selectByGroupAndUnit(formula.getUnitGroupId(), formula.getOutputUnit())
+                == null) {
             return "目标单位不属于当前计量单位组";
         }
         if (formula.getDecimalScale() == null) {
@@ -245,7 +237,8 @@ public class UnitConversionController extends BaseController {
     }
 
     private String normalizeDetail(UnitGroupDetail detail) {
-        if (detail.getGroupId() == null || unitGroupMapper.selectUnitGroupById(detail.getGroupId()) == null) {
+        if (detail.getGroupId() == null
+                || unitGroupMapper.selectUnitGroupById(detail.getGroupId()) == null) {
             return "计量单位组不存在";
         }
         Unit unit = unitMapper.selectUnitByCode(detail.getUnitCode());
@@ -266,7 +259,8 @@ public class UnitConversionController extends BaseController {
         if (!Objects.equals(formula.getInputUnit(), detail.getUnitCode())) {
             return "换算公式源单位必须与明细单位一致";
         }
-        if (detailMapper.selectByGroupAndUnit(detail.getGroupId(), formula.getOutputUnit()) == null) {
+        if (detailMapper.selectByGroupAndUnit(detail.getGroupId(), formula.getOutputUnit())
+                == null) {
             return "换算公式目标单位必须属于当前计量单位组";
         }
         return null;

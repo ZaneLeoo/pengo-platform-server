@@ -12,30 +12,42 @@ import java.util.List;
  */
 public interface IBomVersionService {
     List<BomVersion> selectBomVersionList(BomVersion bomVersion);
+
     BomVersion selectBomVersionById(Long id);
+
     boolean checkVersionCodeUnique(BomVersion bomVersion);
+
     int insertBomVersion(BomVersion bomVersion);
+
     int updateBomVersion(BomVersion bomVersion);
+
     int deleteBomVersionByIds(Long[] ids);
+
     int activateBomVersion(Long id, String updateBy);
+
     int freezeBomVersion(Long id, String updateBy);
+
     int approveBomVersion(Long id, String updateBy);
+
     int unapproveBomVersion(Long id, String updateBy);
+
     int setDefaultBomVersion(Long id, String updateBy);
+
     BomCheckResult checkBomVersion(Long id);
+
     BomVersionCompareResult compareBomVersion(Long baseVersionId, Long targetVersionId);
 
     /**
      * 复制BOM版本及子件明细。
      *
-     * @param sourceVersionId
-     *            源版本ID
-     * @param targetVersionCode
-     *            新版本号
-     * @param targetVersionName
-     *            新版本名称
-     * @param createBy
-     *            创建者
+     * @param sourceVersionId 源版本ID
+     * @param targetVersionCode 新版本号
+     * @param targetVersionName 新版本名称
+     * @param createBy 创建者
      */
-    void copyBomVersion(Long sourceVersionId, String targetVersionCode, String targetVersionName, String createBy);
+    void copyBomVersion(
+            Long sourceVersionId,
+            String targetVersionCode,
+            String targetVersionName,
+            String createBy);
 }

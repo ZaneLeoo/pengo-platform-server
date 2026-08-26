@@ -1,10 +1,9 @@
 package com.ruoyi.agent.business.automation.domain;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 /** 标准化采购订单草稿明细。 */
 @Data
@@ -26,5 +25,4 @@ public class PurchaseOrderDraftLine {
     private Long quoteId;
     private Long quoteLineId;
     private String priceSource;
-
 }

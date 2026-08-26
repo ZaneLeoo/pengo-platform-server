@@ -1,8 +1,8 @@
 package com.ruoyi.projectmanagement.workflow.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.workflow.domain.WorkflowActionRequest;
 import com.ruoyi.projectmanagement.workflow.domain.WorkflowDefinition;
 import com.ruoyi.projectmanagement.workflow.domain.WorkflowInstance;
@@ -32,12 +32,18 @@ public class WorkflowServiceImpl implements IWorkflowService {
     private final ObjectMapper objectMapper;
     private final Map<String, WorkflowBusinessCallback> callbacks;
 
-    public WorkflowServiceImpl(WorkflowMapper mapper, ObjectMapper objectMapper,
+    public WorkflowServiceImpl(
+            WorkflowMapper mapper,
+            ObjectMapper objectMapper,
             List<WorkflowBusinessCallback> callbacks) {
         this.mapper = mapper;
         this.objectMapper = objectMapper;
-        this.callbacks = callbacks.stream().collect(Collectors.toMap(WorkflowBusinessCallback::businessType,
-                Function.identity()));
+        this.callbacks =
+                callbacks.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        WorkflowBusinessCallback::businessType,
+                                        Function.identity()));
     }
 
     @Override
@@ -76,7 +82,8 @@ public class WorkflowServiceImpl implements IWorkflowService {
     @Transactional
     public void publish(Long definitionId, Long versionId, String operator) {
         WorkflowDefinition definition = definition(definitionId);
-        if (!versionId.equals(definition.getVersionId()) || !"DRAFT".equals(definition.getVersionStatus())) {
+        if (!versionId.equals(definition.getVersionId())
+                || !"DRAFT".equals(definition.getVersionStatus())) {
             throw new ServiceException("只能发布当前草稿版本");
         }
         if (mapper.publishVersion(versionId, operator) != 1) {
@@ -87,14 +94,21 @@ public class WorkflowServiceImpl implements IWorkflowService {
 
     @Override
     @Transactional
-    public Long start(String businessType, Long businessId, Long projectId, String title, String snapshot,
-            String operator, Long initiatorUserId) {
+    public Long start(
+            String businessType,
+            Long businessId,
+            Long projectId,
+            String title,
+            String snapshot,
+            String operator,
+            Long initiatorUserId) {
         WorkflowDefinition definition = mapper.selectActiveDefinition(businessType);
         if (definition == null) {
             throw new ServiceException("该业务尚未配置并发布审批流程");
         }
         deserializeNodes(definition);
-        List<List<Long>> candidates = resolveCandidates(definition.getNodes(), projectId, initiatorUserId);
+        List<List<Long>> candidates =
+                resolveCandidates(definition.getNodes(), projectId, initiatorUserId);
         WorkflowInstance instance = new WorkflowInstance();
         instance.setBusinessType(businessType);
         instance.setBusinessId(businessId);
@@ -146,24 +160,33 @@ public class WorkflowServiceImpl implements IWorkflowService {
 
     /** 使用实例绑定的流程版本补充审批来源；候选人则始终读取实例创建时的固定快照。 */
     private List<WorkflowTask> enrichTasks(WorkflowInstance instance, List<WorkflowTask> tasks) {
-        WorkflowDefinition version = mapper.selectDefinitionVersion(instance.getDefinitionVersionId());
+        WorkflowDefinition version =
+                mapper.selectDefinitionVersion(instance.getDefinitionVersionId());
         if (version == null) {
             return tasks;
         }
         deserializeNodes(version);
-        Map<String, WorkflowNode> nodes = version.getNodes().stream()
-                .collect(Collectors.toMap(WorkflowNode::getKey, Function.identity()));
-        tasks.forEach(task -> {
-            WorkflowNode node = nodes.get(task.getNodeKey());
-            if (node == null) {
-                return;
-            }
-            task.setApproverType(node.getApproverType());
-            String roleName = "PROJECT_ROLE".equals(node.getApproverType())
-                    ? mapper.selectRoleName(node.getApproverValue()) : null;
-            task.setApproverLabel("PROJECT_ROLE".equals(node.getApproverType())
-                    ? (StringUtils.isNotBlank(roleName) ? roleName : node.getApproverValue()) : "指定用户");
-        });
+        Map<String, WorkflowNode> nodes =
+                version.getNodes().stream()
+                        .collect(Collectors.toMap(WorkflowNode::getKey, Function.identity()));
+        tasks.forEach(
+                task -> {
+                    WorkflowNode node = nodes.get(task.getNodeKey());
+                    if (node == null) {
+                        return;
+                    }
+                    task.setApproverType(node.getApproverType());
+                    String roleName =
+                            "PROJECT_ROLE".equals(node.getApproverType())
+                                    ? mapper.selectRoleName(node.getApproverValue())
+                                    : null;
+                    task.setApproverLabel(
+                            "PROJECT_ROLE".equals(node.getApproverType())
+                                    ? (StringUtils.isNotBlank(roleName)
+                                            ? roleName
+                                            : node.getApproverValue())
+                                    : "指定用户");
+                });
         return tasks;
     }
 
@@ -191,7 +214,8 @@ public class WorkflowServiceImpl implements IWorkflowService {
         finishOrAdvance(task, approve, operator, request.getOpinion());
     }
 
-    private void finishOrAdvance(WorkflowTask task, boolean approve, String operator, String opinion) {
+    private void finishOrAdvance(
+            WorkflowTask task, boolean approve, String operator, String opinion) {
         WorkflowInstance instance = mapper.selectInstance(task.getInstanceId());
         if (!approve) {
             mapper.cancelWaitingTasks(instance.getInstanceId());
@@ -213,7 +237,8 @@ public class WorkflowServiceImpl implements IWorkflowService {
         return callback;
     }
 
-    private void createTasks(Long instanceId, List<WorkflowNode> nodes, List<List<Long>> candidates) {
+    private void createTasks(
+            Long instanceId, List<WorkflowNode> nodes, List<List<Long>> candidates) {
         for (int index = 0; index < nodes.size(); index++) {
             WorkflowNode node = nodes.get(index);
             WorkflowTask task = new WorkflowTask();
@@ -229,13 +254,16 @@ public class WorkflowServiceImpl implements IWorkflowService {
         }
     }
 
-    private List<List<Long>> resolveCandidates(List<WorkflowNode> nodes, Long projectId, Long initiatorUserId) {
+    private List<List<Long>> resolveCandidates(
+            List<WorkflowNode> nodes, Long projectId, Long initiatorUserId) {
         List<List<Long>> resolved = new ArrayList<>();
         for (WorkflowNode node : nodes) {
-            List<Long> users = "USER".equals(node.getApproverType())
-                    ? List.of(parseUserId(node.getApproverValue()))
-                    : mapper.selectRoleUsers(projectId, node.getApproverValue());
-            List<Long> filtered = users.stream().filter(id -> !id.equals(initiatorUserId)).distinct().toList();
+            List<Long> users =
+                    "USER".equals(node.getApproverType())
+                            ? List.of(parseUserId(node.getApproverValue()))
+                            : mapper.selectRoleUsers(projectId, node.getApproverValue());
+            List<Long> filtered =
+                    users.stream().filter(id -> !id.equals(initiatorUserId)).distinct().toList();
             if (filtered.isEmpty()) {
                 throw new ServiceException("节点“" + node.getName() + "”排除发起人后没有可用审批人");
             }
@@ -258,11 +286,13 @@ public class WorkflowServiceImpl implements IWorkflowService {
         }
         Set<String> keys = new HashSet<>();
         for (WorkflowNode node : nodes) {
-            if (StringUtils.isBlank(node.getKey()) || StringUtils.isBlank(node.getName())
+            if (StringUtils.isBlank(node.getKey())
+                    || StringUtils.isBlank(node.getName())
                     || !keys.add(node.getKey())) {
                 throw new ServiceException("审批节点名称、键不能为空且键不可重复");
             }
-            if (!"USER".equals(node.getApproverType()) && !"PROJECT_ROLE".equals(node.getApproverType())) {
+            if (!"USER".equals(node.getApproverType())
+                    && !"PROJECT_ROLE".equals(node.getApproverType())) {
                 throw new ServiceException("审批人类型仅支持指定用户或项目角色");
             }
             if (StringUtils.isBlank(node.getApproverValue())) {
@@ -289,7 +319,8 @@ public class WorkflowServiceImpl implements IWorkflowService {
 
     private void deserializeNodes(WorkflowDefinition definition) {
         try {
-            definition.setNodes(objectMapper.readValue(definition.getGraphJson(), new TypeReference<>() { }));
+            definition.setNodes(
+                    objectMapper.readValue(definition.getGraphJson(), new TypeReference<>() {}));
         } catch (JacksonException exception) {
             throw new ServiceException("审批流程配置损坏");
         }

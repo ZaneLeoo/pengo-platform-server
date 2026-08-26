@@ -37,8 +37,11 @@ public class PurchaseReceiptController extends BaseController {
     private final ShelfLifeService shelfLifeService;
     private final PurchaseDocumentDraftService draftService;
 
-    public PurchaseReceiptController(PurchaseReceiptMapper receiptMapper, IPurchaseFlowService flowService,
-            ShelfLifeService shelfLifeService, PurchaseDocumentDraftService draftService) {
+    public PurchaseReceiptController(
+            PurchaseReceiptMapper receiptMapper,
+            IPurchaseFlowService flowService,
+            ShelfLifeService shelfLifeService,
+            PurchaseDocumentDraftService draftService) {
         this.receiptMapper = receiptMapper;
         this.flowService = flowService;
         this.shelfLifeService = shelfLifeService;
@@ -129,7 +132,8 @@ public class PurchaseReceiptController extends BaseController {
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:inspect')")
     @Log(title = "采购到货单质检", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/inspect")
-    public AjaxResult inspect(@PathVariable Long id, @Valid @RequestBody InspectionRequest request) {
+    public AjaxResult inspect(
+            @PathVariable Long id, @Valid @RequestBody InspectionRequest request) {
         flowService.inspectReceipt(id, request, getUsername());
         return success();
     }
@@ -146,19 +150,23 @@ public class PurchaseReceiptController extends BaseController {
     /** 查询可参照的已审核采购订单明细。 */
     @PreAuthorize("@ss.hasPermi('mes:purchaseReceipt:reference')")
     @GetMapping("/reference/order-lines")
-    public AjaxResult referenceOrders(@RequestParam(required = false) String orderCode,
+    public AjaxResult referenceOrders(
+            @RequestParam(required = false) String orderCode,
             @RequestParam(required = false) String supplierName,
             @RequestParam(required = false) String materialCode) {
-        return success(flowService.selectReceiptReferenceLines(orderCode, supplierName, materialCode));
+        return success(
+                flowService.selectReceiptReferenceLines(orderCode, supplierName, materialCode));
     }
 
     /** 保存到货单所有明细。 */
     private void saveLines(PurchaseReceipt receipt) {
-        receipt.getLines().forEach(line -> {
-            shelfLifeService.prepareReceiptLine(line);
-            line.setReceiptId(receipt.getId());
-            line.setCreateBy(getUsername());
-            receiptMapper.insertLine(line);
-        });
+        receipt.getLines()
+                .forEach(
+                        line -> {
+                            shelfLifeService.prepareReceiptLine(line);
+                            line.setReceiptId(receipt.getId());
+                            line.setCreateBy(getUsername());
+                            receiptMapper.insertLine(line);
+                        });
     }
 }

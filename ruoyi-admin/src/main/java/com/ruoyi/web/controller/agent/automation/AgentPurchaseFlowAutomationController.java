@@ -1,7 +1,7 @@
 package com.ruoyi.web.controller.agent.automation;
 
-import com.ruoyi.agent.business.automation.purchaseflow.application.PurchaseFlowAutomationService;
 import com.ruoyi.agent.business.automation.purchaseflow.application.PurchaseApprovalAutomationService;
+import com.ruoyi.agent.business.automation.purchaseflow.application.PurchaseFlowAutomationService;
 import com.ruoyi.agent.business.automation.purchaseflow.domain.ConfirmedActionRequest;
 import com.ruoyi.agent.business.automation.purchaseflow.domain.DocumentActionRequest;
 import com.ruoyi.agent.business.automation.purchaseflow.domain.InboundDraft;
@@ -24,7 +24,8 @@ public class AgentPurchaseFlowAutomationController extends BaseController {
     private final PurchaseFlowAutomationService automationService;
     private final PurchaseApprovalAutomationService approvalService;
 
-    public AgentPurchaseFlowAutomationController(PurchaseFlowAutomationService automationService,
+    public AgentPurchaseFlowAutomationController(
+            PurchaseFlowAutomationService automationService,
             PurchaseApprovalAutomationService approvalService) {
         this.automationService = automationService;
         this.approvalService = approvalService;
@@ -71,5 +72,4 @@ public class AgentPurchaseFlowAutomationController extends BaseController {
     public AjaxResult approveInbound(@RequestBody DocumentActionRequest request) {
         return success(approvalService.approveInbound(request, getUserId(), getUsername()));
     }
-
 }

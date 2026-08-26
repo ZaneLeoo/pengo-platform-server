@@ -11,9 +11,15 @@ public enum ProjectStatus {
 
     private final String code;
 
-    ProjectStatus(String code) { this.code = code; }
+    ProjectStatus(String code) {
+        this.code = code;
+    }
 
-    public String getCode() { return code; }
+    public String getCode() {
+        return code;
+    }
 
-    public boolean matches(String value) { return code.equals(value); }
+    public boolean matches(String value) {
+        return code.equals(value);
+    }
 }

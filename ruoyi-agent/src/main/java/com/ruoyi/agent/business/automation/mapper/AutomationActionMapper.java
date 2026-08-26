@@ -11,6 +11,8 @@ public interface AutomationActionMapper {
 
     int insert(AutomationAction action);
 
-    int complete(@Param("actionKey") String actionKey, @Param("targetId") Long targetId,
+    int complete(
+            @Param("actionKey") String actionKey,
+            @Param("targetId") Long targetId,
             @Param("targetCode") String targetCode);
 }

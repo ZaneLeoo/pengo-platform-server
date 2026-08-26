@@ -7,20 +7,16 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 项目团队成员实体。
- */
+/** 项目团队成员实体。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectMember extends BaseEntity {
 
     private Long memberId;
 
-    @NotNull
-    private Long projectId;
+    @NotNull private Long projectId;
 
-    @NotNull
-    private Long personId;
+    @NotNull private Long personId;
 
     private String personCode;
 
@@ -28,8 +24,7 @@ public class ProjectMember extends BaseEntity {
 
     private String deptName;
 
-    @NotNull
-    private Long roleId;
+    @NotNull private Long roleId;
 
     private String roleCode;
 

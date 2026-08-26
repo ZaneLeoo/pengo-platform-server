@@ -24,8 +24,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     private final PurchaseOrderMapper orderMapper;
     private final UnitConversionService conversionService;
 
-    public PurchaseOrderServiceImpl(PurchaseOrderMapper orderMapper,
-                                    UnitConversionService conversionService) {
+    public PurchaseOrderServiceImpl(
+            PurchaseOrderMapper orderMapper, UnitConversionService conversionService) {
         this.orderMapper = orderMapper;
         this.conversionService = conversionService;
     }
@@ -38,8 +38,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     @Override
     public PurchaseOrder selectPurchaseOrderById(Long id) {
         PurchaseOrder order = orderMapper.selectPurchaseOrderById(id);
-        if (order != null)
-            order.setLines(orderMapper.selectPurchaseOrderLineList(id));
+        if (order != null) order.setLines(orderMapper.selectPurchaseOrderLineList(id));
         return order;
     }
 
@@ -77,12 +76,10 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     }
 
     private void insertLines(PurchaseOrder order) {
-        if (order.getLines() == null)
-            return;
+        if (order.getLines() == null) return;
         for (PurchaseOrderLine line : order.getLines()) {
             line.setOrderId(order.getId());
-            if (line.getLineNo() == null)
-                line.setLineNo(order.getLines().indexOf(line) + 1);
+            if (line.getLineNo() == null) line.setLineNo(order.getLines().indexOf(line) + 1);
             if (line.getReceivedQuantity() == null)
                 line.setReceivedQuantity(java.math.BigDecimal.ZERO);
             if (line.getQualifiedQuantity() == null)
@@ -97,7 +94,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     /**
      * 重新计算订单行并汇总订单金额。
-     * <p>采购行按录入单位计价，unit/orderQuantity 仅作为旧表结构兼容字段。</p>
+     *
+     * <p>采购行按录入单位计价，unit/orderQuantity 仅作为旧表结构兼容字段。
      */
     private void prepareOrder(PurchaseOrder order) {
         if (order.getLines() == null || order.getLines().isEmpty()) {
@@ -107,12 +105,14 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (PurchaseOrderLine line : order.getLines()) {
             normalizeLineUnits(line);
-            BigDecimal unitPrice = line.getUnitPrice() == null ? BigDecimal.ZERO : line.getUnitPrice();
+            BigDecimal unitPrice =
+                    line.getUnitPrice() == null ? BigDecimal.ZERO : line.getUnitPrice();
             if (unitPrice.compareTo(BigDecimal.ZERO) < 0) {
                 throw new IllegalArgumentException("采购单价不能小于0: " + line.getMaterialCode());
             }
             line.setUnitPrice(unitPrice);
-            BigDecimal amount = line.getInputQty().multiply(unitPrice).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal amount =
+                    line.getInputQty().multiply(unitPrice).setScale(2, RoundingMode.HALF_UP);
             line.setAmount(amount);
             totalQuantity = totalQuantity.add(line.getInputQty());
             totalAmount = totalAmount.add(amount);
@@ -121,16 +121,17 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         order.setTotalAmount(scale(totalAmount, 2));
     }
 
-    /**
-     * 以录入单位为入口计算单位组内两个或三个单位的数量。
-     * 前端结果只用于即时展示，最终保存统一由服务端重新计算。
-     */
+    /** 以录入单位为入口计算单位组内两个或三个单位的数量。 前端结果只用于即时展示，最终保存统一由服务端重新计算。 */
     private void normalizeLineUnits(PurchaseOrderLine line) {
         List<UnitGroupDetail> details = conversionService.getUnitDetails(line.getMaterialId());
         if (details.size() < MIN_UNIT_COUNT || details.size() > MAX_UNIT_COUNT) {
-            throw new IllegalArgumentException("采购多计量换算要求物料单位组配置"
-                    + MIN_UNIT_COUNT + "到" + MAX_UNIT_COUNT + "个单位: "
-                    + line.getMaterialCode());
+            throw new IllegalArgumentException(
+                    "采购多计量换算要求物料单位组配置"
+                            + MIN_UNIT_COUNT
+                            + "到"
+                            + MAX_UNIT_COUNT
+                            + "个单位: "
+                            + line.getMaterialCode());
         }
 
         String inputUnitCode = resolveUnitCode(details, line.getInputUnitCode());
@@ -169,8 +170,11 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         }
     }
 
-    private void applyUnitSnapshot(PurchaseOrderLine line, UnitGroupDetail detail,
-                                   Map<String, ConversionResult> results, int index) {
+    private void applyUnitSnapshot(
+            PurchaseOrderLine line,
+            UnitGroupDetail detail,
+            Map<String, ConversionResult> results,
+            int index) {
         ConversionResult result = requiredResult(results, detail, line);
         if (index == 1) {
             line.setUnit1Code(detail.getUnitCode());
@@ -187,13 +191,14 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         }
     }
 
-    private ConversionResult requiredResult(Map<String, ConversionResult> results,
-                                            UnitGroupDetail detail, PurchaseOrderLine line) {
+    private ConversionResult requiredResult(
+            Map<String, ConversionResult> results, UnitGroupDetail detail, PurchaseOrderLine line) {
         ConversionResult result = results.get(detail.getUnitCode());
-        if (result == null || result.getQuantity() == null
+        if (result == null
+                || result.getQuantity() == null
                 || result.getQuantity().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("物料 " + line.getMaterialCode()
-                    + " 缺少有效的 " + detail.getUnitName() + " 换算公式");
+            throw new IllegalArgumentException(
+                    "物料 " + line.getMaterialCode() + " 缺少有效的 " + detail.getUnitName() + " 换算公式");
         }
         return result;
     }
@@ -201,7 +206,10 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     private String resolveUnitCode(List<UnitGroupDetail> details, String value) {
         if (com.ruoyi.common.utils.StringUtils.isBlank(value)) return null;
         return details.stream()
-                .filter(detail -> value.equals(detail.getUnitCode()) || value.equals(detail.getUnitName()))
+                .filter(
+                        detail ->
+                                value.equals(detail.getUnitCode())
+                                        || value.equals(detail.getUnitName()))
                 .map(UnitGroupDetail::getUnitCode)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("输入单位不在物料计量单位组中: " + value));

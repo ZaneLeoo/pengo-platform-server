@@ -48,7 +48,8 @@ public class ProjectPersonController extends BaseController {
     /** 查询可绑定到人员档案的系统账号。 */
     @PreAuthorize("@ss.hasAnyPermi('projectManagement:person:add,projectManagement:person:edit')")
     @GetMapping("/account-options")
-    public AjaxResult accountOptions(@RequestParam(required = false) Long personId,
+    public AjaxResult accountOptions(
+            @RequestParam(required = false) Long personId,
             @RequestParam(required = false) String keyword) {
         return success(personService.selectAvailableUserOptions(personId, keyword));
     }

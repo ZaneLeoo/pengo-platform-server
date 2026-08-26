@@ -48,8 +48,7 @@ public class PurchaseSupplierQuoteController extends BaseController {
     @Log(title = "供应商报价", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Valid @RequestBody PurchaseSupplierQuote quote) {
-        if (!quoteService.checkQuoteCodeUnique(quote))
-            return error("报价单号已存在");
+        if (!quoteService.checkQuoteCodeUnique(quote)) return error("报价单号已存在");
         quote.setCreateBy(getUsername());
         return toAjax(quoteService.insert(quote));
     }
@@ -59,8 +58,7 @@ public class PurchaseSupplierQuoteController extends BaseController {
     @Log(title = "供应商报价", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Valid @RequestBody PurchaseSupplierQuote quote) {
-        if (!quoteService.checkQuoteCodeUnique(quote))
-            return error("报价单号已存在");
+        if (!quoteService.checkQuoteCodeUnique(quote)) return error("报价单号已存在");
         quote.setUpdateBy(getUsername());
         return toAjax(quoteService.update(quote));
     }

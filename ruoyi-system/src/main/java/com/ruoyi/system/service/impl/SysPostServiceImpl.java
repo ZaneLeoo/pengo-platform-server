@@ -1,8 +1,5 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
@@ -10,6 +7,9 @@ import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.mapper.SysPostMapper;
 import com.ruoyi.system.mapper.SysUserPostMapper;
 import com.ruoyi.system.service.ISysPostService;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * 岗位信息 服务层处理
@@ -18,17 +18,14 @@ import com.ruoyi.system.service.ISysPostService;
  */
 @Service
 public class SysPostServiceImpl implements ISysPostService {
-    @Autowired
-    private SysPostMapper postMapper;
+    @Autowired private SysPostMapper postMapper;
 
-    @Autowired
-    private SysUserPostMapper userPostMapper;
+    @Autowired private SysUserPostMapper userPostMapper;
 
     /**
      * 查询岗位信息集合
      *
-     * @param post
-     *            岗位信息
+     * @param post 岗位信息
      * @return 岗位信息集合
      */
     @Override
@@ -49,8 +46,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 通过岗位ID查询岗位信息
      *
-     * @param postId
-     *            岗位ID
+     * @param postId 岗位ID
      * @return 角色对象信息
      */
     @Override
@@ -61,8 +57,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 根据用户ID获取岗位选择框列表
      *
-     * @param userId
-     *            用户ID
+     * @param userId 用户ID
      * @return 选中岗位ID列表
      */
     @Override
@@ -73,8 +68,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 校验岗位名称是否唯一
      *
-     * @param post
-     *            岗位信息
+     * @param post 岗位信息
      * @return 结果
      */
     @Override
@@ -90,8 +84,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 校验岗位编码是否唯一
      *
-     * @param post
-     *            岗位信息
+     * @param post 岗位信息
      * @return 结果
      */
     @Override
@@ -107,8 +100,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 通过岗位ID查询岗位使用数量
      *
-     * @param postId
-     *            岗位ID
+     * @param postId 岗位ID
      * @return 结果
      */
     @Override
@@ -119,8 +111,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 删除岗位信息
      *
-     * @param postId
-     *            岗位ID
+     * @param postId 岗位ID
      * @return 结果
      */
     @Override
@@ -131,8 +122,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 批量删除岗位信息
      *
-     * @param postIds
-     *            需要删除的岗位ID
+     * @param postIds 需要删除的岗位ID
      * @return 结果
      */
     @Override
@@ -149,8 +139,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 新增保存岗位信息
      *
-     * @param post
-     *            岗位信息
+     * @param post 岗位信息
      * @return 结果
      */
     @Override
@@ -161,8 +150,7 @@ public class SysPostServiceImpl implements ISysPostService {
     /**
      * 修改保存岗位信息
      *
-     * @param post
-     *            岗位信息
+     * @param post 岗位信息
      * @return 结果
      */
     @Override

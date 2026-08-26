@@ -1,8 +1,5 @@
 package com.ruoyi.framework.manager.factory;
 
-import java.util.TimerTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.LogUtils;
 import com.ruoyi.common.utils.ServletUtils;
@@ -15,6 +12,9 @@ import com.ruoyi.system.domain.SysLogininfor;
 import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.system.service.ISysLogininforService;
 import com.ruoyi.system.service.ISysOperLogService;
+import java.util.TimerTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 异步工厂（产生任务用）
@@ -27,17 +27,16 @@ public class AsyncFactory {
     /**
      * 记录登录信息
      *
-     * @param username
-     *            用户名
-     * @param status
-     *            状态
-     * @param message
-     *            消息
-     * @param args
-     *            列表
+     * @param username 用户名
+     * @param status 状态
+     * @param message 消息
+     * @param args 列表
      * @return 任务task
      */
-    public static TimerTask recordLogininfor(final String username, final String status, final String message,
+    public static TimerTask recordLogininfor(
+            final String username,
+            final String status,
+            final String message,
             final Object... args) {
         final String userAgent = ServletUtils.getRequest().getHeader("User-Agent");
         final String ip = IpUtils.getIpAddr();
@@ -66,7 +65,8 @@ public class AsyncFactory {
                 logininfor.setOs(os);
                 logininfor.setMsg(message);
                 // 日志状态
-                if (StringUtils.equalsAny(status, Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER)) {
+                if (StringUtils.equalsAny(
+                        status, Constants.LOGIN_SUCCESS, Constants.LOGOUT, Constants.REGISTER)) {
                     logininfor.setStatus(Constants.SUCCESS);
                 } else if (Constants.LOGIN_FAIL.equals(status)) {
                     logininfor.setStatus(Constants.FAIL);
@@ -80,8 +80,7 @@ public class AsyncFactory {
     /**
      * 操作日志记录
      *
-     * @param operLog
-     *            操作日志信息
+     * @param operLog 操作日志信息
      * @return 任务task
      */
     public static TimerTask recordOper(final SysOperLog operLog) {

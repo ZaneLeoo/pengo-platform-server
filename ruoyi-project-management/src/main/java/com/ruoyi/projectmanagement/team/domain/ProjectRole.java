@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 项目角色实体。
- */
+/** 项目角色实体。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectRole extends BaseEntity {
@@ -17,11 +15,9 @@ public class ProjectRole extends BaseEntity {
     /** 所属项目ID，0 表示系统预置角色。 */
     private Long projectId;
 
-    @NotBlank
-    private String roleCode;
+    @NotBlank private String roleCode;
 
-    @NotBlank
-    private String roleName;
+    @NotBlank private String roleName;
 
     /** 是否系统预置：1 是，0 否。 */
     private String systemFlag;

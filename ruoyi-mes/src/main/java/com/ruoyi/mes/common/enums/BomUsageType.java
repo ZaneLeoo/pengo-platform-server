@@ -6,7 +6,10 @@ package com.ruoyi.mes.common.enums;
  * @author ruoyi
  */
 public enum BomUsageType {
-    GENERAL("GENERAL", "通用"), MASS("MASS", "量产"), TRIAL("TRIAL", "试制"), REWORK("REWORK", "返工");
+    GENERAL("GENERAL", "通用"),
+    MASS("MASS", "量产"),
+    TRIAL("TRIAL", "试制"),
+    REWORK("REWORK", "返工");
 
     private final String code;
     private final String label;

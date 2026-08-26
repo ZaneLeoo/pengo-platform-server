@@ -45,7 +45,8 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
     private final ISupplierService supplierService;
     private final IMaterialService materialService;
 
-    public PurchaseSupplierQuoteServiceImpl(PurchaseSupplierQuoteMapper quoteMapper,
+    public PurchaseSupplierQuoteServiceImpl(
+            PurchaseSupplierQuoteMapper quoteMapper,
             ISupplierService supplierService,
             IMaterialService materialService) {
         this.quoteMapper = quoteMapper;
@@ -61,8 +62,7 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
     @Override
     public PurchaseSupplierQuote selectById(Long id) {
         PurchaseSupplierQuote quote = quoteMapper.selectById(id);
-        if (quote != null)
-            quote.setLines(quoteMapper.selectLinesByQuoteId(id));
+        if (quote != null) quote.setLines(quoteMapper.selectLinesByQuoteId(id));
         return quote;
     }
 
@@ -113,11 +113,15 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
         PurchaseSupplierQuote quote = required(id);
         if (!PurchaseQuoteStatus.DRAFT.getCode().equals(quote.getStatus()))
             throw new ServiceException("只有草稿报价允许审核");
-        if (quote.getExpireDate() != null && quote.getExpireDate().isBefore(quote.getEffectiveDate()))
+        if (quote.getExpireDate() != null
+                && quote.getExpireDate().isBefore(quote.getEffectiveDate()))
             throw new ServiceException("报价失效日期不能早于生效日期");
-        if (quoteMapper.updateStatus(id, PurchaseQuoteStatus.DRAFT.getCode(),
-                PurchaseQuoteStatus.APPROVED.getCode(), operator) != 1)
-            throw new ServiceException("报价状态已变化，请刷新后重试");
+        if (quoteMapper.updateStatus(
+                        id,
+                        PurchaseQuoteStatus.DRAFT.getCode(),
+                        PurchaseQuoteStatus.APPROVED.getCode(),
+                        operator)
+                != 1) throw new ServiceException("报价状态已变化，请刷新后重试");
     }
 
     @Override
@@ -125,23 +129,36 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
         PurchaseSupplierQuote quote = required(id);
         if (!PurchaseQuoteStatus.APPROVED.getCode().equals(quote.getStatus()))
             throw new ServiceException("只有已审核报价允许弃审");
-        if (quoteMapper.updateStatus(id, PurchaseQuoteStatus.APPROVED.getCode(),
-                PurchaseQuoteStatus.DRAFT.getCode(), operator) != 1)
-            throw new ServiceException("报价状态已变化，请刷新后重试");
+        if (quoteMapper.updateStatus(
+                        id,
+                        PurchaseQuoteStatus.APPROVED.getCode(),
+                        PurchaseQuoteStatus.DRAFT.getCode(),
+                        operator)
+                != 1) throw new ServiceException("报价状态已变化，请刷新后重试");
     }
 
     @Override
     public PurchaseQuoteCompareResult compare(PurchaseQuoteCompareRequest request) {
         if (request == null || request.getLines() == null || request.getLines().isEmpty())
-            return new PurchaseQuoteCompareResult(NEED_INPUT, "MISSING_REQUIRED_FIELDS", "ASK_USER",
-                    "缺少报价比较明细，必须传 lines 数组。", List.of("lines"), List.of(), List.of());
+            return new PurchaseQuoteCompareResult(
+                    NEED_INPUT,
+                    "MISSING_REQUIRED_FIELDS",
+                    "ASK_USER",
+                    "缺少报价比较明细，必须传 lines 数组。",
+                    List.of("lines"),
+                    List.of(),
+                    List.of());
         String currency = defaultCurrency(request.getCurrency());
-        String basis = StringUtils.isBlank(request.getPriceBasis()) ? "TAX_INCLUDED" : request.getPriceBasis().trim();
+        String basis =
+                StringUtils.isBlank(request.getPriceBasis())
+                        ? "TAX_INCLUDED"
+                        : request.getPriceBasis().trim();
         if (!"TAX_INCLUDED".equals(basis) && !TAX_EXCLUDED_BASIS.equals(basis))
             return invalid("priceBasis 必须是 TAX_INCLUDED 或 TAX_EXCLUDED。", "priceBasis");
-        String strategy = StringUtils.isBlank(request.getStrategy())
-                ? LOWEST_VALID_PRICE
-                : request.getStrategy().trim();
+        String strategy =
+                StringUtils.isBlank(request.getStrategy())
+                        ? LOWEST_VALID_PRICE
+                        : request.getStrategy().trim();
         if (!LOWEST_VALID_PRICE.equals(strategy))
             return invalid("strategy 当前只支持 LOWEST_VALID_PRICE。", "strategy");
 
@@ -157,75 +174,144 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
             LocalDate asOfDate = LocalDate.now();
             if (StringUtils.isNotBlank(line.getRequiredDate()) && !isDate(line.getRequiredDate()))
                 return invalid("requiredDate 格式必须是 yyyy-MM-dd。", prefix + "requiredDate");
-            Material material = materialService.selectMaterialListForAgent(line.getMaterialCode().trim(), null, null,
-                    ACTIVE_MATERIAL_STATUS).stream()
-                    .filter(item -> line.getMaterialCode().trim().equalsIgnoreCase(item.getMaterialCode()))
-                    .findFirst().orElse(null);
+            Material material =
+                    materialService
+                            .selectMaterialListForAgent(
+                                    line.getMaterialCode().trim(),
+                                    null,
+                                    null,
+                                    ACTIVE_MATERIAL_STATUS)
+                            .stream()
+                            .filter(
+                                    item ->
+                                            line.getMaterialCode()
+                                                    .trim()
+                                                    .equalsIgnoreCase(item.getMaterialCode()))
+                            .findFirst()
+                            .orElse(null);
             if (material == null)
-                return new PurchaseQuoteCompareResult(INVALID, "MATERIAL_NOT_AVAILABLE", "ASK_USER",
-                        "未找到启用物料：" + line.getMaterialCode(), List.of(prefix + "materialCode"), List.of(), List.of());
-            List<PurchaseQuoteCandidate> candidates = quoteMapper.selectCandidates(material.getMaterialCode(),
-                    line.getQuantity(), currency, asOfDate.toString());
+                return new PurchaseQuoteCompareResult(
+                        INVALID,
+                        "MATERIAL_NOT_AVAILABLE",
+                        "ASK_USER",
+                        "未找到启用物料：" + line.getMaterialCode(),
+                        List.of(prefix + "materialCode"),
+                        List.of(),
+                        List.of());
+            List<PurchaseQuoteCandidate> candidates =
+                    quoteMapper.selectCandidates(
+                            material.getMaterialCode(),
+                            line.getQuantity(),
+                            currency,
+                            asOfDate.toString());
             if (candidates.isEmpty())
-                return new PurchaseQuoteCompareResult(NO_CANDIDATE, "NO_VALID_QUOTE", "ASK_USER",
+                return new PurchaseQuoteCompareResult(
+                        NO_CANDIDATE,
+                        "NO_VALID_QUOTE",
+                        "ASK_USER",
                         "物料 " + material.getMaterialCode() + " 当前没有满足数量、币种和有效期条件的报价。",
-                        List.of(), List.of(), allCandidates);
+                        List.of(),
+                        List.of(),
+                        allCandidates);
             allCandidates.addAll(candidates);
             PurchaseQuoteCandidate selected = candidates.get(0);
-            BigDecimal comparisonPrice = TAX_EXCLUDED_BASIS.equals(basis)
-                    ? taxExcludedPrice(selected)
-                    : selected.getComparableUnitPrice();
+            BigDecimal comparisonPrice =
+                    TAX_EXCLUDED_BASIS.equals(basis)
+                            ? taxExcludedPrice(selected)
+                            : selected.getComparableUnitPrice();
             BigDecimal orderUnitPrice = selected.getComparableUnitPrice();
-            BigDecimal amount = orderUnitPrice.multiply(line.getQuantity()).setScale(2, RoundingMode.HALF_UP);
-            recommendations.add(new PurchaseQuoteRecommendation(material.getMaterialCode(), material.getMaterialName(),
-                    scale(line.getQuantity()), selected.getSupplierId(), selected.getSupplierCode(),
-                    selected.getSupplierName(), selected.getQuoteId(), selected.getQuoteLineId(),
-                    selected.getQuoteCode(),
-                    scale(selected.getUnitPrice()), scale(orderUnitPrice), scale(selected.getTaxRate()),
-                    selected.isTaxIncluded(), selected.getCurrency(),
-                    scale(comparisonPrice), amount, selected.getLeadTimeDays(), selected.getExpireDate(),
-                    "当前有效报价中按" + (TAX_EXCLUDED_BASIS.equals(basis) ? "未税" : "含税") + "可比单价最低"));
+            BigDecimal amount =
+                    orderUnitPrice.multiply(line.getQuantity()).setScale(2, RoundingMode.HALF_UP);
+            recommendations.add(
+                    new PurchaseQuoteRecommendation(
+                            material.getMaterialCode(),
+                            material.getMaterialName(),
+                            scale(line.getQuantity()),
+                            selected.getSupplierId(),
+                            selected.getSupplierCode(),
+                            selected.getSupplierName(),
+                            selected.getQuoteId(),
+                            selected.getQuoteLineId(),
+                            selected.getQuoteCode(),
+                            scale(selected.getUnitPrice()),
+                            scale(orderUnitPrice),
+                            scale(selected.getTaxRate()),
+                            selected.isTaxIncluded(),
+                            selected.getCurrency(),
+                            scale(comparisonPrice),
+                            amount,
+                            selected.getLeadTimeDays(),
+                            selected.getExpireDate(),
+                            "当前有效报价中按"
+                                    + (TAX_EXCLUDED_BASIS.equals(basis) ? "未税" : "含税")
+                                    + "可比单价最低"));
         }
-        return new PurchaseQuoteCompareResult(READY, "QUOTE_MATCHED", "SHOW_RECOMMENDATION",
+        return new PurchaseQuoteCompareResult(
+                READY,
+                "QUOTE_MATCHED",
+                "SHOW_RECOMMENDATION",
                 "已找到当前有效报价，请向用户展示推荐供应商和报价有效期，确认后再准备采购订单。",
-                List.of(), recommendations, allCandidates);
+                List.of(),
+                recommendations,
+                allCandidates);
     }
 
     @Override
-    public boolean validateSelection(Long quoteId, Long quoteLineId, String supplierCode, String materialCode,
-            BigDecimal quantity, BigDecimal orderUnitPrice) {
-        if (quoteId == null || quoteLineId == null || StringUtils.isBlank(supplierCode)
-                || StringUtils.isBlank(materialCode) || !positive(quantity) || orderUnitPrice == null)
-            return false;
+    public boolean validateSelection(
+            Long quoteId,
+            Long quoteLineId,
+            String supplierCode,
+            String materialCode,
+            BigDecimal quantity,
+            BigDecimal orderUnitPrice) {
+        if (quoteId == null
+                || quoteLineId == null
+                || StringUtils.isBlank(supplierCode)
+                || StringUtils.isBlank(materialCode)
+                || !positive(quantity)
+                || orderUnitPrice == null) return false;
         PurchaseSupplierQuote quote = quoteMapper.selectById(quoteId);
-        if (quote == null || !PurchaseQuoteStatus.APPROVED.getCode().equals(quote.getStatus())
-                || !supplierCode.equalsIgnoreCase(quote.getSupplierCode()))
-            return false;
+        if (quote == null
+                || !PurchaseQuoteStatus.APPROVED.getCode().equals(quote.getStatus())
+                || !supplierCode.equalsIgnoreCase(quote.getSupplierCode())) return false;
         LocalDate today = LocalDate.now();
         if (quote.getEffectiveDate().isAfter(today)
                 || (quote.getExpireDate() != null && quote.getExpireDate().isBefore(today)))
             return false;
-        PurchaseSupplierQuoteLine line = quoteMapper.selectLinesByQuoteId(quoteId).stream()
-                .filter(item -> quoteLineId.equals(item.getId())
-                        && materialCode.equalsIgnoreCase(item.getMaterialCode()))
-                .findFirst().orElse(null);
-        if (line == null || quantity.compareTo(line.getMinOrderQuantity()) < 0
+        PurchaseSupplierQuoteLine line =
+                quoteMapper.selectLinesByQuoteId(quoteId).stream()
+                        .filter(
+                                item ->
+                                        quoteLineId.equals(item.getId())
+                                                && materialCode.equalsIgnoreCase(
+                                                        item.getMaterialCode()))
+                        .findFirst()
+                        .orElse(null);
+        if (line == null
+                || quantity.compareTo(line.getMinOrderQuantity()) < 0
                 || (line.getMinQuantity() != null && quantity.compareTo(line.getMinQuantity()) < 0)
                 || (line.getMaxQuantity() != null && quantity.compareTo(line.getMaxQuantity()) > 0))
             return false;
-        BigDecimal expected = TAX_INCLUDED.equals(quote.getTaxIncluded())
-                ? line.getUnitPrice()
-                : line.getUnitPrice().multiply(BigDecimal.ONE.add(line.getTaxRate().divide(BigDecimal.valueOf(100), 8,
-                        RoundingMode.HALF_UP)));
+        BigDecimal expected =
+                TAX_INCLUDED.equals(quote.getTaxIncluded())
+                        ? line.getUnitPrice()
+                        : line.getUnitPrice()
+                                .multiply(
+                                        BigDecimal.ONE.add(
+                                                line.getTaxRate()
+                                                        .divide(
+                                                                BigDecimal.valueOf(100),
+                                                                8,
+                                                                RoundingMode.HALF_UP)));
         return expected.subtract(orderUnitPrice).abs().compareTo(new BigDecimal("0.0001")) <= 0;
     }
 
     private void normalizeAndValidate(PurchaseSupplierQuote quote, boolean create) {
-        if (quote.getExpireDate() != null && quote.getExpireDate().isBefore(quote.getEffectiveDate()))
+        if (quote.getExpireDate() != null
+                && quote.getExpireDate().isBefore(quote.getEffectiveDate()))
             throw new ServiceException("报价失效日期不能早于生效日期");
         Supplier supplier = supplierService.selectById(quote.getSupplierId());
-        if (supplier == null)
-            throw new ServiceException("供应商不存在");
+        if (supplier == null) throw new ServiceException("供应商不存在");
         if (!ACTIVE_SUPPLIER_STATUS.equals(supplier.getStatus()))
             throw new ServiceException("供应商已停用");
         quote.setSupplierCode(supplier.getSupplierCode());
@@ -240,15 +326,15 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
             quote.setStatus(PurchaseQuoteStatus.DRAFT.getCode());
         for (PurchaseSupplierQuoteLine line : quote.getLines()) {
             Material material = materialService.selectMaterialById(line.getMaterialId());
-            if (material == null)
-                throw new ServiceException("报价物料不存在");
+            if (material == null) throw new ServiceException("报价物料不存在");
             if (!ACTIVE_MATERIAL_STATUS.equals(material.getStatus()))
                 throw new ServiceException("报价物料已停用");
             line.setMaterialCode(material.getMaterialCode());
             line.setMaterialName(material.getMaterialName());
             line.setSpec(material.getSpec());
             line.setUnit(material.getUnit());
-            if (line.getMinQuantity() != null && line.getMaxQuantity() != null
+            if (line.getMinQuantity() != null
+                    && line.getMaxQuantity() != null
                     && line.getMaxQuantity().compareTo(line.getMinQuantity()) < 0)
                 throw new ServiceException("报价阶梯结束数量不能小于起始数量");
         }
@@ -258,35 +344,47 @@ public class PurchaseSupplierQuoteServiceImpl implements IPurchaseSupplierQuoteS
         for (int index = 0; index < quote.getLines().size(); index++) {
             PurchaseSupplierQuoteLine line = quote.getLines().get(index);
             line.setQuoteId(quote.getId());
-            if (line.getLineNo() == null)
-                line.setLineNo(index + 1);
+            if (line.getLineNo() == null) line.setLineNo(index + 1);
             quoteMapper.insertLine(line);
         }
     }
 
     private PurchaseSupplierQuote required(Long id) {
         PurchaseSupplierQuote quote = quoteMapper.selectById(id);
-        if (quote == null)
-            throw new ServiceException("供应商报价不存在");
+        if (quote == null) throw new ServiceException("供应商报价不存在");
         return quote;
     }
 
     private BigDecimal taxExcludedPrice(PurchaseQuoteCandidate candidate) {
-        if (!candidate.isTaxIncluded())
-            return candidate.getUnitPrice();
-        BigDecimal divisor = BigDecimal.ONE.add(candidate.getTaxRate().divide(BigDecimal.valueOf(100), 8,
-                RoundingMode.HALF_UP));
+        if (!candidate.isTaxIncluded()) return candidate.getUnitPrice();
+        BigDecimal divisor =
+                BigDecimal.ONE.add(
+                        candidate
+                                .getTaxRate()
+                                .divide(BigDecimal.valueOf(100), 8, RoundingMode.HALF_UP));
         return candidate.getUnitPrice().divide(divisor, 6, RoundingMode.HALF_UP);
     }
 
     private PurchaseQuoteCompareResult needInput(String field, String message) {
-        return new PurchaseQuoteCompareResult(NEED_INPUT, "MISSING_REQUIRED_FIELDS", "ASK_USER", message,
-                List.of(field), List.of(), List.of());
+        return new PurchaseQuoteCompareResult(
+                NEED_INPUT,
+                "MISSING_REQUIRED_FIELDS",
+                "ASK_USER",
+                message,
+                List.of(field),
+                List.of(),
+                List.of());
     }
 
     private PurchaseQuoteCompareResult invalid(String message, String field) {
-        return new PurchaseQuoteCompareResult(INVALID, "INVALID_ARGUMENT", "ASK_USER", message,
-                List.of(field), List.of(), List.of());
+        return new PurchaseQuoteCompareResult(
+                INVALID,
+                "INVALID_ARGUMENT",
+                "ASK_USER",
+                message,
+                List.of(field),
+                List.of(),
+                List.of());
     }
 
     private boolean positive(BigDecimal value) {

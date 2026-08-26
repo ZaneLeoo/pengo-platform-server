@@ -15,5 +15,4 @@ public class AutomationCandidateOption {
     private String spec;
     private String model;
     private String unit;
-
 }

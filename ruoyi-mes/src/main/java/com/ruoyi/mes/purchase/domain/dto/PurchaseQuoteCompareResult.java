@@ -1,10 +1,9 @@
 package com.ruoyi.mes.purchase.domain.dto;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /** AI 报价比较工具的结构化结果。 */
 @Data
@@ -18,5 +17,4 @@ public class PurchaseQuoteCompareResult {
     private List<String> issues;
     private List<PurchaseQuoteRecommendation> recommendations;
     private List<PurchaseQuoteCandidate> candidates;
-
 }

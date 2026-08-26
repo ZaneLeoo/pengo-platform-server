@@ -10,35 +10,29 @@ import com.ruoyi.mes.base.engine.FormulaEngine;
 import com.ruoyi.mes.base.mapper.MaterialMapper;
 import com.ruoyi.mes.base.mapper.UnitGroupDetailMapper;
 import com.ruoyi.mes.base.mapper.UnitGroupMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * 换算图引擎。
- * <p>给定物料、录入单位和数量，基于单位组中的公式边返回所有可达单位的结果。</p>
+ *
+ * <p>给定物料、录入单位和数量，基于单位组中的公式边返回所有可达单位的结果。
  */
 @Service
 public class UnitConversionService {
 
-    @Autowired
-    private MaterialMapper materialMapper;
-    @Autowired
-    private UnitGroupMapper unitGroupMapper;
-    @Autowired
-    private UnitGroupDetailMapper detailMapper;
-    @Autowired
-    private FormulaEngine formulaEngine;
+    @Autowired private MaterialMapper materialMapper;
+    @Autowired private UnitGroupMapper unitGroupMapper;
+    @Autowired private UnitGroupDetailMapper detailMapper;
+    @Autowired private FormulaEngine formulaEngine;
 
-    /**
-     * 核心入口：给定物料ID、录入单位和数量，返回单位组内所有可达单位的结果。
-     */
+    /** 核心入口：给定物料ID、录入单位和数量，返回单位组内所有可达单位的结果。 */
     public Map<String, ConversionResult> calculateAllUnits(ConversionRequest request) {
         if (request == null || request.getMaterialId() == null) {
             throw new IllegalArgumentException("物料不能为空");
@@ -47,8 +41,11 @@ public class UnitConversionService {
         if (material == null) {
             throw new IllegalArgumentException("物料不存在: " + request.getMaterialId());
         }
-        return calculate(material, request.getInputUnitCode(),
-                request.getInputQuantity(), request.getRuntimeOverrides());
+        return calculate(
+                material,
+                request.getInputUnitCode(),
+                request.getInputQuantity(),
+                request.getRuntimeOverrides());
     }
 
     /** 获取物料绑定的单位组明细，供业务单据回显和服务端保存时换算使用。 */
@@ -67,11 +64,14 @@ public class UnitConversionService {
 
     /**
      * 基于公式关系进行 BFS 换算。
-     * <p>单位组内没有中心单位，输入单位可以是任意成员，结果返回所有可达成员的数量。</p>
+     *
+     * <p>单位组内没有中心单位，输入单位可以是任意成员，结果返回所有可达成员的数量。
      */
-    public Map<String, ConversionResult> calculate(Material material, String inputUnitCode,
-                                                    BigDecimal inputQuantity,
-                                                    Map<String, BigDecimal> overrides) {
+    public Map<String, ConversionResult> calculate(
+            Material material,
+            String inputUnitCode,
+            BigDecimal inputQuantity,
+            Map<String, BigDecimal> overrides) {
         if (material == null) {
             throw new IllegalArgumentException("物料不能为空");
         }
@@ -95,8 +95,8 @@ public class UnitConversionService {
 
         Node inputNode = nodeMap.get(inputUnitCode);
         if (inputNode == null) {
-            throw new IllegalArgumentException("录入单位 " + inputUnitCode
-                    + " 不在单位组 " + group.getGroupCode() + " 中");
+            throw new IllegalArgumentException(
+                    "录入单位 " + inputUnitCode + " 不在单位组 " + group.getGroupCode() + " 中");
         }
         Map<String, BigDecimal> quantities = new LinkedHashMap<>();
         Map<String, String> paths = new LinkedHashMap<>();
@@ -114,8 +114,8 @@ public class UnitConversionService {
                 if (quantities.containsKey(toCode)) {
                     continue;
                 }
-                BigDecimal toQuantity = convert(fromNode, toNode, group.getId(), material,
-                        fromQuantity, overrides);
+                BigDecimal toQuantity =
+                        convert(fromNode, toNode, group.getId(), material, fromQuantity, overrides);
                 if (toQuantity == null || toQuantity.compareTo(BigDecimal.ZERO) <= 0) {
                     continue;
                 }
@@ -140,19 +140,26 @@ public class UnitConversionService {
     }
 
     /** 直接公式优先；没有直接公式时使用目标单位公式的反向边。 */
-    private BigDecimal convert(Node fromNode, Node toNode, Long groupId, Material material,
-                               BigDecimal fromQuantity, Map<String, BigDecimal> overrides) {
+    private BigDecimal convert(
+            Node fromNode,
+            Node toNode,
+            Long groupId,
+            Material material,
+            BigDecimal fromQuantity,
+            Map<String, BigDecimal> overrides) {
         String fromCode = fromNode.detail.getUnitCode();
         String toCode = toNode.detail.getUnitCode();
 
-        UnitConversionFormula direct = formulaEngine.findFormula(groupId, material,
-                fromCode, toCode, fromNode.detail.getFormulaId());
+        UnitConversionFormula direct =
+                formulaEngine.findFormula(
+                        groupId, material, fromCode, toCode, fromNode.detail.getFormulaId());
         if (direct != null) {
             return formulaEngine.forwardEvaluate(direct, material, fromQuantity, overrides);
         }
 
-        UnitConversionFormula reverse = formulaEngine.findFormula(groupId, material,
-                toCode, fromCode, toNode.detail.getFormulaId());
+        UnitConversionFormula reverse =
+                formulaEngine.findFormula(
+                        groupId, material, toCode, fromCode, toNode.detail.getFormulaId());
         if (reverse != null) {
             return formulaEngine.reverseEvaluate(reverse, material, fromQuantity, overrides);
         }

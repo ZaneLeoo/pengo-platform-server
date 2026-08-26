@@ -3,9 +3,7 @@ package com.ruoyi.projectmanagement.project.domain;
 import java.time.LocalDateTime;
 import lombok.Data;
 
-/**
- * 项目立项审批记录。
- */
+/** 项目立项审批记录。 */
 @Data
 public class ProjectInitiationApproval {
 

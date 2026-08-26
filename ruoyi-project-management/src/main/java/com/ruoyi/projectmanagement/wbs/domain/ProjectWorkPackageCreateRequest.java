@@ -7,9 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
-/**
- * 创建工作包及其初始交付要求的请求体。
- */
+/** 创建工作包及其初始交付要求的请求体。 */
 @Data
 public class ProjectWorkPackageCreateRequest {
 
@@ -19,6 +17,5 @@ public class ProjectWorkPackageCreateRequest {
     private ProjectWbsNode workPackage;
 
     /** 创建时一并定义的正式交付要求（所属项目与工作包由服务端回填）。 */
-    @Valid
-    private List<ProjectDeliverableDraft> deliverables = new ArrayList<>();
+    @Valid private List<ProjectDeliverableDraft> deliverables = new ArrayList<>();
 }

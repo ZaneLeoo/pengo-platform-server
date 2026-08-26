@@ -1,8 +1,6 @@
 package com.ruoyi.projectmanagement.common.enums;
 
-/**
- * WBS与工作包汇总状态。
- */
+/** WBS与工作包汇总状态。 */
 public enum WbsStatus {
     NOT_STARTED("NOT_STARTED"),
     ACTIVE("ACTIVE"),
@@ -11,9 +9,15 @@ public enum WbsStatus {
 
     private final String code;
 
-    WbsStatus(String code) { this.code = code; }
+    WbsStatus(String code) {
+        this.code = code;
+    }
 
-    public String getCode() { return code; }
+    public String getCode() {
+        return code;
+    }
 
-    public boolean matches(String value) { return code.equals(value); }
+    public boolean matches(String value) {
+        return code.equals(value);
+    }
 }

@@ -1,13 +1,11 @@
 package com.ruoyi.agent.infrastructure.dify;
 
-import java.util.Optional;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
+import java.util.Optional;
 
-/**
- * 解析 Dify Chatflow 的 SSE data 行。
- */
+/** 解析 Dify Chatflow 的 SSE data 行。 */
 @org.springframework.stereotype.Component
 public class DifySseParser {
     private static final String DATA_PREFIX = "data:";
@@ -16,8 +14,7 @@ public class DifySseParser {
     /**
      * 解析单个 SSE 行。
      *
-     * @param line
-     *            SSE 原始行
+     * @param line SSE 原始行
      * @return 可识别的 Dify 事件；空行、ping 和非 data 行返回空
      */
     public Optional<DifyStreamEvent> parseDataLine(String line) {

@@ -1,13 +1,5 @@
 package com.ruoyi.web.controller.system;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysMenu;
@@ -23,6 +15,14 @@ import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysMenuService;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 登录验证
@@ -31,34 +31,32 @@ import com.ruoyi.system.service.ISysMenuService;
  */
 @RestController
 public class SysLoginController {
-    @Autowired
-    private SysLoginService loginService;
+    @Autowired private SysLoginService loginService;
 
-    @Autowired
-    private ISysMenuService menuService;
+    @Autowired private ISysMenuService menuService;
 
-    @Autowired
-    private SysPermissionService permissionService;
+    @Autowired private SysPermissionService permissionService;
 
-    @Autowired
-    private TokenService tokenService;
+    @Autowired private TokenService tokenService;
 
-    @Autowired
-    private ISysConfigService configService;
+    @Autowired private ISysConfigService configService;
 
     /**
      * 登录方法
      *
-     * @param loginBody
-     *            登录信息
+     * @param loginBody 登录信息
      * @return 结果
      */
     @PostMapping("/login")
     public AjaxResult login(@RequestBody LoginBody loginBody) {
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
-                loginBody.getUuid());
+        String token =
+                loginService.login(
+                        loginBody.getUsername(),
+                        loginBody.getPassword(),
+                        loginBody.getCode(),
+                        loginBody.getUuid());
         ajax.put(Constants.TOKEN, token);
         return ajax;
     }
@@ -109,21 +107,23 @@ public class SysLoginController {
 
     // 检查初始密码是否提醒修改
     public boolean initPasswordIsModify(Date pwdUpdateDate) {
-        Integer initPasswordModify = Convert.toInt(configService.selectConfigByKey("sys.account.initPasswordModify"));
+        Integer initPasswordModify =
+                Convert.toInt(configService.selectConfigByKey("sys.account.initPasswordModify"));
         return initPasswordModify != null && initPasswordModify == 1 && pwdUpdateDate == null;
     }
 
     // 检查密码是否过期
     public boolean passwordIsExpiration(Date pwdUpdateDate) {
-        Integer passwordValidateDays = Convert
-                .toInt(configService.selectConfigByKey("sys.account.passwordValidateDays"));
+        Integer passwordValidateDays =
+                Convert.toInt(configService.selectConfigByKey("sys.account.passwordValidateDays"));
         if (passwordValidateDays != null && passwordValidateDays > 0) {
             if (StringUtils.isNull(pwdUpdateDate)) {
                 // 如果从未修改过初始密码，直接提醒过期
                 return true;
             }
             Date nowDate = DateUtils.getNowDate();
-            return DateUtils.differentDaysByMillisecond(nowDate, pwdUpdateDate) > passwordValidateDays;
+            return DateUtils.differentDaysByMillisecond(nowDate, pwdUpdateDate)
+                    > passwordValidateDays;
         }
         return false;
     }

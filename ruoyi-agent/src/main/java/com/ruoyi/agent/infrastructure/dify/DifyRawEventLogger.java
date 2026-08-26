@@ -12,12 +12,15 @@ import org.springframework.stereotype.Component;
 public class DifyRawEventLogger {
     static final int MAX_LOG_LENGTH = 32 * 1024;
     private static final String TRUNCATED_SUFFIX = "...[TRUNCATED]";
-    private static final Pattern SECRET_FIELD = Pattern.compile(
-            "(?i)(\\\"(?:api[_-]?key|authorization|access[_-]?token|token)\\\"\\s*:\\s*\\\")[^\\\"]*(\\\")");
-    private static final Pattern AUTHORIZATION = Pattern.compile("(?i)(Bearer\\s+)[A-Za-z0-9._~+\\-/]+=*");
-    private static final Pattern LARGE_BASE64_FIELD = Pattern.compile(
-            "(\\\"(?:audio|content|data|base64)\\\"\\s*:\\s*\\\")[A-Za-z0-9+/=]{128,}(\\\")",
-            Pattern.CASE_INSENSITIVE);
+    private static final Pattern SECRET_FIELD =
+            Pattern.compile(
+                    "(?i)(\\\"(?:api[_-]?key|authorization|access[_-]?token|token)\\\"\\s*:\\s*\\\")[^\\\"]*(\\\")");
+    private static final Pattern AUTHORIZATION =
+            Pattern.compile("(?i)(Bearer\\s+)[A-Za-z0-9._~+\\-/]+=*");
+    private static final Pattern LARGE_BASE64_FIELD =
+            Pattern.compile(
+                    "(\\\"(?:audio|content|data|base64)\\\"\\s*:\\s*\\\")[A-Za-z0-9+/=]{128,}(\\\")",
+                    Pattern.CASE_INSENSITIVE);
     private static final Logger LOGGER = LoggerFactory.getLogger(DifyRawEventLogger.class);
 
     private final Consumer<String> logConsumer;

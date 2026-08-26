@@ -42,59 +42,76 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient {
 
     /** 上传本地文件，返回 Dify 文件 ID。 */
     @Override
-    public DifyFileUploadResult uploadFile(DifyClientSettings settings, DifyFileUploadRequest request)
+    public DifyFileUploadResult uploadFile(
+            DifyClientSettings settings, DifyFileUploadRequest request)
             throws IOException, InterruptedException {
         String boundary = "----RuoYiDifyBoundary" + UUID.randomUUID().toString().replace("-", "");
-        HttpResponse<String> response = httpClient.send(uploadRequest(settings, request, boundary),
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        HttpResponse<String> response =
+                httpClient.send(
+                        uploadRequest(settings, request, boundary),
+                        HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         requireSuccess(response.statusCode(), response.body());
         JSONObject body = JSON.parseObject(response.body());
-        return new DifyFileUploadResult(body.getString("id"), body.getString("name"), body.getLongValue("size"),
-                body.getString("extension"), body.getString("mime_type"));
+        return new DifyFileUploadResult(
+                body.getString("id"),
+                body.getString("name"),
+                body.getLongValue("size"),
+                body.getString("extension"),
+                body.getString("mime_type"));
     }
 
     /** 以阻塞模式执行默认发布工作流。 */
     @Override
-    public DifyWorkflowRunResult runBlocking(DifyClientSettings settings, DifyWorkflowRunRequest request)
+    public DifyWorkflowRunResult runBlocking(
+            DifyClientSettings settings, DifyWorkflowRunRequest request)
             throws IOException, InterruptedException {
         return runWorkflow(settings, request, "blocking");
     }
 
     /** 以流式模式执行默认发布工作流，并返回 workflow_finished 的最终结果。 */
     @Override
-    public DifyWorkflowRunResult runStreaming(DifyClientSettings settings, DifyWorkflowRunRequest request)
+    public DifyWorkflowRunResult runStreaming(
+            DifyClientSettings settings, DifyWorkflowRunRequest request)
             throws IOException, InterruptedException {
         return runWorkflow(settings, request, "streaming");
     }
 
-    private DifyWorkflowRunResult runWorkflow(DifyClientSettings settings, DifyWorkflowRunRequest request,
-            String responseMode) throws IOException, InterruptedException {
+    private DifyWorkflowRunResult runWorkflow(
+            DifyClientSettings settings, DifyWorkflowRunRequest request, String responseMode)
+            throws IOException, InterruptedException {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("inputs", request.getInputs());
         body.put("response_mode", responseMode);
         body.put("user", request.getUser());
         String requestJson = JSON.toJSONString(body);
         log.debug("Dify workflow request: {}", requestJson);
-        HttpResponse<String> response = httpClient.send(jsonRequest(settings, "/workflows/run", requestJson),
-                HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        HttpResponse<String> response =
+                httpClient.send(
+                        jsonRequest(settings, "/workflows/run", requestJson),
+                        HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         requireSuccess(response.statusCode(), response.body());
         log.debug("Dify workflow response: {}", response.body());
         return "streaming".equals(responseMode)
                 ? parseStreamingResponse(response.body())
-                : parseBlockingResponse(
-                        response.body());
+                : parseBlockingResponse(response.body());
     }
 
     private DifyWorkflowRunResult parseBlockingResponse(String body) {
         JSONObject root = JSON.parseObject(body);
         JSONObject data = root.getJSONObject("data");
-        Map<String, Object> outputs = data == null || data.get("outputs") == null
-                ? new LinkedHashMap<>()
-                : data.getJSONObject("outputs");
+        Map<String, Object> outputs =
+                data == null || data.get("outputs") == null
+                        ? new LinkedHashMap<>()
+                        : data.getJSONObject("outputs");
         String status = data == null ? null : data.getString("status");
         String error = data == null ? null : data.getString("error");
-        return new DifyWorkflowRunResult(root.getString("task_id"), root.getString("workflow_run_id"), status,
-                outputs, error, body);
+        return new DifyWorkflowRunResult(
+                root.getString("task_id"),
+                root.getString("workflow_run_id"),
+                status,
+                outputs,
+                error,
+                body);
     }
 
     private DifyWorkflowRunResult parseStreamingResponse(String body) throws IOException {
@@ -117,7 +134,8 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient {
         return finished;
     }
 
-    private DifyWorkflowRunResult parseStreamingEvent(String data, String rawResponse, DifyWorkflowRunResult current) {
+    private DifyWorkflowRunResult parseStreamingEvent(
+            String data, String rawResponse, DifyWorkflowRunResult current) {
         if (data.isBlank() || "[DONE]".equals(data)) {
             return current;
         }
@@ -126,24 +144,28 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient {
             return current;
         }
         JSONObject eventData = root.getJSONObject("data");
-        Map<String, Object> outputs = eventData == null || eventData.get("outputs") == null
-                ? new LinkedHashMap<>()
-                : eventData.getJSONObject("outputs");
+        Map<String, Object> outputs =
+                eventData == null || eventData.get("outputs") == null
+                        ? new LinkedHashMap<>()
+                        : eventData.getJSONObject("outputs");
         String status = eventData == null ? null : eventData.getString("status");
         String error = eventData == null ? null : eventData.getString("error");
         String workflowRunId = root.getString("workflow_run_id");
         if (workflowRunId == null && eventData != null) {
             workflowRunId = eventData.getString("id");
         }
-        return new DifyWorkflowRunResult(root.getString("task_id"), workflowRunId, status, outputs, error,
-                rawResponse);
+        return new DifyWorkflowRunResult(
+                root.getString("task_id"), workflowRunId, status, outputs, error, rawResponse);
     }
 
-    private HttpRequest uploadRequest(DifyClientSettings settings, DifyFileUploadRequest request, String boundary) {
-        return HttpRequest.newBuilder(uri(settings, "/files/upload")).timeout(REQUEST_TIMEOUT)
+    private HttpRequest uploadRequest(
+            DifyClientSettings settings, DifyFileUploadRequest request, String boundary) {
+        return HttpRequest.newBuilder(uri(settings, "/files/upload"))
+                .timeout(REQUEST_TIMEOUT)
                 .header("Authorization", "Bearer " + settings.getApiKey())
                 .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-                .POST(HttpRequest.BodyPublishers.ofByteArrays(multipartBody(request, boundary))).build();
+                .POST(HttpRequest.BodyPublishers.ofByteArrays(multipartBody(request, boundary)))
+                .build();
     }
 
     private List<byte[]> multipartBody(DifyFileUploadRequest request, String boundary) {
@@ -156,25 +178,35 @@ public class DifyWorkflowClientImpl implements DifyWorkflowClient {
 
     private void addTextPart(List<byte[]> parts, String boundary, String name, String value) {
         parts.add(("--" + boundary + CRLF).getBytes(StandardCharsets.UTF_8));
-        parts.add(("Content-Disposition: form-data; name=\"" + name + "\"" + CRLF + CRLF)
-                .getBytes(StandardCharsets.UTF_8));
+        parts.add(
+                ("Content-Disposition: form-data; name=\"" + name + "\"" + CRLF + CRLF)
+                        .getBytes(StandardCharsets.UTF_8));
         parts.add((value == null ? "" : value).getBytes(StandardCharsets.UTF_8));
         parts.add(CRLF.getBytes(StandardCharsets.UTF_8));
     }
 
     private void addFilePart(List<byte[]> parts, String boundary, DifyFileUploadRequest request) {
         parts.add(("--" + boundary + CRLF).getBytes(StandardCharsets.UTF_8));
-        parts.add(("Content-Disposition: form-data; name=\"file\"; filename=\"" + escape(request.getFilename()) + "\""
-                + CRLF).getBytes(StandardCharsets.UTF_8));
-        parts.add(("Content-Type: " + request.getContentType() + CRLF + CRLF).getBytes(StandardCharsets.UTF_8));
+        parts.add(
+                ("Content-Disposition: form-data; name=\"file\"; filename=\""
+                                + escape(request.getFilename())
+                                + "\""
+                                + CRLF)
+                        .getBytes(StandardCharsets.UTF_8));
+        parts.add(
+                ("Content-Type: " + request.getContentType() + CRLF + CRLF)
+                        .getBytes(StandardCharsets.UTF_8));
         parts.add(request.getContent());
         parts.add(CRLF.getBytes(StandardCharsets.UTF_8));
     }
 
     private HttpRequest jsonRequest(DifyClientSettings settings, String path, String body) {
-        return HttpRequest.newBuilder(uri(settings, path)).timeout(REQUEST_TIMEOUT)
-                .header("Authorization", "Bearer " + settings.getApiKey()).header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(body)).build();
+        return HttpRequest.newBuilder(uri(settings, path))
+                .timeout(REQUEST_TIMEOUT)
+                .header("Authorization", "Bearer " + settings.getApiKey())
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
     }
 
     private URI uri(DifyClientSettings settings, String path) {

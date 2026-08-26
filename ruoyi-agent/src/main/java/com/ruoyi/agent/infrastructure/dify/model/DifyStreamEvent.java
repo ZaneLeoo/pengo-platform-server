@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Dify Chatflow 流式事件。
- */
+/** Dify Chatflow 流式事件。 */
 public class DifyStreamEvent {
     private String event;
     private String taskId;
@@ -80,42 +78,55 @@ public class DifyStreamEvent {
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
+
     public Integer getPosition() {
         return position;
     }
+
     public void setPosition(Integer position) {
         this.position = position;
     }
+
     public String getThought() {
         return thought;
     }
+
     public void setThought(String thought) {
         this.thought = thought;
     }
+
     public String getObservation() {
         return observation;
     }
+
     public void setObservation(String observation) {
         this.observation = observation;
     }
+
     public String getTool() {
         return tool;
     }
+
     public void setTool(String tool) {
         this.tool = tool;
     }
+
     public String getToolInput() {
         return toolInput;
     }
+
     public void setToolInput(String toolInput) {
         this.toolInput = toolInput;
     }
+
     public Map<String, Object> getToolLabels() {
         return toolLabels;
     }
+
     public void setToolLabels(Map<String, Object> toolLabels) {
         this.toolLabels = immutableCopy(toolLabels);
     }

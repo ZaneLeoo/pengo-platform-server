@@ -4,9 +4,7 @@ import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWorkPackageCreateRequest;
 import java.util.List;
 
-/**
- * WBS范围树与工作包业务。
- */
+/** WBS范围树与工作包业务。 */
 public interface IProjectWbsService {
 
     /** 查询WBS节点列表。 */

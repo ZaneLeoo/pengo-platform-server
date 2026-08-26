@@ -8,19 +8,13 @@ import com.ruoyi.common.utils.Arith;
  * @author ruoyi
  */
 public class Mem {
-    /**
-     * 内存总量
-     */
+    /** 内存总量 */
     private double total;
 
-    /**
-     * 已用内存
-     */
+    /** 已用内存 */
     private double used;
 
-    /**
-     * 剩余内存
-     */
+    /** 剩余内存 */
     private double free;
 
     public double getTotal() {

@@ -4,13 +4,12 @@ import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
 import java.util.List;
 
-/**
- * 项目交付物业务接口。
- */
+/** 项目交付物业务接口。 */
 public interface IProjectDeliverableService {
 
     /** 查询交付物列表。 */
     List<ProjectDeliverable> selectList(ProjectDeliverable entity);
+
     List<ProjectDeliverable> selectMine(Long userId, ProjectDeliverable entity);
 
     /** 根据ID查询交付物。 */

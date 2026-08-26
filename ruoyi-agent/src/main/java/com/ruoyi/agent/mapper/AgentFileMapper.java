@@ -2,7 +2,6 @@ package com.ruoyi.agent.mapper;
 
 import com.ruoyi.agent.domain.AgentFile;
 import java.util.List;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,6 +18,8 @@ public interface AgentFileMapper {
     List<AgentFile> selectByUserId(Long userId);
 
     /** 将当前用户拥有的文件标记为已删除。 */
-    int markDeleted(@Param("resourceId") String resourceId, @Param("userId") Long userId,
+    int markDeleted(
+            @Param("resourceId") String resourceId,
+            @Param("userId") Long userId,
             @Param("updateBy") String updateBy);
 }

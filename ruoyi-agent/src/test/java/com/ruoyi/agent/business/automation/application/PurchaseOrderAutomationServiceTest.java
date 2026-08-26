@@ -35,24 +35,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 /** 采购订单自动化服务的核心业务规则测试。 */
 @ExtendWith(MockitoExtension.class)
 class PurchaseOrderAutomationServiceTest {
-    @Mock
-    private ISupplierService supplierService;
-    @Mock
-    private IMaterialService materialService;
-    @Mock
-    private IPurchaseOrderService purchaseOrderService;
-    @Mock
-    private AutomationActionMapper actionMapper;
-    @Mock
-    private IPurchaseSupplierQuoteService quoteService;
+    @Mock private ISupplierService supplierService;
+    @Mock private IMaterialService materialService;
+    @Mock private IPurchaseOrderService purchaseOrderService;
+    @Mock private AutomationActionMapper actionMapper;
+    @Mock private IPurchaseSupplierQuoteService quoteService;
 
     private PurchaseOrderAutomationService service;
 
     @BeforeEach
     void setUp() {
-        service = new PurchaseOrderAutomationService(supplierService, materialService, purchaseOrderService,
-                actionMapper,
-                quoteService);
+        service =
+                new PurchaseOrderAutomationService(
+                        supplierService,
+                        materialService,
+                        purchaseOrderService,
+                        actionMapper,
+                        quoteService);
     }
 
     @Test
@@ -63,9 +62,19 @@ class PurchaseOrderAutomationServiceTest {
         when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString()))
                 .thenReturn(List.of(material));
 
-        PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", "2026-07-12",
-                "2026-07-20", "生产补料", List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", new BigDecimal("2"),
-                        new BigDecimal("25.50"), "2026-07-20"))));
+        PurchaseOrderPreparationResult result =
+                service.prepare(
+                        new PurchaseOrderDraftRequest(
+                                "SUP001",
+                                "2026-07-12",
+                                "2026-07-20",
+                                "生产补料",
+                                List.of(
+                                        new PurchaseOrderDraftLineRequest(
+                                                "PCB-CTRL",
+                                                new BigDecimal("2"),
+                                                new BigDecimal("25.50"),
+                                                "2026-07-20"))));
 
         assertThat(result.getStatus()).isEqualTo(AutomationPreparationStatus.READY);
         assertThat(result.getDraft().getSupplierName()).isEqualTo("深圳鸿发电子科技有限公司");
@@ -76,8 +85,14 @@ class PurchaseOrderAutomationServiceTest {
 
     @Test
     void shouldRequestMissingLineFieldsInsteadOfGuessing() {
-        PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", "2026-07-12",
-                null, null, List.of(new PurchaseOrderDraftLineRequest("", null, null, null))));
+        PurchaseOrderPreparationResult result =
+                service.prepare(
+                        new PurchaseOrderDraftRequest(
+                                "SUP001",
+                                "2026-07-12",
+                                null,
+                                null,
+                                List.of(new PurchaseOrderDraftLineRequest("", null, null, null))));
 
         assertThat(result.getStatus()).isEqualTo(AutomationPreparationStatus.NEED_INPUT);
         assertThat(result.getMissingFields()).contains("第 1 行物料", "第 1 行采购数量", "第 1 行含税单价");
@@ -91,9 +106,19 @@ class PurchaseOrderAutomationServiceTest {
         when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString()))
                 .thenReturn(List.of(material));
 
-        PurchaseOrderPreparationResult result = service.prepare(new PurchaseOrderDraftRequest("SUP001", null,
-                null, null,
-                List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
+        PurchaseOrderPreparationResult result =
+                service.prepare(
+                        new PurchaseOrderDraftRequest(
+                                "SUP001",
+                                null,
+                                null,
+                                null,
+                                List.of(
+                                        new PurchaseOrderDraftLineRequest(
+                                                "PCB-CTRL",
+                                                BigDecimal.ONE,
+                                                BigDecimal.TEN,
+                                                null))));
 
         assertThat(result.getStatus()).isEqualTo(AutomationPreparationStatus.READY);
         assertThat(result.getDraft().getOrderDate())
@@ -108,17 +133,33 @@ class PurchaseOrderAutomationServiceTest {
         when(materialService.selectMaterialListForAgent(anyString(), any(), any(), anyString()))
                 .thenReturn(List.of(material));
         when(actionMapper.selectByActionKey("request-001")).thenReturn(null);
-        doAnswer(invocation -> {
-            PurchaseOrder order = invocation.getArgument(0);
-            order.setId(99L);
-            return 1;
-        }).when(purchaseOrderService).insertPurchaseOrder(any(PurchaseOrder.class));
+        doAnswer(
+                        invocation -> {
+                            PurchaseOrder order = invocation.getArgument(0);
+                            order.setId(99L);
+                            return 1;
+                        })
+                .when(purchaseOrderService)
+                .insertPurchaseOrder(any(PurchaseOrder.class));
 
-        PurchaseOrderPreparationResult prepared = service.prepare(new PurchaseOrderDraftRequest("SUP001", "2026-07-12",
-                null, null,
-                List.of(new PurchaseOrderDraftLineRequest("PCB-CTRL", BigDecimal.ONE, BigDecimal.TEN, null))));
-        CreatePurchaseOrderDraftResult created = service.createDraft(
-                new CreatePurchaseOrderDraftRequest("request-001", prepared.getDraft()), 1L, "admin");
+        PurchaseOrderPreparationResult prepared =
+                service.prepare(
+                        new PurchaseOrderDraftRequest(
+                                "SUP001",
+                                "2026-07-12",
+                                null,
+                                null,
+                                List.of(
+                                        new PurchaseOrderDraftLineRequest(
+                                                "PCB-CTRL",
+                                                BigDecimal.ONE,
+                                                BigDecimal.TEN,
+                                                null))));
+        CreatePurchaseOrderDraftResult created =
+                service.createDraft(
+                        new CreatePurchaseOrderDraftRequest("request-001", prepared.getDraft()),
+                        1L,
+                        "admin");
 
         ArgumentCaptor<PurchaseOrder> orderCaptor = ArgumentCaptor.forClass(PurchaseOrder.class);
         verify(purchaseOrderService).insertPurchaseOrder(orderCaptor.capture());

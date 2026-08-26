@@ -1,10 +1,9 @@
 package com.ruoyi.agent.tool.supplier;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 
 /** 供应商工具安全输出，不暴露联系方式和地址。 */
 @Data
@@ -17,5 +16,4 @@ public class SupplierToolItem {
     private String currency;
     private BigDecimal taxRate;
     private String status;
-
 }

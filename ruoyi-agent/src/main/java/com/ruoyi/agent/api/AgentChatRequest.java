@@ -1,7 +1,7 @@
 package com.ruoyi.agent.api;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.Map;

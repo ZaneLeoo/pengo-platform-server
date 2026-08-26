@@ -1,5 +1,8 @@
 package com.ruoyi.framework.aspectj;
 
+import com.ruoyi.common.annotation.DataSource;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.datasource.DynamicDataSourceContextHolder;
 import java.util.Objects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -11,9 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.annotation.DataSource;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.framework.datasource.DynamicDataSourceContextHolder;
 
 /**
  * 多数据源处理
@@ -26,11 +26,10 @@ import com.ruoyi.framework.datasource.DynamicDataSourceContextHolder;
 public class DataSourceAspect {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Pointcut("@annotation(com.ruoyi.common.annotation.DataSource)"
-            + "|| @within(com.ruoyi.common.annotation.DataSource)")
-    public void dsPointCut() {
-
-    }
+    @Pointcut(
+            "@annotation(com.ruoyi.common.annotation.DataSource)"
+                    + "|| @within(com.ruoyi.common.annotation.DataSource)")
+    public void dsPointCut() {}
 
     @Around("dsPointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -48,12 +47,11 @@ public class DataSourceAspect {
         }
     }
 
-    /**
-     * 获取需要切换的数据源
-     */
+    /** 获取需要切换的数据源 */
     public DataSource getDataSource(ProceedingJoinPoint point) {
         MethodSignature signature = (MethodSignature) point.getSignature();
-        DataSource dataSource = AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
+        DataSource dataSource =
+                AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
         if (Objects.nonNull(dataSource)) {
             return dataSource;
         }

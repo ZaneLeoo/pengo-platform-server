@@ -6,13 +6,9 @@ package com.ruoyi.common.enums;
  * @author ruoyi
  */
 public enum DataSourceType {
-    /**
-     * 主库
-     */
+    /** 主库 */
     MASTER,
 
-    /**
-     * 从库
-     */
+    /** 从库 */
     SLAVE
 }

@@ -13,5 +13,4 @@ public class DifyFileUploadRequest {
     private String contentType;
     private byte[] content;
     private String user;
-
 }

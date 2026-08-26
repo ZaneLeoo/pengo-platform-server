@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 
 import com.ruoyi.agent.api.AgentFileView;
 import com.ruoyi.agent.domain.AgentFile;
-import com.ruoyi.agent.mapper.AgentFileMapper;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.model.DifyStreamEvent;
+import com.ruoyi.agent.mapper.AgentFileMapper;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
@@ -21,11 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AgentFileServiceTest {
     private static final String RESOURCE_ID = "5924e975-b3fe-406a-8615-c4b6ba74f073";
-    @Mock
-    private AgentFileMapper fileMapper;
+    @Mock private AgentFileMapper fileMapper;
 
-    @Mock
-    private AgentFileStorage fileStorage;
+    @Mock private AgentFileStorage fileStorage;
 
     private AgentFileService service;
 
@@ -54,11 +52,15 @@ class AgentFileServiceTest {
 
         List<AgentFileView> result = service.listOwned(7L);
 
-        assertThat(result).singleElement().satisfies(file -> {
-            assertThat(file.getResourceId()).isEqualTo(RESOURCE_ID);
-            assertThat(file.getDownloadUrl()).isEqualTo("/agent/files/" + RESOURCE_ID);
-            assertThat(file.getPreview()).isEqualTo("download");
-        });
+        assertThat(result)
+                .singleElement()
+                .satisfies(
+                        file -> {
+                            assertThat(file.getResourceId()).isEqualTo(RESOURCE_ID);
+                            assertThat(file.getDownloadUrl())
+                                    .isEqualTo("/agent/files/" + RESOURCE_ID);
+                            assertThat(file.getPreview()).isEqualTo("download");
+                        });
     }
 
     @Test
@@ -77,15 +79,22 @@ class AgentFileServiceTest {
     void shouldNotMaterializeUserInputFileReturnedByMessageEnd() {
         String uploadFileId = "56dac531-e8f2-41e3-bc4f-d28a4ef34c9a";
         DifyStreamEvent event = new DifyStreamEvent();
-        event.setRaw(java.util.Map.of("files", List.of(java.util.Map.of(
-                "related_id", "related-1",
-                "upload_file_id", uploadFileId,
-                "filename", "twoCats.jpg",
-                "url", "/files/file-preview"))));
+        event.setRaw(
+                java.util.Map.of(
+                        "files",
+                        List.of(
+                                java.util.Map.of(
+                                        "related_id", "related-1",
+                                        "upload_file_id", uploadFileId,
+                                        "filename", "twoCats.jpg",
+                                        "url", "/files/file-preview"))));
 
-        List<java.util.Map<String, Object>> result = service.materialize(
-                new DifyClientSettings("http://localhost", "secret"), event, 7L,
-                service.newStreamContext(List.of(uploadFileId)));
+        List<java.util.Map<String, Object>> result =
+                service.materialize(
+                        new DifyClientSettings("http://localhost", "secret"),
+                        event,
+                        7L,
+                        service.newStreamContext(List.of(uploadFileId)));
 
         assertThat(result).isEmpty();
     }

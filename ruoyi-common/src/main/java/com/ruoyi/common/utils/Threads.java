@@ -16,9 +16,7 @@ import org.slf4j.LoggerFactory;
 public class Threads {
     private static final Logger logger = LoggerFactory.getLogger(Threads.class);
 
-    /**
-     * sleep等待,单位为毫秒
-     */
+    /** sleep等待,单位为毫秒 */
     public static void sleep(long milliseconds) {
         try {
             Thread.sleep(milliseconds);
@@ -48,9 +46,7 @@ public class Threads {
         }
     }
 
-    /**
-     * 打印线程异常信息
-     */
+    /** 打印线程异常信息 */
     public static void printException(Runnable r, Throwable t) {
         if (t == null && r instanceof Future<?>) {
             try {

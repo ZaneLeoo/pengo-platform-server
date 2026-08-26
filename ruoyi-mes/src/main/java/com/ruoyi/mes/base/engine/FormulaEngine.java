@@ -3,24 +3,22 @@ package com.ruoyi.mes.base.engine;
 import com.ruoyi.mes.base.domain.Material;
 import com.ruoyi.mes.base.domain.UnitConversionFormula;
 import com.ruoyi.mes.base.mapper.UnitConversionFormulaMapper;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
- * 公式求值引擎。
- * 负责：变量替换 + 三级作用域公式查找 + 调用 ArithmeticEvaluator 求值。
+ * 公式求值引擎。 负责：变量替换 + 三级作用域公式查找 + 调用 ArithmeticEvaluator 求值。
  *
  * @author ruoyi
  * @date 2026-07-30
@@ -33,8 +31,7 @@ public class FormulaEngine {
     private static final int DEFAULT_DECIMAL_SCALE = 4;
     private static final MathContext INTERNAL_CONTEXT = MathContext.DECIMAL128;
 
-    @Autowired
-    private UnitConversionFormulaMapper formulaMapper;
+    @Autowired private UnitConversionFormulaMapper formulaMapper;
 
     private final ArithmeticEvaluator evaluator = new ArithmeticEvaluator();
 
@@ -42,32 +39,42 @@ public class FormulaEngine {
      * 三级作用域查找公式：物料级 > 分类级 > 单位组级。
      *
      * @param unitGroupId 单位组ID
-     * @param material    物料（含 categoryId）
-     * @param fromUnit    源单位编码
-     * @param toUnit      目标单位编码
+     * @param material 物料（含 categoryId）
+     * @param fromUnit 源单位编码
+     * @param toUnit 目标单位编码
      * @return 匹配到的公式，null 表示无公式（应使用固定换算率）
      */
-    public UnitConversionFormula findFormula(Long unitGroupId, Material material,
-                                              String fromUnit, String toUnit) {
+    public UnitConversionFormula findFormula(
+            Long unitGroupId, Material material, String fromUnit, String toUnit) {
         return findFormula(unitGroupId, material, fromUnit, toUnit, null);
     }
 
     /**
      * 查找公式，并支持单位明细显式绑定的公式作为单位组级别的补充来源。
-     * <p>物料级和分类级仍然优先，避免显式绑定覆盖更具体的业务规则。</p>
+     *
+     * <p>物料级和分类级仍然优先，避免显式绑定覆盖更具体的业务规则。
      */
-    public UnitConversionFormula findFormula(Long unitGroupId, Material material,
-                                              String fromUnit, String toUnit,
-                                              Long preferredFormulaId) {
+    public UnitConversionFormula findFormula(
+            Long unitGroupId,
+            Material material,
+            String fromUnit,
+            String toUnit,
+            Long preferredFormulaId) {
         // 1. 物料级别（最高优先）
-        UnitConversionFormula f = formulaMapper.selectByScope(
-                unitGroupId, "MATERIAL", material.getMaterialId(), fromUnit, toUnit);
+        UnitConversionFormula f =
+                formulaMapper.selectByScope(
+                        unitGroupId, "MATERIAL", material.getMaterialId(), fromUnit, toUnit);
         if (f != null) return f;
 
         // 2. 分类级别
         if (material.getCategoryId() != null) {
-            f = formulaMapper.selectByScope(
-                    unitGroupId, "CLASSIFICATION", material.getCategoryId(), fromUnit, toUnit);
+            f =
+                    formulaMapper.selectByScope(
+                            unitGroupId,
+                            "CLASSIFICATION",
+                            material.getCategoryId(),
+                            fromUnit,
+                            toUnit);
             if (f != null) return f;
         }
 
@@ -78,12 +85,11 @@ public class FormulaEngine {
         }
 
         // 4. 单位组级别（默认兜底）
-        return formulaMapper.selectByScope(
-                unitGroupId, "UNIT_GROUP", null, fromUnit, toUnit);
+        return formulaMapper.selectByScope(unitGroupId, "UNIT_GROUP", null, fromUnit, toUnit);
     }
 
-    private boolean isUsableFormula(UnitConversionFormula formula, Long unitGroupId,
-                                    String fromUnit, String toUnit) {
+    private boolean isUsableFormula(
+            UnitConversionFormula formula, Long unitGroupId, String fromUnit, String toUnit) {
         return formula != null
                 && unitGroupId != null
                 && unitGroupId.equals(formula.getUnitGroupId())
@@ -94,16 +100,17 @@ public class FormulaEngine {
     }
 
     /**
-     * 计算公式的动态换算率（正向：从 inputUnit 换到 outputUnit）。
-     * 例如公式 "1卷=长*宽*码数 平方米" 返回 rate=60，表示 1卷=60平方米。
+     * 计算公式的动态换算率（正向：从 inputUnit 换到 outputUnit）。 例如公式 "1卷=长*宽*码数 平方米" 返回 rate=60，表示 1卷=60平方米。
      *
-     * @param formula  公式定义
+     * @param formula 公式定义
      * @param material 物料实体（提供 length/width/yards 等值）
      * @param runtimeOverrides 运行时覆盖值（如实际称重数据），可选
      * @return 换算率（表示 1个inputUnit = rate个outputUnit）
      */
-    public BigDecimal evaluate(UnitConversionFormula formula, Material material,
-                                Map<String, BigDecimal> runtimeOverrides) {
+    public BigDecimal evaluate(
+            UnitConversionFormula formula,
+            Material material,
+            Map<String, BigDecimal> runtimeOverrides) {
         if (formula == null || formula.getExpression() == null) {
             log.warn("公式或表达式为空");
             return BigDecimal.ZERO;
@@ -120,8 +127,11 @@ public class FormulaEngine {
     }
 
     /** 正向换算并按公式配置舍入输出数量。 */
-    public BigDecimal forwardEvaluate(UnitConversionFormula formula, Material material,
-                                      BigDecimal inputQty, Map<String, BigDecimal> overrides) {
+    public BigDecimal forwardEvaluate(
+            UnitConversionFormula formula,
+            Material material,
+            BigDecimal inputQty,
+            Map<String, BigDecimal> overrides) {
         BigDecimal rate = evaluate(formula, material, overrides);
         if (rate == null || rate.compareTo(BigDecimal.ZERO) == 0) {
             return BigDecimal.ZERO;
@@ -131,30 +141,37 @@ public class FormulaEngine {
 
     /**
      * 反向计算：已知 output 端数量，反推 input 端数量。
+     *
      * <p>根据 reverse_mode:
+     *
      * <ul>
-     *   <li>DIVIDE: quantity / rate（最常用）</li>
-     *   <li>MULTIPLY: quantity * rate</li>
-     *   <li>CUSTOM: 使用 reverse_expression 单独求值</li>
+     *   <li>DIVIDE: quantity / rate（最常用）
+     *   <li>MULTIPLY: quantity * rate
+     *   <li>CUSTOM: 使用 reverse_expression 单独求值
      * </ul>
      *
-     * @param formula      公式定义
-     * @param material     物料
-     * @param outputQty    目标单位数量（即已知量）
-     * @param overrides    运行时覆盖
+     * @param formula 公式定义
+     * @param material 物料
+     * @param outputQty 目标单位数量（即已知量）
+     * @param overrides 运行时覆盖
      * @return 源单位数量
      */
-    public BigDecimal reverseEvaluate(UnitConversionFormula formula, Material material,
-                                       BigDecimal outputQty, Map<String, BigDecimal> overrides) {
-        String reverseMode = formula.getReverseMode() == null
-                ? "DIVIDE" : formula.getReverseMode().toUpperCase(Locale.ROOT);
+    public BigDecimal reverseEvaluate(
+            UnitConversionFormula formula,
+            Material material,
+            BigDecimal outputQty,
+            Map<String, BigDecimal> overrides) {
+        String reverseMode =
+                formula.getReverseMode() == null
+                        ? "DIVIDE"
+                        : formula.getReverseMode().toUpperCase(Locale.ROOT);
         BigDecimal result;
         if ("MULTIPLY".equals(reverseMode)) {
             BigDecimal rate = evaluate(formula, material, overrides);
             result = outputQty.multiply(rate, INTERNAL_CONTEXT);
-        } else if ("CUSTOM".equals(reverseMode)
-                && formula.getReverseExpression() != null) {
-            String expr = replaceVariables(formula.getReverseExpression(), formula, material, overrides);
+        } else if ("CUSTOM".equals(reverseMode) && formula.getReverseExpression() != null) {
+            String expr =
+                    replaceVariables(formula.getReverseExpression(), formula, material, overrides);
             result = evaluator.evaluate(expr);
         } else {
             BigDecimal rate = evaluate(formula, material, overrides);
@@ -172,13 +189,16 @@ public class FormulaEngine {
         if (value == null) {
             return null;
         }
-        int scale = formula == null || formula.getDecimalScale() == null
-                ? DEFAULT_DECIMAL_SCALE : formula.getDecimalScale();
+        int scale =
+                formula == null || formula.getDecimalScale() == null
+                        ? DEFAULT_DECIMAL_SCALE
+                        : formula.getDecimalScale();
         String modeText = formula == null ? null : formula.getRoundingMode();
         RoundingMode mode;
         try {
-            mode = RoundingMode.valueOf(modeText == null
-                    ? "HALF_UP" : modeText.toUpperCase(Locale.ROOT));
+            mode =
+                    RoundingMode.valueOf(
+                            modeText == null ? "HALF_UP" : modeText.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ex) {
             mode = RoundingMode.HALF_UP;
         }
@@ -187,8 +207,11 @@ public class FormulaEngine {
 
     // ---- 变量替换 ----
 
-    private String replaceVariables(String expression, UnitConversionFormula formula,
-                                     Material material, Map<String, BigDecimal> overrides) {
+    private String replaceVariables(
+            String expression,
+            UnitConversionFormula formula,
+            Material material,
+            Map<String, BigDecimal> overrides) {
         Matcher m = VAR_PATTERN.matcher(expression);
         StringBuilder sb = new StringBuilder();
         while (m.find()) {
@@ -200,8 +223,11 @@ public class FormulaEngine {
         return sb.toString();
     }
 
-    private BigDecimal resolveVar(String varName, UnitConversionFormula formula,
-                                   Material material, Map<String, BigDecimal> overrides) {
+    private BigDecimal resolveVar(
+            String varName,
+            UnitConversionFormula formula,
+            Material material,
+            Map<String, BigDecimal> overrides) {
         // 1. runtime overrides 优先
         if (overrides != null && overrides.containsKey(varName)) {
             return overrides.get(varName);
@@ -218,9 +244,8 @@ public class FormulaEngine {
     }
 
     /**
-     * 根据参数名匹配公式配置的 paramX，按优先级返回：
-     * paramX_field 不为空 → 读 Material 字段；否则用 paramX_default 常量。
-     * 返回 null 表示未匹配或值为 null。
+     * 根据参数名匹配公式配置的 paramX，按优先级返回： paramX_field 不为空 → 读 Material 字段；否则用 paramX_default 常量。 返回 null
+     * 表示未匹配或值为 null。
      */
     private BigDecimal resolveParam(UnitConversionFormula f, String varName, Material material) {
         if (varName.equals(f.getParam1Name()))
@@ -237,7 +262,8 @@ public class FormulaEngine {
     }
 
     /** field 不为空 → 反射 Material；否则用 defaultValue */
-    private BigDecimal resolveFieldOrDefault(String fieldName, BigDecimal defaultValue, Material material) {
+    private BigDecimal resolveFieldOrDefault(
+            String fieldName, BigDecimal defaultValue, Material material) {
         if (fieldName != null && !fieldName.isBlank()) {
             BigDecimal val = getMaterialField(material, fieldName);
             // Material 字段返回 0（即没有配置）→ 回退到 default
@@ -262,7 +288,11 @@ public class FormulaEngine {
             if (val instanceof BigDecimal) return (BigDecimal) val;
             if (val instanceof Number) return BigDecimal.valueOf(((Number) val).doubleValue());
             if (val instanceof String) {
-                try { return new BigDecimal((String) val); } catch (Exception e) { /* ignore */ }
+                try {
+                    return new BigDecimal((String) val);
+                } catch (Exception e) {
+                    /* ignore */
+                }
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             log.debug("无法从Material读取字段: {}", fieldName);

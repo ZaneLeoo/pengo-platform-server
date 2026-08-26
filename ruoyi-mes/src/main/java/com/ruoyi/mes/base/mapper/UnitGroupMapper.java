@@ -1,9 +1,8 @@
 package com.ruoyi.mes.base.mapper;
 
 import com.ruoyi.mes.base.domain.UnitGroup;
-import org.apache.ibatis.annotations.Mapper;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 计量单位组数据访问接口。

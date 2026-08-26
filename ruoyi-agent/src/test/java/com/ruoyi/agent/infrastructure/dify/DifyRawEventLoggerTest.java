@@ -37,7 +37,10 @@ class DifyRawEventLoggerTest {
         DifyRawEventLogger logger = new DifyRawEventLogger(logs::add, () -> true);
         String base64 = "A".repeat(300);
 
-        logger.log("data: {\"api_key\":\"app-secret-value\",\"token\":\"token-value\",\"audio\":\"" + base64 + "\"}");
+        logger.log(
+                "data: {\"api_key\":\"app-secret-value\",\"token\":\"token-value\",\"audio\":\""
+                        + base64
+                        + "\"}");
 
         String logged = logs.get(0);
         assertFalse(logged.contains("app-secret-value"));

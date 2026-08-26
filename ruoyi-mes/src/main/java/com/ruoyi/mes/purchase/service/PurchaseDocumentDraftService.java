@@ -15,7 +15,9 @@ public class PurchaseDocumentDraftService {
     private final PurchaseInboundMapper inboundMapper;
     private final ShelfLifeService shelfLifeService;
 
-    public PurchaseDocumentDraftService(PurchaseReceiptMapper receiptMapper, PurchaseInboundMapper inboundMapper,
+    public PurchaseDocumentDraftService(
+            PurchaseReceiptMapper receiptMapper,
+            PurchaseInboundMapper inboundMapper,
             ShelfLifeService shelfLifeService) {
         this.receiptMapper = receiptMapper;
         this.inboundMapper = inboundMapper;
@@ -28,12 +30,14 @@ public class PurchaseDocumentDraftService {
         receipt.setStatus(PurchaseDocumentStatus.DRAFT.getCode());
         receipt.setCreateBy(operator);
         receiptMapper.insert(receipt);
-        receipt.getLines().forEach(line -> {
-            shelfLifeService.prepareReceiptLine(line);
-            line.setReceiptId(receipt.getId());
-            line.setCreateBy(operator);
-            receiptMapper.insertLine(line);
-        });
+        receipt.getLines()
+                .forEach(
+                        line -> {
+                            shelfLifeService.prepareReceiptLine(line);
+                            line.setReceiptId(receipt.getId());
+                            line.setCreateBy(operator);
+                            receiptMapper.insertLine(line);
+                        });
         return receipt.getId();
     }
 
@@ -43,12 +47,14 @@ public class PurchaseDocumentDraftService {
         inbound.setStatus(PurchaseDocumentStatus.DRAFT.getCode());
         inbound.setCreateBy(operator);
         inboundMapper.insert(inbound);
-        inbound.getLines().forEach(line -> {
-            shelfLifeService.validateInboundLine(line);
-            line.setInboundId(inbound.getId());
-            line.setCreateBy(operator);
-            inboundMapper.insertLine(line);
-        });
+        inbound.getLines()
+                .forEach(
+                        line -> {
+                            shelfLifeService.validateInboundLine(line);
+                            line.setInboundId(inbound.getId());
+                            line.setCreateBy(operator);
+                            inboundMapper.insertLine(line);
+                        });
         return inbound.getId();
     }
 }

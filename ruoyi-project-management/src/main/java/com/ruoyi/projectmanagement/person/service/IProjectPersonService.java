@@ -4,9 +4,7 @@ import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.domain.ProjectUserOption;
 import java.util.List;
 
-/**
- * 项目人员档案业务接口。
- */
+/** 项目人员档案业务接口。 */
 public interface IProjectPersonService {
 
     /** 查询人员档案列表。 */

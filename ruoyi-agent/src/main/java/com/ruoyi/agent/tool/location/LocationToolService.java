@@ -27,21 +27,32 @@ public class LocationToolService {
         condition.setLocationName(query.getLocationName());
         condition.setWarehouseId(query.getWarehouseId());
         condition.setWarehouseCode(query.getWarehouseCode());
-        condition.setStatus(Boolean.TRUE.equals(query.getIncludeDisabled()) ? null : ENABLED_STATUS);
+        condition.setStatus(
+                Boolean.TRUE.equals(query.getIncludeDisabled()) ? null : ENABLED_STATUS);
         List<Location> matched = locationService.selectList(condition);
-        List<LocationToolItem> data = matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
-        AgentToolMeta meta = AgentToolMeta.collection(matched.size(), matched.size() > MAX_RESULT_SIZE);
+        List<LocationToolItem> data =
+                matched.stream().limit(MAX_RESULT_SIZE).map(this::toItem).toList();
+        AgentToolMeta meta =
+                AgentToolMeta.collection(matched.size(), matched.size() > MAX_RESULT_SIZE);
         if (data.isEmpty()) {
-            return AgentToolResults.noResult(LocationToolResultCode.LOCATION_NOT_FOUND,
-                    "未找到符合条件的库位", data, meta);
+            return AgentToolResults.noResult(
+                    LocationToolResultCode.LOCATION_NOT_FOUND, "未找到符合条件的库位", data, meta);
         }
-        return AgentToolResults.success(LocationToolResultCode.LOCATION_QUERY_SUCCESS,
-                "查询到 " + data.size() + " 个库位", data, meta);
+        return AgentToolResults.success(
+                LocationToolResultCode.LOCATION_QUERY_SUCCESS,
+                "查询到 " + data.size() + " 个库位",
+                data,
+                meta);
     }
 
     private LocationToolItem toItem(Location location) {
-        return new LocationToolItem(location.getId(), location.getLocationCode(), location.getLocationName(),
-                location.getWarehouseId(), location.getWarehouseCode(), location.getWarehouseName(),
+        return new LocationToolItem(
+                location.getId(),
+                location.getLocationCode(),
+                location.getLocationName(),
+                location.getWarehouseId(),
+                location.getWarehouseCode(),
+                location.getWarehouseName(),
                 location.getStatus());
     }
 }

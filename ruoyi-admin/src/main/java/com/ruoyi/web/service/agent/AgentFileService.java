@@ -1,9 +1,5 @@
 package com.ruoyi.web.service.agent;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.agent.api.AgentFileView;
 import com.ruoyi.agent.domain.AgentFile;
@@ -28,6 +24,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,10 +34,7 @@ import org.springframework.stereotype.Service;
 /**
  * Agent 生成文件的持久化与安全访问服务。
  *
- * <p>
- * 文件内容由 AgentFileStorage 保存，文件元数据保存到数据库。 浏览器只能拿到不可猜测的 resourceId，不能直接访问 Dify
- * 的签名地址或 API Key。
- * </p>
+ * <p>文件内容由 AgentFileStorage 保存，文件元数据保存到数据库。 浏览器只能拿到不可猜测的 resourceId，不能直接访问 Dify 的签名地址或 API Key。
  */
 @Service
 public class AgentFileService {
@@ -65,9 +61,8 @@ public class AgentFileService {
     public StreamContext newStreamContext(List<String> inputFileIds) {
         StreamContext context = new StreamContext();
         if (inputFileIds != null) {
-            context.inputFileIds.addAll(inputFileIds.stream()
-                    .filter(id -> id != null && !id.isBlank())
-                    .toList());
+            context.inputFileIds.addAll(
+                    inputFileIds.stream().filter(id -> id != null && !id.isBlank()).toList());
         }
         return context;
     }
@@ -93,15 +88,20 @@ public class AgentFileService {
     }
 
     /** 将 message_end.files 转换为可供前端消费的统一文件事件数据。 */
-    public List<Map<String, Object>> materialize(DifyClientSettings settings, DifyStreamEvent event,
-            Long userId, StreamContext context) {
+    public List<Map<String, Object>> materialize(
+            DifyClientSettings settings,
+            DifyStreamEvent event,
+            Long userId,
+            StreamContext context) {
         if (context == null || context.materialized) {
             return Collections.emptyList();
         }
         context.materialized = true;
 
-        LinkedHashMap<String, Map<String, Object>> descriptors = new LinkedHashMap<>(context.pendingFiles);
-        for (Map<String, Object> descriptor : extractFileList(event == null ? null : event.getRaw().get("files"))) {
+        LinkedHashMap<String, Map<String, Object>> descriptors =
+                new LinkedHashMap<>(context.pendingFiles);
+        for (Map<String, Object> descriptor :
+                extractFileList(event == null ? null : event.getRaw().get("files"))) {
             String id = text(first(descriptor, "related_id", "id", "upload_file_id"));
             descriptors.put(id.isBlank() ? "file-" + descriptors.size() : id, descriptor);
         }
@@ -123,8 +123,14 @@ public class AgentFileService {
                 hint = context.nameByTool.get(toolName);
             }
             try {
-                results.add(store(settings, descriptor, hint, toolName, userId,
-                        event == null ? null : event.getConversationId()));
+                results.add(
+                        store(
+                                settings,
+                                descriptor,
+                                hint,
+                                toolName,
+                                userId,
+                                event == null ? null : event.getConversationId()));
             } catch (Exception exception) {
                 if (exception instanceof InterruptedException) {
                     Thread.currentThread().interrupt();
@@ -177,8 +183,12 @@ public class AgentFileService {
         if (file == null) {
             return null;
         }
-        return new StoredFile(file, metadata.getFileName(), metadata.getMediaType(),
-                "BROWSER".equals(metadata.getPreviewMode()), metadata.getFileSize());
+        return new StoredFile(
+                file,
+                metadata.getFileName(),
+                metadata.getMediaType(),
+                "BROWSER".equals(metadata.getPreviewMode()),
+                metadata.getFileSize());
     }
 
     /** 查询当前用户持久化的全部可用文件。 */
@@ -203,13 +213,25 @@ public class AgentFileService {
     }
 
     private AgentFileView toView(AgentFile file) {
-        return new AgentFileView(file.getResourceId(), file.getFileName(), file.getExtension(), file.getMediaType(),
-                file.getFileKind(), file.getFileSize(), "/agent/files/" + file.getResourceId(),
-                "BROWSER".equals(file.getPreviewMode()) ? "browser" : "download", file.getCreateTime());
+        return new AgentFileView(
+                file.getResourceId(),
+                file.getFileName(),
+                file.getExtension(),
+                file.getMediaType(),
+                file.getFileKind(),
+                file.getFileSize(),
+                "/agent/files/" + file.getResourceId(),
+                "BROWSER".equals(file.getPreviewMode()) ? "browser" : "download",
+                file.getCreateTime());
     }
 
-    private Map<String, Object> store(DifyClientSettings settings, Map<String, Object> descriptor,
-            String filenameHint, String toolName, Long userId, String conversationId)
+    private Map<String, Object> store(
+            DifyClientSettings settings,
+            Map<String, Object> descriptor,
+            String filenameHint,
+            String toolName,
+            Long userId,
+            String conversationId)
             throws IOException, InterruptedException {
         String url = text(first(descriptor, "url", "download_url"));
         if (url.isBlank()) {
@@ -222,7 +244,8 @@ public class AgentFileService {
             extension = extensionOf(sourceName);
         }
         String name = normalizeFilename(filenameHint, sourceName, extension);
-        String mediaType = resolveMediaType(text(first(descriptor, "mime_type", "mimeType")), extension);
+        String mediaType =
+                resolveMediaType(text(first(descriptor, "mime_type", "mimeType")), extension);
         String resourceId = UUID.randomUUID().toString();
         Path temporary = fileStorage.createTemporary(resourceId);
         String relativePath = null;
@@ -233,8 +256,19 @@ public class AgentFileService {
                 throw new IOException("生成文件超过 50MB 限制");
             }
             relativePath = fileStorage.persist(temporary, resourceId, extension);
-            AgentFile file = buildMetadata(resourceId, userId, conversationId, descriptor, toolName, name,
-                    extension, mediaType, relativePath, size, sha256(fileStorage.resolve(relativePath)));
+            AgentFile file =
+                    buildMetadata(
+                            resourceId,
+                            userId,
+                            conversationId,
+                            descriptor,
+                            toolName,
+                            name,
+                            extension,
+                            mediaType,
+                            relativePath,
+                            size,
+                            sha256(fileStorage.resolve(relativePath)));
             fileMapper.insert(file);
         } catch (IOException | RuntimeException exception) {
             if (relativePath != null) {
@@ -270,10 +304,16 @@ public class AgentFileService {
         return result;
     }
 
-    private void download(DifyClientSettings settings, URI uri, Path target) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(uri).timeout(DOWNLOAD_TIMEOUT)
-                .header("Authorization", "Bearer " + settings.getApiKey()).GET().build();
-        HttpResponse<Path> response = httpClient.send(request, HttpResponse.BodyHandlers.ofFile(target));
+    private void download(DifyClientSettings settings, URI uri, Path target)
+            throws IOException, InterruptedException {
+        HttpRequest request =
+                HttpRequest.newBuilder(uri)
+                        .timeout(DOWNLOAD_TIMEOUT)
+                        .header("Authorization", "Bearer " + settings.getApiKey())
+                        .GET()
+                        .build();
+        HttpResponse<Path> response =
+                httpClient.send(request, HttpResponse.BodyHandlers.ofFile(target));
         if (response.statusCode() < 200 || response.statusCode() >= 300) {
             Files.deleteIfExists(target);
             throw new IOException("Dify 文件下载失败，HTTP " + response.statusCode());
@@ -283,9 +323,11 @@ public class AgentFileService {
     private URI resolveDifyFileUri(String baseUrl, String fileUrl) {
         URI base = URI.create(baseUrl.replaceAll("/+$", "") + "/");
         URI target = base.resolve(fileUrl);
-        boolean sameOrigin = base.getScheme().equalsIgnoreCase(target.getScheme())
-                && String.valueOf(base.getHost()).equalsIgnoreCase(String.valueOf(target.getHost()))
-                && effectivePort(base) == effectivePort(target);
+        boolean sameOrigin =
+                base.getScheme().equalsIgnoreCase(target.getScheme())
+                        && String.valueOf(base.getHost())
+                                .equalsIgnoreCase(String.valueOf(target.getHost()))
+                        && effectivePort(base) == effectivePort(target);
         if (!sameOrigin || target.getPath() == null || !target.getPath().startsWith("/files/")) {
             throw new IllegalArgumentException("Dify 文件地址不在受信任的文件路径内");
         }
@@ -293,8 +335,7 @@ public class AgentFileService {
     }
 
     private int effectivePort(URI uri) {
-        if (uri.getPort() >= 0)
-            return uri.getPort();
+        if (uri.getPort() >= 0) return uri.getPort();
         return "https".equalsIgnoreCase(uri.getScheme()) ? 443 : 80;
     }
 
@@ -309,20 +350,18 @@ public class AgentFileService {
         }
         for (int index = 0; index < fileIds.size(); index++) {
             String name = index < filenames.size() ? filenames.get(index) : "";
-            if (!name.isBlank())
-                context.nameByFileId.put(fileIds.get(index), name);
+            if (!name.isBlank()) context.nameByFileId.put(fileIds.get(index), name);
             if (!toolNames.isEmpty())
-                context.toolByFileId.put(fileIds.get(index), toolNames.get(Math.min(index, toolNames.size() - 1)));
+                context.toolByFileId.put(
+                        fileIds.get(index), toolNames.get(Math.min(index, toolNames.size() - 1)));
         }
     }
 
     private List<String> outputFilenames(String value, List<String> toolNames) {
         Object parsed = parseStructuredValue(value);
-        if (!(parsed instanceof Map<?, ?> values))
-            return List.of();
+        if (!(parsed instanceof Map<?, ?> values)) return List.of();
         String directFilename = text(values.get("output_filename"));
-        if (toolNames.size() == 1 && !directFilename.isBlank())
-            return List.of(directFilename);
+        if (toolNames.size() == 1 && !directFilename.isBlank()) return List.of(directFilename);
         List<String> filenames = new ArrayList<>();
         for (String toolName : toolNames) {
             Object nested = values.get(toolName);
@@ -332,14 +371,12 @@ public class AgentFileService {
                 filenames.add("");
             }
         }
-        if (filenames.isEmpty())
-            filenames.add(text(values.get("output_filename")));
+        if (filenames.isEmpty()) filenames.add(text(values.get("output_filename")));
         return filenames;
     }
 
     private Object parseStructuredValue(String value) {
-        if (value == null || value.isBlank())
-            return null;
+        if (value == null || value.isBlank()) return null;
         try {
             return JSON.parse(value);
         } catch (RuntimeException ignored) {
@@ -349,52 +386,42 @@ public class AgentFileService {
 
     private List<Map<String, Object>> extractFileList(Object value) {
         Object parsed = value;
-        if (value instanceof String text)
-            parsed = parseStructuredValue(text);
-        if (!(parsed instanceof List<?> list))
-            return List.of();
+        if (value instanceof String text) parsed = parseStructuredValue(text);
+        if (!(parsed instanceof List<?> list)) return List.of();
         List<Map<String, Object>> result = new ArrayList<>();
         for (Object item : list) {
-            if (item instanceof Map<?, ?> map)
-                result.add(copyMap(map));
+            if (item instanceof Map<?, ?> map) result.add(copyMap(map));
         }
         return result;
     }
 
     private List<String> strings(Object value) {
-        if (!(value instanceof List<?> list))
-            return List.of();
+        if (!(value instanceof List<?> list)) return List.of();
         List<String> result = new ArrayList<>();
         for (Object item : list) {
             String text = text(item);
-            if (!text.isBlank())
-                result.add(text);
+            if (!text.isBlank()) result.add(text);
         }
         return result;
     }
 
     private List<String> splitTools(String value) {
         List<String> result = new ArrayList<>();
-        for (String item : value.split(";"))
-            if (!item.isBlank())
-                result.add(item.trim());
+        for (String item : value.split(";")) if (!item.isBlank()) result.add(item.trim());
         return result;
     }
 
     private Map<String, Object> copyMap(Map<?, ?> source) {
         Map<String, Object> result = new LinkedHashMap<>();
-        if (source != null)
-            source.forEach((key, value) -> result.put(String.valueOf(key), value));
+        if (source != null) source.forEach((key, value) -> result.put(String.valueOf(key), value));
         return result;
     }
 
     private Object first(Map<String, Object> map, String... keys) {
-        if (map == null)
-            return null;
+        if (map == null) return null;
         for (String key : keys) {
             Object value = map.get(key);
-            if (value != null && !text(value).isBlank())
-                return value;
+            if (value != null && !text(value).isBlank()) return value;
         }
         return null;
     }
@@ -403,38 +430,42 @@ public class AgentFileService {
         String value = hint == null || hint.isBlank() ? source : hint;
         value = value == null ? "生成文件" : value;
         value = value.replace('\\', '/');
-        value = value.substring(value.lastIndexOf('/') + 1).replaceAll("[\\r\\n\\\\/:*?\"<>|]", "_").trim();
-        if (value.isBlank())
-            value = "生成文件";
-        if (!extension.isBlank() && !value.toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT)))
+        value =
+                value.substring(value.lastIndexOf('/') + 1)
+                        .replaceAll("[\\r\\n\\\\/:*?\"<>|]", "_")
+                        .trim();
+        if (value.isBlank()) value = "生成文件";
+        if (!extension.isBlank()
+                && !value.toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT)))
             value += extension;
         return value;
     }
 
     private String normalizeExtension(String extension) {
-        if (extension == null)
-            return "";
+        if (extension == null) return "";
         String value = extension.trim().toLowerCase(Locale.ROOT);
-        if (!value.isBlank() && !value.startsWith("."))
-            value = "." + value;
+        if (!value.isBlank() && !value.startsWith(".")) value = "." + value;
         return value.matches("\\.[a-z0-9]{1,10}") ? value : "";
     }
 
     private String extensionOf(String filename) {
-        if (filename == null)
-            return "";
+        if (filename == null) return "";
         int index = filename.lastIndexOf('.');
         return index >= 0 ? normalizeExtension(filename.substring(index)) : "";
     }
 
     private String resolveMediaType(String source, String extension) {
-        if (source != null && !source.isBlank() && !"application/octet-stream".equalsIgnoreCase(source))
-            return source;
+        if (source != null
+                && !source.isBlank()
+                && !"application/octet-stream".equalsIgnoreCase(source)) return source;
         return switch (extension) {
             case ".pdf" -> "application/pdf";
-            case ".doc", ".docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-            case ".xls", ".xlsx" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            case ".ppt", ".pptx" -> "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+            case ".doc", ".docx" ->
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+            case ".xls", ".xlsx" ->
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            case ".ppt", ".pptx" ->
+                    "application/vnd.openxmlformats-officedocument.presentationml.presentation";
             case ".csv" -> "text/csv";
             case ".txt", ".md" -> "text/plain";
             case ".png" -> "image/png";
@@ -445,10 +476,8 @@ public class AgentFileService {
     }
 
     private String fileKind(String extension, String mediaType) {
-        if (mediaType.startsWith("image/"))
-            return "image";
-        if ("application/pdf".equals(mediaType))
-            return "pdf";
+        if (mediaType.startsWith("image/")) return "image";
+        if ("application/pdf".equals(mediaType)) return "pdf";
         return switch (extension) {
             case ".xlsx", ".xls", ".csv" -> "spreadsheet";
             case ".docx", ".doc", ".txt", ".md" -> "document";
@@ -458,13 +487,24 @@ public class AgentFileService {
     }
 
     private boolean isBrowserPreview(String extension, String mediaType) {
-        return "application/pdf".equals(mediaType) || mediaType.startsWith("image/") || extension.equals(".txt")
+        return "application/pdf".equals(mediaType)
+                || mediaType.startsWith("image/")
+                || extension.equals(".txt")
                 || extension.equals(".md");
     }
 
-    private AgentFile buildMetadata(String resourceId, Long userId, String conversationId,
-            Map<String, Object> descriptor, String toolName, String name, String extension, String mediaType,
-            String relativePath, long size, String hash) {
+    private AgentFile buildMetadata(
+            String resourceId,
+            Long userId,
+            String conversationId,
+            Map<String, Object> descriptor,
+            String toolName,
+            String name,
+            String extension,
+            String mediaType,
+            String relativePath,
+            long size,
+            String hash) {
         AgentFile file = new AgentFile();
         file.setResourceId(resourceId);
         file.setUserId(userId);
@@ -532,6 +572,5 @@ public class AgentFileService {
         private String mediaType;
         private boolean browserPreview;
         private long size;
-
     }
 }

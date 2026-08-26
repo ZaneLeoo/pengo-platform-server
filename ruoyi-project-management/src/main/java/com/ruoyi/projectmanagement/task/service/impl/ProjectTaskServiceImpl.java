@@ -14,8 +14,8 @@ import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
-import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOperationLog;
+import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
 import com.ruoyi.projectmanagement.task.mapper.ProjectTaskMapper;
 import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
@@ -29,9 +29,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 任务树与任务执行业务实现。
- */
+/** 任务树与任务执行业务实现。 */
 @Service
 public class ProjectTaskServiceImpl implements IProjectTaskService {
 
@@ -42,9 +40,13 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     private final IProjectWbsService wbsService;
     private final ProjectDeliverableMapper deliverableMapper;
 
-    public ProjectTaskServiceImpl(ProjectTaskMapper mapper, ProjectWbsMapper wbsMapper,
-            ProjectInfoMapper projectMapper, IProjectTeamService teamService,
-            IProjectWbsService wbsService, ProjectDeliverableMapper deliverableMapper) {
+    public ProjectTaskServiceImpl(
+            ProjectTaskMapper mapper,
+            ProjectWbsMapper wbsMapper,
+            ProjectInfoMapper projectMapper,
+            IProjectTeamService teamService,
+            IProjectWbsService wbsService,
+            ProjectDeliverableMapper deliverableMapper) {
         this.mapper = mapper;
         this.wbsMapper = wbsMapper;
         this.projectMapper = projectMapper;
@@ -157,7 +159,8 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
                 task.setActualStartDate(LocalDate.now());
             }
             case PAUSE -> {
-                if (!WorkItemStatus.ACTIVE.matches(from) || StringUtils.isBlank(request.getReason())) {
+                if (!WorkItemStatus.ACTIVE.matches(from)
+                        || StringUtils.isBlank(request.getReason())) {
                     throw new ServiceException("只有进行中任务可以暂停，且必须填写原因");
                 }
                 to = WorkItemStatus.PAUSED.getCode();
@@ -243,9 +246,7 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         return mapper.deleteOutput(id);
     }
 
-    /**
-     * 刷新工作包汇总：汇总任务按下级均值聚合，工作包状态按任务完成度与交付物要求推进。
-     */
+    /** 刷新工作包汇总：汇总任务按下级均值聚合，工作包状态按任务完成度与交付物要求推进。 */
     @Override
     @Transactional
     public void refreshPackage(Long packageId) {
@@ -259,51 +260,89 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         all.stream()
                 .sorted(Comparator.comparingInt(x -> -depth(x, all)))
                 .filter(x -> TaskType.SUMMARY.matches(x.getTaskType()))
-                .forEach(x -> {
-                    List<ProjectTask> children = all.stream()
-                            .filter(y -> x.getTaskId().equals(y.getParentTaskId()))
-                            .toList();
-                    int progress = children.isEmpty()
-                            ? 0
-                            : (int) Math.round(children.stream()
-                                    .mapToInt(y -> y.getProgress() == null ? 0 : y.getProgress())
-                                    .average()
-                                    .orElse(0));
-                    String status = progress == 100
-                            ? WorkItemStatus.COMPLETED.getCode()
-                            : children.stream().anyMatch(y -> !WorkItemStatus.NOT_STARTED.matches(y.getStatus()))
-                                    ? WorkItemStatus.ACTIVE.getCode()
-                                    : WorkItemStatus.NOT_STARTED.getCode();
-                    mapper.updateAggregate(x.getTaskId(), status, progress);
-                    x.setStatus(status);
-                    x.setProgress(progress);
-                });
+                .forEach(
+                        x -> {
+                            List<ProjectTask> children =
+                                    all.stream()
+                                            .filter(y -> x.getTaskId().equals(y.getParentTaskId()))
+                                            .toList();
+                            int progress =
+                                    children.isEmpty()
+                                            ? 0
+                                            : (int)
+                                                    Math.round(
+                                                            children.stream()
+                                                                    .mapToInt(
+                                                                            y ->
+                                                                                    y.getProgress()
+                                                                                                    == null
+                                                                                            ? 0
+                                                                                            : y
+                                                                                                    .getProgress())
+                                                                    .average()
+                                                                    .orElse(0));
+                            String status =
+                                    progress == 100
+                                            ? WorkItemStatus.COMPLETED.getCode()
+                                            : children.stream()
+                                                            .anyMatch(
+                                                                    y ->
+                                                                            !WorkItemStatus
+                                                                                    .NOT_STARTED
+                                                                                    .matches(
+                                                                                            y
+                                                                                                    .getStatus()))
+                                                    ? WorkItemStatus.ACTIVE.getCode()
+                                                    : WorkItemStatus.NOT_STARTED.getCode();
+                            mapper.updateAggregate(x.getTaskId(), status, progress);
+                            x.setStatus(status);
+                            x.setProgress(progress);
+                        });
         List<ProjectTask> roots = all.stream().filter(x -> x.getParentTaskId() == 0).toList();
-        int progress = roots.isEmpty()
-                ? 0
-                : (int) Math.round(roots.stream()
-                        .mapToInt(x -> x.getProgress() == null ? 0 : x.getProgress())
-                        .average()
-                        .orElse(0));
-        boolean tasksDone = !roots.isEmpty() && roots.stream().allMatch(x -> WorkItemStatus.COMPLETED.matches(x.getStatus()));
-        boolean delivered = tasksDone && deliverableMapper.countUnsatisfiedRequiredByWorkPackageId(packageId) == 0;
-        String status = delivered
-                ? WbsStatus.COMPLETED.getCode()
-                : tasksDone
-                        ? WbsStatus.WAITING_DELIVERY.getCode()
-                        : progress > 0 ? WbsStatus.ACTIVE.getCode() : WbsStatus.NOT_STARTED.getCode();
+        int progress =
+                roots.isEmpty()
+                        ? 0
+                        : (int)
+                                Math.round(
+                                        roots.stream()
+                                                .mapToInt(
+                                                        x ->
+                                                                x.getProgress() == null
+                                                                        ? 0
+                                                                        : x.getProgress())
+                                                .average()
+                                                .orElse(0));
+        boolean tasksDone =
+                !roots.isEmpty()
+                        && roots.stream()
+                                .allMatch(x -> WorkItemStatus.COMPLETED.matches(x.getStatus()));
+        boolean delivered =
+                tasksDone
+                        && deliverableMapper.countUnsatisfiedRequiredByWorkPackageId(packageId)
+                                == 0;
+        String status =
+                delivered
+                        ? WbsStatus.COMPLETED.getCode()
+                        : tasksDone
+                                ? WbsStatus.WAITING_DELIVERY.getCode()
+                                : progress > 0
+                                        ? WbsStatus.ACTIVE.getCode()
+                                        : WbsStatus.NOT_STARTED.getCode();
         if (delivered) {
             progress = 100;
         } else if (tasksDone) {
             progress = 99;
         }
-        wbsMapper.updateAggregate(packageId, workPackage.getPlanStartDate(), workPackage.getPlanEndDate(), status, progress);
+        wbsMapper.updateAggregate(
+                packageId,
+                workPackage.getPlanStartDate(),
+                workPackage.getPlanEndDate(),
+                status,
+                progress);
         wbsService.refreshProject(workPackage.getProjectId());
     }
 
-    /**
-     * 校验任务结构：上级任务归属、执行任务必须配置在组执行人与计划日期。
-     */
+    /** 校验任务结构：上级任务归属、执行任务必须配置在组执行人与计划日期。 */
     private void validate(ProjectTask task, ProjectWbsNode workPackage) {
         if (task.getParentTaskId() != 0) {
             ProjectTask parent = required(task.getParentTaskId());
@@ -315,7 +354,8 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
             }
         }
         if (TaskType.EXECUTION.matches(task.getTaskType())) {
-            if (task.getAssigneeId() == null || !teamService.isActiveMember(task.getProjectId(), task.getAssigneeId())) {
+            if (task.getAssigneeId() == null
+                    || !teamService.isActiveMember(task.getProjectId(), task.getAssigneeId())) {
                 throw new ServiceException("任务执行人必须是当前项目在组成员");
             }
             if (task.getPlanStartDate() == null || task.getPlanEndDate() == null) {
@@ -326,16 +366,24 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
             }
             if (task.getPlanStartDate().isBefore(workPackage.getPlanStartDate())
                     || task.getPlanEndDate().isAfter(workPackage.getPlanEndDate())) {
-                throw new ServiceException("任务计划日期必须在工作包周期内（" + workPackage.getPlanStartDate() + " ~ "
-                        + workPackage.getPlanEndDate() + "）");
+                throw new ServiceException(
+                        "任务计划日期必须在工作包周期内（"
+                                + workPackage.getPlanStartDate()
+                                + " ~ "
+                                + workPackage.getPlanEndDate()
+                                + "）");
             }
             if (task.getParentTaskId() != 0) {
                 ProjectTask parent = required(task.getParentTaskId());
                 if (parent.getPlanStartDate() != null
                         && (task.getPlanStartDate().isBefore(parent.getPlanStartDate())
                                 || task.getPlanEndDate().isAfter(parent.getPlanEndDate()))) {
-                    throw new ServiceException("子任务计划日期必须在上级任务周期内（" + parent.getPlanStartDate() + " ~ "
-                            + parent.getPlanEndDate() + "）");
+                    throw new ServiceException(
+                            "子任务计划日期必须在上级任务周期内（"
+                                    + parent.getPlanStartDate()
+                                    + " ~ "
+                                    + parent.getPlanEndDate()
+                                    + "）");
                 }
             }
         }
@@ -344,7 +392,8 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     /** 校验任务所属工作包存在且属于指定项目。 */
     private ProjectWbsNode workPackage(Long id, Long projectId) {
         ProjectWbsNode node = wbsMapper.selectById(id);
-        if (node == null || !projectId.equals(node.getProjectId())
+        if (node == null
+                || !projectId.equals(node.getProjectId())
                 || !WbsNodeType.WORK_PACKAGE.matches(node.getNodeType())) {
             throw new ServiceException("所属工作包不存在");
         }
@@ -354,7 +403,10 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
     /** 按工作包与上级任务生成任务编码，如 1-T1、1.1、1.1.2。 */
     private String nextCode(ProjectWbsNode workPackage, Long parentId) {
         List<ProjectTask> children = mapper.selectChildren(workPackage.getWbsId(), parentId);
-        String prefix = parentId == 0 ? workPackage.getWbsCode() + "-T" : required(parentId).getTaskCode() + ".";
+        String prefix =
+                parentId == 0
+                        ? workPackage.getWbsCode() + "-T"
+                        : required(parentId).getTaskCode() + ".";
         return prefix + (children.size() + 1);
     }
 
@@ -375,11 +427,12 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         while (parentId != null && parentId != 0) {
             depth++;
             Long id = parentId;
-            parentId = all.stream()
-                    .filter(x -> x.getTaskId().equals(id))
-                    .map(ProjectTask::getParentTaskId)
-                    .findFirst()
-                    .orElse(0L);
+            parentId =
+                    all.stream()
+                            .filter(x -> x.getTaskId().equals(id))
+                            .map(ProjectTask::getParentTaskId)
+                            .findFirst()
+                            .orElse(0L);
         }
         return depth;
     }

@@ -1,8 +1,8 @@
 package com.ruoyi.generator.domain;
 
-import jakarta.validation.constraints.NotBlank;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.utils.StringUtils;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 代码生成业务字段表 gen_table_column
@@ -278,11 +278,19 @@ public class GenTableColumn extends BaseEntity {
     }
 
     public static boolean isSuperColumn(String javaField) {
-        return StringUtils.equalsAnyIgnoreCase(javaField,
+        return StringUtils.equalsAnyIgnoreCase(
+                javaField,
                 // BaseEntity
-                "createBy", "createTime", "updateBy", "updateTime", "remark",
+                "createBy",
+                "createTime",
+                "updateBy",
+                "updateTime",
+                "remark",
                 // TreeEntity
-                "parentName", "parentId", "orderNum", "ancestors");
+                "parentName",
+                "parentId",
+                "orderNum",
+                "ancestors");
     }
 
     public boolean isUsableColumn() {

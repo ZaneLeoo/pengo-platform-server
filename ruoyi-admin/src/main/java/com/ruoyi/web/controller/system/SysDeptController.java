@@ -1,5 +1,13 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.service.ISysDeptService;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.ArrayUtils;
@@ -14,14 +22,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.constant.UserConstants;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.entity.SysDept;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.service.ISysDeptService;
 
 /**
  * 部门信息
@@ -31,12 +31,9 @@ import com.ruoyi.system.service.ISysDeptService;
 @RestController
 @RequestMapping("/system/dept")
 public class SysDeptController extends BaseController {
-    @Autowired
-    private ISysDeptService deptService;
+    @Autowired private ISysDeptService deptService;
 
-    /**
-     * 获取部门列表
-     */
+    /** 获取部门列表 */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list")
     public AjaxResult list(SysDept dept) {
@@ -44,9 +41,7 @@ public class SysDeptController extends BaseController {
         return success(depts);
     }
 
-    /**
-     * 懒加载部门列表（根据父节点ID获取子部门，含hasChildren标记）
-     */
+    /** 懒加载部门列表（根据父节点ID获取子部门，含hasChildren标记） */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list/lazy/{parentId}")
     public AjaxResult listLazy(@PathVariable Long parentId) {
@@ -54,21 +49,20 @@ public class SysDeptController extends BaseController {
         return success(depts);
     }
 
-    /**
-     * 查询部门列表（排除节点）
-     */
+    /** 查询部门列表（排除节点） */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list/exclude/{deptId}")
     public AjaxResult excludeChild(@PathVariable(value = "deptId", required = false) Long deptId) {
         List<SysDept> depts = deptService.selectDeptList(new SysDept());
-        depts.removeIf(d -> d.getDeptId().intValue() == deptId
-                || ArrayUtils.contains(StringUtils.split(d.getAncestors(), ","), deptId + ""));
+        depts.removeIf(
+                d ->
+                        d.getDeptId().intValue() == deptId
+                                || ArrayUtils.contains(
+                                        StringUtils.split(d.getAncestors(), ","), deptId + ""));
         return success(depts);
     }
 
-    /**
-     * 根据部门编号获取详细信息
-     */
+    /** 根据部门编号获取详细信息 */
     @PreAuthorize("@ss.hasPermi('system:dept:query')")
     @GetMapping(value = "/{deptId}")
     public AjaxResult getInfo(@PathVariable Long deptId) {
@@ -76,9 +70,7 @@ public class SysDeptController extends BaseController {
         return success(deptService.selectDeptById(deptId));
     }
 
-    /**
-     * 新增部门
-     */
+    /** 新增部门 */
     @PreAuthorize("@ss.hasPermi('system:dept:add')")
     @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @PostMapping
@@ -90,9 +82,7 @@ public class SysDeptController extends BaseController {
         return toAjax(deptService.insertDept(dept));
     }
 
-    /**
-     * 修改部门
-     */
+    /** 修改部门 */
     @PreAuthorize("@ss.hasPermi('system:dept:edit')")
     @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -111,9 +101,7 @@ public class SysDeptController extends BaseController {
         return toAjax(deptService.updateDept(dept));
     }
 
-    /**
-     * 保存部门排序
-     */
+    /** 保存部门排序 */
     @PreAuthorize("@ss.hasPermi('system:dept:edit')")
     @Log(title = "保存部门排序", businessType = BusinessType.UPDATE)
     @PutMapping("/updateSort")
@@ -124,9 +112,7 @@ public class SysDeptController extends BaseController {
         return success();
     }
 
-    /**
-     * 删除部门
-     */
+    /** 删除部门 */
     @PreAuthorize("@ss.hasPermi('system:dept:remove')")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptId}")

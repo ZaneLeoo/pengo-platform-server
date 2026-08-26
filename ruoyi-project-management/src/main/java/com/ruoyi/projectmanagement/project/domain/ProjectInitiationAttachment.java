@@ -2,14 +2,13 @@ package com.ruoyi.projectmanagement.project.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 /**
  * 项目立项申请支撑材料。
  *
- * <p>approvalId 为空表示当前草稿附件；提交后绑定到审批版本，历史版本不再修改。</p>
+ * <p>approvalId 为空表示当前草稿附件；提交后绑定到审批版本，历史版本不再修改。
  */
 @Data
 public class ProjectInitiationAttachment {

@@ -80,8 +80,10 @@ public class UnitConversionFormula extends BaseEntity {
 
     /** 参数1变量名 */
     private String param1Name;
+
     /** 参数1映射字段: length/width/height/weight/yards/standard_weight_per_sqm */
     private String param1Field;
+
     /** 参数1默认常量（field为空时使用） */
     private java.math.BigDecimal param1Default;
 

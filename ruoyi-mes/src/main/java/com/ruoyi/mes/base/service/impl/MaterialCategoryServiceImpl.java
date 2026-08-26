@@ -6,10 +6,9 @@ import com.ruoyi.mes.base.domain.MaterialCategory;
 import com.ruoyi.mes.base.mapper.MaterialCategoryMapper;
 import com.ruoyi.mes.base.mapper.MaterialMapper;
 import com.ruoyi.mes.base.service.IMaterialCategoryService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 物料分类业务处理。
@@ -19,17 +18,14 @@ import java.util.List;
 @Service
 public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
 
-    @Autowired
-    private MaterialCategoryMapper categoryMapper;
+    @Autowired private MaterialCategoryMapper categoryMapper;
 
-    @Autowired
-    private MaterialMapper materialMapper;
+    @Autowired private MaterialMapper materialMapper;
 
     /**
      * 查询物料分类列表。
      *
-     * @param category
-     *            物料分类
+     * @param category 物料分类
      * @return 物料分类集合
      */
     @Override
@@ -39,15 +35,15 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
 
     /** 查询 Agent 工具使用的物料分类列表。 */
     @Override
-    public List<MaterialCategory> selectCategoryListForAgent(String keyword, Long parentId, String status) {
+    public List<MaterialCategory> selectCategoryListForAgent(
+            String keyword, Long parentId, String status) {
         return categoryMapper.selectCategoryListForAgent(keyword, parentId, status);
     }
 
     /**
      * 根据分类ID查询物料分类。
      *
-     * @param categoryId
-     *            分类ID
+     * @param categoryId 分类ID
      * @return 物料分类
      */
     @Override
@@ -58,22 +54,22 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 校验分类编码是否唯一。
      *
-     * @param category
-     *            物料分类
+     * @param category 物料分类
      * @return true 唯一
      */
     @Override
     public boolean checkCategoryCodeUnique(MaterialCategory category) {
-        Long categoryId = StringUtils.isNull(category.getCategoryId()) ? -1L : category.getCategoryId();
+        Long categoryId =
+                StringUtils.isNull(category.getCategoryId()) ? -1L : category.getCategoryId();
         MaterialCategory info = categoryMapper.selectCategoryByCode(category.getCategoryCode());
-        return StringUtils.isNull(info) || info.getCategoryId().longValue() == categoryId.longValue();
+        return StringUtils.isNull(info)
+                || info.getCategoryId().longValue() == categoryId.longValue();
     }
 
     /**
      * 新增物料分类。
      *
-     * @param category
-     *            物料分类
+     * @param category 物料分类
      * @return 结果
      */
     @Override
@@ -85,8 +81,7 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 修改物料分类。
      *
-     * @param category
-     *            物料分类
+     * @param category 物料分类
      * @return 结果
      */
     @Override
@@ -98,8 +93,7 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 删除物料分类。
      *
-     * @param categoryId
-     *            分类ID
+     * @param categoryId 分类ID
      * @return 结果
      */
     @Override
@@ -116,8 +110,7 @@ public class MaterialCategoryServiceImpl implements IMaterialCategoryService {
     /**
      * 填充祖级路径。
      *
-     * @param category
-     *            物料分类
+     * @param category 物料分类
      */
     private void fillAncestors(MaterialCategory category) {
         if (StringUtils.isNull(category.getParentId()) || category.getParentId() == 0L) {

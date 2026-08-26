@@ -18,8 +18,11 @@ public class LocalAgentFileStorage implements AgentFileStorage {
         String profilePath = environment.getRequiredProperty("ruoyi.profile");
         Path profile = Path.of(profilePath).toAbsolutePath().normalize();
         Path parent = profile.getParent();
-        this.storageRoot = (parent == null ? profile.resolve("agent-file-store") : parent.resolve("agent-file-store"))
-                .normalize();
+        this.storageRoot =
+                (parent == null
+                                ? profile.resolve("agent-file-store")
+                                : parent.resolve("agent-file-store"))
+                        .normalize();
     }
 
     @Override
@@ -61,7 +64,9 @@ public class LocalAgentFileStorage implements AgentFileStorage {
 
     private Path dailyDirectory() {
         LocalDate date = LocalDate.now();
-        return storageRoot.resolve("outputs").resolve(String.valueOf(date.getYear()))
+        return storageRoot
+                .resolve("outputs")
+                .resolve(String.valueOf(date.getYear()))
                 .resolve(String.format("%02d", date.getMonthValue()))
                 .resolve(String.format("%02d", date.getDayOfMonth()));
     }

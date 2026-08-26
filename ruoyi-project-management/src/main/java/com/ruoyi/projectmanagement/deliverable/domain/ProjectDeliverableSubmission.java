@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import lombok.Data;
 
-/**
- * 交付物的提交与审核留痕。
- */
+/** 交付物的提交与审核留痕。 */
 @Data
 public class ProjectDeliverableSubmission {
 

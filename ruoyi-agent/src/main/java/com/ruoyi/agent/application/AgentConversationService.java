@@ -17,7 +17,9 @@ public class AgentConversationService {
     private final AgentMessageMapper messageMapper;
     private final ConversationTitlePolicy titlePolicy;
 
-    public AgentConversationService(AgentConversationMapper conversationMapper, AgentMessageMapper messageMapper,
+    public AgentConversationService(
+            AgentConversationMapper conversationMapper,
+            AgentMessageMapper messageMapper,
             ConversationTitlePolicy titlePolicy) {
         this.conversationMapper = conversationMapper;
         this.messageMapper = messageMapper;

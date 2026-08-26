@@ -1,9 +1,8 @@
 package com.ruoyi.agent.tool.shared;
 
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /** Agent 工具需要用户或模型修正的结构化问题。 */
 @Data
@@ -17,7 +16,11 @@ public class AgentToolIssue {
     private List<AgentToolCandidate> candidates;
 
     /** 规范问题字段并确保候选列表不可变。 */
-    public AgentToolIssue(String code, String field, String message, String expected,
+    public AgentToolIssue(
+            String code,
+            String field,
+            String message,
+            String expected,
             List<AgentToolCandidate> candidates) {
         this.code = code == null ? "" : code;
         this.field = field == null ? "" : field;

@@ -1,10 +1,5 @@
 package com.ruoyi.common.core.domain.entity;
 
-import java.util.Date;
-import java.util.List;
-import jakarta.validation.constraints.*;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ruoyi.common.annotation.Excel;
@@ -14,6 +9,11 @@ import com.ruoyi.common.annotation.Excels;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.xss.Xss;
+import jakarta.validation.constraints.*;
+import java.util.Date;
+import java.util.List;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 用户对象 sys_user
@@ -78,8 +78,8 @@ public class SysUser extends BaseEntity {
 
     /** 部门对象 */
     @Excels({
-            @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
-            @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
+        @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
+        @Excel(name = "部门负责人", targetAttr = "leader", type = Type.EXPORT)
     })
     private SysDept dept;
 
@@ -95,9 +95,7 @@ public class SysUser extends BaseEntity {
     /** 角色ID */
     private Long roleId;
 
-    public SysUser() {
-
-    }
+    public SysUser() {}
 
     public SysUser(Long userId) {
         this.userId = userId;

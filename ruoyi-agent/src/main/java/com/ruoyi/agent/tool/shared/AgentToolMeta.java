@@ -20,6 +20,7 @@ public class AgentToolMeta {
 
     /** 创建分页查询的元数据。 */
     public static AgentToolMeta page(int pageNum, int pageSize, long total, boolean hasMore) {
-        return new AgentToolMeta(total, hasMore, new AgentToolPage(pageNum, pageSize, total, hasMore));
+        return new AgentToolMeta(
+                total, hasMore, new AgentToolPage(pageNum, pageSize, total, hasMore));
     }
 }

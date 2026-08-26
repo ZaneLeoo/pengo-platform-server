@@ -9,13 +9,15 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.mock.env.MockEnvironment;
 
 class LocalAgentFileStorageTest {
-    @TempDir
-    private Path temporaryDirectory;
+    @TempDir private Path temporaryDirectory;
 
     @Test
     void shouldReadProfileFromEnvironmentAndPersistFile() throws Exception {
-        MockEnvironment environment = new MockEnvironment()
-                .withProperty("ruoyi.profile", temporaryDirectory.resolve("uploadPath").toString());
+        MockEnvironment environment =
+                new MockEnvironment()
+                        .withProperty(
+                                "ruoyi.profile",
+                                temporaryDirectory.resolve("uploadPath").toString());
         LocalAgentFileStorage storage = new LocalAgentFileStorage(environment);
         Path temporary = storage.createTemporary("resource-1");
         Files.writeString(temporary, "agent file");

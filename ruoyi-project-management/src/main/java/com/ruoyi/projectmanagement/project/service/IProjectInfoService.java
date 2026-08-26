@@ -4,14 +4,12 @@ import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
-import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectInitiationApproval;
+import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import java.util.List;
 
-/**
- * 项目主档业务接口。
- */
+/** 项目主档业务接口。 */
 public interface IProjectInfoService {
 
     /** 查询项目列表。 */
@@ -63,8 +61,8 @@ public interface IProjectInfoService {
     List<ProjectInitiationAttachment> initiationAttachments(Long projectId, String sectionCode);
 
     /** 查询指定审批版本附件。 */
-    List<ProjectInitiationAttachment> initiationApprovalAttachments(Long projectId, Long approvalId,
-            String sectionCode);
+    List<ProjectInitiationAttachment> initiationApprovalAttachments(
+            Long projectId, Long approvalId, String sectionCode);
 
     /** 新增立项申请附件。 */
     int addInitiationAttachment(ProjectInitiationAttachment attachment, String operator);

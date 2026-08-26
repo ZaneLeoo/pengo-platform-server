@@ -13,5 +13,4 @@ public class AgentToolPage {
     private int pageSize;
     private long total;
     private boolean hasMore;
-
 }

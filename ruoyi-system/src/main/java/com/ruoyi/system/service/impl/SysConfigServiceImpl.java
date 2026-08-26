@@ -1,10 +1,5 @@
 package com.ruoyi.system.service.impl;
 
-import java.util.Collection;
-import java.util.List;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -14,6 +9,11 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysConfig;
 import com.ruoyi.system.mapper.SysConfigMapper;
 import com.ruoyi.system.service.ISysConfigService;
+import jakarta.annotation.PostConstruct;
+import java.util.Collection;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * 参数配置 服务层实现
@@ -22,15 +22,11 @@ import com.ruoyi.system.service.ISysConfigService;
  */
 @Service
 public class SysConfigServiceImpl implements ISysConfigService {
-    @Autowired
-    private SysConfigMapper configMapper;
+    @Autowired private SysConfigMapper configMapper;
 
-    @Autowired
-    private RedisCache redisCache;
+    @Autowired private RedisCache redisCache;
 
-    /**
-     * 项目启动时，初始化参数到缓存
-     */
+    /** 项目启动时，初始化参数到缓存 */
     @PostConstruct
     public void init() {
         loadingConfigCache();
@@ -39,8 +35,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 查询参数配置信息
      *
-     * @param configId
-     *            参数配置ID
+     * @param configId 参数配置ID
      * @return 参数配置信息
      */
     @Override
@@ -53,8 +48,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 根据键名查询参数配置信息
      *
-     * @param configKey
-     *            参数key
+     * @param configKey 参数key
      * @return 参数键值
      */
     @Override
@@ -90,8 +84,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 查询参数配置列表
      *
-     * @param config
-     *            参数配置信息
+     * @param config 参数配置信息
      * @return 参数配置集合
      */
     @Override
@@ -102,8 +95,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 新增参数配置
      *
-     * @param config
-     *            参数配置信息
+     * @param config 参数配置信息
      * @return 结果
      */
     @Override
@@ -118,8 +110,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 修改参数配置
      *
-     * @param config
-     *            参数配置信息
+     * @param config 参数配置信息
      * @return 结果
      */
     @Override
@@ -139,8 +130,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 批量删除参数信息
      *
-     * @param configIds
-     *            需要删除的参数ID
+     * @param configIds 需要删除的参数ID
      */
     @Override
     public void deleteConfigByIds(Long[] configIds) {
@@ -154,9 +144,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
         }
     }
 
-    /**
-     * 加载参数缓存数据
-     */
+    /** 加载参数缓存数据 */
     @Override
     public void loadingConfigCache() {
         List<SysConfig> configsList = configMapper.selectConfigList(new SysConfig());
@@ -165,18 +153,14 @@ public class SysConfigServiceImpl implements ISysConfigService {
         }
     }
 
-    /**
-     * 清空参数缓存数据
-     */
+    /** 清空参数缓存数据 */
     @Override
     public void clearConfigCache() {
         Collection<String> keys = redisCache.keys(CacheConstants.SYS_CONFIG_KEY + "*");
         redisCache.deleteObject(keys);
     }
 
-    /**
-     * 重置参数缓存数据
-     */
+    /** 重置参数缓存数据 */
     @Override
     public void resetConfigCache() {
         clearConfigCache();
@@ -186,8 +170,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 校验参数键名是否唯一
      *
-     * @param config
-     *            参数配置信息
+     * @param config 参数配置信息
      * @return 结果
      */
     @Override
@@ -203,8 +186,7 @@ public class SysConfigServiceImpl implements ISysConfigService {
     /**
      * 设置cache key
      *
-     * @param configKey
-     *            参数键
+     * @param configKey 参数键
      * @return 缓存键key
      */
     private String getCacheKey(String configKey) {

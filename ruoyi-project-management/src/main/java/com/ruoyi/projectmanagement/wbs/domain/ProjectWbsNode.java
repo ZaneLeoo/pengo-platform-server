@@ -9,9 +9,7 @@ import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 项目WBS范围节点；SUMMARY为汇总WBS，WORK_PACKAGE为工作包（最低管理单元）。
- */
+/** 项目WBS范围节点；SUMMARY为汇总WBS，WORK_PACKAGE为工作包（最低管理单元）。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectWbsNode extends BaseEntity {

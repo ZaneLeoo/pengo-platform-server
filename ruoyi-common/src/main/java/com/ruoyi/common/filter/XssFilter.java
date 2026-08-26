@@ -1,8 +1,7 @@
 package com.ruoyi.common.filter;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.ruoyi.common.enums.HttpMethod;
+import com.ruoyi.common.utils.StringUtils;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -11,8 +10,9 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.enums.HttpMethod;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 防止XSS攻击的过滤器
@@ -20,9 +20,7 @@ import com.ruoyi.common.enums.HttpMethod;
  * @author ruoyi
  */
 public class XssFilter implements Filter {
-    /**
-     * 排除链接
-     */
+    /** 排除链接 */
     public List<String> excludes = new ArrayList<>();
 
     @Override
@@ -45,7 +43,8 @@ public class XssFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        XssHttpServletRequestWrapper xssRequest = new XssHttpServletRequestWrapper((HttpServletRequest) request);
+        XssHttpServletRequestWrapper xssRequest =
+                new XssHttpServletRequestWrapper((HttpServletRequest) request);
         chain.doFilter(xssRequest, response);
     }
 
@@ -60,7 +59,5 @@ public class XssFilter implements Filter {
     }
 
     @Override
-    public void destroy() {
-
-    }
+    public void destroy() {}
 }

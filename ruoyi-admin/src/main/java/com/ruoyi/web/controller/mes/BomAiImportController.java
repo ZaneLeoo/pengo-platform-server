@@ -7,19 +7,18 @@ import com.ruoyi.web.domain.BomAiImportTrace;
 import com.ruoyi.web.domain.dto.BomAiConfirmResult;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
-import com.ruoyi.web.service.mes.BomAiImportTraceService;
 import com.ruoyi.web.service.mes.BomAiImportService;
+import com.ruoyi.web.service.mes.BomAiImportTraceService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,18 +28,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
-/**
- * BOM AI 图纸导入控制器。
- */
+/** BOM AI 图纸导入控制器。 */
 @RestController
 @RequestMapping("/mes/base/bomAiImport")
 public class BomAiImportController extends BaseController {
 
-    @Autowired
-    private BomAiImportService bomAiImportService;
-    @Autowired
-    private BomAiImportTraceService bomAiImportTraceService;
+    @Autowired private BomAiImportService bomAiImportService;
+    @Autowired private BomAiImportTraceService bomAiImportTraceService;
 
     /** 获取当前生效的 AI 图纸导入限制。 */
     @GetMapping("/limits")
@@ -48,9 +42,7 @@ public class BomAiImportController extends BaseController {
         return success(bomAiImportService.getImportLimits());
     }
 
-    /**
-     * 上传图纸 → AI 识别 → 返回预览数据（含物料匹配状态）。
-     */
+    /** 上传图纸 → AI 识别 → 返回预览数据（含物料匹配状态）。 */
     @PostMapping(value = "/recognize", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public AjaxResult recognize(
             @RequestParam(value = "files", required = false) MultipartFile[] files,
@@ -70,16 +62,15 @@ public class BomAiImportController extends BaseController {
         if (uploads.isEmpty()) {
             return error("请上传至少一张图纸");
         }
-        BomAiPreviewResult result = bomAiImportService.recognize(uploads.toArray(new MultipartFile[0]), getUsername());
+        BomAiPreviewResult result =
+                bomAiImportService.recognize(uploads.toArray(new MultipartFile[0]), getUsername());
         if (result.isSuccess()) {
             return success(result);
         }
         return error(result.getError());
     }
 
-    /**
-     * 确认导入 → 事务写入 BOM 表。
-     */
+    /** 确认导入 → 事务写入 BOM 表。 */
     @PostMapping("/confirm")
     public AjaxResult confirm(@RequestBody BomAiImportConfirmRequest request) {
         BomAiConfirmResult result = bomAiImportService.confirm(request, getUsername());
@@ -117,20 +108,29 @@ public class BomAiImportController extends BaseController {
 
     /** 下载某次 AI 图纸识别保存的原始文件。 */
     @GetMapping("/trace/{traceId}/files/{resourceId}")
-    public ResponseEntity<FileSystemResource> downloadSourceFile(@PathVariable Long traceId,
-            @PathVariable String resourceId) throws IOException {
-        BomAiImportTraceService.StoredSourceFile stored = bomAiImportTraceService.resolveSourceFile(traceId, resourceId);
+    public ResponseEntity<FileSystemResource> downloadSourceFile(
+            @PathVariable Long traceId, @PathVariable String resourceId) throws IOException {
+        BomAiImportTraceService.StoredSourceFile stored =
+                bomAiImportTraceService.resolveSourceFile(traceId, resourceId);
         String mediaType = stored.getSourceFile().getMediaType();
         if (mediaType == null || mediaType.isBlank()) {
             mediaType = Files.probeContentType(stored.getPath());
         }
-        MediaType contentType = mediaType == null ? MediaType.APPLICATION_OCTET_STREAM : MediaType.parseMediaType(mediaType);
+        MediaType contentType =
+                mediaType == null
+                        ? MediaType.APPLICATION_OCTET_STREAM
+                        : MediaType.parseMediaType(mediaType);
         return ResponseEntity.ok()
                 .contentType(contentType)
                 .contentLength(Files.size(stored.getPath()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
-                        .filename(stored.getSourceFile().getOriginalFilename(), java.nio.charset.StandardCharsets.UTF_8)
-                        .build().toString())
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment()
+                                .filename(
+                                        stored.getSourceFile().getOriginalFilename(),
+                                        java.nio.charset.StandardCharsets.UTF_8)
+                                .build()
+                                .toString())
                 .body(new FileSystemResource(stored.getPath()));
     }
 }

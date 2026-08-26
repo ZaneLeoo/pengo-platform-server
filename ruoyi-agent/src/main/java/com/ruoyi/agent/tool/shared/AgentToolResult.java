@@ -1,13 +1,10 @@
 package com.ruoyi.agent.tool.shared;
 
+import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-/**
- * Agent 工具统一响应。
- */
+/** Agent 工具统一响应。 */
 @Data
 @NoArgsConstructor
 public class AgentToolResult<T> {
@@ -22,8 +19,16 @@ public class AgentToolResult<T> {
     private AgentToolMeta meta;
 
     /** 规范可空字段并确保问题列表不可变。 */
-    public AgentToolResult(AgentToolStatus status, String resultCode, String message, AgentToolNextAction nextAction,
-            boolean retryable, String agentInstruction, List<AgentToolIssue> issues, T data, AgentToolMeta meta) {
+    public AgentToolResult(
+            AgentToolStatus status,
+            String resultCode,
+            String message,
+            AgentToolNextAction nextAction,
+            boolean retryable,
+            String agentInstruction,
+            List<AgentToolIssue> issues,
+            T data,
+            AgentToolMeta meta) {
         this.status = status;
         this.resultCode = resultCode == null ? "" : resultCode;
         this.message = message == null ? "" : message;

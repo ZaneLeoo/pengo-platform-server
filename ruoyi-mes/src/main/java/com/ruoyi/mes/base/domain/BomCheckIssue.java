@@ -18,8 +18,7 @@ public class BomCheckIssue implements Serializable {
     private Integer lineNo;
     private String componentItemCode;
 
-    public BomCheckIssue() {
-    }
+    public BomCheckIssue() {}
 
     public BomCheckIssue(String level, String code, String message) {
         this.level = level;

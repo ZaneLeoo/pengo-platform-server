@@ -5,6 +5,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
+import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableType;
@@ -16,25 +17,23 @@ import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
-import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import com.ruoyi.projectmanagement.workflow.service.IWorkflowService;
 import com.ruoyi.projectmanagement.workflow.service.WorkflowBusinessCallback;
 import java.net.URI;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * 项目交付物业务实现。
- */
+/** 项目交付物业务实现。 */
 @Service
-public class ProjectDeliverableServiceImpl implements IProjectDeliverableService, WorkflowBusinessCallback {
+public class ProjectDeliverableServiceImpl
+        implements IProjectDeliverableService, WorkflowBusinessCallback {
 
     private final ProjectDeliverableMapper mapper;
     private final ProjectInfoMapper projectMapper;
@@ -44,9 +43,14 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     private final IWorkflowService workflowService;
     private final ObjectMapper objectMapper;
 
-    public ProjectDeliverableServiceImpl(ProjectDeliverableMapper mapper, ProjectInfoMapper projectMapper,
-            ProjectWbsMapper wbsMapper, IProjectTaskService taskService, ProjectDeliverableTypeMapper typeMapper,
-            @Lazy IWorkflowService workflowService, ObjectMapper objectMapper) {
+    public ProjectDeliverableServiceImpl(
+            ProjectDeliverableMapper mapper,
+            ProjectInfoMapper projectMapper,
+            ProjectWbsMapper wbsMapper,
+            IProjectTaskService taskService,
+            ProjectDeliverableTypeMapper typeMapper,
+            @Lazy IWorkflowService workflowService,
+            ObjectMapper objectMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.wbsMapper = wbsMapper;
@@ -89,7 +93,8 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         entity.setProjectId(old.getProjectId());
         entity.setWorkPackageId(old.getWorkPackageId());
         assertRequirementMutable(old.getProjectId());
-        if (!DeliverableStatus.PENDING.matches(old.getStatus()) && !DeliverableStatus.RETURNED.matches(old.getStatus())) {
+        if (!DeliverableStatus.PENDING.matches(old.getStatus())
+                && !DeliverableStatus.RETURNED.matches(old.getStatus())) {
             throw new ServiceException("已提交或已通过的交付要求不能直接修改");
         }
         prepare(entity);
@@ -112,27 +117,34 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
             throw new ServiceException("所属项目不存在");
         }
         ProjectWbsNode wp = wbsMapper.selectById(entity.getWorkPackageId());
-        if (wp == null || !WbsNodeType.WORK_PACKAGE.matches(wp.getNodeType())
+        if (wp == null
+                || !WbsNodeType.WORK_PACKAGE.matches(wp.getNodeType())
                 || !wp.getProjectId().equals(entity.getProjectId())) {
             throw new ServiceException("所属工作包不存在或不属于当前项目");
         }
-        ProjectDeliverableType type = entity.getDeliverableTypeId() == null
-                ? typeMapper.selectByCode(entity.getDeliverableType()) : typeMapper.selectById(entity.getDeliverableTypeId());
+        ProjectDeliverableType type =
+                entity.getDeliverableTypeId() == null
+                        ? typeMapper.selectByCode(entity.getDeliverableType())
+                        : typeMapper.selectById(entity.getDeliverableTypeId());
         if (type == null || !"0".equals(type.getStatus())) {
             throw new ServiceException("交付物类型不存在或已停用");
         }
         entity.setDeliverableTypeId(type.getTypeId());
         entity.setDeliverableType(type.getTypeCode());
         entity.setSubmissionMode(type.getSubmissionMode());
-        List<String> configuredExtensions = type.getAllowedExtensions() == null
-                ? List.of() : type.getAllowedExtensions();
-        Set<String> typeExtensions = configuredExtensions.stream()
-                .map(x -> x.toLowerCase(Locale.ROOT)).collect(Collectors.toSet());
+        List<String> configuredExtensions =
+                type.getAllowedExtensions() == null ? List.of() : type.getAllowedExtensions();
+        Set<String> typeExtensions =
+                configuredExtensions.stream()
+                        .map(x -> x.toLowerCase(Locale.ROOT))
+                        .collect(Collectors.toSet());
         Set<String> selectedExtensions = extensions(entity.getAllowedExtensions());
         if (!selectedExtensions.isEmpty() && !typeExtensions.containsAll(selectedExtensions)) {
             throw new ServiceException("允许格式必须属于交付物类型配置的格式范围");
         }
-        entity.setAllowedExtensions(String.join(",", selectedExtensions.isEmpty() ? typeExtensions : selectedExtensions));
+        entity.setAllowedExtensions(
+                String.join(
+                        ",", selectedExtensions.isEmpty() ? typeExtensions : selectedExtensions));
         if (entity.getRequiredFlag() == null) {
             entity.setRequiredFlag("1");
         }
@@ -146,23 +158,28 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
 
     @Override
     @Transactional
-    public void submit(Long id, ProjectDeliverableSubmission submission, String username, Long userId) {
+    public void submit(
+            Long id, ProjectDeliverableSubmission submission, String username, Long userId) {
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
         ProjectWbsNode workPackage = requiredPackage(d.getWorkPackageId());
         assertSubmitterAllowed(workPackage, username);
-        if (!DeliverableStatus.PENDING.matches(d.getStatus()) && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
+        if (!DeliverableStatus.PENDING.matches(d.getStatus())
+                && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
         }
         if ("FILE".equals(d.getSubmissionMode())) {
-            if (submission.getFileUrl() == null || submission.getFileUrl().isBlank()) throw new ServiceException("请上传文件");
+            if (submission.getFileUrl() == null || submission.getFileUrl().isBlank())
+                throw new ServiceException("请上传文件");
             String extension = extensionOf(submission.getFileUrl());
-            if (!extensions(d.getAllowedExtensions()).isEmpty() && !extensions(d.getAllowedExtensions()).contains(extension)) {
+            if (!extensions(d.getAllowedExtensions()).isEmpty()
+                    && !extensions(d.getAllowedExtensions()).contains(extension)) {
                 throw new ServiceException("文件格式不符合交付要求，仅允许：" + d.getAllowedExtensions());
             }
             submission.setExternalUrl(null);
         } else if ("LINK".equals(d.getSubmissionMode())) {
-            if (submission.getExternalUrl() == null || submission.getExternalUrl().isBlank()) throw new ServiceException("请填写外部链接");
+            if (submission.getExternalUrl() == null || submission.getExternalUrl().isBlank())
+                throw new ServiceException("请填写外部链接");
             String externalUrl = submission.getExternalUrl().trim();
             if (!isHttpUrl(externalUrl)) {
                 throw new ServiceException("外部链接必须是有效的 http 或 https 地址");
@@ -176,25 +193,40 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         submission.setDeliverableId(id);
         submission.setVersionNo(next == null ? 1 : next);
         submission.setSubmitBy(username);
-        submission.setReviewResult("1".equals(d.getApprovalRequired())
-                ? DeliverableSubmissionStatus.SUBMITTED.getCode() : DeliverableSubmissionStatus.DELIVERED.getCode());
+        submission.setReviewResult(
+                "1".equals(d.getApprovalRequired())
+                        ? DeliverableSubmissionStatus.SUBMITTED.getCode()
+                        : DeliverableSubmissionStatus.DELIVERED.getCode());
         mapper.insertSubmission(submission);
         if ("1".equals(d.getApprovalRequired())) {
             String snapshot;
             try {
-                snapshot = objectMapper.writeValueAsString(java.util.Map.of("deliverable", d,
-                        "submission", submission));
+                snapshot =
+                        objectMapper.writeValueAsString(
+                                java.util.Map.of("deliverable", d, "submission", submission));
             } catch (Exception exception) {
                 throw new ServiceException("生成交付物审批快照失败");
             }
-            Long instanceId = workflowService.start("DELIVERABLE_APPROVAL", submission.getSubmissionId(),
-                    d.getProjectId(), "交付物审批：" + d.getDeliverableName() + "（V" + submission.getVersionNo() + "）",
-                    snapshot, username, userId);
+            Long instanceId =
+                    workflowService.start(
+                            "DELIVERABLE_APPROVAL",
+                            submission.getSubmissionId(),
+                            d.getProjectId(),
+                            "交付物审批："
+                                    + d.getDeliverableName()
+                                    + "（V"
+                                    + submission.getVersionNo()
+                                    + "）",
+                            snapshot,
+                            username,
+                            userId);
             submission.setWorkflowInstanceId(instanceId);
             mapper.bindSubmissionWorkflow(submission);
         }
-        d.setStatus("1".equals(d.getApprovalRequired()) ? DeliverableStatus.PENDING_APPROVAL.getCode()
-                : DeliverableStatus.DELIVERED.getCode());
+        d.setStatus(
+                "1".equals(d.getApprovalRequired())
+                        ? DeliverableStatus.PENDING_APPROVAL.getCode()
+                        : DeliverableStatus.DELIVERED.getCode());
         d.setSubmitBy(username);
         d.setLatestFileUrl(submission.getFileUrl());
         d.setLatestExternalUrl(submission.getExternalUrl());
@@ -216,16 +248,15 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
     private boolean isHttpUrl(String value) {
         try {
             URI uri = URI.create(value);
-            return ("http".equalsIgnoreCase(uri.getScheme()) || "https".equalsIgnoreCase(uri.getScheme()))
+            return ("http".equalsIgnoreCase(uri.getScheme())
+                            || "https".equalsIgnoreCase(uri.getScheme()))
                     && uri.getHost() != null;
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
 
-    /**
-     * 审核交付物提交：按提交结果（APPROVED/RETURNED）更新交付物与最新提交记录。
-     */
+    /** 审核交付物提交：按提交结果（APPROVED/RETURNED）更新交付物与最新提交记录。 */
     @Override
     public void review(Long id, ProjectDeliverableSubmission submission, String username) {
         throw new ServiceException("请在审批中心处理交付物审批");
@@ -248,18 +279,25 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         finishSubmission(submissionId, false, operator, opinion);
     }
 
-    private void finishSubmission(Long submissionId, boolean approved, String operator, String opinion) {
+    private void finishSubmission(
+            Long submissionId, boolean approved, String operator, String opinion) {
         ProjectDeliverableSubmission last = mapper.selectSubmissionById(submissionId);
-        if (last == null || !DeliverableSubmissionStatus.SUBMITTED.matches(last.getReviewResult())) {
+        if (last == null
+                || !DeliverableSubmissionStatus.SUBMITTED.matches(last.getReviewResult())) {
             throw new ServiceException("待审批交付物版本不存在");
         }
         ProjectDeliverable deliverable = required(last.getDeliverableId());
         last.setReviewBy(operator);
         last.setReviewComment(opinion);
-        last.setReviewResult(approved ? DeliverableSubmissionStatus.APPROVED.getCode()
-                : DeliverableSubmissionStatus.RETURNED.getCode());
+        last.setReviewResult(
+                approved
+                        ? DeliverableSubmissionStatus.APPROVED.getCode()
+                        : DeliverableSubmissionStatus.RETURNED.getCode());
         mapper.updateSubmissionReview(last);
-        deliverable.setStatus(approved ? DeliverableStatus.APPROVED.getCode() : DeliverableStatus.RETURNED.getCode());
+        deliverable.setStatus(
+                approved
+                        ? DeliverableStatus.APPROVED.getCode()
+                        : DeliverableStatus.RETURNED.getCode());
         mapper.updateStatus(deliverable);
         taskService.refreshPackage(deliverable.getWorkPackageId());
     }
@@ -306,15 +344,18 @@ public class ProjectDeliverableServiceImpl implements IProjectDeliverableService
         if (project == null) {
             throw new ServiceException("所属项目不存在");
         }
-        if (ProjectStatus.DRAFT.matches(project.getStatus()) || ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
+        if (ProjectStatus.DRAFT.matches(project.getStatus())
+                || ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
             throw new ServiceException("项目处于申请草稿阶段，正式立项后才能维护交付物");
         }
     }
 
     private Set<String> extensions(String value) {
         if (value == null || value.isBlank()) return Set.of();
-        return Arrays.stream(value.split(",")).map(x -> x.trim().replaceFirst("^\\.", "").toLowerCase(Locale.ROOT))
-                .filter(x -> !x.isBlank()).collect(Collectors.toSet());
+        return Arrays.stream(value.split(","))
+                .map(x -> x.trim().replaceFirst("^\\.", "").toLowerCase(Locale.ROOT))
+                .filter(x -> !x.isBlank())
+                .collect(Collectors.toSet());
     }
 
     private String extensionOf(String fileUrl) {

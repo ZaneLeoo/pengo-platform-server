@@ -1,7 +1,5 @@
 package com.ruoyi.framework.web.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
@@ -18,6 +16,8 @@ import com.ruoyi.framework.manager.AsyncManager;
 import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * 注册校验方法
@@ -26,20 +26,17 @@ import com.ruoyi.system.service.ISysUserService;
  */
 @Component
 public class SysRegisterService {
-    @Autowired
-    private ISysUserService userService;
+    @Autowired private ISysUserService userService;
 
-    @Autowired
-    private ISysConfigService configService;
+    @Autowired private ISysConfigService configService;
 
-    @Autowired
-    private RedisCache redisCache;
+    @Autowired private RedisCache redisCache;
 
-    /**
-     * 注册
-     */
+    /** 注册 */
     public String register(RegisterBody registerBody) {
-        String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
+        String msg = "",
+                username = registerBody.getUsername(),
+                password = registerBody.getPassword();
         SysUser sysUser = new SysUser();
         sysUser.setUserName(username);
 
@@ -69,8 +66,12 @@ public class SysRegisterService {
             if (!regFlag) {
                 msg = "注册失败,请联系系统管理人员";
             } else {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER,
-                        MessageUtils.message("user.register.success")));
+                AsyncManager.me()
+                        .execute(
+                                AsyncFactory.recordLogininfor(
+                                        username,
+                                        Constants.REGISTER,
+                                        MessageUtils.message("user.register.success")));
             }
         }
         return msg;
@@ -79,12 +80,9 @@ public class SysRegisterService {
     /**
      * 校验验证码
      *
-     * @param username
-     *            用户名
-     * @param code
-     *            验证码
-     * @param uuid
-     *            唯一标识
+     * @param username 用户名
+     * @param code 验证码
+     * @param uuid 唯一标识
      * @return 结果
      */
     public void validateCaptcha(String username, String code, String uuid) {

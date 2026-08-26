@@ -58,6 +58,7 @@ public class BomMaster extends BaseEntity {
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -67,6 +68,7 @@ public class BomMaster extends BaseEntity {
     public String getBomCode() {
         return bomCode;
     }
+
     public void setBomCode(String bomCode) {
         this.bomCode = bomCode;
     }
@@ -74,6 +76,7 @@ public class BomMaster extends BaseEntity {
     public Long getParentItemId() {
         return parentItemId;
     }
+
     public void setParentItemId(Long parentItemId) {
         this.parentItemId = parentItemId;
     }
@@ -82,6 +85,7 @@ public class BomMaster extends BaseEntity {
     public String getParentItemCode() {
         return parentItemCode;
     }
+
     public void setParentItemCode(String parentItemCode) {
         this.parentItemCode = parentItemCode;
     }
@@ -90,6 +94,7 @@ public class BomMaster extends BaseEntity {
     public String getParentItemName() {
         return parentItemName;
     }
+
     public void setParentItemName(String parentItemName) {
         this.parentItemName = parentItemName;
     }
@@ -97,6 +102,7 @@ public class BomMaster extends BaseEntity {
     public String getParentItemSpec() {
         return parentItemSpec;
     }
+
     public void setParentItemSpec(String parentItemSpec) {
         this.parentItemSpec = parentItemSpec;
     }
@@ -104,6 +110,7 @@ public class BomMaster extends BaseEntity {
     public String getParentItemUnit() {
         return parentItemUnit;
     }
+
     public void setParentItemUnit(String parentItemUnit) {
         this.parentItemUnit = parentItemUnit;
     }
@@ -112,6 +119,7 @@ public class BomMaster extends BaseEntity {
     public String getBomType() {
         return bomType;
     }
+
     public void setBomType(String bomType) {
         this.bomType = bomType;
     }
@@ -120,6 +128,7 @@ public class BomMaster extends BaseEntity {
     public String getStatus() {
         return status;
     }
+
     public void setStatus(String status) {
         this.status = status;
     }
@@ -127,6 +136,7 @@ public class BomMaster extends BaseEntity {
     public String getSourceSystem() {
         return sourceSystem;
     }
+
     public void setSourceSystem(String sourceSystem) {
         this.sourceSystem = sourceSystem;
     }
@@ -134,6 +144,7 @@ public class BomMaster extends BaseEntity {
     public String getSourceId() {
         return sourceId;
     }
+
     public void setSourceId(String sourceId) {
         this.sourceId = sourceId;
     }

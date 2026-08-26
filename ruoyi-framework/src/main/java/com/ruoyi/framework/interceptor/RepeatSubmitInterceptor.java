@@ -1,15 +1,15 @@
 package com.ruoyi.framework.interceptor;
 
-import java.lang.reflect.Method;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.ServletUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
+import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * 防止重复提交拦截器
@@ -19,7 +19,8 @@ import com.ruoyi.common.utils.ServletUtils;
 @Component
 public abstract class RepeatSubmitInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+    public boolean preHandle(
+            HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
@@ -41,10 +42,8 @@ public abstract class RepeatSubmitInterceptor implements HandlerInterceptor {
     /**
      * 验证是否重复提交由子类实现具体的防重复提交的规则
      *
-     * @param request
-     *            请求信息
-     * @param annotation
-     *            防重复注解参数
+     * @param request 请求信息
+     * @param annotation 防重复注解参数
      * @return 结果
      * @throws Exception
      */

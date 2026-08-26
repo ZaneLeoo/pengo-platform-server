@@ -4,9 +4,7 @@ import com.ruoyi.projectmanagement.category.domain.ProjectCategory;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 
-/**
- * 项目分类数据访问接口。
- */
+/** 项目分类数据访问接口。 */
 @Mapper
 public interface ProjectCategoryMapper {
 

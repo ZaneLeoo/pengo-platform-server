@@ -14,9 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/projectManagement/project")
 public class ProjectStartReadinessController extends BaseController {
     private final IProjectInfoService service;
-    public ProjectStartReadinessController(IProjectInfoService service) { this.service = service; }
+
+    public ProjectStartReadinessController(IProjectInfoService service) {
+        this.service = service;
+    }
 
     @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
     @GetMapping("/{id}/start-readiness")
-    public AjaxResult check(@PathVariable Long id) { return success(service.startReadiness(id)); }
+    public AjaxResult check(@PathVariable Long id) {
+        return success(service.startReadiness(id));
+    }
 }

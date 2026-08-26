@@ -8,9 +8,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 工作包的正式应交付项；交付物提交后进入审批闭环并参与工作包验收。
- */
+/** 工作包的正式应交付项；交付物提交后进入审批闭环并参与工作包验收。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectDeliverable extends BaseEntity {

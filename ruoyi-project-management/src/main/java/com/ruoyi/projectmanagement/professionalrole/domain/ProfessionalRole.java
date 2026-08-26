@@ -6,9 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 全局项目专业角色。
- */
+/** 全局项目专业角色。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProfessionalRole extends BaseEntity {

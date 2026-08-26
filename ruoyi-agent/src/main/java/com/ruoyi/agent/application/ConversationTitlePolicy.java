@@ -2,9 +2,7 @@ package com.ruoyi.agent.application;
 
 import java.util.regex.Pattern;
 
-/**
- * 根据首轮问题生成本地会话标题。
- */
+/** 根据首轮问题生成本地会话标题。 */
 @org.springframework.stereotype.Component
 public class ConversationTitlePolicy {
     private static final int MAX_TITLE_LENGTH = 30;
@@ -14,8 +12,7 @@ public class ConversationTitlePolicy {
     /**
      * 将用户问题转换为适合会话列表展示的标题。
      *
-     * @param query
-     *            用户问题
+     * @param query 用户问题
      * @return 去除多余空白且不超过三十个字符的标题
      */
     public String fromQuery(String query) {

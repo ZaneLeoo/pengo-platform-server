@@ -4,9 +4,7 @@ import com.ruoyi.mes.purchase.domain.PurchaseInbound;
 import com.ruoyi.mes.purchase.domain.PurchaseInboundLine;
 import java.util.List;
 
-/**
- * 采购入库单数据访问接口。
- */
+/** 采购入库单数据访问接口。 */
 public interface PurchaseInboundMapper {
 
     List<PurchaseInbound> selectList(PurchaseInbound q);

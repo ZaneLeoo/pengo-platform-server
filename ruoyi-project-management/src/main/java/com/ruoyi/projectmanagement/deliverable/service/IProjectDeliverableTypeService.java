@@ -5,8 +5,12 @@ import java.util.List;
 
 public interface IProjectDeliverableTypeService {
     List<ProjectDeliverableType> list(ProjectDeliverableType filter);
+
     ProjectDeliverableType get(Long id);
+
     int add(ProjectDeliverableType entity, String operator);
+
     int edit(ProjectDeliverableType entity, String operator);
+
     int remove(Long id);
 }

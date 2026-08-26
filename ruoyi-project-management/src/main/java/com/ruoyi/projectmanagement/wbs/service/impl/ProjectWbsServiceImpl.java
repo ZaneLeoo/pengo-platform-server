@@ -1,10 +1,10 @@
 package com.ruoyi.projectmanagement.wbs.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
 import com.ruoyi.projectmanagement.common.enums.WbsStatus;
-import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableDraft;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
@@ -16,15 +16,13 @@ import com.ruoyi.projectmanagement.wbs.domain.ProjectWorkPackageCreateRequest;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * WBS范围树与工作包业务实现。
- */
+/** WBS范围树与工作包业务实现。 */
 @Service
 public class ProjectWbsServiceImpl implements IProjectWbsService {
 
@@ -33,8 +31,11 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
     private final IProjectTeamService teamService;
     private final ProjectDeliverableMapper deliverableMapper;
 
-    public ProjectWbsServiceImpl(ProjectWbsMapper mapper, ProjectInfoMapper projectMapper,
-            IProjectTeamService teamService, ProjectDeliverableMapper deliverableMapper) {
+    public ProjectWbsServiceImpl(
+            ProjectWbsMapper mapper,
+            ProjectInfoMapper projectMapper,
+            IProjectTeamService teamService,
+            ProjectDeliverableMapper deliverableMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.teamService = teamService;
@@ -78,15 +79,18 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         if (!WbsNodeType.WORK_PACKAGE.matches(workPackage.getNodeType())) {
             throw new ServiceException("该接口仅用于创建工作包");
         }
-        List<ProjectDeliverableDraft> drafts = request.getDeliverables() == null
-                ? Collections.<ProjectDeliverableDraft>emptyList() : request.getDeliverables();
+        List<ProjectDeliverableDraft> drafts =
+                request.getDeliverables() == null
+                        ? Collections.<ProjectDeliverableDraft>emptyList()
+                        : request.getDeliverables();
         if ("1".equals(workPackage.getDeliverableRequired())
                 && drafts.stream().noneMatch(x -> "1".equals(x.getRequiredFlag()))) {
             throw new ServiceException("已开启正式交付物，请至少配置一项必交交付物");
         }
         Long workPackageId = add(workPackage, operator);
         for (ProjectDeliverableDraft draft : drafts) {
-            if (deliverableMapper.insert(toDeliverable(draft, workPackage, workPackageId, operator)) == 0) {
+            if (deliverableMapper.insert(toDeliverable(draft, workPackage, workPackageId, operator))
+                    == 0) {
                 throw new ServiceException("新增工作包交付要求失败");
             }
         }
@@ -94,8 +98,11 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
     }
 
     /** 将初始交付要求映射为交付物实体，所属项目、工作包与状态由本方法回填。 */
-    private ProjectDeliverable toDeliverable(ProjectDeliverableDraft draft, ProjectWbsNode workPackage,
-            Long workPackageId, String operator) {
+    private ProjectDeliverable toDeliverable(
+            ProjectDeliverableDraft draft,
+            ProjectWbsNode workPackage,
+            Long workPackageId,
+            String operator) {
         ProjectDeliverable deliverable = new ProjectDeliverable();
         deliverable.setProjectId(workPackage.getProjectId());
         deliverable.setWorkPackageId(workPackageId);
@@ -105,8 +112,10 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         deliverable.setAllowedExtensions(draft.getAllowedExtensions());
         deliverable.setDescription(draft.getDescription());
         deliverable.setPlannedDate(draft.getPlannedDate());
-        deliverable.setRequiredFlag(draft.getRequiredFlag() == null ? "1" : draft.getRequiredFlag());
-        deliverable.setApprovalRequired(draft.getApprovalRequired() == null ? "0" : draft.getApprovalRequired());
+        deliverable.setRequiredFlag(
+                draft.getRequiredFlag() == null ? "1" : draft.getRequiredFlag());
+        deliverable.setApprovalRequired(
+                draft.getApprovalRequired() == null ? "0" : draft.getApprovalRequired());
         deliverable.setStatus(DeliverableStatus.PENDING.getCode());
         deliverable.setCreateBy(operator);
         return deliverable;
@@ -138,7 +147,9 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
     public int remove(Long id, String operator) {
         ProjectWbsNode node = required(id);
         assertStructureMutable(node.getProjectId());
-        if (mapper.countChildren(id) > 0 || mapper.countTasks(id) > 0 || mapper.countDeliverables(id) > 0) {
+        if (mapper.countChildren(id) > 0
+                || mapper.countTasks(id) > 0
+                || mapper.countDeliverables(id) > 0) {
             throw new ServiceException("WBS节点非空，不能删除");
         }
         int rows = mapper.deleteById(id);
@@ -154,7 +165,8 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         filter.setProjectId(projectId);
         filter.setNodeType(WbsNodeType.WORK_PACKAGE.getCode());
         List<ProjectWbsNode> packages = mapper.selectList(filter);
-        return !packages.isEmpty() && packages.stream().allMatch(x -> WbsStatus.COMPLETED.matches(x.getStatus()));
+        return !packages.isEmpty()
+                && packages.stream().allMatch(x -> WbsStatus.COMPLETED.matches(x.getStatus()));
     }
 
     /** 自底向上刷新项目内全部WBS节点的汇总状态与进度。 */
@@ -168,12 +180,19 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         ProjectInfo project = projectMapper.selectProjectInfoById(projectId);
         if (project != null) {
             List<ProjectWbsNode> roots = all.stream().filter(x -> x.getParentId() == 0).toList();
-            project.setProgress(roots.isEmpty()
-                    ? 0
-                    : (int) Math.round(roots.stream()
-                            .mapToInt(x -> x.getProgress() == null ? 0 : x.getProgress())
-                            .average()
-                            .orElse(0)));
+            project.setProgress(
+                    roots.isEmpty()
+                            ? 0
+                            : (int)
+                                    Math.round(
+                                            roots.stream()
+                                                    .mapToInt(
+                                                            x ->
+                                                                    x.getProgress() == null
+                                                                            ? 0
+                                                                            : x.getProgress())
+                                                    .average()
+                                                    .orElse(0)));
             project.setUpdateBy("system");
             projectMapper.updateLifecycle(project);
         }
@@ -184,30 +203,38 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         if (WbsNodeType.WORK_PACKAGE.matches(node.getNodeType())) {
             return;
         }
-        List<ProjectWbsNode> children = all.stream()
-                .filter(x -> node.getWbsId().equals(x.getParentId()))
-                .toList();
+        List<ProjectWbsNode> children =
+                all.stream().filter(x -> node.getWbsId().equals(x.getParentId())).toList();
         if (children.isEmpty()) {
             mapper.updateAggregate(node.getWbsId(), null, null, WbsStatus.NOT_STARTED.getCode(), 0);
             return;
         }
-        LocalDate start = children.stream()
-                .map(ProjectWbsNode::getPlanStartDate)
-                .filter(x -> x != null)
-                .min(LocalDate::compareTo)
-                .orElse(null);
-        LocalDate end = children.stream()
-                .map(ProjectWbsNode::getPlanEndDate)
-                .filter(x -> x != null)
-                .max(LocalDate::compareTo)
-                .orElse(null);
-        int progress = (int) Math.round(children.stream()
-                .mapToInt(x -> x.getProgress() == null ? 0 : x.getProgress())
-                .average()
-                .orElse(0));
-        String status = progress == 100
-                ? WbsStatus.COMPLETED.getCode()
-                : progress > 0 ? WbsStatus.ACTIVE.getCode() : WbsStatus.NOT_STARTED.getCode();
+        LocalDate start =
+                children.stream()
+                        .map(ProjectWbsNode::getPlanStartDate)
+                        .filter(x -> x != null)
+                        .min(LocalDate::compareTo)
+                        .orElse(null);
+        LocalDate end =
+                children.stream()
+                        .map(ProjectWbsNode::getPlanEndDate)
+                        .filter(x -> x != null)
+                        .max(LocalDate::compareTo)
+                        .orElse(null);
+        int progress =
+                (int)
+                        Math.round(
+                                children.stream()
+                                        .mapToInt(
+                                                x -> x.getProgress() == null ? 0 : x.getProgress())
+                                        .average()
+                                        .orElse(0));
+        String status =
+                progress == 100
+                        ? WbsStatus.COMPLETED.getCode()
+                        : progress > 0
+                                ? WbsStatus.ACTIVE.getCode()
+                                : WbsStatus.NOT_STARTED.getCode();
         mapper.updateAggregate(node.getWbsId(), start, end, status, progress);
         node.setPlanStartDate(start);
         node.setPlanEndDate(end);
@@ -215,9 +242,7 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         node.setProgress(progress);
     }
 
-    /**
-     * 校验WBS节点：层级关系、工作包必填项与项目周期约束。
-     */
+    /** 校验WBS节点：层级关系、工作包必填项与项目周期约束。 */
     private void validate(ProjectWbsNode node, ProjectWbsNode old) {
         ProjectInfo project = projectMapper.selectProjectInfoById(node.getProjectId());
         if (project == null) {
@@ -236,7 +261,8 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
             }
         }
         if (WbsNodeType.WORK_PACKAGE.matches(node.getNodeType())) {
-            if (node.getOwnerId() == null || !teamService.isActiveMember(node.getProjectId(), node.getOwnerId())) {
+            if (node.getOwnerId() == null
+                    || !teamService.isActiveMember(node.getProjectId(), node.getOwnerId())) {
                 throw new ServiceException("工作包负责人必须是当前项目在组成员");
             }
             if (node.getPlanStartDate() == null || node.getPlanEndDate() == null) {
@@ -247,18 +273,28 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
             }
             if (node.getPlanStartDate().isBefore(project.getStartDate())
                     || node.getPlanEndDate().isAfter(project.getEndDate())) {
-                throw new ServiceException("工作包计划日期必须在项目周期内（" + project.getStartDate() + " ~ "
-                        + project.getEndDate() + "）");
+                throw new ServiceException(
+                        "工作包计划日期必须在项目周期内（"
+                                + project.getStartDate()
+                                + " ~ "
+                                + project.getEndDate()
+                                + "）");
             }
-            if (node.getAcceptanceCriteria() == null || node.getAcceptanceCriteria().isBlank()
-                    || node.getDefinitionOfDone() == null || node.getDefinitionOfDone().isBlank()) {
+            if (node.getAcceptanceCriteria() == null
+                    || node.getAcceptanceCriteria().isBlank()
+                    || node.getDefinitionOfDone() == null
+                    || node.getDefinitionOfDone().isBlank()) {
                 throw new ServiceException("工作包必须填写验收标准和完成定义");
             }
-            if (old != null && WbsNodeType.SUMMARY.matches(old.getNodeType()) && mapper.countChildren(old.getWbsId()) > 0) {
+            if (old != null
+                    && WbsNodeType.SUMMARY.matches(old.getNodeType())
+                    && mapper.countChildren(old.getWbsId()) > 0) {
                 throw new ServiceException("汇总WBS仍有下级，不能转为工作包");
             }
-        } else if (old != null && WbsNodeType.WORK_PACKAGE.matches(old.getNodeType())
-                && (mapper.countTasks(old.getWbsId()) > 0 || mapper.countDeliverables(old.getWbsId()) > 0)) {
+        } else if (old != null
+                && WbsNodeType.WORK_PACKAGE.matches(old.getNodeType())
+                && (mapper.countTasks(old.getWbsId()) > 0
+                        || mapper.countDeliverables(old.getWbsId()) > 0)) {
             throw new ServiceException("工作包已有任务或交付物，不能转为汇总WBS");
         }
     }
@@ -315,11 +351,12 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
         while (parentId != null && parentId != 0) {
             depth++;
             Long id = parentId;
-            parentId = all.stream()
-                    .filter(x -> x.getWbsId().equals(id))
-                    .map(ProjectWbsNode::getParentId)
-                    .findFirst()
-                    .orElse(0L);
+            parentId =
+                    all.stream()
+                            .filter(x -> x.getWbsId().equals(id))
+                            .map(ProjectWbsNode::getParentId)
+                            .findFirst()
+                            .orElse(0L);
         }
         return depth;
     }

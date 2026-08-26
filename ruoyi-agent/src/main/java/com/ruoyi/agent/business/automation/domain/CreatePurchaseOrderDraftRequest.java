@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 public class CreatePurchaseOrderDraftRequest {
     private String requestId;
     private PurchaseOrderDraft draft;
-
 }

@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AgentPurchaseOrderAutomationController extends BaseController {
     private final PurchaseOrderAutomationService automationService;
 
-    public AgentPurchaseOrderAutomationController(PurchaseOrderAutomationService automationService) {
+    public AgentPurchaseOrderAutomationController(
+            PurchaseOrderAutomationService automationService) {
         this.automationService = automationService;
     }
 
@@ -27,8 +28,10 @@ public class AgentPurchaseOrderAutomationController extends BaseController {
     @PreAuthorize("@ss.hasPermi('mes:purchaseOrder:add')")
     @Log(title = "AI 创建采购订单草稿", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult createPurchaseOrderDraft(@RequestBody CreatePurchaseOrderDraftRequest request) {
-        CreatePurchaseOrderDraftResult result = automationService.createDraft(request, getUserId(), getUsername());
+    public AjaxResult createPurchaseOrderDraft(
+            @RequestBody CreatePurchaseOrderDraftRequest request) {
+        CreatePurchaseOrderDraftResult result =
+                automationService.createDraft(request, getUserId(), getUsername());
         return success(result);
     }
 }

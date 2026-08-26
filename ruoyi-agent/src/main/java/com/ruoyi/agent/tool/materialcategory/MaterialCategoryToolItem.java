@@ -16,5 +16,4 @@ public class MaterialCategoryToolItem {
     private String ancestors;
     private int level;
     private String status;
-
 }

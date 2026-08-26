@@ -1,12 +1,12 @@
 package com.ruoyi.generator.domain;
 
-import java.util.List;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import org.apache.commons.lang3.ArrayUtils;
 import com.ruoyi.common.constant.GenConstants;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.utils.StringUtils;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import java.util.List;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * 业务表 gen_table
@@ -79,8 +79,7 @@ public class GenTable extends BaseEntity {
     private GenTable subTable;
 
     /** 表列信息 */
-    @Valid
-    private List<GenTableColumn> columns;
+    @Valid private List<GenTableColumn> columns;
 
     /** 其它生成选项 */
     private String options;
@@ -341,7 +340,8 @@ public class GenTable extends BaseEntity {
 
     public static boolean isSuperColumn(String tplCategory, String javaField) {
         if (isTree(tplCategory)) {
-            return StringUtils.equalsAnyIgnoreCase(javaField,
+            return StringUtils.equalsAnyIgnoreCase(
+                    javaField,
                     ArrayUtils.addAll(GenConstants.TREE_ENTITY, GenConstants.BASE_ENTITY));
         }
         return StringUtils.equalsAnyIgnoreCase(javaField, GenConstants.BASE_ENTITY);

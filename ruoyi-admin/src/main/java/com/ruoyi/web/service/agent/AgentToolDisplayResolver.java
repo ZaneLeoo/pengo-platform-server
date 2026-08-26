@@ -19,9 +19,7 @@ public class AgentToolDisplayResolver {
         this.metadataRegistry = metadataRegistry;
     }
 
-    /**
-     * 解析工具展示名称；Dify 将并行调用拼成分号字符串时，按工具名称聚合并显示调用次数。
-     */
+    /** 解析工具展示名称；Dify 将并行调用拼成分号字符串时，按工具名称聚合并显示调用次数。 */
     public String resolveLabel(DifyStreamEvent event) {
         List<String> toolNames = splitToolNames(event.getTool());
         if (toolNames.isEmpty()) {
@@ -44,7 +42,9 @@ public class AgentToolDisplayResolver {
         Set<String> descriptions = new LinkedHashSet<>();
         for (String toolName : splitToolNames(toolNames)) {
             AgentToolMetadataRegistry.ToolMetadata metadata = metadataRegistry.find(toolName);
-            if (metadata != null && metadata.getDescription() != null && !metadata.getDescription().isBlank()) {
+            if (metadata != null
+                    && metadata.getDescription() != null
+                    && !metadata.getDescription().isBlank()) {
                 descriptions.add(metadata.getDescription());
             }
         }
@@ -97,7 +97,8 @@ public class AgentToolDisplayResolver {
     }
 
     private boolean isMeaningfulLabel(Object value, String toolName) {
-        return value != null && !value.toString().isBlank()
+        return value != null
+                && !value.toString().isBlank()
                 && !value.toString().trim().equalsIgnoreCase(toolName);
     }
 

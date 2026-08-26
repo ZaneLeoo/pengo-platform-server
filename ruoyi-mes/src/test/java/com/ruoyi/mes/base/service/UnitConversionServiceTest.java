@@ -1,5 +1,13 @@
 package com.ruoyi.mes.base.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.ruoyi.mes.base.domain.Material;
 import com.ruoyi.mes.base.domain.UnitConversionFormula;
 import com.ruoyi.mes.base.domain.UnitGroup;
@@ -10,20 +18,11 @@ import com.ruoyi.mes.base.engine.FormulaEngine;
 import com.ruoyi.mes.base.mapper.MaterialMapper;
 import com.ruoyi.mes.base.mapper.UnitGroupDetailMapper;
 import com.ruoyi.mes.base.mapper.UnitGroupMapper;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class UnitConversionServiceTest {
 
@@ -58,14 +57,26 @@ class UnitConversionServiceTest {
                 .thenReturn(rollToSquare);
         when(formulaEngine.findFormula(eq(1L), same(material), eq("BOX"), eq("SQ"), eq(102L)))
                 .thenReturn(boxToSquare);
-        when(formulaEngine.reverseEvaluate(eq(rollToSquare), same(material), any(BigDecimal.class),
-                nullable(Map.class)))
-                .thenAnswer(invocation -> invocation.getArgument(2, BigDecimal.class)
-                        .divide(new BigDecimal("10")));
-        when(formulaEngine.reverseEvaluate(eq(boxToSquare), same(material), any(BigDecimal.class),
-                nullable(Map.class)))
-                .thenAnswer(invocation -> invocation.getArgument(2, BigDecimal.class)
-                        .divide(new BigDecimal("20")));
+        when(formulaEngine.reverseEvaluate(
+                        eq(rollToSquare),
+                        same(material),
+                        any(BigDecimal.class),
+                        nullable(Map.class)))
+                .thenAnswer(
+                        invocation ->
+                                invocation
+                                        .getArgument(2, BigDecimal.class)
+                                        .divide(new BigDecimal("10")));
+        when(formulaEngine.reverseEvaluate(
+                        eq(boxToSquare),
+                        same(material),
+                        any(BigDecimal.class),
+                        nullable(Map.class)))
+                .thenAnswer(
+                        invocation ->
+                                invocation
+                                        .getArgument(2, BigDecimal.class)
+                                        .divide(new BigDecimal("20")));
 
         UnitConversionService service = new UnitConversionService();
         ReflectionTestUtils.setField(service, "materialMapper", materialMapper);

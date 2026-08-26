@@ -1,10 +1,10 @@
 package com.ruoyi.common.utils.ip;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import jakarta.servlet.http.HttpServletRequest;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * 获取IP方法
@@ -12,13 +12,22 @@ import com.ruoyi.common.utils.StringUtils;
  * @author ruoyi
  */
 public class IpUtils {
-    public final static String REGX_0_255 = "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]\\d|\\d)";
+    public static final String REGX_0_255 = "(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]\\d|\\d)";
     // 匹配 ip
-    public final static String REGX_IP = "((" + REGX_0_255 + "\\.){3}" + REGX_0_255 + ")";
-    public final static String REGX_IP_WILDCARD = "(((\\*\\.){3}\\*)|(" + REGX_0_255 + "(\\.\\*){3})|(" + REGX_0_255
-            + "\\." + REGX_0_255 + ")(\\.\\*){2}" + "|((" + REGX_0_255 + "\\.){3}\\*))";
+    public static final String REGX_IP = "((" + REGX_0_255 + "\\.){3}" + REGX_0_255 + ")";
+    public static final String REGX_IP_WILDCARD =
+            "(((\\*\\.){3}\\*)|("
+                    + REGX_0_255
+                    + "(\\.\\*){3})|("
+                    + REGX_0_255
+                    + "\\."
+                    + REGX_0_255
+                    + ")(\\.\\*){2}"
+                    + "|(("
+                    + REGX_0_255
+                    + "\\.){3}\\*))";
     // 匹配网段
-    public final static String REGX_IP_SEG = "(" + REGX_IP + "\\-" + REGX_IP + ")";
+    public static final String REGX_IP_SEG = "(" + REGX_IP + "\\-" + REGX_IP + ")";
 
     /**
      * 获取客户端IP
@@ -32,8 +41,7 @@ public class IpUtils {
     /**
      * 获取客户端IP
      *
-     * @param request
-     *            请求对象
+     * @param request 请求对象
      * @return IP地址
      */
     public static String getIpAddr(HttpServletRequest request) {
@@ -64,8 +72,7 @@ public class IpUtils {
     /**
      * 检查是否为内部IP地址
      *
-     * @param ip
-     *            IP地址
+     * @param ip IP地址
      * @return 结果
      */
     public static boolean internalIp(String ip) {
@@ -76,8 +83,7 @@ public class IpUtils {
     /**
      * 检查是否为内部IP地址
      *
-     * @param addr
-     *            byte地址
+     * @param addr byte地址
      * @return 结果
      */
     private static boolean internalIp(byte[] addr) {
@@ -96,18 +102,18 @@ public class IpUtils {
         final byte SECTION_5 = (byte) 0xC0;
         final byte SECTION_6 = (byte) 0xA8;
         switch (b0) {
-            case SECTION_1 :
+            case SECTION_1:
                 return true;
-            case SECTION_2 :
+            case SECTION_2:
                 if (b1 >= SECTION_3 && b1 <= SECTION_4) {
                     return true;
                 }
-            case SECTION_5 :
+            case SECTION_5:
                 switch (b1) {
-                    case SECTION_6 :
+                    case SECTION_6:
                         return true;
                 }
-            default :
+            default:
                 return false;
         }
     }
@@ -115,8 +121,7 @@ public class IpUtils {
     /**
      * 将IPv4地址转换成字节
      *
-     * @param text
-     *            IPv4地址
+     * @param text IPv4地址
      * @return byte 字节
      */
     public static byte[] textToNumericFormatV4(String text) {
@@ -130,7 +135,7 @@ public class IpUtils {
             long l;
             int i;
             switch (elements.length) {
-                case 1 :
+                case 1:
                     l = Long.parseLong(elements[0]);
                     if ((l < 0L) || (l > 4294967295L)) {
                         return null;
@@ -140,7 +145,7 @@ public class IpUtils {
                     bytes[2] = (byte) (int) ((l & 0xFFFF) >> 8 & 0xFF);
                     bytes[3] = (byte) (int) (l & 0xFF);
                     break;
-                case 2 :
+                case 2:
                     l = Integer.parseInt(elements[0]);
                     if ((l < 0L) || (l > 255L)) {
                         return null;
@@ -154,7 +159,7 @@ public class IpUtils {
                     bytes[2] = (byte) (int) ((l & 0xFFFF) >> 8 & 0xFF);
                     bytes[3] = (byte) (int) (l & 0xFF);
                     break;
-                case 3 :
+                case 3:
                     for (i = 0; i < 2; ++i) {
                         l = Integer.parseInt(elements[i]);
                         if ((l < 0L) || (l > 255L)) {
@@ -169,7 +174,7 @@ public class IpUtils {
                     bytes[2] = (byte) (int) (l >> 8 & 0xFF);
                     bytes[3] = (byte) (int) (l & 0xFF);
                     break;
-                case 4 :
+                case 4:
                     for (i = 0; i < 4; ++i) {
                         l = Integer.parseInt(elements[i]);
                         if ((l < 0L) || (l > 255L)) {
@@ -178,7 +183,7 @@ public class IpUtils {
                         bytes[i] = (byte) (int) (l & 0xFF);
                     }
                     break;
-                default :
+                default:
                     return null;
             }
         } catch (NumberFormatException e) {
@@ -216,8 +221,7 @@ public class IpUtils {
     /**
      * 从多级反向代理中获得第一个非unknown IP地址
      *
-     * @param ip
-     *            获得的IP地址
+     * @param ip 获得的IP地址
      * @return 第一个非unknown IP地址
      */
     public static String getMultistageReverseProxyIp(String ip) {
@@ -237,31 +241,24 @@ public class IpUtils {
     /**
      * 检测给定字符串是否为未知，多用于检测HTTP请求相关
      *
-     * @param checkString
-     *            被检测的字符串
+     * @param checkString 被检测的字符串
      * @return 是否未知
      */
     public static boolean isUnknown(String checkString) {
         return StringUtils.isBlank(checkString) || "unknown".equalsIgnoreCase(checkString);
     }
 
-    /**
-     * 是否为IP
-     */
+    /** 是否为IP */
     public static boolean isIP(String ip) {
         return StringUtils.isNotBlank(ip) && ip.matches(REGX_IP);
     }
 
-    /**
-     * 是否为IP，或 *为间隔的通配符地址
-     */
+    /** 是否为IP，或 *为间隔的通配符地址 */
     public static boolean isIpWildCard(String ip) {
         return StringUtils.isNotBlank(ip) && ip.matches(REGX_IP_WILDCARD);
     }
 
-    /**
-     * 检测参数是否在ip通配符里
-     */
+    /** 检测参数是否在ip通配符里 */
     public static boolean ipIsInWildCardNoCheck(String ipWildCard, String ip) {
         String[] s1 = ipWildCard.split("\\.");
         String[] s2 = ip.split("\\.");
@@ -275,16 +272,12 @@ public class IpUtils {
         return isMatchedSeg;
     }
 
-    /**
-     * 是否为特定格式如:“10.10.10.1-10.10.10.99”的ip段字符串
-     */
+    /** 是否为特定格式如:“10.10.10.1-10.10.10.99”的ip段字符串 */
     public static boolean isIPSegment(String ipSeg) {
         return StringUtils.isNotBlank(ipSeg) && ipSeg.matches(REGX_IP_SEG);
     }
 
-    /**
-     * 判断ip是否在指定网段中
-     */
+    /** 判断ip是否在指定网段中 */
     public static boolean ipIsInNetNoCheck(String iparea, String ip) {
         int idx = iparea.indexOf('-');
         String[] sips = iparea.substring(0, idx).split("\\.");
@@ -307,10 +300,8 @@ public class IpUtils {
     /**
      * 校验ip是否符合过滤串规则
      *
-     * @param filter
-     *            过滤IP列表,支持后缀'*'通配,支持网段如:`10.10.10.1-10.10.10.99`
-     * @param ip
-     *            校验IP地址
+     * @param filter 过滤IP列表,支持后缀'*'通配,支持网段如:`10.10.10.1-10.10.10.99`
+     * @param ip 校验IP地址
      * @return boolean 结果
      */
     public static boolean isMatchedIp(String filter, String ip) {

@@ -4,10 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import lombok.Data;
 
-/**
- * 创建工作包时一并定义的初始交付要求。
- * 所属项目与所属工作包在服务端创建完工作包后回填，因此此处不校验这两个字段。
- */
+/** 创建工作包时一并定义的初始交付要求。 所属项目与所属工作包在服务端创建完工作包后回填，因此此处不校验这两个字段。 */
 @Data
 public class ProjectDeliverableDraft {
 

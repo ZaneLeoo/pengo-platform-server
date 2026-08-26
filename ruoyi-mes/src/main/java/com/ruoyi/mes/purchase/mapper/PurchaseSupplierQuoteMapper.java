@@ -26,11 +26,15 @@ public interface PurchaseSupplierQuoteMapper {
 
     int insertLine(PurchaseSupplierQuoteLine line);
 
-    List<PurchaseQuoteCandidate> selectCandidates(@Param("materialCode") String materialCode,
+    List<PurchaseQuoteCandidate> selectCandidates(
+            @Param("materialCode") String materialCode,
             @Param("quantity") java.math.BigDecimal quantity,
             @Param("currency") String currency,
             @Param("requiredDate") String requiredDate);
 
-    int updateStatus(@Param("id") Long id, @Param("sourceStatus") String sourceStatus,
-            @Param("targetStatus") String targetStatus, @Param("operator") String operator);
+    int updateStatus(
+            @Param("id") Long id,
+            @Param("sourceStatus") String sourceStatus,
+            @Param("targetStatus") String targetStatus,
+            @Param("operator") String operator);
 }

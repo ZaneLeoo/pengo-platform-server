@@ -1,12 +1,12 @@
 package com.ruoyi.quartz.util;
 
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.spring.SpringUtils;
+import com.ruoyi.quartz.domain.SysJob;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.quartz.domain.SysJob;
 
 /**
  * 任务执行工具
@@ -17,8 +17,7 @@ public class JobInvokeUtil {
     /**
      * 执行方法
      *
-     * @param sysJob
-     *            系统任务
+     * @param sysJob 系统任务
      */
     public static void invokeMethod(SysJob sysJob) throws Exception {
         String invokeTarget = sysJob.getInvokeTarget();
@@ -38,18 +37,19 @@ public class JobInvokeUtil {
     /**
      * 调用任务方法
      *
-     * @param bean
-     *            目标对象
-     * @param methodName
-     *            方法名称
-     * @param methodParams
-     *            方法参数
+     * @param bean 目标对象
+     * @param methodName 方法名称
+     * @param methodParams 方法参数
      */
     private static void invokeMethod(Object bean, String methodName, List<Object[]> methodParams)
-            throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-            InvocationTargetException {
+            throws NoSuchMethodException,
+                    SecurityException,
+                    IllegalAccessException,
+                    IllegalArgumentException,
+                    InvocationTargetException {
         if (StringUtils.isNotNull(methodParams) && methodParams.size() > 0) {
-            Method method = bean.getClass().getMethod(methodName, getMethodParamsType(methodParams));
+            Method method =
+                    bean.getClass().getMethod(methodName, getMethodParamsType(methodParams));
             method.invoke(bean, getMethodParamsValue(methodParams));
         } else {
             Method method = bean.getClass().getMethod(methodName);
@@ -60,8 +60,7 @@ public class JobInvokeUtil {
     /**
      * 校验是否为为class包名
      *
-     * @param invokeTarget
-     *            名称
+     * @param invokeTarget 名称
      * @return true是 false否
      */
     public static boolean isValidClassName(String invokeTarget) {
@@ -71,8 +70,7 @@ public class JobInvokeUtil {
     /**
      * 获取bean名称
      *
-     * @param invokeTarget
-     *            目标字符串
+     * @param invokeTarget 目标字符串
      * @return bean名称
      */
     public static String getBeanName(String invokeTarget) {
@@ -83,8 +81,7 @@ public class JobInvokeUtil {
     /**
      * 获取bean方法
      *
-     * @param invokeTarget
-     *            目标字符串
+     * @param invokeTarget 目标字符串
      * @return method方法
      */
     public static String getMethodName(String invokeTarget) {
@@ -95,8 +92,7 @@ public class JobInvokeUtil {
     /**
      * 获取method方法参数相关列表
      *
-     * @param invokeTarget
-     *            目标字符串
+     * @param invokeTarget 目标字符串
      * @return method方法相关参数列表
      */
     public static List<Object[]> getMethodParams(String invokeTarget) {
@@ -110,23 +106,34 @@ public class JobInvokeUtil {
             String str = StringUtils.trimToEmpty(methodParams[i]);
             // String字符串类型，以'或"开头
             if (StringUtils.startsWithAny(str, "'", "\"")) {
-                classs.add(new Object[]{StringUtils.substring(str, 1, str.length() - 1), String.class});
+                classs.add(
+                        new Object[] {
+                            StringUtils.substring(str, 1, str.length() - 1), String.class
+                        });
             }
             // boolean布尔类型，等于true或者false
             else if ("true".equalsIgnoreCase(str) || "false".equalsIgnoreCase(str)) {
-                classs.add(new Object[]{Boolean.valueOf(str), Boolean.class});
+                classs.add(new Object[] {Boolean.valueOf(str), Boolean.class});
             }
             // long长整形，以L结尾
             else if (StringUtils.endsWith(str, "L")) {
-                classs.add(new Object[]{Long.valueOf(StringUtils.substring(str, 0, str.length() - 1)), Long.class});
+                classs.add(
+                        new Object[] {
+                            Long.valueOf(StringUtils.substring(str, 0, str.length() - 1)),
+                            Long.class
+                        });
             }
             // double浮点类型，以D结尾
             else if (StringUtils.endsWith(str, "D")) {
-                classs.add(new Object[]{Double.valueOf(StringUtils.substring(str, 0, str.length() - 1)), Double.class});
+                classs.add(
+                        new Object[] {
+                            Double.valueOf(StringUtils.substring(str, 0, str.length() - 1)),
+                            Double.class
+                        });
             }
             // 其他类型归类为整形
             else {
-                classs.add(new Object[]{Integer.valueOf(str), Integer.class});
+                classs.add(new Object[] {Integer.valueOf(str), Integer.class});
             }
         }
         return classs;
@@ -135,8 +142,7 @@ public class JobInvokeUtil {
     /**
      * 获取参数类型
      *
-     * @param methodParams
-     *            参数相关列表
+     * @param methodParams 参数相关列表
      * @return 参数类型列表
      */
     public static Class<?>[] getMethodParamsType(List<Object[]> methodParams) {
@@ -152,8 +158,7 @@ public class JobInvokeUtil {
     /**
      * 获取参数值
      *
-     * @param methodParams
-     *            参数相关列表
+     * @param methodParams 参数相关列表
      * @return 参数值列表
      */
     public static Object[] getMethodParamsValue(List<Object[]> methodParams) {

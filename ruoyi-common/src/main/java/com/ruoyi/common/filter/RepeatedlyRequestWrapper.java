@@ -1,16 +1,16 @@
 package com.ruoyi.common.filter;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.http.HttpHelper;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-import com.ruoyi.common.utils.http.HttpHelper;
-import com.ruoyi.common.constant.Constants;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * 构建可重复读取inputStream的request
@@ -20,7 +20,8 @@ import com.ruoyi.common.constant.Constants;
 public class RepeatedlyRequestWrapper extends HttpServletRequestWrapper {
     private final byte[] body;
 
-    public RepeatedlyRequestWrapper(HttpServletRequest request, ServletResponse response) throws IOException {
+    public RepeatedlyRequestWrapper(HttpServletRequest request, ServletResponse response)
+            throws IOException {
         super(request);
         request.setCharacterEncoding(Constants.UTF8);
         response.setCharacterEncoding(Constants.UTF8);
@@ -58,9 +59,7 @@ public class RepeatedlyRequestWrapper extends HttpServletRequestWrapper {
             }
 
             @Override
-            public void setReadListener(ReadListener readListener) {
-
-            }
+            public void setReadListener(ReadListener readListener) {}
         };
     }
 }

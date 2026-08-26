@@ -27,7 +27,9 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
     private final DifyRawEventLogger rawEventLogger;
 
     public DifyChatflowClientImpl() {
-        this(HttpClient.newBuilder().connectTimeout(CONNECT_TIMEOUT).build(), new DifySseParser(),
+        this(
+                HttpClient.newBuilder().connectTimeout(CONNECT_TIMEOUT).build(),
+                new DifySseParser(),
                 new DifyRawEventLogger());
     }
 
@@ -36,7 +38,8 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
     }
 
     /** 创建具有可替换基础设施依赖的 Dify 客户端。 */
-    DifyChatflowClientImpl(HttpClient httpClient, DifySseParser parser, DifyRawEventLogger rawEventLogger) {
+    DifyChatflowClientImpl(
+            HttpClient httpClient, DifySseParser parser, DifyRawEventLogger rawEventLogger) {
         this.httpClient = httpClient;
         this.parser = parser;
         this.rawEventLogger = rawEventLogger;
@@ -44,7 +47,10 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
 
     /** 发送流式消息，并逐行解析 Dify SSE。 */
     @Override
-    public void stream(DifyClientSettings settings, DifyChatRequest request, Consumer<DifyStreamEvent> consumer)
+    public void stream(
+            DifyClientSettings settings,
+            DifyChatRequest request,
+            Consumer<DifyStreamEvent> consumer)
             throws IOException, InterruptedException {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("query", request.getQuery());
@@ -58,11 +64,14 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
         if (request.getConversationId() != null && !request.getConversationId().isBlank()) {
             body.put("conversation_id", request.getConversationId());
         }
-        HttpResponse<java.io.InputStream> response = httpClient.send(build(settings,
-                "/chat-messages", JSON.toJSONString(body)), HttpResponse.BodyHandlers.ofInputStream());
+        HttpResponse<java.io.InputStream> response =
+                httpClient.send(
+                        build(settings, "/chat-messages", JSON.toJSONString(body)),
+                        HttpResponse.BodyHandlers.ofInputStream());
         requireSuccess(response.statusCode());
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader =
+                new BufferedReader(
+                        new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 rawEventLogger.log(line);
@@ -73,18 +82,28 @@ public class DifyChatflowClientImpl implements DifyChatflowClient {
 
     /** 调用 Dify 停止生成接口。 */
     @Override
-    public void stop(DifyClientSettings settings, String taskId, String user) throws IOException, InterruptedException {
-        HttpResponse<String> response = httpClient.send(build(settings, "/chat-messages/" + taskId + "/stop",
-                JSON.toJSONString(Map.of("user", user))), HttpResponse.BodyHandlers.ofString());
+    public void stop(DifyClientSettings settings, String taskId, String user)
+            throws IOException, InterruptedException {
+        HttpResponse<String> response =
+                httpClient.send(
+                        build(
+                                settings,
+                                "/chat-messages/" + taskId + "/stop",
+                                JSON.toJSONString(Map.of("user", user))),
+                        HttpResponse.BodyHandlers.ofString());
         requireSuccess(response.statusCode());
     }
 
     /** 构建统一鉴权和超时策略的 POST 请求。 */
     private HttpRequest build(DifyClientSettings settings, String path, String body) {
         String baseUrl = settings.getBaseUrl().replaceAll("/+$", "");
-        return HttpRequest.newBuilder(URI.create(baseUrl + path)).timeout(REQUEST_TIMEOUT)
-                .header("Authorization", "Bearer " + settings.getApiKey()).header("Content-Type", "application/json")
-                .header("Accept", "text/event-stream").POST(HttpRequest.BodyPublishers.ofString(body)).build();
+        return HttpRequest.newBuilder(URI.create(baseUrl + path))
+                .timeout(REQUEST_TIMEOUT)
+                .header("Authorization", "Bearer " + settings.getApiKey())
+                .header("Content-Type", "application/json")
+                .header("Accept", "text/event-stream")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
     }
 
     /** 将非 2xx 响应转换为稳定的远程调用异常。 */

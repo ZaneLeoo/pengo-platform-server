@@ -61,10 +61,12 @@ public class ProfessionalRoleServiceImpl implements IProfessionalRoleService {
         }
         normalize(role);
         ProfessionalRole duplicate = mapper.selectByCode(role.getRoleCode());
-        if (duplicate != null && !duplicate.getProfessionalRoleId().equals(role.getProfessionalRoleId())) {
+        if (duplicate != null
+                && !duplicate.getProfessionalRoleId().equals(role.getProfessionalRoleId())) {
             throw new ServiceException("专业角色编码已存在");
         }
-        if ("1".equals(role.getStatus()) && mapper.countActiveMembers(role.getProfessionalRoleId()) > 0) {
+        if ("1".equals(role.getStatus())
+                && mapper.countActiveMembers(role.getProfessionalRoleId()) > 0) {
             throw new ServiceException("该专业角色仍被在组成员使用，不能停用");
         }
         role.setSystemFlag(old.getSystemFlag());

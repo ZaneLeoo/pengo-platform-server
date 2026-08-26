@@ -24,14 +24,15 @@ public class AgentDocumentExtractor {
     public ExtractionResult extract(byte[] content, String extension) throws IOException {
         String text;
         try {
-            text = switch (extension) {
-                case "pdf" -> extractPdf(content);
-                case "docx" -> extractWord(content);
-                case "xlsx" -> extractExcel(content);
-                case "pptx" -> extractPowerPoint(content);
-                case "txt", "csv" -> new String(content, StandardCharsets.UTF_8);
-                default -> throw new IOException("不支持提取该文档格式");
-            };
+            text =
+                    switch (extension) {
+                        case "pdf" -> extractPdf(content);
+                        case "docx" -> extractWord(content);
+                        case "xlsx" -> extractExcel(content);
+                        case "pptx" -> extractPowerPoint(content);
+                        case "txt", "csv" -> new String(content, StandardCharsets.UTF_8);
+                        default -> throw new IOException("不支持提取该文档格式");
+                    };
         } catch (IOException exception) {
             throw exception;
         } catch (RuntimeException exception) {
@@ -60,11 +61,24 @@ public class AgentDocumentExtractor {
     private String extractWord(byte[] content) throws IOException {
         StringBuilder text = new StringBuilder();
         try (XWPFDocument document = new XWPFDocument(new ByteArrayInputStream(content))) {
-            document.getParagraphs().forEach(paragraph -> text.append(paragraph.getText()).append('\n'));
-            document.getTables().forEach(table -> table.getRows().forEach(row -> {
-                row.getTableCells().forEach(cell -> text.append(cell.getText()).append('\t'));
-                text.append('\n');
-            }));
+            document.getParagraphs()
+                    .forEach(paragraph -> text.append(paragraph.getText()).append('\n'));
+            document.getTables()
+                    .forEach(
+                            table ->
+                                    table.getRows()
+                                            .forEach(
+                                                    row -> {
+                                                        row.getTableCells()
+                                                                .forEach(
+                                                                        cell ->
+                                                                                text.append(
+                                                                                                cell
+                                                                                                        .getText())
+                                                                                        .append(
+                                                                                                '\t'));
+                                                        text.append('\n');
+                                                    }));
         }
         return text.toString();
     }
@@ -73,13 +87,18 @@ public class AgentDocumentExtractor {
         StringBuilder text = new StringBuilder();
         DataFormatter formatter = new DataFormatter();
         try (XSSFWorkbook workbook = new XSSFWorkbook(new ByteArrayInputStream(content))) {
-            workbook.forEach(sheet -> {
-                text.append("[工作表：").append(sheet.getSheetName()).append("]\n");
-                sheet.forEach(row -> {
-                    row.forEach(cell -> text.append(formatter.formatCellValue(cell)).append('\t'));
-                    text.append('\n');
-                });
-            });
+            workbook.forEach(
+                    sheet -> {
+                        text.append("[工作表：").append(sheet.getSheetName()).append("]\n");
+                        sheet.forEach(
+                                row -> {
+                                    row.forEach(
+                                            cell ->
+                                                    text.append(formatter.formatCellValue(cell))
+                                                            .append('\t'));
+                                    text.append('\n');
+                                });
+                    });
         }
         return text.toString();
     }
@@ -100,8 +119,11 @@ public class AgentDocumentExtractor {
     }
 
     private String normalize(String text) {
-        return text.replace("\u0000", "").replaceAll("[\\t\\x0B\\f\\r ]+", " ")
-                .replaceAll(" *\\n *", "\n").replaceAll("\\n{3,}", "\n\n").trim();
+        return text.replace("\u0000", "")
+                .replaceAll("[\\t\\x0B\\f\\r ]+", " ")
+                .replaceAll(" *\\n *", "\n")
+                .replaceAll("\\n{3,}", "\n\n")
+                .trim();
     }
 
     /** 文档提取结果。 */

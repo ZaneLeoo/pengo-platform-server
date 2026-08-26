@@ -1,17 +1,16 @@
 package com.ruoyi.mes.base.service.impl;
 
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mes.base.domain.Material;
 import com.ruoyi.mes.base.domain.UnitGroup;
 import com.ruoyi.mes.base.mapper.MaterialMapper;
 import com.ruoyi.mes.base.mapper.UnitGroupDetailMapper;
 import com.ruoyi.mes.base.mapper.UnitGroupMapper;
 import com.ruoyi.mes.base.service.IMaterialService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 物料主数据业务处理。
@@ -21,18 +20,14 @@ import java.util.List;
 @Service
 public class MaterialServiceImpl implements IMaterialService {
 
-    @Autowired
-    private MaterialMapper materialMapper;
-    @Autowired
-    private UnitGroupMapper unitGroupMapper;
-    @Autowired
-    private UnitGroupDetailMapper unitGroupDetailMapper;
+    @Autowired private MaterialMapper materialMapper;
+    @Autowired private UnitGroupMapper unitGroupMapper;
+    @Autowired private UnitGroupDetailMapper unitGroupDetailMapper;
 
     /**
      * 查询物料列表。
      *
-     * @param material
-     *            物料
+     * @param material 物料
      * @return 物料集合
      */
     @Override
@@ -42,16 +37,15 @@ public class MaterialServiceImpl implements IMaterialService {
 
     /** 查询 Agent 工具使用的物料列表。 */
     @Override
-    public List<Material> selectMaterialListForAgent(String keyword, Long categoryId, String materialType,
-            String status) {
+    public List<Material> selectMaterialListForAgent(
+            String keyword, Long categoryId, String materialType, String status) {
         return materialMapper.selectMaterialListForAgent(keyword, categoryId, materialType, status);
     }
 
     /**
      * 根据物料ID查询物料。
      *
-     * @param materialId
-     *            物料ID
+     * @param materialId 物料ID
      * @return 物料
      */
     @Override
@@ -62,8 +56,7 @@ public class MaterialServiceImpl implements IMaterialService {
     /**
      * 根据物料编码精确查询物料。
      *
-     * @param materialCode
-     *            物料编码
+     * @param materialCode 物料编码
      * @return 物料
      */
     @Override
@@ -74,22 +67,22 @@ public class MaterialServiceImpl implements IMaterialService {
     /**
      * 校验物料编码是否唯一。
      *
-     * @param material
-     *            物料
+     * @param material 物料
      * @return true 唯一
      */
     @Override
     public boolean checkMaterialCodeUnique(Material material) {
-        Long materialId = StringUtils.isNull(material.getMaterialId()) ? -1L : material.getMaterialId();
+        Long materialId =
+                StringUtils.isNull(material.getMaterialId()) ? -1L : material.getMaterialId();
         Material info = materialMapper.selectMaterialByCode(material.getMaterialCode());
-        return StringUtils.isNull(info) || info.getMaterialId().longValue() == materialId.longValue();
+        return StringUtils.isNull(info)
+                || info.getMaterialId().longValue() == materialId.longValue();
     }
 
     /**
      * 新增物料。
      *
-     * @param material
-     *            物料
+     * @param material 物料
      * @return 结果
      */
     @Override
@@ -102,8 +95,7 @@ public class MaterialServiceImpl implements IMaterialService {
     /**
      * 修改物料。
      *
-     * @param material
-     *            物料
+     * @param material 物料
      * @return 结果
      */
     @Override
@@ -116,8 +108,7 @@ public class MaterialServiceImpl implements IMaterialService {
     /**
      * 批量删除物料。
      *
-     * @param materialIds
-     *            物料ID数组
+     * @param materialIds 物料ID数组
      * @return 结果
      */
     @Override

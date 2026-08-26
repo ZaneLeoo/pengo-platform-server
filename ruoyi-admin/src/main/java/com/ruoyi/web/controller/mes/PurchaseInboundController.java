@@ -36,8 +36,11 @@ public class PurchaseInboundController extends BaseController {
     private final ShelfLifeService shelfLifeService;
     private final PurchaseDocumentDraftService draftService;
 
-    public PurchaseInboundController(PurchaseInboundMapper inboundMapper, IPurchaseFlowService flowService,
-            ShelfLifeService shelfLifeService, PurchaseDocumentDraftService draftService) {
+    public PurchaseInboundController(
+            PurchaseInboundMapper inboundMapper,
+            IPurchaseFlowService flowService,
+            ShelfLifeService shelfLifeService,
+            PurchaseDocumentDraftService draftService) {
         this.inboundMapper = inboundMapper;
         this.flowService = flowService;
         this.shelfLifeService = shelfLifeService;
@@ -127,19 +130,23 @@ public class PurchaseInboundController extends BaseController {
     /** 查询可参照的已质检到货明细。 */
     @PreAuthorize("@ss.hasPermi('mes:purchaseInbound:reference')")
     @GetMapping("/reference/receipt-lines")
-    public AjaxResult referenceReceipts(@RequestParam(required = false) String receiptCode,
+    public AjaxResult referenceReceipts(
+            @RequestParam(required = false) String receiptCode,
             @RequestParam(required = false) String warehouseCode,
             @RequestParam(required = false) String materialCode) {
-        return success(flowService.selectInboundReferenceLines(receiptCode, warehouseCode, materialCode));
+        return success(
+                flowService.selectInboundReferenceLines(receiptCode, warehouseCode, materialCode));
     }
 
     /** 保存入库单所有明细。 */
     private void saveLines(PurchaseInbound inbound) {
-        inbound.getLines().forEach(line -> {
-            shelfLifeService.validateInboundLine(line);
-            line.setInboundId(inbound.getId());
-            line.setCreateBy(getUsername());
-            inboundMapper.insertLine(line);
-        });
+        inbound.getLines()
+                .forEach(
+                        line -> {
+                            shelfLifeService.validateInboundLine(line);
+                            line.setInboundId(inbound.getId());
+                            line.setCreateBy(getUsername());
+                            inboundMapper.insertLine(line);
+                        });
     }
 }

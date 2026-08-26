@@ -2,13 +2,11 @@ package com.ruoyi.projectmanagement.task.service;
 
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
-import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
 import com.ruoyi.projectmanagement.task.domain.ProjectTaskOperationLog;
+import com.ruoyi.projectmanagement.task.domain.ProjectTaskOutput;
 import java.util.List;
 
-/**
- * 任务树与任务执行业务。
- */
+/** 任务树与任务执行业务。 */
 public interface IProjectTaskService {
 
     /** 查询任务列表。 */

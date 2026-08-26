@@ -76,11 +76,16 @@ public class DifyAppConfigService {
     }
 
     private boolean isUsable(DifyAppConfig config) {
-        return config != null && "Y".equals(config.getEnabled()) && StringUtils.isNotBlank(config.getApiKey());
+        return config != null
+                && "Y".equals(config.getEnabled())
+                && StringUtils.isNotBlank(config.getApiKey());
     }
 
     private DifyClientSettings toSettings(DifyAppConfig config) {
-        String baseUrl = StringUtils.isBlank(config.getApiBaseUrl()) ? DEFAULT_API_BASE_URL : config.getApiBaseUrl();
+        String baseUrl =
+                StringUtils.isBlank(config.getApiBaseUrl())
+                        ? DEFAULT_API_BASE_URL
+                        : config.getApiBaseUrl();
         return new DifyClientSettings(baseUrl, config.getApiKey());
     }
 

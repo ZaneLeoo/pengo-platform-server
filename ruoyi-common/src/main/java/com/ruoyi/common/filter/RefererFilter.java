@@ -1,8 +1,5 @@
 package com.ruoyi.common.filter;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -11,6 +8,9 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 防盗链过滤器
@@ -18,9 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author ruoyi
  */
 public class RefererFilter implements Filter {
-    /**
-     * 允许的域名列表
-     */
+    /** 允许的域名列表 */
     public List<String> allowedDomains;
 
     @Override
@@ -39,7 +37,8 @@ public class RefererFilter implements Filter {
 
         // 如果Referer为空，拒绝访问
         if (referer == null || referer.isEmpty()) {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Referer header is required");
+            resp.sendError(
+                    HttpServletResponse.SC_FORBIDDEN, "Access denied: Referer header is required");
             return;
         }
 
@@ -56,12 +55,12 @@ public class RefererFilter implements Filter {
         if (allowed) {
             chain.doFilter(request, response);
         } else {
-            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied: Referer '" + referer + "' is not allowed");
+            resp.sendError(
+                    HttpServletResponse.SC_FORBIDDEN,
+                    "Access denied: Referer '" + referer + "' is not allowed");
         }
     }
 
     @Override
-    public void destroy() {
-
-    }
+    public void destroy() {}
 }

@@ -20,8 +20,8 @@ public class AgentWarehouseToolController {
     private final WarehouseToolService warehouseToolService;
     private final LocationToolService locationToolService;
 
-    public AgentWarehouseToolController(WarehouseToolService warehouseToolService,
-            LocationToolService locationToolService) {
+    public AgentWarehouseToolController(
+            WarehouseToolService warehouseToolService, LocationToolService locationToolService) {
         this.warehouseToolService = warehouseToolService;
         this.locationToolService = locationToolService;
     }

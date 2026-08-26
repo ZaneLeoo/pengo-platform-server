@@ -14,5 +14,4 @@ public class DifyFileUploadResult {
     private long size;
     private String extension;
     private String mimeType;
-
 }

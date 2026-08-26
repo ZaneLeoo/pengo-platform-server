@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * 项目分类控制器。
- */
+/** 项目分类控制器。 */
 @RestController
 @RequestMapping("/projectManagement/category")
 public class ProjectCategoryController extends BaseController {

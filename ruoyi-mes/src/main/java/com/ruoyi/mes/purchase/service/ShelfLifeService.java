@@ -62,7 +62,11 @@ public class ShelfLifeService {
         if (!"Y".equals(material.getShelfLifeControlFlag())) {
             return;
         }
-        requireLotAndDate(line.getMaterialCode(), line.getLotNo(), line.getProductionDate(), line.getExpiryDate());
+        requireLotAndDate(
+                line.getMaterialCode(),
+                line.getLotNo(),
+                line.getProductionDate(),
+                line.getExpiryDate());
         LocalDate productionDate = parseOptionalDate(line.getProductionDate(), "生产日期");
         LocalDate expiryDate = parseOptionalDate(line.getExpiryDate(), "有效期");
         if (productionDate != null && expiryDate != null) {
@@ -78,11 +82,13 @@ public class ShelfLifeService {
         return material;
     }
 
-    private void requireLotAndDate(String materialCode, String lotNo, String productionDate, String expiryDate) {
+    private void requireLotAndDate(
+            String materialCode, String lotNo, String productionDate, String expiryDate) {
         if (isBlank(lotNo)) {
             throw new ServiceException("保质期物料 " + materialCode + " 必须填写批次号");
         }
-        if ((productionDate == null || productionDate.isBlank()) && (expiryDate == null || expiryDate.isBlank())) {
+        if ((productionDate == null || productionDate.isBlank())
+                && (expiryDate == null || expiryDate.isBlank())) {
             throw new ServiceException("保质期物料 " + materialCode + " 必须填写生产日期或有效期");
         }
     }
@@ -103,7 +109,8 @@ public class ShelfLifeService {
         }
     }
 
-    private void validateDateOrder(String materialCode, LocalDate productionDate, LocalDate expiryDate) {
+    private void validateDateOrder(
+            String materialCode, LocalDate productionDate, LocalDate expiryDate) {
         if (expiryDate.isBefore(productionDate)) {
             throw new ServiceException("物料 " + materialCode + " 的有效期不能早于生产日期");
         }

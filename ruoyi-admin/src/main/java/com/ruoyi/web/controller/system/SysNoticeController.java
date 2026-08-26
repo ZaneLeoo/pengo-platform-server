@@ -1,5 +1,14 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.core.text.Convert;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.system.domain.SysNotice;
+import com.ruoyi.system.service.ISysNoticeReadService;
+import com.ruoyi.system.service.ISysNoticeService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,15 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
-import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.core.text.Convert;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.SysNotice;
-import com.ruoyi.system.service.ISysNoticeReadService;
-import com.ruoyi.system.service.ISysNoticeService;
 
 /**
  * 公告 信息操作处理
@@ -31,15 +31,11 @@ import com.ruoyi.system.service.ISysNoticeService;
 @RestController
 @RequestMapping("/system/notice")
 public class SysNoticeController extends BaseController {
-    @Autowired
-    private ISysNoticeService noticeService;
+    @Autowired private ISysNoticeService noticeService;
 
-    @Autowired
-    private ISysNoticeReadService noticeReadService;
+    @Autowired private ISysNoticeReadService noticeReadService;
 
-    /**
-     * 获取通知公告列表
-     */
+    /** 获取通知公告列表 */
     @PreAuthorize("@ss.hasPermi('system:notice:list')")
     @GetMapping("/list")
     public TableDataInfo list(SysNotice notice) {
@@ -48,17 +44,13 @@ public class SysNoticeController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 根据通知公告编号获取详细信息
-     */
+    /** 根据通知公告编号获取详细信息 */
     @GetMapping(value = "/{noticeId}")
     public AjaxResult getInfo(@PathVariable Long noticeId) {
         return success(noticeService.selectNoticeById(noticeId));
     }
 
-    /**
-     * 新增通知公告
-     */
+    /** 新增通知公告 */
     @PreAuthorize("@ss.hasPermi('system:notice:add')")
     @Log(title = "通知公告", businessType = BusinessType.INSERT)
     @PostMapping
@@ -67,9 +59,7 @@ public class SysNoticeController extends BaseController {
         return toAjax(noticeService.insertNotice(notice));
     }
 
-    /**
-     * 修改通知公告
-     */
+    /** 修改通知公告 */
     @PreAuthorize("@ss.hasPermi('system:notice:edit')")
     @Log(title = "通知公告", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -78,9 +68,7 @@ public class SysNoticeController extends BaseController {
         return toAjax(noticeService.updateNotice(notice));
     }
 
-    /**
-     * 首页顶部公告列表（返回全部正常公告，带当前用户已读标记，最多5条）
-     */
+    /** 首页顶部公告列表（返回全部正常公告，带当前用户已读标记，最多5条） */
     @GetMapping("/listTop")
     @ResponseBody
     public AjaxResult listTop() {
@@ -92,9 +80,7 @@ public class SysNoticeController extends BaseController {
         return result;
     }
 
-    /**
-     * 标记公告已读
-     */
+    /** 标记公告已读 */
     @PostMapping("/markRead")
     @ResponseBody
     public AjaxResult markRead(Long noticeId) {
@@ -103,9 +89,7 @@ public class SysNoticeController extends BaseController {
         return success();
     }
 
-    /**
-     * 批量标记已读
-     */
+    /** 批量标记已读 */
     @PostMapping("/markReadAll")
     @ResponseBody
     public AjaxResult markReadAll(String ids) {
@@ -115,9 +99,7 @@ public class SysNoticeController extends BaseController {
         return success();
     }
 
-    /**
-     * 已读用户列表数据
-     */
+    /** 已读用户列表数据 */
     @PreAuthorize("@ss.hasPermi('system:notice:list')")
     @GetMapping("/readUsers/list")
     @ResponseBody
@@ -127,9 +109,7 @@ public class SysNoticeController extends BaseController {
         return getDataTable(list);
     }
 
-    /**
-     * 删除通知公告
-     */
+    /** 删除通知公告 */
     @PreAuthorize("@ss.hasPermi('system:notice:remove')")
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @DeleteMapping("/{noticeIds}")

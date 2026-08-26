@@ -3,9 +3,7 @@ package com.ruoyi.projectmanagement.category.service;
 import com.ruoyi.projectmanagement.category.domain.ProjectCategory;
 import java.util.List;
 
-/**
- * 项目分类业务接口。
- */
+/** 项目分类业务接口。 */
 public interface IProjectCategoryService {
 
     /** 查询项目分类列表。 */

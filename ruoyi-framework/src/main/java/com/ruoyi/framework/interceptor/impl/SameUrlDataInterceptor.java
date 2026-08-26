@@ -1,12 +1,5 @@
 package com.ruoyi.framework.interceptor.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.constant.CacheConstants;
@@ -15,6 +8,13 @@ import com.ruoyi.common.filter.RepeatedlyRequestWrapper;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.http.HttpHelper;
 import com.ruoyi.framework.interceptor.RepeatSubmitInterceptor;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * 判断请求url和数据是否和上一次相同， 如果和上次相同，则是重复提交表单。 有效时间为10秒内。
@@ -31,8 +31,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
     @Value("${token.header}")
     private String header;
 
-    @Autowired
-    private RedisCache redisCache;
+    @Autowired private RedisCache redisCache;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -73,23 +72,21 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
         }
         Map<String, Object> cacheMap = new HashMap<String, Object>();
         cacheMap.put(url, nowDataMap);
-        redisCache.setCacheObject(cacheRepeatKey, cacheMap, annotation.interval(), TimeUnit.MILLISECONDS);
+        redisCache.setCacheObject(
+                cacheRepeatKey, cacheMap, annotation.interval(), TimeUnit.MILLISECONDS);
         return false;
     }
 
-    /**
-     * 判断参数是否相同
-     */
+    /** 判断参数是否相同 */
     private boolean compareParams(Map<String, Object> nowMap, Map<String, Object> preMap) {
         String nowParams = (String) nowMap.get(REPEAT_PARAMS);
         String preParams = (String) preMap.get(REPEAT_PARAMS);
         return nowParams.equals(preParams);
     }
 
-    /**
-     * 判断两次间隔时间
-     */
-    private boolean compareTime(Map<String, Object> nowMap, Map<String, Object> preMap, int interval) {
+    /** 判断两次间隔时间 */
+    private boolean compareTime(
+            Map<String, Object> nowMap, Map<String, Object> preMap, int interval) {
         long time1 = (Long) nowMap.get(REPEAT_TIME);
         long time2 = (Long) preMap.get(REPEAT_TIME);
         if ((time1 - time2) < interval) {

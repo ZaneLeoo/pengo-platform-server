@@ -5,6 +5,4 @@ package com.ruoyi.common.core.domain.model;
  *
  * @author ruoyi
  */
-public class RegisterBody extends LoginBody {
-
-}
+public class RegisterBody extends LoginBody {}

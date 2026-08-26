@@ -37,7 +37,8 @@ public class AgentPurchaseFlowToolController {
     }
 
     @PostMapping("/receipts/prepare")
-    public AgentToolResult<ReceiptDraft> prepareReceipt(@RequestBody(required = false) ReceiptDraftRequest request) {
+    public AgentToolResult<ReceiptDraft> prepareReceipt(
+            @RequestBody(required = false) ReceiptDraftRequest request) {
         return toolService.prepareReceipt(request);
     }
 
@@ -56,7 +57,8 @@ public class AgentPurchaseFlowToolController {
     }
 
     @PostMapping("/inbounds/prepare")
-    public AgentToolResult<InboundDraft> prepareInbound(@RequestBody(required = false) InboundDraftRequest request) {
+    public AgentToolResult<InboundDraft> prepareInbound(
+            @RequestBody(required = false) InboundDraftRequest request) {
         return toolService.prepareInbound(request);
     }
 }

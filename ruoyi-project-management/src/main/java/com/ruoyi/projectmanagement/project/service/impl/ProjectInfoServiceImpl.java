@@ -5,6 +5,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
 import com.ruoyi.projectmanagement.common.enums.InitiationApprovalStatus;
 import com.ruoyi.projectmanagement.common.enums.LifecycleAction;
+import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.common.enums.TaskType;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
@@ -16,17 +17,16 @@ import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
-import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectInitiationApproval;
+import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInitiationAttachmentMapper;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.mapper.ProjectTaskMapper;
-import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import com.ruoyi.projectmanagement.team.domain.ProjectMember;
-import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
+import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
 import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
@@ -38,14 +38,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.stereotype.Service;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
-/**
- * 项目主档、立项和项目生命周期业务。
- */
+/** 项目主档、立项和项目生命周期业务。 */
 @Service
 public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusinessCallback {
 
@@ -61,11 +59,18 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     private final ObjectMapper objectMapper;
     private final IWorkflowService workflowService;
 
-    public ProjectInfoServiceImpl(ProjectInfoMapper projectMapper, ProjectCategoryMapper categoryMapper,
-            ProjectPersonMapper personMapper, IProjectTeamService teamService, IProjectWbsService wbsService,
-            ProjectWbsMapper wbsMapper, ProjectTaskMapper taskMapper,
-            ProjectDeliverableMapper deliverableMapper, ProjectInitiationAttachmentMapper attachmentMapper,
-            ObjectMapper objectMapper, @Lazy IWorkflowService workflowService) {
+    public ProjectInfoServiceImpl(
+            ProjectInfoMapper projectMapper,
+            ProjectCategoryMapper categoryMapper,
+            ProjectPersonMapper personMapper,
+            IProjectTeamService teamService,
+            IProjectWbsService wbsService,
+            ProjectWbsMapper wbsMapper,
+            ProjectTaskMapper taskMapper,
+            ProjectDeliverableMapper deliverableMapper,
+            ProjectInitiationAttachmentMapper attachmentMapper,
+            ObjectMapper objectMapper,
+            @Lazy IWorkflowService workflowService) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -112,7 +117,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         validate(project);
         int rows = projectMapper.insertProjectInfo(project);
         if (rows > 0) {
-            teamService.ensureManager(project.getProjectId(), project.getManagerId(), null, project.getCreateBy());
+            teamService.ensureManager(
+                    project.getProjectId(), project.getManagerId(), null, project.getCreateBy());
         }
         return rows;
     }
@@ -125,10 +131,12 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         if (ProjectStatus.PENDING_APPROVAL.matches(old.getStatus())) {
             throw new ServiceException("项目正在立项审批中，不能修改申请材料");
         }
-        if (!ProjectStatus.DRAFT.matches(old.getStatus()) && !ProjectStatus.APPROVED.matches(old.getStatus())) {
+        if (!ProjectStatus.DRAFT.matches(old.getStatus())
+                && !ProjectStatus.APPROVED.matches(old.getStatus())) {
             throw new ServiceException("当前项目状态不能修改基本信息");
         }
-        if (ProjectStatus.APPROVED.matches(old.getStatus()) && !old.getManagerId().equals(project.getManagerId())) {
+        if (ProjectStatus.APPROVED.matches(old.getStatus())
+                && !old.getManagerId().equals(project.getManagerId())) {
             throw new ServiceException("项目立项后变更负责人请走项目变更申请");
         }
         project.setStatus(old.getStatus());
@@ -138,7 +146,10 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         validate(project);
         int rows = projectMapper.updateProjectInfo(project);
         if (rows > 0 && !old.getManagerId().equals(project.getManagerId())) {
-            teamService.ensureManager(project.getProjectId(), project.getManagerId(), old.getManagerId(),
+            teamService.ensureManager(
+                    project.getProjectId(),
+                    project.getManagerId(),
+                    old.getManagerId(),
                     project.getUpdateBy());
         }
         return rows;
@@ -153,7 +164,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     /** 执行项目生命周期动作（启动/暂停/恢复/完成）。 */
     @Override
     @Transactional
-    public int applyLifecycleAction(Long projectId, LifecycleActionRequest request, String operator) {
+    public int applyLifecycleAction(
+            Long projectId, LifecycleActionRequest request, String operator) {
         ProjectInfo project = requiredProject(projectId);
         LifecycleAction action = LifecycleAction.fromCode(request.getAction());
         if (action == null) {
@@ -207,7 +219,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         project.setUpdateBy(operator);
         int rows = projectMapper.updateLifecycle(project);
         if (rows > 0) {
-            projectMapper.insertLifecycleLog(projectId, action.getCode(), from, to, request.getReason(), operator);
+            projectMapper.insertLifecycleLog(
+                    projectId, action.getCode(), from, to, request.getReason(), operator);
         }
         return rows;
     }
@@ -222,15 +235,21 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         List<ProjectWbsNode> nodes = wbsMapper.selectList(filter);
         Map<Long, ProjectWbsNode> wbsById = new HashMap<>();
         nodes.forEach(x -> wbsById.put(x.getWbsId(), x));
-        List<ProjectWbsNode> roots = nodes.stream()
-                .filter(x -> x.getParentId() == null || x.getParentId() == 0)
-                .toList();
+        List<ProjectWbsNode> roots =
+                nodes.stream()
+                        .filter(x -> x.getParentId() == null || x.getParentId() == 0)
+                        .toList();
         if (roots.isEmpty()) {
             issues.add("至少需要一个顶层WBS");
         }
         for (ProjectWbsNode node : nodes) {
-            String label = (WbsNodeType.WORK_PACKAGE.matches(node.getNodeType()) ? "工作包" : "WBS")
-                    + "【" + node.getWbsCode() + " · " + node.getWbsName() + "】";
+            String label =
+                    (WbsNodeType.WORK_PACKAGE.matches(node.getNodeType()) ? "工作包" : "WBS")
+                            + "【"
+                            + node.getWbsCode()
+                            + " · "
+                            + node.getWbsName()
+                            + "】";
             if (WbsNodeType.SUMMARY.matches(node.getNodeType())) {
                 if (node.getChildCount() == null || node.getChildCount() == 0) {
                     issues.add(label + "为空，WBS分支必须最终落到工作包");
@@ -241,11 +260,13 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         }
         for (ProjectWbsNode root : roots) {
             String label = "顶层WBS【" + root.getWbsCode() + " · " + root.getWbsName() + "】";
-            if (root.getPlanStartDate() != null && root.getTargetStartDate() != null
+            if (root.getPlanStartDate() != null
+                    && root.getTargetStartDate() != null
                     && root.getPlanStartDate().isBefore(root.getTargetStartDate())) {
                 issues.add(label + "汇总开始日期早于立项批准目标窗口");
             }
-            if (root.getPlanEndDate() != null && root.getTargetEndDate() != null
+            if (root.getPlanEndDate() != null
+                    && root.getTargetEndDate() != null
                     && root.getPlanEndDate().isAfter(root.getTargetEndDate())) {
                 issues.add(label + "汇总结束日期晚于立项批准目标窗口");
             }
@@ -254,8 +275,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     }
 
     /** 校验工作包启动条件：负责人、验收定义、计划日期、必交交付物与任务。 */
-    private void validateWorkPackageReadiness(ProjectInfo project, ProjectWbsNode workPackage, String label,
-            List<String> issues) {
+    private void validateWorkPackageReadiness(
+            ProjectInfo project, ProjectWbsNode workPackage, String label, List<String> issues) {
         if (workPackage.getOwnerId() == null) {
             issues.add(label + "未设置负责人");
         } else if (!teamService.isActiveMember(project.getProjectId(), workPackage.getOwnerId())) {
@@ -310,7 +331,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
             if (task.getPlanEndDate().isBefore(task.getPlanStartDate())) {
                 issues.add(taskLabel + "计划结束日期早于开始日期");
             }
-            if (workPackage.getPlanStartDate() != null && workPackage.getPlanEndDate() != null
+            if (workPackage.getPlanStartDate() != null
+                    && workPackage.getPlanEndDate() != null
                     && (task.getPlanStartDate().isBefore(workPackage.getPlanStartDate())
                             || task.getPlanEndDate().isAfter(workPackage.getPlanEndDate()))) {
                 issues.add(taskLabel + "计划日期超出所属工作包");
@@ -319,7 +341,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
                 ProjectTask parent = taskById.get(task.getParentTaskId());
                 if (parent == null) {
                     issues.add(taskLabel + "上级任务不存在");
-                } else if (parent.getPlanStartDate() != null && parent.getPlanEndDate() != null
+                } else if (parent.getPlanStartDate() != null
+                        && parent.getPlanEndDate() != null
                         && (task.getPlanStartDate().isBefore(parent.getPlanStartDate())
                                 || task.getPlanEndDate().isAfter(parent.getPlanEndDate()))) {
                     issues.add(taskLabel + "计划日期超出上级任务");
@@ -411,7 +434,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         if ("1".equals(project.getBudgetRequired()) && project.getBudgetAmount() == null) {
             throw new ServiceException("项目需要预算，请填写预算总额");
         }
-        int version = (project.getInitiationVersion() == null ? 0 : project.getInitiationVersion()) + 1;
+        int version =
+                (project.getInitiationVersion() == null ? 0 : project.getInitiationVersion()) + 1;
         ProjectInitiationApproval approval = new ProjectInitiationApproval();
         approval.setProjectId(id);
         approval.setVersionNo(version);
@@ -424,18 +448,26 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         List<ProjectInitiationAttachment> attachments = attachmentMapper.selectDraft(id, null);
         attachments.forEach(x -> x.setVersionNo(version));
         try {
-            approval.setSnapshotJson(objectMapper.writeValueAsString(Map.of(
-                    "project", project,
-                    "team", team,
-                    "wbsOutlines", plans,
-                    "attachments", attachments)));
+            approval.setSnapshotJson(
+                    objectMapper.writeValueAsString(
+                            Map.of(
+                                    "project", project,
+                                    "team", team,
+                                    "wbsOutlines", plans,
+                                    "attachments", attachments)));
         } catch (Exception e) {
             throw new ServiceException("生成立项申请快照失败");
         }
         projectMapper.insertApproval(approval);
-        Long instanceId = workflowService.start("PROJECT_INITIATION", approval.getApprovalId(), id,
-                "项目立项：" + project.getProjectName() + "（V" + version + "）", approval.getSnapshotJson(),
-                operator, userId);
+        Long instanceId =
+                workflowService.start(
+                        "PROJECT_INITIATION",
+                        approval.getApprovalId(),
+                        id,
+                        "项目立项：" + project.getProjectName() + "（V" + version + "）",
+                        approval.getSnapshotJson(),
+                        operator,
+                        userId);
         approval.setWorkflowInstanceId(instanceId);
         projectMapper.bindApprovalWorkflow(approval);
         attachmentMapper.bindDraft(id, approval.getApprovalId(), version);
@@ -471,18 +503,22 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         finishInitiation(approvalId, false, operator, opinion);
     }
 
-    private void finishInitiation(Long approvalId, boolean approved, String operator, String opinion) {
+    private void finishInitiation(
+            Long approvalId, boolean approved, String operator, String opinion) {
         ProjectInitiationApproval approval = projectMapper.selectApproval(approvalId);
         if (approval == null || !InitiationApprovalStatus.PENDING.matches(approval.getStatus())) {
             throw new ServiceException("待审批立项版本不存在");
         }
         ProjectInfo project = requiredProject(approval.getProjectId());
-        approval.setStatus(approved ? InitiationApprovalStatus.APPROVED.getCode()
-                : InitiationApprovalStatus.RETURNED.getCode());
+        approval.setStatus(
+                approved
+                        ? InitiationApprovalStatus.APPROVED.getCode()
+                        : InitiationApprovalStatus.RETURNED.getCode());
         approval.setReviewBy(operator);
         approval.setReviewComment(opinion);
         projectMapper.reviewApproval(approval);
-        project.setStatus(approved ? ProjectStatus.APPROVED.getCode() : ProjectStatus.DRAFT.getCode());
+        project.setStatus(
+                approved ? ProjectStatus.APPROVED.getCode() : ProjectStatus.DRAFT.getCode());
         project.setInitiationTime(approved ? LocalDateTime.now() : null);
         project.setUpdateBy(operator);
         projectMapper.updateInitiationState(project);
@@ -502,7 +538,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     /** 查询立项审批快照。 */
     @Override
     public ProjectInitiationApproval approvalSnapshot(Long projectId, Long approvalId) {
-        ProjectInitiationApproval approval = projectMapper.selectApprovalById(projectId, approvalId);
+        ProjectInitiationApproval approval =
+                projectMapper.selectApprovalById(projectId, approvalId);
         if (approval == null) {
             throw new ServiceException("审批记录不存在");
         }
@@ -511,22 +548,25 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
 
     /** 查询当前立项申请附件；草稿使用未绑定记录，审批中/已立项使用对应版本记录。 */
     @Override
-    public List<ProjectInitiationAttachment> initiationAttachments(Long projectId, String sectionCode) {
+    public List<ProjectInitiationAttachment> initiationAttachments(
+            Long projectId, String sectionCode) {
         ProjectInfo project = requiredProject(projectId);
         if (ProjectStatus.DRAFT.matches(project.getStatus())) {
             return attachmentMapper.selectDraft(projectId, sectionCode);
         }
         if (ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
             ProjectInitiationApproval pending = projectMapper.selectPendingApproval(projectId);
-            return pending == null ? List.of() : attachmentMapper.selectByApproval(pending.getApprovalId(), sectionCode);
+            return pending == null
+                    ? List.of()
+                    : attachmentMapper.selectByApproval(pending.getApprovalId(), sectionCode);
         }
         return attachmentMapper.selectLatestApproved(projectId, sectionCode);
     }
 
     /** 查询指定审批版本附件，供审批记录查看。 */
     @Override
-    public List<ProjectInitiationAttachment> initiationApprovalAttachments(Long projectId, Long approvalId,
-            String sectionCode) {
+    public List<ProjectInitiationAttachment> initiationApprovalAttachments(
+            Long projectId, Long approvalId, String sectionCode) {
         if (projectMapper.selectApprovalById(projectId, approvalId) == null) {
             throw new ServiceException("审批记录不存在");
         }
@@ -564,7 +604,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     /** 立项通过后把WBS概要转换为正式WBS节点。 */
     private void convertPlans(ProjectInfo project, String operator) {
         int code = nextTopLevelWbsCode(project.getProjectId());
-        for (ProjectPreliminaryPlan plan : projectMapper.selectPreliminaryPlans(project.getProjectId())) {
+        for (ProjectPreliminaryPlan plan :
+                projectMapper.selectPreliminaryPlans(project.getProjectId())) {
             if (plan.getConvertedWbsId() != null) {
                 continue;
             }
@@ -618,8 +659,12 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         }
         if (plan.getStartDate().isBefore(project.getStartDate())
                 || plan.getEndDate().isAfter(project.getEndDate())) {
-            throw new ServiceException("WBS概要目标日期必须在项目预计日期范围内（" + project.getStartDate() + " ~ "
-                    + project.getEndDate() + "）");
+            throw new ServiceException(
+                    "WBS概要目标日期必须在项目预计日期范围内（"
+                            + project.getStartDate()
+                            + " ~ "
+                            + project.getEndDate()
+                            + "）");
         }
     }
 

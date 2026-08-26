@@ -1,12 +1,11 @@
 package com.ruoyi.mes.base.engine;
 
-import com.ruoyi.mes.base.domain.UnitConversionFormula;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.ruoyi.mes.base.domain.UnitConversionFormula;
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
 
 class ArithmeticEvaluatorTest {
 
@@ -26,11 +25,13 @@ class ArithmeticEvaluatorTest {
         UnitConversionFormula formula = new UnitConversionFormula();
         formula.setDecimalScale(4);
         formula.setRoundingMode("HALF_UP");
-        assertEquals(new BigDecimal("78.7393"),
+        assertEquals(
+                new BigDecimal("78.7393"),
                 formulaEngine.roundResult(new BigDecimal("78.73925"), formula));
 
         formula.setRoundingMode("HALF_DOWN");
-        assertEquals(new BigDecimal("78.7392"),
+        assertEquals(
+                new BigDecimal("78.7392"),
                 formulaEngine.roundResult(new BigDecimal("78.73925"), formula));
     }
 }
