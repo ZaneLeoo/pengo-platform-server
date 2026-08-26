@@ -88,4 +88,10 @@ public class ProjectIssue extends BaseEntity {
 
     /** 数据范围查询使用，管理员不受项目范围限制。 */
     private Boolean viewerAdmin;
+
+    /** 新建问题时随首条动态保存的附件名称，不持久化到问题表。 */
+    private String initialAttachmentName;
+
+    /** 新建问题时随首条动态保存的附件地址，不持久化到问题表。 */
+    private String initialAttachmentUrl;
 }

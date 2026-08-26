@@ -108,7 +108,16 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         issue.setStatus(IssueStatus.OPEN.getCode());
         issue.setCreateBy(operator);
         int rows = mapper.insert(issue);
-        record(issue.getIssueId(), "CREATED", "提出问题", null, issue.getStatus(), operator, userId);
+        record(
+                issue.getIssueId(),
+                "CREATED",
+                "提出问题",
+                null,
+                issue.getStatus(),
+                operator,
+                userId,
+                issue.getInitialAttachmentName(),
+                issue.getInitialAttachmentUrl());
         return rows;
     }
 
@@ -168,7 +177,7 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
                 StringUtils.isNotBlank(request.getReason())
                         ? request.getReason()
                         : request.getResolution();
-        record(id, "STATUS", content, oldStatus, target.getCode(), operator, userId);
+        record(id, "STATUS", content, oldStatus, target.getCode(), operator, userId, null, null);
         return rows;
     }
 
@@ -367,7 +376,9 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
             String fromStatus,
             String toStatus,
             String operator,
-            Long userId) {
+            Long userId,
+            String attachmentName,
+            String attachmentUrl) {
         ProjectIssueActivity activity = new ProjectIssueActivity();
         activity.setIssueId(issueId);
         activity.setActivityType(type);
@@ -375,6 +386,8 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         activity.setFromStatus(fromStatus);
         activity.setToStatus(toStatus);
         activity.setOperatorUserId(userId);
+        activity.setAttachmentName(attachmentName);
+        activity.setAttachmentUrl(attachmentUrl);
         activity.setCreateBy(operator);
         mapper.insertActivity(activity);
     }
