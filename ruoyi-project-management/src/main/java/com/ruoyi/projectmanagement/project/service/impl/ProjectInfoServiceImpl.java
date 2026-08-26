@@ -405,6 +405,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     @Transactional
     public int submitInitiation(Long id, String operator, Long userId) {
         ProjectInfo project = editable(id, operator);
+        if (!operator.equals(project.getApplicant()) && !userId.equals(project.getManagerId())) {
+            throw new ServiceException("仅项目申请人或负责人可以提交立项申请");
+        }
         List<ProjectPreliminaryPlan> plans = projectMapper.selectPreliminaryPlans(id);
         List<String> missing = new ArrayList<>();
         if (StringUtils.isBlank(project.getProjectBackground())) {

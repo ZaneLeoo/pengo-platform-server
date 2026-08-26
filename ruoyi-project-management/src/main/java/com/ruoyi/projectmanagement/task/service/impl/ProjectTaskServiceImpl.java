@@ -1,7 +1,6 @@
 package com.ruoyi.projectmanagement.task.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.LifecycleAction;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
@@ -446,13 +445,10 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         return task;
     }
 
-    /** 执行人本人或系统管理员才可推进任务及维护任务成果。 */
+    /** 仅任务执行人可推进任务及维护任务成果。 */
     private void assertTaskExecutor(ProjectTask task, Long userId) {
-        if (SecurityUtils.isAdmin(userId)) {
-            return;
-        }
         if (!userId.equals(task.getAssigneeUserId())) {
-            throw new ServiceException("只有任务执行人或管理员可以执行此操作");
+            throw new ServiceException("只有任务执行人可以执行此操作");
         }
     }
 

@@ -1,7 +1,6 @@
 package com.ruoyi.projectmanagement.issue.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.IssueSeverity;
 import com.ruoyi.projectmanagement.common.enums.IssueStatus;
@@ -51,7 +50,6 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
     @Override
     public List<ProjectIssue> list(ProjectIssue filter, Long userId) {
         filter.setViewerUserId(userId);
-        filter.setViewerAdmin(SecurityUtils.isAdmin(userId));
         List<ProjectIssue> issues = mapper.selectList(filter);
         issues.forEach(issue -> enrichCapabilities(issue, userId));
         return issues;
@@ -71,8 +69,7 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         ProjectInfo project = requireProject(projectId);
         boolean mutable = isMutable(project);
         boolean member =
-                SecurityUtils.isAdmin(userId)
-                        || userId.equals(project.getManagerId())
+                userId.equals(project.getManagerId())
                         || teamService.isActiveMember(projectId, userId);
         if (!mutable) {
             return new ProjectIssueCapability(false, "仅已立项、执行中或暂停的项目允许新增问题");
@@ -95,8 +92,7 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         validate(issue);
         assertMutable(issue.getProjectId());
         ProjectInfo project = requireProject(issue.getProjectId());
-        if (!SecurityUtils.isAdmin(userId)
-                && !userId.equals(project.getManagerId())
+        if (!userId.equals(project.getManagerId())
                 && !teamService.isActiveMember(issue.getProjectId(), userId)) {
             throw new ServiceException("仅项目在组成员可以新增问题");
         }
@@ -264,9 +260,6 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
 
     private void authorizeTransition(
             ProjectIssue issue, IssueStatus target, IssueTransitionRequest request, Long userId) {
-        if (SecurityUtils.isAdmin(userId) && isSupportedTransition(issue, target, request)) {
-            return;
-        }
         boolean managerOrOwner = isManager(issue, userId) || userId.equals(issue.getOwnerId());
         boolean reporterOrManager =
                 isManager(issue, userId) || userId.equals(issue.getReporterUserId());
@@ -300,18 +293,6 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
         return project != null && userId.equals(project.getManagerId());
     }
 
-    private boolean isSupportedTransition(
-            ProjectIssue issue, IssueStatus target, IssueTransitionRequest request) {
-        return IssueStatus.OPEN.matches(issue.getStatus()) && target == IssueStatus.PROCESSING
-                || IssueStatus.PROCESSING.matches(issue.getStatus())
-                        && target == IssueStatus.RESOLVED
-                        && StringUtils.isNotBlank(request.getResolution())
-                || IssueStatus.RESOLVED.matches(issue.getStatus()) && target == IssueStatus.CLOSED
-                || IssueStatus.RESOLVED.matches(issue.getStatus())
-                        && target == IssueStatus.PROCESSING
-                        && StringUtils.isNotBlank(request.getReason());
-    }
-
     private void enrichCapabilities(ProjectIssue issue, Long userId) {
         boolean mutable = isMutable(requireProject(issue.getProjectId()));
         boolean edit = mutable && canEdit(issue, userId);
@@ -323,14 +304,9 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
             issue.setAllowedTransitions(transitions);
             return;
         }
-        boolean managerOrOwner =
-                SecurityUtils.isAdmin(userId)
-                        || isManager(issue, userId)
-                        || userId.equals(issue.getOwnerId());
+        boolean managerOrOwner = isManager(issue, userId) || userId.equals(issue.getOwnerId());
         boolean reporterOrManager =
-                SecurityUtils.isAdmin(userId)
-                        || isManager(issue, userId)
-                        || userId.equals(issue.getReporterUserId());
+                isManager(issue, userId) || userId.equals(issue.getReporterUserId());
         if (IssueStatus.OPEN.matches(issue.getStatus()) && managerOrOwner) {
             transitions.add(IssueStatus.PROCESSING.getCode());
         } else if (IssueStatus.PROCESSING.matches(issue.getStatus()) && managerOrOwner) {
@@ -343,20 +319,15 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
     }
 
     private boolean canEdit(ProjectIssue issue, Long userId) {
-        return SecurityUtils.isAdmin(userId)
-                || isManager(issue, userId)
-                || userId.equals(issue.getReporterUserId());
+        return isManager(issue, userId) || userId.equals(issue.getReporterUserId());
     }
 
     private boolean canAddActivity(ProjectIssue issue, Long userId) {
-        return SecurityUtils.isAdmin(userId)
-                || isManager(issue, userId)
-                || teamService.isActiveMember(issue.getProjectId(), userId);
+        return isManager(issue, userId) || teamService.isActiveMember(issue.getProjectId(), userId);
     }
 
     private void assertViewable(ProjectIssue issue, Long userId) {
-        if (!SecurityUtils.isAdmin(userId)
-                && !isManager(issue, userId)
+        if (!isManager(issue, userId)
                 && !teamService.isActiveMember(issue.getProjectId(), userId)
                 && !userId.equals(issue.getReporterUserId())
                 && !userId.equals(issue.getOwnerId())) {

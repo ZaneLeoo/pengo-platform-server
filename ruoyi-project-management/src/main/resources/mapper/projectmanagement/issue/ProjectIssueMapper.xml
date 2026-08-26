@@ -21,12 +21,10 @@
             <if test="taskId != null">and i.task_id = #{taskId}</if>
             <if test="status != null and status != ''">and i.status = #{status}</if>
             <if test="issueName != null and issueName != ''">and i.issue_name like concat('%', #{issueName}, '%')</if>
-            <if test="viewerAdmin == null or !viewerAdmin">
-                and (i.reporter_user_id=#{viewerUserId} or i.owner_user_id=#{viewerUserId}
-                  or exists(select 1 from pm_project p where p.project_id=i.project_id and p.manager_id=#{viewerUserId})
-                  or exists(select 1 from pm_project_member m where m.project_id=i.project_id
-                            and m.user_id=#{viewerUserId} and m.status='ACTIVE'))
-            </if>
+            and (i.reporter_user_id=#{viewerUserId} or i.owner_user_id=#{viewerUserId}
+              or exists(select 1 from pm_project p where p.project_id=i.project_id and p.manager_id=#{viewerUserId})
+              or exists(select 1 from pm_project_member m where m.project_id=i.project_id
+                        and m.user_id=#{viewerUserId} and m.status='ACTIVE'))
         </where>
         order by i.issue_id desc
     </select>

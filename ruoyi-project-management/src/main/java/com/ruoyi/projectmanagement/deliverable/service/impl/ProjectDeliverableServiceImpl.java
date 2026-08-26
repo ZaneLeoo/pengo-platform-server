@@ -1,7 +1,6 @@
 package com.ruoyi.projectmanagement.deliverable.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
@@ -163,7 +162,7 @@ public class ProjectDeliverableServiceImpl
         ProjectDeliverable d = required(id);
         assertProjectAllowed(d.getProjectId());
         ProjectWbsNode workPackage = requiredPackage(d.getWorkPackageId());
-        assertSubmitterAllowed(workPackage, username);
+        assertSubmitterAllowed(workPackage, userId);
         if (!DeliverableStatus.PENDING.matches(d.getStatus())
                 && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
@@ -234,12 +233,9 @@ public class ProjectDeliverableServiceImpl
         taskService.refreshPackage(d.getWorkPackageId());
     }
 
-    /** 校验提交人必须是工作包负责人或admin，防止绕过前端直接调用接口。 */
-    private void assertSubmitterAllowed(ProjectWbsNode workPackage, String username) {
-        if ("admin".equals(username)) {
-            return;
-        }
-        if (!SecurityUtils.getUserId().equals(workPackage.getOwnerUserId())) {
+    /** 校验提交人必须是工作包负责人，防止绕过前端直接调用接口。 */
+    private void assertSubmitterAllowed(ProjectWbsNode workPackage, Long userId) {
+        if (!userId.equals(workPackage.getOwnerUserId())) {
             throw new ServiceException("只有工作包负责人可以提交交付物");
         }
     }
