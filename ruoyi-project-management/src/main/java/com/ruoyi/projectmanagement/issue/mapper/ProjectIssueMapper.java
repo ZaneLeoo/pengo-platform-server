@@ -8,12 +8,22 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ProjectIssueMapper {
     List<ProjectIssue> selectList(ProjectIssue filter);
+
     ProjectIssue selectById(Long id);
+
     int insert(ProjectIssue issue);
+
     int update(ProjectIssue issue);
+
     int delete(Long[] ids);
+
+    int deleteActivities(Long[] issueIds);
+
     int countByProject(Long projectId);
+
     int updateStatus(ProjectIssue issue);
+
     int insertActivity(ProjectIssueActivity activity);
+
     List<ProjectIssueActivity> selectActivities(Long issueId);
 }

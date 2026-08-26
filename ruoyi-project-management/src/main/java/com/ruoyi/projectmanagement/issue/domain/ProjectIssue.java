@@ -5,12 +5,11 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * 项目执行过程中的问题跟踪记录，可关联工作包或任务。
- */
+/** 项目执行过程中的问题跟踪记录，可关联工作包或任务。 */
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectIssue extends BaseEntity {
@@ -71,4 +70,22 @@ public class ProjectIssue extends BaseEntity {
 
     /** 是否已逾期（展示字段）。 */
     private Boolean overdue;
+
+    /** 当前登录人是否可编辑基本信息。 */
+    private Boolean canEdit;
+
+    /** 当前登录人是否可删除。 */
+    private Boolean canDelete;
+
+    /** 当前登录人是否可补充动态。 */
+    private Boolean canAddActivity;
+
+    /** 当前登录人允许执行的目标状态。 */
+    private List<String> allowedTransitions;
+
+    /** 数据范围查询使用，不对持久化开放。 */
+    private Long viewerUserId;
+
+    /** 数据范围查询使用，管理员不受项目范围限制。 */
+    private Boolean viewerAdmin;
 }

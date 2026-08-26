@@ -1,7 +1,6 @@
 package com.ruoyi.projectmanagement.issue.domain;
 
 import com.ruoyi.common.core.domain.BaseEntity;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,23 +11,31 @@ public class ProjectIssueActivity extends BaseEntity {
 
     /** 动态ID。 */
     private Long activityId;
+
     /** 问题ID。 */
     private Long issueId;
+
     /** 类型：CREATED、COMMENT、STATUS、ATTACHMENT。 */
     private String activityType;
+
     /** 评论、操作原因或说明。 */
-    @NotBlank(message = "内容不能为空")
     private String content;
+
     /** 变化前状态。 */
     private String fromStatus;
+
     /** 变化后状态。 */
     private String toStatus;
+
     /** 附件名称。 */
     private String attachmentName;
+
     /** 附件地址。 */
     private String attachmentUrl;
+
     /** 操作用户ID。 */
     private Long operatorUserId;
+
     /** 操作人姓名。 */
     private String operatorName;
 }
