@@ -16,4 +16,10 @@ public class IssueTransitionRequest {
 
     /** 操作原因；重新打开时必填。 */
     private String reason;
+
+    /** 标记解决时可附带的解决附件名称。 */
+    private String attachmentName;
+
+    /** 标记解决时可附带的解决附件地址。 */
+    private String attachmentUrl;
 }

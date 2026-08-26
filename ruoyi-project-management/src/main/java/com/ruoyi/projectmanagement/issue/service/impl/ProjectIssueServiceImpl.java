@@ -177,7 +177,16 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
                 StringUtils.isNotBlank(request.getReason())
                         ? request.getReason()
                         : request.getResolution();
-        record(id, "STATUS", content, oldStatus, target.getCode(), operator, userId, null, null);
+        record(
+                id,
+                "STATUS",
+                content,
+                oldStatus,
+                target.getCode(),
+                operator,
+                userId,
+                request.getAttachmentName(),
+                request.getAttachmentUrl());
         return rows;
     }
 
