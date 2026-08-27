@@ -41,6 +41,6 @@ public class ProjectInitiationAttachment {
 
     private String uploadBy;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date uploadTime;
 }

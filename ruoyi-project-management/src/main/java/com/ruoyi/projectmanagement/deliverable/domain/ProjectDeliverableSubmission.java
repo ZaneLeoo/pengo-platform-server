@@ -22,7 +22,7 @@ public class ProjectDeliverableSubmission {
 
     private String submitBy;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date submitTime;
 
     /** SUBMITTED、APPROVED、RETURNED、DELIVERED。 */
@@ -32,6 +32,6 @@ public class ProjectDeliverableSubmission {
 
     private String reviewBy;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private Date reviewTime;
 }

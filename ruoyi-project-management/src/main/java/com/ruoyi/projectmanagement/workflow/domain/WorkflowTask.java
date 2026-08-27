@@ -1,5 +1,6 @@
 package com.ruoyi.projectmanagement.workflow.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -15,7 +16,11 @@ public class WorkflowTask {
     private Long actedByUserId;
     private String actedByName;
     private String opinion;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime actedTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime createTime;
 
     /** 发起实例时固定下来的候选审批人姓名，使用顿号分隔。 */

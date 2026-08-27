@@ -22,6 +22,6 @@ public class ProjectTaskOperationLog {
     private Long operatorUserId;
     private String operatorName;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime operationTime;
 }

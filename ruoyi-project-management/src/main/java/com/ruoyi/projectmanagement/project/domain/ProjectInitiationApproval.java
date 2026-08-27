@@ -1,5 +1,6 @@
 package com.ruoyi.projectmanagement.project.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class ProjectInitiationApproval {
 
     private String submitBy;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime submitTime;
 
     /** PENDING、APPROVED、RETURNED。 */
@@ -28,6 +30,7 @@ public class ProjectInitiationApproval {
 
     private String reviewBy;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime reviewTime;
 
     private String reviewComment;

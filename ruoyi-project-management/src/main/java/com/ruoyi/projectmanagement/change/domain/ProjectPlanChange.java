@@ -1,5 +1,6 @@
 package com.ruoyi.projectmanagement.change.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.domain.BaseEntity;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +30,10 @@ public class ProjectPlanChange extends BaseEntity {
     private List<ProjectPlanChangeAudit> audits;
 
     /** 从业务审计推导的提交时间，列表展示用，不单独落库。 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime submitTime;
 
     /** 从业务审计推导的应用时间，列表展示用，不单独落库。 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime applyTime;
 }

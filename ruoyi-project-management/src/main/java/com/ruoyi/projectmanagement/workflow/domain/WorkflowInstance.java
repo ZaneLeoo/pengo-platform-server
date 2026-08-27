@@ -1,5 +1,6 @@
 package com.ruoyi.projectmanagement.workflow.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.domain.BaseEntity;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,9 @@ public class WorkflowInstance extends BaseEntity {
     private String status;
     private String currentNodeKey;
     private String businessSnapshotJson;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime finishTime;
+
     private List<WorkflowTask> tasks;
 }

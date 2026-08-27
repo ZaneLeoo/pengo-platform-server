@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -98,7 +99,9 @@ public class ProjectInfo extends BaseEntity {
     private String resourceFeasibility;
     private String feasibilityConclusion;
     private Integer initiationVersion;
-    private java.time.LocalDateTime initiationTime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private LocalDateTime initiationTime;
 
     @NotBlank(message = "项目编码不能为空")
     @Size(max = 32, message = "项目编码长度不能超过32个字符")

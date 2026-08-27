@@ -63,7 +63,7 @@ spring:
       # 参数管理的业务限制可在 1~200MB 间调整；此处为 Web 层硬上限。
       max-request-size: 200MB
   jackson:
-    time-zone: GMT+8
+    time-zone: Asia/Shanghai
     date-format: yyyy-MM-dd HH:mm:ss
   # 服务模块
   devtools:
