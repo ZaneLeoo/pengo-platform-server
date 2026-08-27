@@ -266,6 +266,14 @@ public class ProjectPlanChangeServiceImpl
     }
 
     @Override
+    public List<ProjectMember> memberCandidates(Long projectId, String keyword, Long userId) {
+        requireProject(projectId);
+        assertProjectMemberOrManager(projectId, userId);
+        if (keyword == null || keyword.trim().length() < 2) return List.of();
+        return mapper.selectMemberCandidates(projectId, keyword.trim());
+    }
+
+    @Override
     public ProjectPlanChange detail(Long changeId, Long userId) {
         ProjectPlanChange c = require(changeId);
         assertChangeViewable(c, userId);

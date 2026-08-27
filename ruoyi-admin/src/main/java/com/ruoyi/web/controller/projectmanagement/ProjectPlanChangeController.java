@@ -50,6 +50,13 @@ public class ProjectPlanChangeController extends BaseController {
         return success(service.capability(projectId, SecurityUtils.getUserId()));
     }
 
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:edit')")
+    @GetMapping("/{projectId}/member-candidates")
+    public AjaxResult memberCandidates(
+            @PathVariable Long projectId, @RequestParam(required = false) String keyword) {
+        return success(service.memberCandidates(projectId, keyword, SecurityUtils.getUserId()));
+    }
+
     @PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
     @GetMapping("/detail/{changeId}")
     public AjaxResult detail(@PathVariable Long changeId) {

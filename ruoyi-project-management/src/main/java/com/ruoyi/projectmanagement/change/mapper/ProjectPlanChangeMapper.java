@@ -5,6 +5,7 @@ import com.ruoyi.projectmanagement.change.domain.ProjectPlanChange;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeAttachment;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeAudit;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeItem;
+import com.ruoyi.projectmanagement.team.domain.ProjectMember;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -51,4 +52,7 @@ public interface ProjectPlanChangeMapper {
     int insertAudit(ProjectPlanChangeAudit audit);
 
     List<ProjectPlanChangeAudit> selectAudits(Long changeId);
+
+    List<ProjectMember> selectMemberCandidates(
+            @Param("projectId") Long projectId, @Param("keyword") String keyword);
 }

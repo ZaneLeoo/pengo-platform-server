@@ -21,4 +21,16 @@
   <delete id="deleteChange">delete from pm_project_plan_change where change_id=#{changeId}</delete>
   <insert id="insertAudit" useGeneratedKeys="true" keyProperty="auditId">insert into pm_project_plan_change_audit(change_id,action,operator_user_id,operator,detail,create_time) values(#{changeId},#{action},#{operatorUserId},#{operator},#{detail},sysdate())</insert>
   <select id="selectAudits" resultType="ProjectPlanChangeAudit">select * from pm_project_plan_change_audit where change_id=#{changeId} order by audit_id</select>
+  <select id="selectMemberCandidates" resultType="com.ruoyi.projectmanagement.team.domain.ProjectMember">
+    select u.user_id as person_id, u.user_name as person_code, u.nick_name as person_name
+    from sys_user u
+    where u.status = '0' and u.del_flag = '0'
+      and (u.user_name like concat('%', #{keyword}, '%') or u.nick_name like concat('%', #{keyword}, '%'))
+      and not exists(
+        select 1 from pm_project_member m
+        where m.project_id = #{projectId} and m.user_id = u.user_id and m.status = 'ACTIVE'
+      )
+    order by u.user_id
+    limit 20
+  </select>
 </mapper>
