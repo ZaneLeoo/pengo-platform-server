@@ -34,4 +34,7 @@ public interface IWorkflowService {
     int unreadCount(Long userId);
 
     void act(Long taskId, WorkflowActionRequest request, String operator, Long userId);
+
+    /** 发起人撤回仍在审批中的业务，同时取消所有未处理审批任务。 */
+    void withdraw(Long instanceId, String operator, Long userId);
 }

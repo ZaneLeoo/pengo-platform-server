@@ -2,7 +2,7 @@
 create table pm_workflow_definition (
   definition_id bigint not null auto_increment,
   definition_name varchar(100) not null,
-  business_type varchar(40) not null comment 'PROJECT_INITIATION、DELIVERABLE_APPROVAL',
+  business_type varchar(40) not null comment 'PROJECT_INITIATION、DELIVERABLE_APPROVAL、PLAN_CHANGE',
   active_version_id bigint null,
   status varchar(20) not null default 'ENABLED',
   create_by varchar(64) default '', create_time datetime,

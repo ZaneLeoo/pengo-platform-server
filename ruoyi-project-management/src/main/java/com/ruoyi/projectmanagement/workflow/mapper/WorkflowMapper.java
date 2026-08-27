@@ -73,6 +73,8 @@ public interface WorkflowMapper {
 
     int cancelWaitingTasks(Long instanceId);
 
+    int cancelPendingTasks(Long instanceId);
+
     int finishInstance(
             @Param("instanceId") Long instanceId,
             @Param("status") String status,

@@ -229,7 +229,7 @@ public class ProjectTaskServiceImpl implements IProjectTaskService {
         return mapper.insertOutput(output);
     }
 
-    /** 删除任务成果，仅任务执行人或admin可操作。 */
+    /** 删除任务成果，仅任务执行人可操作。 */
     @Override
     @Transactional
     public int removeOutput(Long id, String operator, Long userId) {

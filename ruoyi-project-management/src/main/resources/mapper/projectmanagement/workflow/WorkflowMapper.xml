@@ -133,6 +133,7 @@
         order by node_order limit 1
     </update>
     <update id="cancelWaitingTasks">update pm_workflow_task set status='CANCELLED' where instance_id=#{instanceId} and status='WAITING'</update>
+    <update id="cancelPendingTasks">update pm_workflow_task set status='CANCELLED' where instance_id=#{instanceId} and status='PENDING'</update>
     <update id="finishInstance">
         update pm_workflow_instance set status=#{status},current_node_key=null,finish_time=sysdate(),update_by=#{operator},update_time=sysdate()
         where instance_id=#{instanceId} and status='RUNNING'

@@ -3,6 +3,7 @@ package com.ruoyi.projectmanagement.project.service.impl;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
+import com.ruoyi.projectmanagement.change.service.IProjectPlanChangeService;
 import com.ruoyi.projectmanagement.common.enums.InitiationApprovalStatus;
 import com.ruoyi.projectmanagement.common.enums.LifecycleAction;
 import com.ruoyi.projectmanagement.common.enums.ProjectMemberStatus;
@@ -58,6 +59,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     private final ProjectInitiationAttachmentMapper attachmentMapper;
     private final ObjectMapper objectMapper;
     private final IWorkflowService workflowService;
+    private final IProjectPlanChangeService planChangeService;
 
     public ProjectInfoServiceImpl(
             ProjectInfoMapper projectMapper,
@@ -70,7 +72,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
             ProjectDeliverableMapper deliverableMapper,
             ProjectInitiationAttachmentMapper attachmentMapper,
             ObjectMapper objectMapper,
-            @Lazy IWorkflowService workflowService) {
+            @Lazy IWorkflowService workflowService,
+            IProjectPlanChangeService planChangeService) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -82,6 +85,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         this.attachmentMapper = attachmentMapper;
         this.objectMapper = objectMapper;
         this.workflowService = workflowService;
+        this.planChangeService = planChangeService;
     }
 
     /** 查询项目列表。 */
@@ -219,6 +223,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         project.setUpdateBy(operator);
         int rows = projectMapper.updateLifecycle(project);
         if (rows > 0) {
+            if (action == LifecycleAction.START) {
+                planChangeService.createInitialBaseline(projectId, operator);
+            }
             projectMapper.insertLifecycleLog(
                     projectId, action.getCode(), from, to, request.getReason(), operator);
         }

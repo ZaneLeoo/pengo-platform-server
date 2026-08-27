@@ -210,21 +210,53 @@ public class WorkflowServiceImpl implements IWorkflowService {
             throw new ServiceException("任务已处理或您不是当前审批人");
         }
         mapper.insertEvent(task.getInstanceId(), taskId, result, userId, request.getOpinion());
-        finishOrAdvance(task, approve, operator, request.getOpinion());
+        finishOrAdvance(task, approve, operator, request.getOpinion(), userId);
+    }
+
+    @Override
+    @Transactional
+    public void withdraw(Long instanceId, String operator, Long userId) {
+        WorkflowInstance instance = mapper.selectInstance(instanceId);
+        if (instance == null || !"RUNNING".equals(instance.getStatus())) {
+            throw new ServiceException("审批流程已结束，不能撤回");
+        }
+        if (!userId.equals(instance.getInitiatorUserId())) {
+            throw new ServiceException("仅审批发起人可以撤回");
+        }
+        mapper.cancelWaitingTasks(instanceId);
+        mapper.cancelPendingTasks(instanceId);
+        mapper.finishInstance(instanceId, "WITHDRAWN", operator);
+        mapper.insertEvent(instanceId, null, "WITHDRAWN", userId, "发起人撤回审批");
     }
 
     private void finishOrAdvance(
-            WorkflowTask task, boolean approve, String operator, String opinion) {
+            WorkflowTask task,
+            boolean approve,
+            String operator,
+            String opinion,
+            Long operatorUserId) {
         WorkflowInstance instance = mapper.selectInstance(task.getInstanceId());
         if (!approve) {
             mapper.cancelWaitingTasks(instance.getInstanceId());
             mapper.finishInstance(instance.getInstanceId(), "REJECTED", operator);
-            callback(instance).rejected(instance.getBusinessId(), operator, opinion);
+            callback(instance)
+                    .rejected(
+                            instance.getBusinessId(),
+                            operator,
+                            opinion,
+                            operatorUserId,
+                            instance.getInstanceId());
             return;
         }
         if (mapper.activateNextTask(instance.getInstanceId()) == 0) {
             mapper.finishInstance(instance.getInstanceId(), "APPROVED", operator);
-            callback(instance).approved(instance.getBusinessId(), operator, opinion);
+            callback(instance)
+                    .approved(
+                            instance.getBusinessId(),
+                            operator,
+                            opinion,
+                            operatorUserId,
+                            instance.getInstanceId());
         }
     }
 

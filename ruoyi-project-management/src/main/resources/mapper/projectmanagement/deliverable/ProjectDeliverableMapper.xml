@@ -133,6 +133,10 @@
         order by version_no desc, submission_id desc
     </select>
 
+    <select id="countSubmissions" resultType="int">
+        select count(*) from pm_project_deliverable_submission where deliverable_id = #{deliverableId}
+    </select>
+
     <select id="selectNextVersion" resultType="int">
         select coalesce(max(version_no), 0) + 1 from pm_project_deliverable_submission
         where deliverable_id = #{deliverableId}

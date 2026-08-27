@@ -4,6 +4,7 @@ import com.ruoyi.projectmanagement.issue.domain.ProjectIssue;
 import com.ruoyi.projectmanagement.issue.domain.ProjectIssueActivity;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface ProjectIssueMapper {
@@ -20,6 +21,11 @@ public interface ProjectIssueMapper {
     int deleteActivities(Long[] issueIds);
 
     int countByProject(Long projectId);
+
+    int countByWorkPackage(
+            @Param("projectId") Long projectId, @Param("workPackageId") Long workPackageId);
+
+    int countByTask(@Param("projectId") Long projectId, @Param("taskId") Long taskId);
 
     int updateStatus(ProjectIssue issue);
 

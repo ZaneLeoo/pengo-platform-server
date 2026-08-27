@@ -10,4 +10,24 @@ public interface WorkflowBusinessCallback {
 
     /** 任一节点驳回后的业务回写。 */
     void rejected(Long businessId, String operator, String opinion);
+
+    /** 带审批人和流程实例上下文的回写；旧业务默认复用兼容签名。 */
+    default void approved(
+            Long businessId,
+            String operator,
+            String opinion,
+            Long operatorUserId,
+            Long workflowInstanceId) {
+        approved(businessId, operator, opinion);
+    }
+
+    /** 带审批人和流程实例上下文的回写；旧业务默认复用兼容签名。 */
+    default void rejected(
+            Long businessId,
+            String operator,
+            String opinion,
+            Long operatorUserId,
+            Long workflowInstanceId) {
+        rejected(businessId, operator, opinion);
+    }
 }

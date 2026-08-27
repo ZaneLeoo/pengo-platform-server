@@ -38,6 +38,14 @@
         select count(*) from pm_project_issue where project_id = #{projectId}
     </select>
 
+    <select id="countByWorkPackage" resultType="int">
+        select count(*) from pm_project_issue where project_id = #{projectId} and work_package_id = #{workPackageId}
+    </select>
+
+    <select id="countByTask" resultType="int">
+        select count(*) from pm_project_issue where project_id = #{projectId} and task_id = #{taskId}
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="issueId">
         insert into pm_project_issue(project_id, work_package_id, task_id, issue_code, issue_name, description, reporter_user_id,
                                      owner_id, owner_user_id, severity, status, due_date, resolution, create_by, create_time)

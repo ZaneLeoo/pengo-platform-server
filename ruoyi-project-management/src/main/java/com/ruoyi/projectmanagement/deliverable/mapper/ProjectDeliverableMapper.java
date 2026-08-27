@@ -36,6 +36,9 @@ public interface ProjectDeliverableMapper {
     /** 查询交付物提交历史。 */
     List<ProjectDeliverableSubmission> selectSubmissions(Long deliverableId);
 
+    /** 查询交付物是否存在提交历史。 */
+    int countSubmissions(Long deliverableId);
+
     /** 新增提交记录。 */
     int insertSubmission(ProjectDeliverableSubmission entity);
 

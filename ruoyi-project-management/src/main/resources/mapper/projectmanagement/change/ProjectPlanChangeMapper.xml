@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.change.mapper.ProjectPlanChangeMapper">
+  <select id="selectCurrentBaseline" resultType="ProjectPlanBaseline">select * from pm_project_plan_baseline where project_id=#{projectId} order by version_no desc limit 1</select>
+  <select id="selectCurrentBaselineForUpdate" resultType="ProjectPlanBaseline">select * from pm_project_plan_baseline where project_id=#{projectId} order by version_no desc limit 1 for update</select>
+  <select id="selectBaselines" resultType="ProjectPlanBaseline">select * from pm_project_plan_baseline where project_id=#{projectId} order by version_no desc</select>
+  <select id="selectBaseline" resultType="ProjectPlanBaseline">select * from pm_project_plan_baseline where baseline_id=#{baselineId}</select>
+  <insert id="insertBaseline" useGeneratedKeys="true" keyProperty="baselineId">insert into pm_project_plan_baseline(project_id,version_no,source_change_id,snapshot_json,create_by,create_time) values(#{projectId},#{versionNo},#{sourceChangeId},#{snapshotJson},#{createBy},sysdate())</insert>
+  <select id="selectChange" resultType="ProjectPlanChange">select c.*,p.project_name,u.nick_name applicant_name from pm_project_plan_change c join pm_project p on p.project_id=c.project_id left join sys_user u on u.user_id=c.applicant_user_id where c.change_id=#{changeId}</select>
+  <select id="selectChangeForUpdate" resultType="ProjectPlanChange">select c.*,p.project_name,u.nick_name applicant_name from pm_project_plan_change c join pm_project p on p.project_id=c.project_id left join sys_user u on u.user_id=c.applicant_user_id where c.change_id=#{changeId} for update</select>
+  <select id="selectChanges" resultType="ProjectPlanChange">select c.*,p.project_name,u.nick_name applicant_name from pm_project_plan_change c join pm_project p on p.project_id=c.project_id left join sys_user u on u.user_id=c.applicant_user_id where c.project_id=#{projectId} order by c.change_id desc</select>
+  <insert id="insertChange" useGeneratedKeys="true" keyProperty="changeId">insert into pm_project_plan_change(change_code,project_id,base_baseline_id,base_version_no,title,change_reason,impact_description,status,applicant_user_id,create_by,create_time) values(#{changeCode},#{projectId},#{baseBaselineId},#{baseVersionNo},#{title},#{changeReason},#{impactDescription},#{status},#{applicantUserId},#{createBy},sysdate())</insert>
+  <update id="updateChange">update pm_project_plan_change set base_baseline_id=#{baseBaselineId},base_version_no=#{baseVersionNo},title=#{title},change_reason=#{changeReason},impact_description=#{impactDescription},status=#{status},update_by=#{updateBy},update_time=sysdate() where change_id=#{changeId}</update>
+  <delete id="deleteItems">delete from pm_project_plan_change_item where change_id=#{changeId}</delete>
+  <insert id="insertItem" useGeneratedKeys="true" keyProperty="itemId">insert into pm_project_plan_change_item(change_id,module_type,operation_type,target_type,target_id,target_name,before_json,after_json,item_reason,sort_order) values(#{changeId},#{moduleType},#{operationType},#{targetType},#{targetId},#{targetName},#{beforeJson},#{afterJson},#{itemReason},#{sortOrder})</insert>
+  <select id="selectItems" resultType="ProjectPlanChangeItem">select * from pm_project_plan_change_item where change_id=#{changeId} order by sort_order,item_id</select>
+  <delete id="deleteAttachments">delete from pm_project_plan_change_attachment where change_id=#{changeId}</delete>
+  <insert id="insertAttachment" useGeneratedKeys="true" keyProperty="attachmentId">insert into pm_project_plan_change_attachment(change_id,file_name,file_url) values(#{changeId},#{fileName},#{fileUrl})</insert>
+  <select id="selectAttachments" resultType="ProjectPlanChangeAttachment">select * from pm_project_plan_change_attachment where change_id=#{changeId}</select>
+  <update id="bindWorkflow">update pm_project_plan_change set workflow_instance_id=#{workflowInstanceId} where change_id=#{changeId}</update>
+  <delete id="deleteChange">delete from pm_project_plan_change where change_id=#{changeId}</delete>
+  <insert id="insertAudit" useGeneratedKeys="true" keyProperty="auditId">insert into pm_project_plan_change_audit(change_id,action,operator_user_id,operator,detail,create_time) values(#{changeId},#{action},#{operatorUserId},#{operator},#{detail},sysdate())</insert>
+  <select id="selectAudits" resultType="ProjectPlanChangeAudit">select * from pm_project_plan_change_audit where change_id=#{changeId} order by audit_id</select>
+</mapper>
