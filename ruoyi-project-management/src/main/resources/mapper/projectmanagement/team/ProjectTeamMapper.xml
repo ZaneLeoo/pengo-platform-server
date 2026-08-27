@@ -78,7 +78,6 @@
     <select id="selectActiveMember" resultMap="member">
         <include refid="memberVo"/>
         where m.project_id = #{projectId} and m.user_id = #{personId} and m.status = 'ACTIVE'
-        limit 1
     </select>
 
     <insert id="insertMember" useGeneratedKeys="true" keyProperty="memberId">

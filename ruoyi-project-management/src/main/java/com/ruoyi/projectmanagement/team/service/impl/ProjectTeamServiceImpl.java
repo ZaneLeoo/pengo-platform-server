@@ -151,6 +151,9 @@ public class ProjectTeamServiceImpl implements IProjectTeamService {
             Long projectId, Long managerId, Long previousManagerId, String operator) {
         ProjectRole manager = mapper.selectSystemRole(TeamRoleCode.PROJECT_MANAGER.getCode());
         ProjectRole core = mapper.selectSystemRole(TeamRoleCode.CORE_MEMBER.getCode());
+        if (manager == null || core == null) {
+            throw new ServiceException("系统未配置项目负责人或核心成员团队角色");
+        }
         // 原负责人降为核心成员
         if (previousManagerId != null && !previousManagerId.equals(managerId)) {
             ProjectMember old = mapper.selectActiveMember(projectId, previousManagerId);

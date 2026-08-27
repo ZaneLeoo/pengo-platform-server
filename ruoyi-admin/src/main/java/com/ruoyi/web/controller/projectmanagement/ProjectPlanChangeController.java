@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.projectmanagement;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChange;
@@ -22,6 +23,22 @@ public class ProjectPlanChangeController extends BaseController {
 
     public ProjectPlanChangeController(IProjectPlanChangeService service) {
         this.service = service;
+    }
+
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
+    @GetMapping("/projects")
+    public AjaxResult navigatorProjects(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "false") boolean includeHistory) {
+        return success(
+                service.navigatorProjects(keyword, includeHistory, SecurityUtils.getUserId()));
+    }
+
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
+    @GetMapping("/page")
+    public TableDataInfo page(ProjectPlanChange query) {
+        startPage();
+        return getDataTable(service.page(query, SecurityUtils.getUserId()));
     }
 
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")

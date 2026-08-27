@@ -5,6 +5,7 @@ import com.ruoyi.projectmanagement.change.domain.ProjectPlanChange;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeAttachment;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeAudit;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeItem;
+import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeProjectNavigator;
 import com.ruoyi.projectmanagement.team.domain.ProjectMember;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -27,6 +28,13 @@ public interface ProjectPlanChangeMapper {
     ProjectPlanChange selectChangeForUpdate(Long changeId);
 
     List<ProjectPlanChange> selectChanges(@Param("projectId") Long projectId);
+
+    List<ProjectPlanChange> selectChangesPage(ProjectPlanChange change);
+
+    List<ProjectPlanChangeProjectNavigator> selectNavigatorProjects(
+            @Param("userId") Long userId,
+            @Param("keyword") String keyword,
+            @Param("includeHistory") boolean includeHistory);
 
     int insertChange(ProjectPlanChange change);
 

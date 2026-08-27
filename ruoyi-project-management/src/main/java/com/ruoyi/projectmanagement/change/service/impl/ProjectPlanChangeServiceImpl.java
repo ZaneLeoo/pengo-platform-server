@@ -3,6 +3,7 @@ package com.ruoyi.projectmanagement.change.service.impl;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
 import com.ruoyi.projectmanagement.change.domain.*;
 import com.ruoyi.projectmanagement.change.mapper.ProjectPlanChangeMapper;
 import com.ruoyi.projectmanagement.change.service.IProjectPlanChangeService;
@@ -57,6 +58,7 @@ public class ProjectPlanChangeServiceImpl
     private final ProjectIssueMapper issueMapper;
     private final IProjectTaskService taskService;
     private final IProjectWbsService wbsService;
+    private final ProjectCategoryMapper categoryMapper;
 
     public ProjectPlanChangeServiceImpl(
             ProjectPlanChangeMapper mapper,
@@ -72,7 +74,8 @@ public class ProjectPlanChangeServiceImpl
             ProjectPlanChangeAuditService auditService,
             ProjectIssueMapper issueMapper,
             IProjectTaskService taskService,
-            IProjectWbsService wbsService) {
+            IProjectWbsService wbsService,
+            ProjectCategoryMapper categoryMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.teamService = teamService;
@@ -87,6 +90,7 @@ public class ProjectPlanChangeServiceImpl
         this.issueMapper = issueMapper;
         this.taskService = taskService;
         this.wbsService = wbsService;
+        this.categoryMapper = categoryMapper;
     }
 
     @Override
@@ -243,6 +247,24 @@ public class ProjectPlanChangeServiceImpl
         List<ProjectPlanChange> rows = mapper.selectChanges(projectId);
         rows.forEach(x -> enrich(x, userId));
         return rows;
+    }
+
+    @Override
+    public List<ProjectPlanChange> page(ProjectPlanChange query, Long userId) {
+        if (query == null || query.getProjectId() == null) {
+            throw new ServiceException("请选择项目");
+        }
+        assertProjectMemberOrManager(query.getProjectId(), userId);
+        List<ProjectPlanChange> rows = mapper.selectChangesPage(query);
+        rows.forEach(item -> enrich(item, userId));
+        return rows;
+    }
+
+    @Override
+    public List<ProjectPlanChangeProjectNavigator> navigatorProjects(
+            String keyword, boolean includeHistory, Long userId) {
+        return mapper.selectNavigatorProjects(
+                userId, keyword == null ? null : keyword.trim(), includeHistory);
     }
 
     @Override
@@ -619,16 +641,17 @@ public class ProjectPlanChangeServiceImpl
             if (item == null || item.getModuleType() == null || item.getOperationType() == null)
                 throw new ServiceException("变更项缺少模块或操作类型");
             String module = item.getModuleType(), operation = item.getOperationType();
-            if (!List.of("PROJECT", "WBS", "TASK", "DELIVERABLE", "TEAM").contains(module))
-                throw new ServiceException("变更模块不受支持");
+            if (!List.of("PROJECT", "PROJECT_INFO", "WBS", "TASK", "DELIVERABLE", "TEAM")
+                    .contains(module)) throw new ServiceException("变更模块不受支持");
             if (!List.of("ADD", "UPDATE", "DELETE").contains(operation))
                 throw new ServiceException("变更项操作类型无效");
-            if ("PROJECT".equals(module) && !"UPDATE".equals(operation))
-                throw new ServiceException("项目计划仅支持修改");
+            if (("PROJECT".equals(module) || "PROJECT_INFO".equals(module))
+                    && !"UPDATE".equals(operation)) throw new ServiceException("项目基础信息和项目计划仅支持修改");
             if (item.getTargetType() == null || item.getTargetType().isBlank())
                 throw new ServiceException("变更项缺少目标类型");
             if (!"ADD".equals(operation)
-                    && !("PROJECT".equals(module) && "UPDATE".equals(operation))
+                    && !(("PROJECT".equals(module) || "PROJECT_INFO".equals(module))
+                            && "UPDATE".equals(operation))
                     && (item.getTargetId() == null || item.getTargetId() <= 0)) {
                 throw new ServiceException("修改或删除变更项必须指定变更对象");
             }
@@ -641,8 +664,11 @@ public class ProjectPlanChangeServiceImpl
                 throw new ServiceException("每项变更必须填写变更说明");
             if (!"DELETE".equals(operation)) {
                 try {
-                    objectMapper.readValue(item.getAfterJson(), Map.class);
+                    Map<String, Object> after =
+                            objectMapper.readValue(item.getAfterJson(), Map.class);
+                    if ("PROJECT_INFO".equals(module)) validateProjectInfoAfter(after);
                 } catch (Exception e) {
+                    if (e instanceof ServiceException) throw (ServiceException) e;
                     throw new ServiceException("变更后内容格式无效");
                 }
             }
@@ -678,6 +704,11 @@ public class ProjectPlanChangeServiceImpl
             throw new ServiceException("变更项操作类型无效");
         if ("PROJECT".equals(item.getModuleType()) && "UPDATE".equals(item.getOperationType())) {
             applyProject(change, item, operator);
+            return;
+        }
+        if ("PROJECT_INFO".equals(item.getModuleType())
+                && "UPDATE".equals(item.getOperationType())) {
+            applyProjectInfo(change, item, operator);
             return;
         }
         if ("WBS".equals(item.getModuleType())) {
@@ -729,6 +760,7 @@ public class ProjectPlanChangeServiceImpl
         String module = item.getModuleType();
         String operation = item.getOperationType();
         if ("TEAM".equals(module) && !"DELETE".equals(operation)) return 5;
+        if ("PROJECT_INFO".equals(module)) return 10;
         if ("PROJECT".equals(module)) return 10;
         if ("WBS".equals(module) && !"DELETE".equals(operation)) return 20;
         if ("TASK".equals(module) && !"DELETE".equals(operation)) return 30;
@@ -803,6 +835,132 @@ public class ProjectPlanChangeServiceImpl
         } catch (Exception e) {
             if (e instanceof ServiceException) throw (ServiceException) e;
             throw new ServiceException("项目计划变更数据无效");
+        }
+    }
+
+    /** 项目基础信息按字段作为最小变更单元，禁止借由 JSON 覆盖未开放字段。 */
+    @SuppressWarnings("unchecked")
+    private void applyProjectInfo(
+            ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
+        try {
+            Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
+            validateProjectInfoAfter(after);
+            String field = after.keySet().iterator().next();
+            Object value = after.get(field);
+            ProjectInfo old = requireProject(change.getProjectId());
+            Long previousManagerId = old.getManagerId();
+            switch (field) {
+                case "projectName" -> old.setProjectName(String.valueOf(value).trim());
+                case "categoryId" -> {
+                    Long categoryId = numberValue(value, "项目分类");
+                    if (categoryMapper.selectProjectCategoryById(categoryId) == null)
+                        throw new ServiceException("项目分类不存在");
+                    old.setCategoryId(categoryId);
+                }
+                case "managerId" -> {
+                    Long managerId = numberValue(value, "项目负责人");
+                    if (!teamService.isActiveMember(change.getProjectId(), managerId))
+                        throw new ServiceException("项目负责人必须是当前项目活动成员");
+                    old.setManagerId(managerId);
+                }
+                case "startDate" -> {
+                    java.time.LocalDate start = java.time.LocalDate.parse(String.valueOf(value));
+                    if (old.getStartDate() != null && start.isBefore(old.getStartDate()))
+                        throw new ServiceException("项目计划开始日期仅允许延后");
+                    old.setStartDate(start);
+                }
+                case "endDate" -> old.setEndDate(java.time.LocalDate.parse(String.valueOf(value)));
+                case "projectBackground" -> old.setProjectBackground(String.valueOf(value));
+                case "projectGoal" -> old.setProjectGoal(String.valueOf(value));
+                case "projectScope" -> old.setProjectScope(String.valueOf(value));
+                case "outOfScope" -> old.setOutOfScope(String.valueOf(value));
+                case "expectedOutcome" -> old.setExpectedOutcome(String.valueOf(value));
+                case "resourceRequirement" -> old.setResourceRequirement(String.valueOf(value));
+                case "budgetRequired" -> old.setBudgetRequired(String.valueOf(value));
+                case "budgetAmount" ->
+                        old.setBudgetAmount(new java.math.BigDecimal(String.valueOf(value)));
+                case "majorRisk" -> old.setMajorRisk(String.valueOf(value));
+                case "technicalFeasibility" -> old.setTechnicalFeasibility(String.valueOf(value));
+                case "resourceFeasibility" -> old.setResourceFeasibility(String.valueOf(value));
+                case "feasibilityConclusion" -> old.setFeasibilityConclusion(String.valueOf(value));
+                default -> throw new ServiceException("项目基础信息字段不支持变更");
+            }
+            validateProjectInfoSchedule(change.getProjectId(), old);
+            if ("1".equals(old.getBudgetRequired()) && old.getBudgetAmount() == null)
+                throw new ServiceException("需要预算时必须填写预算金额");
+            if (old.getBudgetAmount() != null && old.getBudgetAmount().signum() < 0)
+                throw new ServiceException("预算金额不能为负数");
+            old.setUpdateBy(operator);
+            projectMapper.updateProjectInfo(old);
+            if ("managerId".equals(field) && !old.getManagerId().equals(previousManagerId))
+                teamService.ensureManager(
+                        change.getProjectId(), old.getManagerId(), previousManagerId, operator);
+        } catch (Exception e) {
+            if (e instanceof ServiceException) throw (ServiceException) e;
+            throw new ServiceException("项目基础信息变更数据无效");
+        }
+    }
+
+    private void validateProjectInfoAfter(Map<String, Object> after) {
+        if (after == null || after.size() != 1) throw new ServiceException("项目基础信息变更一次只能修改一个字段");
+        String field = after.keySet().iterator().next();
+        if (!Set.of(
+                                "projectName",
+                                "categoryId",
+                                "managerId",
+                                "startDate",
+                                "endDate",
+                                "projectBackground",
+                                "projectGoal",
+                                "projectScope",
+                                "outOfScope",
+                                "expectedOutcome",
+                                "resourceRequirement",
+                                "budgetRequired",
+                                "budgetAmount",
+                                "majorRisk",
+                                "technicalFeasibility",
+                                "resourceFeasibility",
+                                "feasibilityConclusion")
+                        .contains(field)
+                || after.get(field) == null
+                || String.valueOf(after.get(field)).trim().isEmpty())
+            throw new ServiceException("项目基础信息变更字段或新值无效");
+        if ("budgetRequired".equals(field)
+                && !Set.of("0", "1").contains(String.valueOf(after.get(field))))
+            throw new ServiceException("是否需要预算仅支持是或否");
+    }
+
+    private Long numberValue(Object value, String label) {
+        try {
+            return Long.valueOf(String.valueOf(value));
+        } catch (NumberFormatException e) {
+            throw new ServiceException(label + "格式无效");
+        }
+    }
+
+    private void validateProjectInfoSchedule(Long projectId, ProjectInfo project) {
+        if (project.getStartDate() == null
+                || project.getEndDate() == null
+                || project.getEndDate().isBefore(project.getStartDate()))
+            throw new ServiceException("项目计划结束日期不能早于开始日期");
+        ProjectWbsNode wbs = new ProjectWbsNode();
+        wbs.setProjectId(projectId);
+        for (ProjectWbsNode node : wbsMapper.selectList(wbs)) {
+            if ((node.getPlanStartDate() != null
+                            && node.getPlanStartDate().isBefore(project.getStartDate()))
+                    || (node.getPlanEndDate() != null
+                            && node.getPlanEndDate().isAfter(project.getEndDate())))
+                throw new ServiceException("项目周期必须覆盖现有 WBS / 工作包计划日期");
+        }
+        ProjectTask task = new ProjectTask();
+        task.setProjectId(projectId);
+        for (ProjectTask node : taskMapper.selectList(task)) {
+            if ((node.getPlanStartDate() != null
+                            && node.getPlanStartDate().isBefore(project.getStartDate()))
+                    || (node.getPlanEndDate() != null
+                            && node.getPlanEndDate().isAfter(project.getEndDate())))
+                throw new ServiceException("项目周期必须覆盖现有任务计划日期");
         }
     }
 

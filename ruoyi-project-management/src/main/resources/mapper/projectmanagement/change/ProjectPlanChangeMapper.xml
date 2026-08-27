@@ -9,6 +9,43 @@
   <select id="selectChange" resultType="ProjectPlanChange">select c.*,p.project_name,u.nick_name applicant_name from pm_project_plan_change c join pm_project p on p.project_id=c.project_id left join sys_user u on u.user_id=c.applicant_user_id where c.change_id=#{changeId}</select>
   <select id="selectChangeForUpdate" resultType="ProjectPlanChange">select c.*,p.project_name,u.nick_name applicant_name from pm_project_plan_change c join pm_project p on p.project_id=c.project_id left join sys_user u on u.user_id=c.applicant_user_id where c.change_id=#{changeId} for update</select>
   <select id="selectChanges" resultType="ProjectPlanChange">select c.*,p.project_name,u.nick_name applicant_name from pm_project_plan_change c join pm_project p on p.project_id=c.project_id left join sys_user u on u.user_id=c.applicant_user_id where c.project_id=#{projectId} order by c.change_id desc</select>
+  <select id="selectChangesPage" parameterType="ProjectPlanChange" resultType="ProjectPlanChange">
+    select c.*, p.project_name, u.nick_name applicant_name
+    from pm_project_plan_change c
+    join pm_project p on p.project_id = c.project_id
+    left join sys_user u on u.user_id = c.applicant_user_id
+    <where>
+      c.project_id = #{projectId}
+      <if test="changeCode != null and changeCode != ''">and c.change_code like concat('%', #{changeCode}, '%')</if>
+      <if test="title != null and title != ''">and c.title like concat('%', #{title}, '%')</if>
+      <if test="status != null and status != ''">and c.status = #{status}</if>
+      <if test="applicantName != null and applicantName != ''">and u.nick_name like concat('%', #{applicantName}, '%')</if>
+      <if test="params.beginSubmitTime != null and params.beginSubmitTime != ''">
+        and exists (select 1 from pm_project_plan_change_audit a where a.change_id = c.change_id
+          and a.action = 'SUBMITTED' and a.create_time &gt;= #{params.beginSubmitTime})
+      </if>
+      <if test="params.endSubmitTime != null and params.endSubmitTime != ''">
+        and exists (select 1 from pm_project_plan_change_audit a where a.change_id = c.change_id
+          and a.action = 'SUBMITTED' and a.create_time &lt;= #{params.endSubmitTime})
+      </if>
+    </where>
+    order by c.change_id desc
+  </select>
+  <select id="selectNavigatorProjects" resultType="ProjectPlanChangeProjectNavigator">
+    select distinct p.project_id, p.project_code, p.project_name, p.status, u.nick_name manager_name,
+      (select max(b.version_no) from pm_project_plan_baseline b where b.project_id = p.project_id) current_baseline_version,
+      (select count(*) from pm_project_plan_change c where c.project_id = p.project_id
+        and c.status in ('DRAFT', 'PENDING', 'RETURNED', 'PENDING_APPLY', 'RECONCILE')) open_change_count
+    from pm_project p
+    left join sys_user u on u.user_id = p.manager_user_id and u.del_flag = '0'
+    left join pm_project_member m on m.project_id = p.project_id and m.user_id = #{userId} and m.status = 'ACTIVE'
+    where (m.member_id is not null or p.manager_user_id = #{userId})
+      <if test="!includeHistory">and p.status in ('ACTIVE', 'PAUSED')</if>
+      <if test="keyword != null and keyword != ''">
+        and (p.project_code like concat('%', #{keyword}, '%') or p.project_name like concat('%', #{keyword}, '%'))
+      </if>
+    order by case p.status when 'ACTIVE' then 1 when 'PAUSED' then 2 else 3 end, p.project_id desc
+  </select>
   <insert id="insertChange" useGeneratedKeys="true" keyProperty="changeId">insert into pm_project_plan_change(change_code,project_id,base_baseline_id,base_version_no,title,change_reason,impact_description,status,applicant_user_id,create_by,create_time) values(#{changeCode},#{projectId},#{baseBaselineId},#{baseVersionNo},#{title},#{changeReason},#{impactDescription},#{status},#{applicantUserId},#{createBy},sysdate())</insert>
   <update id="updateChange">update pm_project_plan_change set base_baseline_id=#{baseBaselineId},base_version_no=#{baseVersionNo},title=#{title},change_reason=#{changeReason},impact_description=#{impactDescription},status=#{status},update_by=#{updateBy},update_time=sysdate() where change_id=#{changeId}</update>
   <delete id="deleteItems">delete from pm_project_plan_change_item where change_id=#{changeId}</delete>

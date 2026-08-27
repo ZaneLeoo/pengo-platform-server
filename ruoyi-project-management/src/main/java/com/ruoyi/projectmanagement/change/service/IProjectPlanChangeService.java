@@ -4,6 +4,7 @@ import com.ruoyi.projectmanagement.change.domain.ProjectPlanBaseline;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChange;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeAttachment;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeProjectCapability;
+import com.ruoyi.projectmanagement.change.domain.ProjectPlanChangeProjectNavigator;
 import com.ruoyi.projectmanagement.team.domain.ProjectMember;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,13 @@ public interface IProjectPlanChangeService {
             Long projectId, Long fromBaselineId, Long toBaselineId, Long userId);
 
     List<ProjectPlanChange> list(Long projectId, Long userId);
+
+    /** 分页查询当前用户在项目中可查看的变更单。 */
+    List<ProjectPlanChange> page(ProjectPlanChange query, Long userId);
+
+    /** 查询当前用户可访问的项目变更导航。 */
+    List<ProjectPlanChangeProjectNavigator> navigatorProjects(
+            String keyword, boolean includeHistory, Long userId);
 
     ProjectPlanChangeProjectCapability capability(Long projectId, Long userId);
 
