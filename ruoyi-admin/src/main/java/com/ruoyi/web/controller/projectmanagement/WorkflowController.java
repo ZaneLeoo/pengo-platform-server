@@ -6,7 +6,6 @@ import com.ruoyi.projectmanagement.workflow.domain.WorkflowActionRequest;
 import com.ruoyi.projectmanagement.workflow.domain.WorkflowDefinition;
 import com.ruoyi.projectmanagement.workflow.service.IWorkflowService;
 import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,25 +25,25 @@ public class WorkflowController extends BaseController {
         this.service = service;
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
     @GetMapping("/definitions")
     public AjaxResult definitions() {
         return success(service.definitions());
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
     @GetMapping("/definitions/{id}")
     public AjaxResult definition(@PathVariable Long id) {
         return success(service.definition(id));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
     @PostMapping("/definitions/draft")
     public AjaxResult saveDraft(@Valid @RequestBody WorkflowDefinition definition) {
         return success(service.saveDraft(definition, getUsername()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:workflow:config')")
     @PostMapping("/definitions/{definitionId}/versions/{versionId}/publish")
     public AjaxResult publish(@PathVariable Long definitionId, @PathVariable Long versionId) {
         service.publish(definitionId, versionId, getUsername());

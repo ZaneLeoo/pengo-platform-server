@@ -12,7 +12,6 @@ import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +34,7 @@ public class ProjectInfoController extends BaseController {
     }
 
     /** 查询项目列表。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:list')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:list')")
     @GetMapping("/list")
     public TableDataInfo list(ProjectInfo project) {
         startPage();
@@ -44,14 +43,14 @@ public class ProjectInfoController extends BaseController {
     }
 
     /** 查询项目详细。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
     @GetMapping("/{id}")
     public AjaxResult get(@PathVariable Long id) {
         return success(service.selectProjectInfoById(id));
     }
 
     /** 新增项目申请。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:add')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:add')")
     @Log(title = "项目申请", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody ProjectInfo project) {
@@ -65,7 +64,7 @@ public class ProjectInfoController extends BaseController {
     }
 
     /** 修改项目申请。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
     @Log(title = "项目申请", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody ProjectInfo project) {
@@ -77,7 +76,7 @@ public class ProjectInfoController extends BaseController {
     }
 
     /** 执行项目生命周期动作（启动/暂停/恢复/完成）。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
     @Log(title = "项目生命周期", businessType = BusinessType.UPDATE)
     @PostMapping("/{id}/lifecycle")
     public AjaxResult lifecycle(
@@ -165,7 +164,7 @@ public class ProjectInfoController extends BaseController {
     }
 
     /** 批量删除项目。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:remove')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:remove')")
     @Log(title = "项目台账", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {

@@ -3,7 +3,6 @@ package com.ruoyi.web.controller.projectmanagement;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,7 @@ public class ProjectStartReadinessController extends BaseController {
         this.service = service;
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
     @GetMapping("/{id}/start-readiness")
     public AjaxResult check(@PathVariable Long id) {
         return success(service.startReadiness(id));

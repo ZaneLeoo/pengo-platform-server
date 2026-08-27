@@ -9,7 +9,6 @@ import com.ruoyi.projectmanagement.issue.domain.ProjectIssueActivity;
 import com.ruoyi.projectmanagement.issue.service.IProjectIssueService;
 import jakarta.validation.Valid;
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,59 +27,59 @@ public class ProjectIssueController extends BaseController {
         this.service = service;
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:list')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:list')")
     @GetMapping("/list")
     public TableDataInfo list(ProjectIssue filter) {
         startPage();
         return getDataTable(service.list(filter, getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:query')")
     @GetMapping("/{id}")
     public AjaxResult get(@PathVariable Long id) {
         return success(service.get(id, getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:query')")
     @GetMapping("/project/{projectId}/capability")
     public AjaxResult capability(@PathVariable Long projectId) {
         return success(service.capability(projectId, getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:add')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:add')")
     @PostMapping
     public AjaxResult add(@Valid @RequestBody ProjectIssue issue) {
         return toAjax(service.add(issue, getUsername(), getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:edit')")
     @PutMapping
     public AjaxResult edit(@Valid @RequestBody ProjectIssue issue) {
         return toAjax(service.edit(issue, getUsername(), getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:edit')")
     @PutMapping("/{id}/transition")
     public AjaxResult transition(
             @PathVariable Long id, @Valid @RequestBody IssueTransitionRequest request) {
         return toAjax(service.transition(id, request, getUsername(), getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:query')")
     @GetMapping("/{id}/activities")
     public AjaxResult activities(@PathVariable Long id) {
         List<ProjectIssueActivity> activities = service.activities(id, getUserId());
         return success(activities);
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:edit')")
     @PostMapping("/{id}/activities")
     public AjaxResult addActivity(
             @PathVariable Long id, @Valid @RequestBody ProjectIssueActivity activity) {
         return toAjax(service.addActivity(id, activity, getUsername(), getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:issue:remove')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:issue:remove')")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(service.remove(ids, getUsername(), getUserId()));

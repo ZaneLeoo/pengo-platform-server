@@ -7,7 +7,6 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.projectmanagement.professionalrole.domain.ProfessionalRole;
 import com.ruoyi.projectmanagement.professionalrole.service.IProfessionalRoleService;
 import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,28 +28,28 @@ public class ProfessionalRoleController extends BaseController {
     }
 
     /** 查询专业角色配置列表。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:list')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:list')")
     @GetMapping("/list")
     public AjaxResult list(ProfessionalRole filter) {
         return success(service.list(filter));
     }
 
     /** 查询项目团队可选的启用角色。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
     @GetMapping("/options")
     public AjaxResult options() {
         return success(service.options());
     }
 
     /** 查询专业角色详情。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:query')")
     @GetMapping("/{id}")
     public AjaxResult get(@PathVariable Long id) {
         return success(service.get(id));
     }
 
     /** 新增专业角色。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:add')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:add')")
     @Log(title = "项目专业角色", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Valid @RequestBody ProfessionalRole role) {
@@ -58,7 +57,7 @@ public class ProfessionalRoleController extends BaseController {
     }
 
     /** 修改专业角色。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:edit')")
     @Log(title = "项目专业角色", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Valid @RequestBody ProfessionalRole role) {
@@ -66,7 +65,7 @@ public class ProfessionalRoleController extends BaseController {
     }
 
     /** 删除专业角色。 */
-    @PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:remove')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:professionalRole:remove')")
     @Log(title = "项目专业角色", businessType = BusinessType.DELETE)
     @DeleteMapping("/{id}")
     public AjaxResult remove(@PathVariable Long id) {

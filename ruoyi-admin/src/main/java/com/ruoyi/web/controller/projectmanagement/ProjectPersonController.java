@@ -10,7 +10,6 @@ import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.service.IProjectPersonService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,21 +31,21 @@ public class ProjectPersonController extends BaseController {
         this.personService = personService;
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:person:list')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:person:list')")
     @GetMapping("/list")
     public TableDataInfo list(ProjectPerson person) {
         startPage();
         return getDataTable(personService.selectProjectPersonList(person));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:person:list')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:person:list')")
     @GetMapping("/options")
     public AjaxResult options(@RequestParam(required = false) String keyword) {
         return success(personService.selectEnabledPersonOptions(keyword));
     }
 
     /** 查询可绑定到人员档案的系统账号。 */
-    @PreAuthorize("@ss.hasAnyPermi('projectManagement:person:add,projectManagement:person:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasAnyPermi('projectManagement:person:add,projectManagement:person:edit')")
     @GetMapping("/account-options")
     public AjaxResult accountOptions(
             @RequestParam(required = false) Long personId,
@@ -54,7 +53,7 @@ public class ProjectPersonController extends BaseController {
         return success(personService.selectAvailableUserOptions(personId, keyword));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:person:export')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:person:export')")
     @Log(title = "项目人员档案", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, ProjectPerson person) {
@@ -62,13 +61,13 @@ public class ProjectPersonController extends BaseController {
         new ExcelUtil<>(ProjectPerson.class).exportExcel(response, list, "项目人员档案");
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:person:query')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:person:query')")
     @GetMapping("/{personId}")
     public AjaxResult getInfo(@PathVariable Long personId) {
         return success(personService.selectProjectPersonById(personId));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:person:add')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:person:add')")
     @Log(title = "项目人员档案", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody ProjectPerson person) {
@@ -79,7 +78,7 @@ public class ProjectPersonController extends BaseController {
         return toAjax(personService.insertProjectPerson(person));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:person:edit')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:person:edit')")
     @Log(title = "项目人员档案", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody ProjectPerson person) {
@@ -90,7 +89,7 @@ public class ProjectPersonController extends BaseController {
         return toAjax(personService.updateProjectPerson(person));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:person:remove')")
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:person:remove')")
     @Log(title = "项目人员档案", businessType = BusinessType.DELETE)
     @DeleteMapping("/{personIds}")
     public AjaxResult remove(@PathVariable Long[] personIds) {
