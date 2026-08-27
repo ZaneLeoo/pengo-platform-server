@@ -667,6 +667,7 @@ public class ProjectPlanChangeServiceImpl
                             objectMapper.readValue(item.getAfterJson(), Map.class);
                     if ("PROJECT_INFO".equals(module)) validateProjectInfoAfter(after);
                     if ("WBS".equals(module)) validateWbsItem(projectId, item, after);
+                    if ("TASK".equals(module)) validateTaskItem(projectId, item, after);
                 } catch (Exception e) {
                     if (e instanceof ServiceException) throw (ServiceException) e;
                     throw new ServiceException("变更后内容格式无效");
@@ -674,6 +675,71 @@ public class ProjectPlanChangeServiceImpl
             }
             if ("WBS".equals(module) && "DELETE".equals(operation))
                 validateWbsItem(projectId, item, Map.of());
+            if ("TASK".equals(module) && "DELETE".equals(operation))
+                validateTaskItem(projectId, item, Map.of());
+        }
+    }
+
+    private void validateTaskItem(
+            Long projectId, ProjectPlanChangeItem item, Map<String, Object> after) {
+        String operation = item.getOperationType();
+        Set<String> addFields =
+                Set.of(
+                        "taskType",
+                        "workPackageId",
+                        "workPackageName",
+                        "parentTaskId",
+                        "parentTaskName",
+                        "taskName",
+                        "description",
+                        "assigneeId",
+                        "assigneeName",
+                        "planStartDate",
+                        "planEndDate");
+        Set<String> updateFields =
+                Set.of(
+                        "taskName",
+                        "description",
+                        "assigneeId",
+                        "assigneeName",
+                        "planStartDate",
+                        "planEndDate");
+        if ("DELETE".equals(operation)) {
+            if (item.getAfterJson() != null && !item.getAfterJson().isBlank())
+                throw new ServiceException("删除任务不能填写变更后内容");
+            validateTaskDelete(projectId, requireTask(projectId, item.getTargetId()));
+            return;
+        }
+        Set<String> allowed = "ADD".equals(operation) ? addFields : updateFields;
+        if (after.isEmpty() || !allowed.containsAll(after.keySet()))
+            throw new ServiceException("任务变更包含未开放字段");
+        if (after.containsKey("assigneeName") && !after.containsKey("assigneeId"))
+            throw new ServiceException("执行人显示名称不能独立变更");
+        if (after.containsKey("workPackageName") && !after.containsKey("workPackageId"))
+            throw new ServiceException("工作包显示名称不能独立变更");
+        if (after.containsKey("parentTaskName") && !after.containsKey("parentTaskId"))
+            throw new ServiceException("上级任务显示名称不能独立变更");
+        try {
+            ProjectTask requested = objectMapper.convertValue(after, ProjectTask.class);
+            requested.setProjectId(projectId);
+            if ("ADD".equals(operation)) {
+                ProjectWbsNode workPackage =
+                        requireWorkPackage(projectId, requested.getWorkPackageId());
+                validateTaskParent(projectId, requested);
+                validateTaskFields(requested, workPackage);
+                return;
+            }
+            ProjectTask old = requireTask(projectId, item.getTargetId());
+            if ("COMPLETED".equals(old.getStatus())) throw new ServiceException("已完成任务不允许变更");
+            if ("SUMMARY".equals(old.getTaskType())
+                    && !Set.of("taskName", "description").containsAll(after.keySet()))
+                throw new ServiceException("汇总任务仅允许修改名称和说明");
+            mergeTask(old, requested);
+            if (after.containsKey("description"))
+                requested.setDescription((String) after.get("description"));
+            validateTaskUpdate(old, requested, after.keySet());
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException("任务变更字段格式无效");
         }
     }
 
@@ -1157,17 +1223,8 @@ public class ProjectPlanChangeServiceImpl
     private void applyTask(ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
         try {
             if ("DELETE".equals(item.getOperationType())) {
-                ProjectTask old = taskMapper.selectById(item.getTargetId());
-                if (old == null || !old.getProjectId().equals(change.getProjectId()))
-                    throw new ServiceException("任务不存在");
-                if (taskMapper.countChildren(old.getTaskId()) > 0
-                        || old.getActualStartDate() != null
-                        || old.getActualEndDate() != null
-                        || old.getActualHours() != null
-                        || !taskMapper.selectOutputs(old.getTaskId()).isEmpty()
-                        || issueMapper.countByTask(change.getProjectId(), old.getTaskId()) > 0) {
-                    throw new ServiceException("任务已有下级、成果、问题或执行记录，不能删除");
-                }
+                ProjectTask old = requireTask(change.getProjectId(), item.getTargetId());
+                validateTaskDelete(change.getProjectId(), old);
                 taskMapper.delete(old.getTaskId());
                 return;
             }
@@ -1177,31 +1234,15 @@ public class ProjectPlanChangeServiceImpl
             if ("ADD".equals(item.getOperationType())) {
                 Long parent =
                         requested.getParentTaskId() == null ? 0L : requested.getParentTaskId();
-                ProjectWbsNode wp = wbsMapper.selectById(requested.getWorkPackageId());
-                if (wp == null
-                        || !wp.getProjectId().equals(change.getProjectId())
-                        || !"WORK_PACKAGE".equals(wp.getNodeType())) {
-                    throw new ServiceException("任务必须归属当前项目的工作包");
-                }
+                ProjectWbsNode wp =
+                        requireWorkPackage(change.getProjectId(), requested.getWorkPackageId());
                 if (requested.getTaskName() == null
                         || requested.getTaskName().isBlank()
                         || !("SUMMARY".equals(requested.getTaskType())
                                 || "EXECUTION".equals(requested.getTaskType()))) {
                     throw new ServiceException("新增任务必须填写名称和任务类型");
                 }
-                ProjectTask parentTask = null;
-                if (parent != 0) {
-                    parentTask = taskMapper.selectById(parent);
-                    if (parentTask == null
-                            || !parentTask.getProjectId().equals(change.getProjectId())
-                            || !requested
-                                    .getWorkPackageId()
-                                    .equals(parentTask.getWorkPackageId())) {
-                        throw new ServiceException("任务父级不存在或不属于同一工作包");
-                    }
-                    if ("EXECUTION".equals(parentTask.getTaskType()))
-                        throw new ServiceException("执行任务不能包含子任务");
-                }
+                ProjectTask parentTask = validateTaskParent(change.getProjectId(), requested);
                 validateTaskFields(requested, wp);
                 List<ProjectTask> siblings =
                         taskMapper.selectChildren(requested.getWorkPackageId(), parent);
@@ -1221,21 +1262,12 @@ public class ProjectPlanChangeServiceImpl
                 taskMapper.insert(requested);
                 return;
             }
-            ProjectTask old = taskMapper.selectById(item.getTargetId());
-            if (old == null || !old.getProjectId().equals(change.getProjectId()))
-                throw new ServiceException("任务不存在");
-            if ((requested.getParentTaskId() != null
-                            && !requested.getParentTaskId().equals(old.getParentTaskId()))
-                    || (requested.getWorkPackageId() != null
-                            && !requested.getWorkPackageId().equals(old.getWorkPackageId()))) {
-                throw new ServiceException("不支持将已有任务移动至其他父级或工作包");
-            }
-            if (requested.getTaskType() != null
-                    && !requested.getTaskType().equals(old.getTaskType())) {
-                throw new ServiceException("已有任务不能变更任务类型");
-            }
+            ProjectTask old = requireTask(change.getProjectId(), item.getTargetId());
             mergeTask(old, requested);
-            validateTaskFields(requested, wbsMapper.selectById(old.getWorkPackageId()));
+            Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
+            if (after.containsKey("description"))
+                requested.setDescription((String) after.get("description"));
+            validateTaskUpdate(old, requested, after.keySet());
             taskMapper.update(requested);
         } catch (Exception e) {
             if (e instanceof ServiceException) throw (ServiceException) e;
@@ -1244,6 +1276,11 @@ public class ProjectPlanChangeServiceImpl
     }
 
     private void validateTaskFields(ProjectTask task, ProjectWbsNode wp) {
+        if (task.getTaskName() == null
+                || task.getTaskName().isBlank()
+                || !("SUMMARY".equals(task.getTaskType())
+                        || "EXECUTION".equals(task.getTaskType())))
+            throw new ServiceException("任务必须填写有效名称和任务类型");
         if ("EXECUTION".equals(task.getTaskType())) {
             if (task.getAssigneeId() == null
                     || !teamService.isActiveMember(task.getProjectId(), task.getAssigneeId())) {
@@ -1262,6 +1299,55 @@ public class ProjectPlanChangeServiceImpl
                 throw new ServiceException("任务计划日期必须在工作包周期内");
             }
         }
+    }
+
+    private ProjectTask requireTask(Long projectId, Long taskId) {
+        ProjectTask task = taskMapper.selectById(taskId);
+        if (task == null || !projectId.equals(task.getProjectId()))
+            throw new ServiceException("任务不存在或不属于当前项目");
+        return task;
+    }
+
+    private ProjectWbsNode requireWorkPackage(Long projectId, Long workPackageId) {
+        ProjectWbsNode workPackage = requireWbs(projectId, workPackageId);
+        if (!"WORK_PACKAGE".equals(workPackage.getNodeType()))
+            throw new ServiceException("任务必须归属工作包");
+        return workPackage;
+    }
+
+    private ProjectTask validateTaskParent(Long projectId, ProjectTask task) {
+        Long parentId = task.getParentTaskId() == null ? 0L : task.getParentTaskId();
+        if (parentId == 0) return null;
+        ProjectTask parent = requireTask(projectId, parentId);
+        if (!task.getWorkPackageId().equals(parent.getWorkPackageId()))
+            throw new ServiceException("上级任务必须属于同一工作包");
+        if (!"SUMMARY".equals(parent.getTaskType())) throw new ServiceException("执行任务不能拥有下级任务");
+        return parent;
+    }
+
+    private void validateTaskUpdate(
+            ProjectTask old, ProjectTask requested, Set<String> changedFields) {
+        if ("COMPLETED".equals(old.getStatus())) throw new ServiceException("已完成任务不允许变更");
+        if (changedFields.contains("planStartDate")) {
+            if (!"NOT_STARTED".equals(old.getStatus()))
+                throw new ServiceException("已开始任务不允许修改计划开始日期");
+            if (old.getPlanStartDate() != null
+                    && requested.getPlanStartDate().isBefore(old.getPlanStartDate()))
+                throw new ServiceException("任务计划开始日期仅允许延后");
+        }
+        validateTaskFields(
+                requested, requireWorkPackage(old.getProjectId(), old.getWorkPackageId()));
+    }
+
+    private void validateTaskDelete(Long projectId, ProjectTask task) {
+        if (!"NOT_STARTED".equals(task.getStatus())) throw new ServiceException("仅未开始任务允许删除");
+        if (taskMapper.countChildren(task.getTaskId()) > 0
+                || task.getActualStartDate() != null
+                || task.getActualEndDate() != null
+                || task.getActualHours() != null
+                || !taskMapper.selectOutputs(task.getTaskId()).isEmpty()
+                || issueMapper.countByTask(projectId, task.getTaskId()) > 0)
+            throw new ServiceException("任务已有下级、成果、问题或执行记录，不能删除");
     }
 
     private void mergeTask(ProjectTask old, ProjectTask requested) {

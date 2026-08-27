@@ -37,6 +37,9 @@ public class ProjectTask extends BaseEntity {
     /** 上级任务ID，0表示工作包下的顶层任务。 */
     private Long parentTaskId;
 
+    /** 上级任务名称（变更差异展示字段，不落库）。 */
+    private String parentTaskName;
+
     /** 任务层级编码，如 1-T1、1.1、1.1.2。 */
     private String taskCode;
 
