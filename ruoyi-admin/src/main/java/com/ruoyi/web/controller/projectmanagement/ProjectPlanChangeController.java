@@ -25,38 +25,38 @@ public class ProjectPlanChangeController extends BaseController {
         this.service = service;
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
     @GetMapping("/{projectId}/baselines")
     public AjaxResult baselines(@PathVariable Long projectId) {
         return success(service.baselines(projectId, SecurityUtils.getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
     @GetMapping("/{projectId}/baselines/compare")
     public AjaxResult compare(
             @PathVariable Long projectId, @RequestParam Long from, @RequestParam Long to) {
         return success(service.compare(projectId, from, to, SecurityUtils.getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
     @GetMapping("/{projectId}")
     public AjaxResult list(@PathVariable Long projectId) {
         return success(service.list(projectId, SecurityUtils.getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
     @GetMapping("/{projectId}/capability")
     public AjaxResult capability(@PathVariable Long projectId) {
         return success(service.capability(projectId, SecurityUtils.getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
     @GetMapping("/detail/{changeId}")
     public AjaxResult detail(@PathVariable Long changeId) {
         return success(service.detail(changeId, SecurityUtils.getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:query')")
     @GetMapping("/{changeId}/attachments/{attachmentId}/download")
     public void download(
             @PathVariable Long changeId,
@@ -76,34 +76,34 @@ public class ProjectPlanChangeController extends BaseController {
         Files.copy(path, response.getOutputStream());
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:edit')")
     @PostMapping
     public AjaxResult save(@RequestBody ProjectPlanChange change) {
         return AjaxResult.success(service.save(change, getUsername(), SecurityUtils.getUserId()));
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:edit')")
     @DeleteMapping("/{changeId}")
     public AjaxResult delete(@PathVariable Long changeId) {
         service.delete(changeId, getUsername(), SecurityUtils.getUserId());
         return success();
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:edit')")
     @PostMapping("/{changeId}/submit")
     public AjaxResult submit(@PathVariable Long changeId) {
         service.submit(changeId, getUsername(), SecurityUtils.getUserId());
         return success();
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:edit')")
     @PostMapping("/{changeId}/withdraw")
     public AjaxResult withdraw(@PathVariable Long changeId) {
         service.withdraw(changeId, getUsername(), SecurityUtils.getUserId());
         return success();
     }
 
-    @PreAuthorize("@ss.hasPermi('projectManagement:project:edit')")
+    @PreAuthorize("@ss.hasPermi('projectManagement:planChange:apply')")
     @PostMapping("/{changeId}/apply")
     public AjaxResult apply(@PathVariable Long changeId) {
         service.apply(changeId, getUsername(), SecurityUtils.getUserId());
