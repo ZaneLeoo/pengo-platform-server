@@ -24,6 +24,9 @@ public class ProjectWbsNode extends BaseEntity {
     /** 上级WBS节点ID，0表示顶层节点。 */
     private Long parentId;
 
+    /** 上级节点名称（变更差异展示字段，不落库）。 */
+    private String parentName;
+
     /** WBS层级编码，如 1、1.1、1.1.2。 */
     private String wbsCode;
 

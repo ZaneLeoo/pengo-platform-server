@@ -158,7 +158,7 @@ public class ProjectPlanChangeServiceImpl
             result.put("fromVersion", from.getVersionNo());
             result.put("toVersion", to.getVersionNo());
             Map<String, Object> modules = new LinkedHashMap<>();
-            modules.put("PROJECT", compareSingle(left.get("project"), right.get("project")));
+            modules.put("PROJECT_INFO", compareSingle(left.get("project"), right.get("project")));
             modules.put(
                     "WBS",
                     compareCollection(left.get("wbs"), right.get("wbs"), "wbsId", "wbsName"));
@@ -364,7 +364,7 @@ public class ProjectPlanChangeServiceImpl
             mapper.deleteAttachments(change.getChangeId());
             audit(change.getChangeId(), "UPDATED", userId, operator, "编辑变更草稿");
         }
-        validateItems(change.getItems());
+        validateItems(change.getProjectId(), change.getItems());
         validateAttachments(change.getAttachments());
         for (ProjectPlanChangeItem i :
                 change.getItems() == null ? List.<ProjectPlanChangeItem>of() : change.getItems()) {
@@ -393,7 +393,7 @@ public class ProjectPlanChangeServiceImpl
         assertChangeable(c.getProjectId(), user);
         List<ProjectPlanChangeItem> items = mapper.selectItems(id);
         if (items.isEmpty()) throw new ServiceException("请至少添加一条变更项");
-        validateItems(items);
+        validateItems(c.getProjectId(), items);
         validateAttachments(mapper.selectAttachments(id));
         try {
             Map<String, Object> snapshot = new LinkedHashMap<>();
@@ -472,7 +472,7 @@ public class ProjectPlanChangeServiceImpl
                 throw new PlanChangeReconcileException("当前计划基线已变化，请重新核对变更单");
             }
             List<ProjectPlanChangeItem> items = mapper.selectItems(id);
-            validateItems(items);
+            validateItems(c.getProjectId(), items);
             for (ProjectPlanChangeItem item : orderedApplyItems(items)) applyItem(c, item, op);
             refreshAggregates(c.getProjectId());
             createNextBaseline(c.getProjectId(), id, op, current.getVersionNo() + 1);
@@ -635,23 +635,22 @@ public class ProjectPlanChangeServiceImpl
         mapper.insertAudit(audit);
     }
 
-    private void validateItems(List<ProjectPlanChangeItem> items) {
+    private void validateItems(Long projectId, List<ProjectPlanChangeItem> items) {
         if (items == null || items.isEmpty()) throw new ServiceException("请至少添加一条变更项");
         for (ProjectPlanChangeItem item : items) {
             if (item == null || item.getModuleType() == null || item.getOperationType() == null)
                 throw new ServiceException("变更项缺少模块或操作类型");
             String module = item.getModuleType(), operation = item.getOperationType();
-            if (!List.of("PROJECT", "PROJECT_INFO", "WBS", "TASK", "DELIVERABLE", "TEAM")
-                    .contains(module)) throw new ServiceException("变更模块不受支持");
+            if (!List.of("PROJECT_INFO", "WBS", "TASK", "DELIVERABLE", "TEAM").contains(module))
+                throw new ServiceException("变更模块不受支持");
             if (!List.of("ADD", "UPDATE", "DELETE").contains(operation))
                 throw new ServiceException("变更项操作类型无效");
-            if (("PROJECT".equals(module) || "PROJECT_INFO".equals(module))
-                    && !"UPDATE".equals(operation)) throw new ServiceException("项目基础信息和项目计划仅支持修改");
+            if ("PROJECT_INFO".equals(module) && !"UPDATE".equals(operation))
+                throw new ServiceException("项目基础信息仅支持修改");
             if (item.getTargetType() == null || item.getTargetType().isBlank())
                 throw new ServiceException("变更项缺少目标类型");
             if (!"ADD".equals(operation)
-                    && !(("PROJECT".equals(module) || "PROJECT_INFO".equals(module))
-                            && "UPDATE".equals(operation))
+                    && !("PROJECT_INFO".equals(module) && "UPDATE".equals(operation))
                     && (item.getTargetId() == null || item.getTargetId() <= 0)) {
                 throw new ServiceException("修改或删除变更项必须指定变更对象");
             }
@@ -667,11 +666,75 @@ public class ProjectPlanChangeServiceImpl
                     Map<String, Object> after =
                             objectMapper.readValue(item.getAfterJson(), Map.class);
                     if ("PROJECT_INFO".equals(module)) validateProjectInfoAfter(after);
+                    if ("WBS".equals(module)) validateWbsItem(projectId, item, after);
                 } catch (Exception e) {
                     if (e instanceof ServiceException) throw (ServiceException) e;
                     throw new ServiceException("变更后内容格式无效");
                 }
             }
+            if ("WBS".equals(module) && "DELETE".equals(operation))
+                validateWbsItem(projectId, item, Map.of());
+        }
+    }
+
+    private void validateWbsItem(
+            Long projectId, ProjectPlanChangeItem item, Map<String, Object> after) {
+        String operation = item.getOperationType();
+        Set<String> addFields =
+                Set.of(
+                        "nodeType",
+                        "parentId",
+                        "parentName",
+                        "wbsName",
+                        "scopeDescription",
+                        "ownerId",
+                        "ownerName",
+                        "planStartDate",
+                        "planEndDate",
+                        "acceptanceCriteria",
+                        "definitionOfDone");
+        Set<String> updateFields =
+                Set.of(
+                        "wbsName",
+                        "scopeDescription",
+                        "ownerId",
+                        "ownerName",
+                        "planStartDate",
+                        "planEndDate",
+                        "acceptanceCriteria",
+                        "definitionOfDone");
+        if ("DELETE".equals(operation)) {
+            if (item.getAfterJson() != null && !item.getAfterJson().isBlank())
+                throw new ServiceException("删除 WBS 节点不能填写变更后内容");
+            validateWbsDelete(projectId, requireWbs(projectId, item.getTargetId()));
+            return;
+        }
+        Set<String> allowed = "ADD".equals(operation) ? addFields : updateFields;
+        if (after.isEmpty() || !allowed.containsAll(after.keySet()))
+            throw new ServiceException("WBS 变更包含未开放字段");
+        if (after.containsKey("ownerName") && !after.containsKey("ownerId"))
+            throw new ServiceException("负责人显示名称不能独立变更");
+        if (after.containsKey("parentName") && !after.containsKey("parentId"))
+            throw new ServiceException("上级节点显示名称不能独立变更");
+        try {
+            ProjectWbsNode requested = objectMapper.convertValue(after, ProjectWbsNode.class);
+            requested.setProjectId(projectId);
+            if ("ADD".equals(operation)) {
+                validateWbsParent(projectId, requested.getParentId());
+                validateWbsFields(requested);
+                return;
+            }
+            ProjectWbsNode old = requireWbs(projectId, item.getTargetId());
+            if ("COMPLETED".equals(old.getStatus())) throw new ServiceException("已完成 WBS 节点不允许变更");
+            if ("SUMMARY".equals(old.getNodeType())
+                    && !Set.of("wbsName", "scopeDescription").containsAll(after.keySet()))
+                throw new ServiceException("汇总 WBS 仅允许修改名称和范围说明");
+            mergeWbs(old, requested);
+            if (after.containsKey("scopeDescription"))
+                requested.setScopeDescription((String) after.get("scopeDescription"));
+            validateWbsUpdate(old, requested, after.keySet());
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException("WBS 变更字段格式无效");
         }
     }
 
@@ -702,10 +765,6 @@ public class ProjectPlanChangeServiceImpl
                 && !"UPDATE".equals(item.getOperationType())
                 && !"DELETE".equals(item.getOperationType()))
             throw new ServiceException("变更项操作类型无效");
-        if ("PROJECT".equals(item.getModuleType()) && "UPDATE".equals(item.getOperationType())) {
-            applyProject(change, item, operator);
-            return;
-        }
         if ("PROJECT_INFO".equals(item.getModuleType())
                 && "UPDATE".equals(item.getOperationType())) {
             applyProjectInfo(change, item, operator);
@@ -761,7 +820,6 @@ public class ProjectPlanChangeServiceImpl
         String operation = item.getOperationType();
         if ("TEAM".equals(module) && !"DELETE".equals(operation)) return 5;
         if ("PROJECT_INFO".equals(module)) return 10;
-        if ("PROJECT".equals(module)) return 10;
         if ("WBS".equals(module) && !"DELETE".equals(operation)) return 20;
         if ("TASK".equals(module) && !"DELETE".equals(operation)) return 30;
         if ("DELIVERABLE".equals(module) && !"DELETE".equals(operation)) return 40;
@@ -795,47 +853,6 @@ public class ProjectPlanChangeServiceImpl
         ProjectTask task = taskMapper.selectById(id);
         if (task == null || task.getParentTaskId() == null || task.getParentTaskId() == 0) return 0;
         return 1 + taskDepth(task.getParentTaskId(), visited);
-    }
-
-    private void applyProject(
-            ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
-        try {
-            ProjectInfo requested = objectMapper.readValue(item.getAfterJson(), ProjectInfo.class);
-            ProjectInfo old = requireProject(change.getProjectId());
-            java.time.LocalDate start =
-                    requested.getStartDate() == null
-                            ? old.getStartDate()
-                            : requested.getStartDate();
-            java.time.LocalDate end =
-                    requested.getEndDate() == null ? old.getEndDate() : requested.getEndDate();
-            String budgetRequired =
-                    requested.getBudgetRequired() == null
-                            ? old.getBudgetRequired()
-                            : requested.getBudgetRequired();
-            java.math.BigDecimal budgetAmount =
-                    requested.getBudgetAmount() == null
-                            ? old.getBudgetAmount()
-                            : requested.getBudgetAmount();
-            if (start == null || end == null || end.isBefore(start))
-                throw new ServiceException("项目计划日期不能为空且结束日期不能早于开始日期");
-            if ("1".equals(budgetRequired) && budgetAmount == null)
-                throw new ServiceException("需要预算时必须填写计划预算");
-            if (budgetAmount != null && budgetAmount.signum() < 0)
-                throw new ServiceException("计划预算不能为负数");
-            old.setStartDate(start);
-            old.setEndDate(end);
-            old.setBudgetRequired(budgetRequired);
-            old.setBudgetAmount(budgetAmount);
-            old.setBudgetDescription(
-                    requested.getBudgetDescription() == null
-                            ? old.getBudgetDescription()
-                            : requested.getBudgetDescription());
-            old.setUpdateBy(operator);
-            projectMapper.updateProjectInfo(old);
-        } catch (Exception e) {
-            if (e instanceof ServiceException) throw (ServiceException) e;
-            throw new ServiceException("项目计划变更数据无效");
-        }
     }
 
     /** 项目基础信息按字段作为最小变更单元，禁止借由 JSON 覆盖未开放字段。 */
@@ -967,17 +984,8 @@ public class ProjectPlanChangeServiceImpl
     private void applyWbs(ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
         try {
             if ("DELETE".equals(item.getOperationType())) {
-                ProjectWbsNode old = wbsMapper.selectById(item.getTargetId());
-                if (old == null || !old.getProjectId().equals(change.getProjectId())) {
-                    throw new ServiceException("WBS节点不存在");
-                }
-                if (wbsMapper.countChildren(old.getWbsId()) > 0
-                        || wbsMapper.countTasks(old.getWbsId()) > 0
-                        || wbsMapper.countDeliverables(old.getWbsId()) > 0
-                        || issueMapper.countByWorkPackage(change.getProjectId(), old.getWbsId())
-                                > 0) {
-                    throw new ServiceException("WBS节点已有下级或业务记录，不能删除");
-                }
+                ProjectWbsNode old = requireWbs(change.getProjectId(), item.getTargetId());
+                validateWbsDelete(change.getProjectId(), old);
                 wbsMapper.deleteById(old.getWbsId());
                 return;
             }
@@ -987,17 +995,7 @@ public class ProjectPlanChangeServiceImpl
             requested.setUpdateBy(operator);
             if ("ADD".equals(item.getOperationType())) {
                 Long parent = requested.getParentId() == null ? 0L : requested.getParentId();
-                ProjectWbsNode parentNode = null;
-                if (parent != 0) {
-                    parentNode = wbsMapper.selectById(parent);
-                    if (parentNode == null
-                            || !parentNode.getProjectId().equals(change.getProjectId())) {
-                        throw new ServiceException("WBS父级不存在或不属于当前项目");
-                    }
-                    if ("WORK_PACKAGE".equals(parentNode.getNodeType())) {
-                        throw new ServiceException("工作包不能继续挂载WBS节点");
-                    }
-                }
+                ProjectWbsNode parentNode = validateWbsParent(change.getProjectId(), parent);
                 validateWbsFields(requested);
                 List<ProjectWbsNode> siblings =
                         wbsMapper.selectChildren(change.getProjectId(), parent);
@@ -1016,28 +1014,12 @@ public class ProjectPlanChangeServiceImpl
                 wbsMapper.insert(requested);
                 return;
             }
-            ProjectWbsNode old = wbsMapper.selectById(item.getTargetId());
-            if (old == null || !old.getProjectId().equals(change.getProjectId())) {
-                throw new ServiceException("WBS节点不存在");
-            }
-            if (requested.getParentId() != null
-                    && !requested.getParentId().equals(old.getParentId())) {
-                throw new ServiceException("不支持将已有WBS节点移动至其他父级");
-            }
-            if (requested.getNodeType() != null
-                    && !requested.getNodeType().equals(old.getNodeType())) {
-                if ("WORK_PACKAGE".equals(requested.getNodeType())
-                        && wbsMapper.countChildren(old.getWbsId()) > 0) {
-                    throw new ServiceException("有下级节点的WBS不能转换为工作包");
-                }
-                if ("SUMMARY".equals(requested.getNodeType())
-                        && (wbsMapper.countTasks(old.getWbsId()) > 0
-                                || wbsMapper.countDeliverables(old.getWbsId()) > 0)) {
-                    throw new ServiceException("已有任务或交付物的工作包不能转换为汇总WBS");
-                }
-            }
+            ProjectWbsNode old = requireWbs(change.getProjectId(), item.getTargetId());
             mergeWbs(old, requested);
-            validateWbsFields(requested);
+            Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
+            if (after.containsKey("scopeDescription"))
+                requested.setScopeDescription((String) after.get("scopeDescription"));
+            validateWbsUpdate(old, requested, after.keySet());
             wbsMapper.update(requested);
         } catch (Exception e) {
             if (e instanceof ServiceException) throw (ServiceException) e;
@@ -1078,12 +1060,80 @@ public class ProjectPlanChangeServiceImpl
         }
     }
 
+    private ProjectWbsNode requireWbs(Long projectId, Long wbsId) {
+        ProjectWbsNode node = wbsMapper.selectById(wbsId);
+        if (node == null || !projectId.equals(node.getProjectId()))
+            throw new ServiceException("WBS 节点不存在或不属于当前项目");
+        return node;
+    }
+
+    private ProjectWbsNode validateWbsParent(Long projectId, Long parentId) {
+        if (parentId == null || parentId == 0) return null;
+        ProjectWbsNode parent = requireWbs(projectId, parentId);
+        if (!"SUMMARY".equals(parent.getNodeType())) throw new ServiceException("工作包不能拥有下级 WBS 节点");
+        return parent;
+    }
+
+    private void validateWbsDelete(Long projectId, ProjectWbsNode node) {
+        if (!"NOT_STARTED".equals(node.getStatus())) throw new ServiceException("仅未开始的 WBS 节点允许删除");
+        if (wbsMapper.countChildren(node.getWbsId()) > 0
+                || wbsMapper.countTasks(node.getWbsId()) > 0
+                || wbsMapper.countDeliverables(node.getWbsId()) > 0
+                || issueMapper.countByWorkPackage(projectId, node.getWbsId()) > 0)
+            throw new ServiceException("WBS 节点已有下级、任务、交付物或问题，不能删除");
+    }
+
+    private void validateWbsUpdate(
+            ProjectWbsNode old, ProjectWbsNode requested, Set<String> changedFields) {
+        if ("COMPLETED".equals(old.getStatus())) throw new ServiceException("已完成 WBS 节点不允许变更");
+        if (changedFields.contains("planStartDate")) {
+            if (!"NOT_STARTED".equals(old.getStatus()))
+                throw new ServiceException("已开始的工作包不允许修改计划开始日期");
+            if (old.getPlanStartDate() != null
+                    && requested.getPlanStartDate().isBefore(old.getPlanStartDate()))
+                throw new ServiceException("工作包计划开始日期仅允许延后");
+        }
+        validateWbsFields(requested);
+        if ("WORK_PACKAGE".equals(requested.getNodeType())) validateWbsDateCoverage(requested);
+    }
+
+    private void validateWbsDateCoverage(ProjectWbsNode node) {
+        ProjectTask taskFilter = new ProjectTask();
+        taskFilter.setProjectId(node.getProjectId());
+        taskFilter.setWorkPackageId(node.getWbsId());
+        for (ProjectTask task : taskMapper.selectList(taskFilter)) {
+            if (before(task.getPlanStartDate(), node.getPlanStartDate())
+                    || after(task.getPlanEndDate(), node.getPlanEndDate())
+                    || before(task.getActualStartDate(), node.getPlanStartDate())
+                    || after(task.getActualEndDate(), node.getPlanEndDate()))
+                throw new ServiceException("工作包周期必须覆盖所属任务的计划日期和实际日期");
+        }
+        ProjectDeliverable deliverableFilter = new ProjectDeliverable();
+        deliverableFilter.setProjectId(node.getProjectId());
+        deliverableFilter.setWorkPackageId(node.getWbsId());
+        for (ProjectDeliverable deliverable : deliverableMapper.selectList(deliverableFilter)) {
+            if (before(deliverable.getPlannedDate(), node.getPlanStartDate())
+                    || after(deliverable.getPlannedDate(), node.getPlanEndDate()))
+                throw new ServiceException("工作包周期必须覆盖所属交付物的计划日期");
+        }
+    }
+
+    private boolean before(java.time.LocalDate value, java.time.LocalDate boundary) {
+        return value != null && boundary != null && value.isBefore(boundary);
+    }
+
+    private boolean after(java.time.LocalDate value, java.time.LocalDate boundary) {
+        return value != null && boundary != null && value.isAfter(boundary);
+    }
+
     private void mergeWbs(ProjectWbsNode old, ProjectWbsNode requested) {
         requested.setWbsId(old.getWbsId());
         requested.setParentId(old.getParentId());
         requested.setWbsCode(old.getWbsCode());
         if (requested.getNodeType() == null) requested.setNodeType(old.getNodeType());
         if (requested.getWbsName() == null) requested.setWbsName(old.getWbsName());
+        if (requested.getScopeDescription() == null)
+            requested.setScopeDescription(old.getScopeDescription());
         if (requested.getOwnerId() == null && "WORK_PACKAGE".equals(old.getNodeType()))
             requested.setOwnerId(old.getOwnerId());
         if (requested.getPlanStartDate() == null)
