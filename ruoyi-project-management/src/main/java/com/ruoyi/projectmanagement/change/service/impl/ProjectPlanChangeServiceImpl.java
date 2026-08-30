@@ -668,6 +668,8 @@ public class ProjectPlanChangeServiceImpl
                     if ("PROJECT_INFO".equals(module)) validateProjectInfoAfter(after);
                     if ("WBS".equals(module)) validateWbsItem(projectId, item, after);
                     if ("TASK".equals(module)) validateTaskItem(projectId, item, after);
+                    if ("DELIVERABLE".equals(module))
+                        validateDeliverableItem(projectId, item, after);
                 } catch (Exception e) {
                     if (e instanceof ServiceException) throw (ServiceException) e;
                     throw new ServiceException("变更后内容格式无效");
@@ -677,6 +679,64 @@ public class ProjectPlanChangeServiceImpl
                 validateWbsItem(projectId, item, Map.of());
             if ("TASK".equals(module) && "DELETE".equals(operation))
                 validateTaskItem(projectId, item, Map.of());
+            if ("DELIVERABLE".equals(module) && "DELETE".equals(operation))
+                validateDeliverableItem(projectId, item, Map.of());
+        }
+    }
+
+    private void validateDeliverableItem(
+            Long projectId, ProjectPlanChangeItem item, Map<String, Object> after) {
+        String operation = item.getOperationType();
+        Set<String> addFields =
+                Set.of(
+                        "workPackageId",
+                        "workPackageName",
+                        "deliverableName",
+                        "deliverableType",
+                        "requiredFlag",
+                        "approvalRequired",
+                        "plannedDate",
+                        "acceptanceCriteria",
+                        "description");
+        Set<String> updateFields =
+                Set.of(
+                        "deliverableName",
+                        "deliverableType",
+                        "requiredFlag",
+                        "approvalRequired",
+                        "plannedDate",
+                        "acceptanceCriteria",
+                        "description");
+        if ("DELETE".equals(operation)) {
+            if (item.getAfterJson() != null && !item.getAfterJson().isBlank())
+                throw new ServiceException("删除交付物要求不能填写变更后内容");
+            validateDeliverableDelete(requireDeliverable(projectId, item.getTargetId()));
+            return;
+        }
+        Set<String> allowed = "ADD".equals(operation) ? addFields : updateFields;
+        if (after.isEmpty() || !allowed.containsAll(after.keySet()))
+            throw new ServiceException("交付物要求变更包含未开放字段");
+        if (after.containsKey("workPackageName") && !after.containsKey("workPackageId"))
+            throw new ServiceException("工作包显示名称不能独立变更");
+        try {
+            ProjectDeliverable requested =
+                    objectMapper.convertValue(after, ProjectDeliverable.class);
+            requested.setProjectId(projectId);
+            if ("ADD".equals(operation)) {
+                validateDeliverableFields(requested);
+                return;
+            }
+            ProjectDeliverable old = requireDeliverable(projectId, item.getTargetId());
+            if (deliverableMapper.countSubmissions(old.getDeliverableId()) > 0
+                    && !Set.of("description").containsAll(after.keySet())) {
+                throw new ServiceException("已有提交记录的交付物要求仅允许修改交付说明");
+            }
+            mergeDeliverable(old, requested);
+            if (after.containsKey("description"))
+                requested.setDescription((String) after.get("description"));
+            validateDeliverableFields(requested);
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException("交付物要求变更字段格式无效");
         }
     }
 
@@ -1374,13 +1434,9 @@ public class ProjectPlanChangeServiceImpl
             ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
         try {
             if ("DELETE".equals(item.getOperationType())) {
-                ProjectDeliverable old = deliverableMapper.selectById(item.getTargetId());
-                if (old == null || !old.getProjectId().equals(change.getProjectId()))
-                    throw new ServiceException("交付物不存在");
-                if (deliverableMapper.countSubmissions(old.getDeliverableId()) > 0
-                        || !"PENDING".equals(old.getStatus())) {
-                    throw new ServiceException("已有提交记录的交付物不能删除");
-                }
+                ProjectDeliverable old =
+                        requireDeliverable(change.getProjectId(), item.getTargetId());
+                validateDeliverableDelete(old);
                 deliverableMapper.deleteByIds(new Long[] {old.getDeliverableId()});
                 return;
             }
@@ -1389,57 +1445,82 @@ public class ProjectPlanChangeServiceImpl
             requested.setProjectId(change.getProjectId());
             requested.setUpdateBy(operator);
             if ("ADD".equals(item.getOperationType())) {
-                ProjectWbsNode wp = wbsMapper.selectById(requested.getWorkPackageId());
-                if (wp == null
-                        || !wp.getProjectId().equals(change.getProjectId())
-                        || !"WORK_PACKAGE".equals(wp.getNodeType())) {
-                    throw new ServiceException("交付物必须归属当前项目的工作包");
-                }
-                if (requested.getDeliverableName() == null
-                        || requested.getDeliverableName().isBlank()) {
-                    throw new ServiceException("新增交付物必须填写名称");
-                }
-                applyDeliverableType(requested);
+                validateDeliverableFields(requested);
                 requested.setCreateBy(operator);
-                if (requested.getStatus() == null) requested.setStatus("PENDING");
+                requested.setStatus("PENDING");
                 deliverableMapper.insert(requested);
                 return;
             }
-            ProjectDeliverable old = deliverableMapper.selectById(item.getTargetId());
-            if (old == null || !old.getProjectId().equals(change.getProjectId()))
-                throw new ServiceException("交付物不存在");
-            if (requested.getWorkPackageId() != null
-                    && !requested.getWorkPackageId().equals(old.getWorkPackageId())) {
-                throw new ServiceException("不支持将已有交付物移动至其他工作包");
+            ProjectDeliverable old = requireDeliverable(change.getProjectId(), item.getTargetId());
+            Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
+            if (deliverableMapper.countSubmissions(old.getDeliverableId()) > 0
+                    && !Set.of("description").containsAll(after.keySet())) {
+                throw new ServiceException("已有提交记录的交付物要求仅允许修改交付说明");
             }
-            requested.setDeliverableId(item.getTargetId());
-            requested.setWorkPackageId(old.getWorkPackageId());
-            if (requested.getDeliverableName() == null)
-                requested.setDeliverableName(old.getDeliverableName());
-            if (requested.getDeliverableType() == null
-                    && requested.getDeliverableTypeId() == null) {
-                requested.setDeliverableType(old.getDeliverableType());
-                requested.setDeliverableTypeId(old.getDeliverableTypeId());
-            }
-            if (requested.getDescription() == null) requested.setDescription(old.getDescription());
-            if (requested.getPlannedDate() == null) requested.setPlannedDate(old.getPlannedDate());
-            if (requested.getAcceptanceCriteria() == null)
-                requested.setAcceptanceCriteria(old.getAcceptanceCriteria());
-            if (requested.getSubmissionMode() == null)
-                requested.setSubmissionMode(old.getSubmissionMode());
-            if (requested.getAllowedExtensions() == null)
-                requested.setAllowedExtensions(old.getAllowedExtensions());
-            if (requested.getRequiredFlag() == null)
-                requested.setRequiredFlag(old.getRequiredFlag());
-            if (requested.getApprovalRequired() == null)
-                requested.setApprovalRequired(old.getApprovalRequired());
-            requested.setStatus(old.getStatus());
-            applyDeliverableType(requested);
+            mergeDeliverable(old, requested);
+            if (after.containsKey("description"))
+                requested.setDescription((String) after.get("description"));
+            validateDeliverableFields(requested);
             deliverableMapper.update(requested);
         } catch (Exception e) {
             if (e instanceof ServiceException) throw (ServiceException) e;
             throw new ServiceException("交付物变更数据无效");
         }
+    }
+
+    private ProjectDeliverable requireDeliverable(Long projectId, Long deliverableId) {
+        ProjectDeliverable deliverable = deliverableMapper.selectById(deliverableId);
+        if (deliverable == null || !projectId.equals(deliverable.getProjectId()))
+            throw new ServiceException("交付物要求不存在或不属于当前项目");
+        return deliverable;
+    }
+
+    private void validateDeliverableDelete(ProjectDeliverable deliverable) {
+        if (deliverableMapper.countSubmissions(deliverable.getDeliverableId()) > 0
+                || !"PENDING".equals(deliverable.getStatus())) {
+            throw new ServiceException("仅待提交且没有提交记录的交付物要求允许删除");
+        }
+    }
+
+    private void validateDeliverableFields(ProjectDeliverable deliverable) {
+        ProjectWbsNode workPackage =
+                requireWorkPackage(deliverable.getProjectId(), deliverable.getWorkPackageId());
+        if (deliverable.getDeliverableName() == null
+                || deliverable.getDeliverableName().isBlank()) {
+            throw new ServiceException("交付物要求必须填写名称");
+        }
+        if (deliverable.getPlannedDate() == null) {
+            throw new ServiceException("交付物要求必须填写计划交付日期");
+        }
+        if (before(deliverable.getPlannedDate(), workPackage.getPlanStartDate())
+                || after(deliverable.getPlannedDate(), workPackage.getPlanEndDate())) {
+            throw new ServiceException("计划交付日期必须在所属工作包周期内");
+        }
+        if (!List.of("0", "1").contains(deliverable.getRequiredFlag())
+                || !List.of("0", "1").contains(deliverable.getApprovalRequired())) {
+            throw new ServiceException("交付规则取值无效");
+        }
+        applyDeliverableType(deliverable);
+    }
+
+    private void mergeDeliverable(ProjectDeliverable old, ProjectDeliverable requested) {
+        requested.setDeliverableId(old.getDeliverableId());
+        requested.setProjectId(old.getProjectId());
+        requested.setWorkPackageId(old.getWorkPackageId());
+        if (requested.getDeliverableName() == null)
+            requested.setDeliverableName(old.getDeliverableName());
+        if (requested.getDeliverableType() == null) {
+            requested.setDeliverableType(old.getDeliverableType());
+            requested.setDeliverableTypeId(old.getDeliverableTypeId());
+        }
+        if (requested.getDescription() == null) requested.setDescription(old.getDescription());
+        if (requested.getPlannedDate() == null) requested.setPlannedDate(old.getPlannedDate());
+        if (requested.getAcceptanceCriteria() == null)
+            requested.setAcceptanceCriteria(old.getAcceptanceCriteria());
+        if (requested.getRequiredFlag() == null) requested.setRequiredFlag(old.getRequiredFlag());
+        if (requested.getApprovalRequired() == null)
+            requested.setApprovalRequired(old.getApprovalRequired());
+        requested.setStatus(old.getStatus());
     }
 
     private void applyDeliverableType(ProjectDeliverable requested) {
