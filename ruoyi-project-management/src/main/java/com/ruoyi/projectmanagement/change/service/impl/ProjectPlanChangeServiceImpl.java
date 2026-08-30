@@ -14,12 +14,16 @@ import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableType;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableTypeMapper;
 import com.ruoyi.projectmanagement.issue.mapper.ProjectIssueMapper;
+import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
+import com.ruoyi.projectmanagement.professionalrole.domain.ProfessionalRole;
+import com.ruoyi.projectmanagement.professionalrole.mapper.ProfessionalRoleMapper;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
 import com.ruoyi.projectmanagement.project.mapper.ProjectInfoMapper;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.mapper.ProjectTaskMapper;
 import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
 import com.ruoyi.projectmanagement.team.domain.ProjectMember;
+import com.ruoyi.projectmanagement.team.domain.ProjectRole;
 import com.ruoyi.projectmanagement.team.mapper.ProjectTeamMapper;
 import com.ruoyi.projectmanagement.team.service.IProjectTeamService;
 import com.ruoyi.projectmanagement.wbs.domain.ProjectWbsNode;
@@ -59,6 +63,8 @@ public class ProjectPlanChangeServiceImpl
     private final IProjectTaskService taskService;
     private final IProjectWbsService wbsService;
     private final ProjectCategoryMapper categoryMapper;
+    private final ProjectPersonMapper personMapper;
+    private final ProfessionalRoleMapper professionalRoleMapper;
 
     public ProjectPlanChangeServiceImpl(
             ProjectPlanChangeMapper mapper,
@@ -75,7 +81,9 @@ public class ProjectPlanChangeServiceImpl
             ProjectIssueMapper issueMapper,
             IProjectTaskService taskService,
             IProjectWbsService wbsService,
-            ProjectCategoryMapper categoryMapper) {
+            ProjectCategoryMapper categoryMapper,
+            ProjectPersonMapper personMapper,
+            ProfessionalRoleMapper professionalRoleMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.teamService = teamService;
@@ -91,6 +99,8 @@ public class ProjectPlanChangeServiceImpl
         this.taskService = taskService;
         this.wbsService = wbsService;
         this.categoryMapper = categoryMapper;
+        this.personMapper = personMapper;
+        this.professionalRoleMapper = professionalRoleMapper;
     }
 
     @Override
@@ -670,6 +680,7 @@ public class ProjectPlanChangeServiceImpl
                     if ("TASK".equals(module)) validateTaskItem(projectId, item, after);
                     if ("DELIVERABLE".equals(module))
                         validateDeliverableItem(projectId, item, after);
+                    if ("TEAM".equals(module)) validateTeamItem(projectId, item, after);
                 } catch (Exception e) {
                     if (e instanceof ServiceException) throw (ServiceException) e;
                     throw new ServiceException("变更后内容格式无效");
@@ -681,6 +692,62 @@ public class ProjectPlanChangeServiceImpl
                 validateTaskItem(projectId, item, Map.of());
             if ("DELIVERABLE".equals(module) && "DELETE".equals(operation))
                 validateDeliverableItem(projectId, item, Map.of());
+            if ("TEAM".equals(module) && "DELETE".equals(operation))
+                validateTeamItem(projectId, item, Map.of());
+        }
+    }
+
+    private void validateTeamItem(
+            Long projectId, ProjectPlanChangeItem item, Map<String, Object> after) {
+        String operation = item.getOperationType();
+        Set<String> addFields =
+                Set.of(
+                        "personId",
+                        "personName",
+                        "roleId",
+                        "roleName",
+                        "professionalRoleId",
+                        "professionalRoleName",
+                        "responsibility",
+                        "joinDate",
+                        "remark");
+        Set<String> updateFields =
+                Set.of(
+                        "roleId",
+                        "roleName",
+                        "professionalRoleId",
+                        "professionalRoleName",
+                        "responsibility",
+                        "remark");
+        if ("DELETE".equals(operation)) {
+            if (item.getAfterJson() != null && !item.getAfterJson().isBlank())
+                throw new ServiceException("成员退出不能填写变更后内容");
+            validateTeamExit(requireTeamMember(projectId, item.getTargetId()));
+            return;
+        }
+        Set<String> allowed = "ADD".equals(operation) ? addFields : updateFields;
+        if (after.isEmpty() || !allowed.containsAll(after.keySet()))
+            throw new ServiceException("项目团队变更包含未开放字段");
+        if (after.containsKey("personName") && !after.containsKey("personId"))
+            throw new ServiceException("成员显示名称不能独立变更");
+        if (after.containsKey("roleName") && !after.containsKey("roleId"))
+            throw new ServiceException("项目角色显示名称不能独立变更");
+        if (after.containsKey("professionalRoleName") && !after.containsKey("professionalRoleId"))
+            throw new ServiceException("专业角色显示名称不能独立变更");
+        try {
+            ProjectMember requested = objectMapper.convertValue(after, ProjectMember.class);
+            requested.setProjectId(projectId);
+            if ("ADD".equals(operation)) {
+                validateNewTeamMember(requested);
+                return;
+            }
+            ProjectMember old = requireTeamMember(projectId, item.getTargetId());
+            if ("PROJECT_MANAGER".equals(old.getRoleCode()))
+                throw new ServiceException("项目负责人请通过项目基础信息变更");
+            mergeTeamMember(old, requested);
+            validateTeamMemberFields(requested);
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException("项目团队变更字段格式无效");
         }
     }
 
@@ -1547,13 +1614,8 @@ public class ProjectPlanChangeServiceImpl
     private void applyTeam(ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
         try {
             if ("DELETE".equals(item.getOperationType())) {
-                ProjectMember old = teamMapper.selectMemberById(item.getTargetId());
-                if (old == null || !old.getProjectId().equals(change.getProjectId()))
-                    throw new ServiceException("项目成员不存在");
-                if ("PROJECT_MANAGER".equals(old.getRoleCode()))
-                    throw new ServiceException("项目负责人不能退出团队");
-                if (teamMapper.countIncompleteTasks(change.getProjectId(), old.getPersonId()) > 0)
-                    throw new ServiceException("成员仍有未完成任务，不能退出");
+                ProjectMember old = requireTeamMember(change.getProjectId(), item.getTargetId());
+                validateTeamExit(old);
                 old.setUpdateBy(operator);
                 old.setExitDate(java.time.LocalDate.now());
                 teamMapper.exitMember(old);
@@ -1562,31 +1624,17 @@ public class ProjectPlanChangeServiceImpl
             ProjectMember n = objectMapper.readValue(item.getAfterJson(), ProjectMember.class);
             n.setProjectId(change.getProjectId());
             if ("ADD".equals(item.getOperationType())) {
-                if (n.getPersonId() == null || n.getRoleId() == null)
-                    throw new ServiceException("新增项目成员必须指定用户和项目角色");
-                if (!validRole(change.getProjectId(), n.getRoleId()))
-                    throw new ServiceException("项目角色不存在或不属于当前项目");
-                if (teamMapper.selectActiveMember(change.getProjectId(), n.getPersonId()) != null)
-                    throw new ServiceException("该用户已经是项目活动成员");
+                validateNewTeamMember(n);
                 n.setStatus("ACTIVE");
                 n.setCreateBy(operator);
                 if (n.getJoinDate() == null) n.setJoinDate(java.time.LocalDate.now());
                 teamMapper.insertMember(n);
             } else {
-                ProjectMember old = teamMapper.selectMemberById(item.getTargetId());
-                if (old == null || !old.getProjectId().equals(change.getProjectId()))
-                    throw new ServiceException("项目成员不存在");
-                if (n.getPersonId() != null && !n.getPersonId().equals(old.getPersonId()))
-                    throw new ServiceException("不支持通过变更单替换既有成员");
-                if (n.getRoleId() != null && !validRole(change.getProjectId(), n.getRoleId()))
-                    throw new ServiceException("项目角色不存在或不属于当前项目");
-                n.setMemberId(item.getTargetId());
-                n.setPersonId(old.getPersonId());
-                if (n.getProfessionalRoleId() == null)
-                    n.setProfessionalRoleId(old.getProfessionalRoleId());
-                if (n.getSpecialtyRole() == null) n.setSpecialtyRole(old.getSpecialtyRole());
-                if (n.getResponsibility() == null) n.setResponsibility(old.getResponsibility());
-                if (n.getRemark() == null) n.setRemark(old.getRemark());
+                ProjectMember old = requireTeamMember(change.getProjectId(), item.getTargetId());
+                if ("PROJECT_MANAGER".equals(old.getRoleCode()))
+                    throw new ServiceException("项目负责人请通过项目基础信息变更");
+                mergeTeamMember(old, n);
+                validateTeamMemberFields(n);
                 n.setUpdateBy(operator);
                 teamMapper.updateMember(n);
             }
@@ -1594,6 +1642,59 @@ public class ProjectPlanChangeServiceImpl
             if (e instanceof ServiceException) throw (ServiceException) e;
             throw new ServiceException("项目团队变更数据无效");
         }
+    }
+
+    private ProjectMember requireTeamMember(Long projectId, Long memberId) {
+        ProjectMember member = teamMapper.selectMemberById(memberId);
+        if (member == null || !projectId.equals(member.getProjectId()))
+            throw new ServiceException("项目成员不存在或不属于当前项目");
+        if (!"ACTIVE".equals(member.getStatus())) throw new ServiceException("已退出成员不允许再次变更");
+        return member;
+    }
+
+    private void validateNewTeamMember(ProjectMember member) {
+        if (member.getPersonId() == null
+                || personMapper.selectProjectPersonById(member.getPersonId()) == null) {
+            throw new ServiceException("新增项目成员必须选择有效用户");
+        }
+        if (teamMapper.selectActiveMember(member.getProjectId(), member.getPersonId()) != null)
+            throw new ServiceException("该用户已经是项目活动成员");
+        validateTeamMemberFields(member);
+    }
+
+    private void validateTeamMemberFields(ProjectMember member) {
+        if (member.getRoleId() == null || !validRole(member.getProjectId(), member.getRoleId()))
+            throw new ServiceException("项目角色不存在或不属于当前项目");
+        ProjectRole projectRole = teamMapper.selectRoleById(member.getRoleId());
+        if ("PROJECT_MANAGER".equals(projectRole.getRoleCode()))
+            throw new ServiceException("项目负责人请通过项目基础信息变更");
+        if (member.getProfessionalRoleId() == null) throw new ServiceException("请选择专业角色");
+        ProfessionalRole role = professionalRoleMapper.selectById(member.getProfessionalRoleId());
+        if (role == null || !"0".equals(role.getStatus()))
+            throw new ServiceException("专业角色不存在或已停用");
+        member.setProfessionalRoleCode(role.getRoleCode());
+        member.setProfessionalRoleName(role.getRoleName());
+        member.setSpecialtyRole(role.getRoleName());
+    }
+
+    private void validateTeamExit(ProjectMember member) {
+        if ("PROJECT_MANAGER".equals(member.getRoleCode()))
+            throw new ServiceException("项目负责人不能退出团队，请先变更项目负责人");
+        int count = teamMapper.countIncompleteTasks(member.getProjectId(), member.getPersonId());
+        if (count > 0) throw new ServiceException("该成员仍负责" + count + "项未完成任务，请先转交任务");
+    }
+
+    private void mergeTeamMember(ProjectMember old, ProjectMember requested) {
+        requested.setMemberId(old.getMemberId());
+        requested.setProjectId(old.getProjectId());
+        requested.setPersonId(old.getPersonId());
+        if (requested.getRoleId() == null) requested.setRoleId(old.getRoleId());
+        if (requested.getProfessionalRoleId() == null)
+            requested.setProfessionalRoleId(old.getProfessionalRoleId());
+        if (requested.getResponsibility() == null)
+            requested.setResponsibility(old.getResponsibility());
+        if (requested.getRemark() == null) requested.setRemark(old.getRemark());
+        requested.setStatus(old.getStatus());
     }
 
     private void createNextBaseline(
