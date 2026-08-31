@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.costcategory.mapper.CostCategoryMapper">
+
+    <resultMap id="costCategory" type="CostCategory">
+        <id property="costCategoryId" column="cost_category_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="categoryCode" column="category_code"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="levelNo" column="level_no"/>
+        <result property="allowManualEntry" column="allow_manual_entry"/>
+        <result property="financeAccountCode" column="finance_account_code"/>
+        <result property="financeAccountName" column="finance_account_name"/>
+        <result property="systemFlag" column="system_flag"/>
+        <result property="status" column="status"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="description" column="description"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="columns">
+        cost_category_id, parent_id, ancestors, category_code, category_name, level_no,
+        allow_manual_entry, finance_account_code, finance_account_name, system_flag,
+        status, sort_order, description, create_by, create_time, update_by, update_time
+    </sql>
+
+    <select id="selectList" resultMap="costCategory">
+        select <include refid="columns"/> from pm_cost_category
+        order by parent_id, sort_order, cost_category_id
+    </select>
+
+    <select id="selectById" resultMap="costCategory">
+        select <include refid="columns"/> from pm_cost_category
+        where cost_category_id = #{id}
+    </select>
+
+    <select id="selectByCode" resultMap="costCategory">
+        select <include refid="columns"/> from pm_cost_category
+        where upper(category_code) = upper(#{code}) limit 1
+    </select>
+
+    <select id="countSameName" resultType="int">
+        select count(*) from pm_cost_category
+        where parent_id = #{parentId}
+          and category_name = #{categoryName}
+        <if test="excludeId != null">and cost_category_id != #{excludeId}</if>
+    </select>
+
+    <select id="countChildren" resultType="int">
+        select count(*) from pm_cost_category where parent_id = #{id}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="costCategoryId">
+        insert into pm_cost_category(
+            parent_id, ancestors, category_code, category_name, level_no, allow_manual_entry,
+            finance_account_code, finance_account_name, system_flag, status, sort_order,
+            description, create_by, create_time
+        ) values (
+            #{parentId}, #{ancestors}, #{categoryCode}, #{categoryName}, #{levelNo},
+            #{allowManualEntry}, #{financeAccountCode}, #{financeAccountName}, #{systemFlag},
+            #{status}, #{sortOrder}, #{description}, #{createBy}, sysdate()
+        )
+    </insert>
+
+    <update id="update">
+        update pm_cost_category
+        set parent_id = #{parentId}, ancestors = #{ancestors}, category_name = #{categoryName},
+            level_no = #{levelNo}, allow_manual_entry = #{allowManualEntry},
+            finance_account_code = #{financeAccountCode}, finance_account_name = #{financeAccountName},
+            status = #{status}, sort_order = #{sortOrder}, description = #{description},
+            update_by = #{updateBy}, update_time = sysdate()
+        where cost_category_id = #{costCategoryId}
+    </update>
+
+    <update id="updateHierarchy">
+        update pm_cost_category
+        set ancestors = #{ancestors}, level_no = #{levelNo}, update_by = #{updateBy},
+            update_time = sysdate()
+        where cost_category_id = #{costCategoryId}
+    </update>
+
+    <update id="updateStatus">
+        update pm_cost_category
+        set status = #{status}, update_by = #{operator}, update_time = sysdate()
+        where cost_category_id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        delete from pm_cost_category where cost_category_id = #{id} and system_flag = '0'
+    </delete>
+</mapper>
