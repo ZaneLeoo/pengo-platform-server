@@ -66,6 +66,25 @@ public class ProjectPlanChangeServiceImpl
     private final ProjectPersonMapper personMapper;
     private final ProfessionalRoleMapper professionalRoleMapper;
 
+    /** Fields maintained by the runtime rather than by a plan baseline change. */
+    private static final Set<String> BASELINE_COMPARE_IGNORED_FIELDS =
+            Set.of(
+                    "createBy",
+                    "createTime",
+                    "updateBy",
+                    "updateTime",
+                    "status",
+                    "progress",
+                    "remark",
+                    "actualStartDate",
+                    "actualEndDate",
+                    "childCount",
+                    "taskCount",
+                    "deliverableCount",
+                    "completedTaskCount",
+                    "overdueTaskCount",
+                    "allowedExtensions");
+
     public ProjectPlanChangeServiceImpl(
             ProjectPlanChangeMapper mapper,
             ProjectInfoMapper projectMapper,
@@ -196,10 +215,12 @@ public class ProjectPlanChangeServiceImpl
     private Map<String, Object> compareSingle(Object before, Object after) {
         Map<String, Object> result = new LinkedHashMap<>();
         List<Object> modified = new ArrayList<>();
-        if (before != null && after != null && !before.equals(after)) {
+        Map<String, Object> beforeValue = baselineCompareValue(before);
+        Map<String, Object> afterValue = baselineCompareValue(after);
+        if (before != null && after != null && !beforeValue.equals(afterValue)) {
             Map<String, Object> row = new LinkedHashMap<>();
-            row.put("before", before);
-            row.put("after", after);
+            row.put("before", beforeValue);
+            row.put("after", afterValue);
             modified.add(row);
         }
         result.put("added", List.of());
@@ -218,22 +239,37 @@ public class ProjectPlanChangeServiceImpl
                 modified = new ArrayList<>();
         right.forEach(
                 (id, value) -> {
-                    if (!left.containsKey(id)) added.add(value);
-                    else if (!value.equals(left.get(id))) {
+                    Map<String, Object> afterValue = baselineCompareValue(value);
+                    if (!left.containsKey(id)) added.add(afterValue);
+                    else if (!afterValue.equals(baselineCompareValue(left.get(id)))) {
                         Map<String, Object> row = new LinkedHashMap<>();
-                        row.put("name", value.get(nameKey));
-                        row.put("before", left.get(id));
-                        row.put("after", value);
+                        row.put("name", afterValue.get(nameKey));
+                        row.put("before", baselineCompareValue(left.get(id)));
+                        row.put("after", afterValue);
                         modified.add(row);
                     }
                 });
         left.forEach(
                 (id, value) -> {
-                    if (!right.containsKey(id)) removed.add(value);
+                    if (!right.containsKey(id)) removed.add(baselineCompareValue(value));
                 });
         result.put("added", added);
         result.put("removed", removed);
         result.put("modified", modified);
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> baselineCompareValue(Object value) {
+        if (!(value instanceof Map<?, ?> source)) return Map.of();
+        Map<String, Object> result = new LinkedHashMap<>();
+        source.forEach(
+                (key, fieldValue) -> {
+                    String field = String.valueOf(key);
+                    if (!BASELINE_COMPARE_IGNORED_FIELDS.contains(field)) {
+                        result.put(field, fieldValue);
+                    }
+                });
         return result;
     }
 
@@ -379,6 +415,12 @@ public class ProjectPlanChangeServiceImpl
         for (ProjectPlanChangeItem i :
                 change.getItems() == null ? List.<ProjectPlanChangeItem>of() : change.getItems()) {
             i.setChangeId(change.getChangeId());
+            if (i.getBeforeJson() != null && i.getBeforeJson().isBlank()) {
+                i.setBeforeJson(null);
+            }
+            if (i.getAfterJson() != null && i.getAfterJson().isBlank()) {
+                i.setAfterJson(null);
+            }
             mapper.insertItem(i);
         }
         for (ProjectPlanChangeAttachment a :
@@ -1203,6 +1245,8 @@ public class ProjectPlanChangeServiceImpl
                 requested.setCreateBy(operator);
                 if (requested.getStatus() == null) requested.setStatus("NOT_STARTED");
                 if (requested.getProgress() == null) requested.setProgress(0);
+                if (requested.getDeliverableRequired() == null)
+                    requested.setDeliverableRequired("0");
                 if (requested.getSortOrder() == null) requested.setSortOrder(siblings.size());
                 wbsMapper.insert(requested);
                 return;
@@ -1495,6 +1539,7 @@ public class ProjectPlanChangeServiceImpl
         if (requested.getPriority() == null) requested.setPriority(old.getPriority());
         requested.setStatus(old.getStatus());
         requested.setProgress(old.getProgress());
+        requested.setSortOrder(old.getSortOrder());
     }
 
     private void applyDeliverable(
