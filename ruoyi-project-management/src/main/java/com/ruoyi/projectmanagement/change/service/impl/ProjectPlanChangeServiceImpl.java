@@ -3,12 +3,16 @@ package com.ruoyi.projectmanagement.change.service.impl;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine;
+import com.ruoyi.projectmanagement.budget.mapper.ProjectBudgetMapper;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
 import com.ruoyi.projectmanagement.change.domain.*;
 import com.ruoyi.projectmanagement.change.mapper.ProjectPlanChangeMapper;
 import com.ruoyi.projectmanagement.change.service.IProjectPlanChangeService;
 import com.ruoyi.projectmanagement.change.service.ProjectPlanChangeAuditService;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
+import com.ruoyi.projectmanagement.costcategory.domain.CostCategory;
+import com.ruoyi.projectmanagement.costcategory.service.ICostCategoryService;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableType;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
@@ -31,6 +35,8 @@ import com.ruoyi.projectmanagement.wbs.mapper.ProjectWbsMapper;
 import com.ruoyi.projectmanagement.wbs.service.IProjectWbsService;
 import com.ruoyi.projectmanagement.workflow.service.IWorkflowService;
 import com.ruoyi.projectmanagement.workflow.service.WorkflowBusinessCallback;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -65,6 +71,8 @@ public class ProjectPlanChangeServiceImpl
     private final ProjectCategoryMapper categoryMapper;
     private final ProjectPersonMapper personMapper;
     private final ProfessionalRoleMapper professionalRoleMapper;
+    private final ProjectBudgetMapper budgetMapper;
+    private final ICostCategoryService costCategoryService;
 
     /** Fields maintained by the runtime rather than by a plan baseline change. */
     private static final Set<String> BASELINE_COMPARE_IGNORED_FIELDS =
@@ -102,7 +110,9 @@ public class ProjectPlanChangeServiceImpl
             IProjectWbsService wbsService,
             ProjectCategoryMapper categoryMapper,
             ProjectPersonMapper personMapper,
-            ProfessionalRoleMapper professionalRoleMapper) {
+            ProfessionalRoleMapper professionalRoleMapper,
+            ProjectBudgetMapper budgetMapper,
+            ICostCategoryService costCategoryService) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.teamService = teamService;
@@ -120,6 +130,8 @@ public class ProjectPlanChangeServiceImpl
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
         this.professionalRoleMapper = professionalRoleMapper;
+        this.budgetMapper = budgetMapper;
+        this.costCategoryService = costCategoryService;
     }
 
     @Override
@@ -152,6 +164,7 @@ public class ProjectPlanChangeServiceImpl
             teamFilter.setProjectId(projectId);
             teamFilter.setStatus("ACTIVE");
             snapshot.put("team", teamService.members(teamFilter));
+            snapshot.put("projectBudget", budgetMapper.selectByProjectId(projectId));
             baseline.setSnapshotJson(objectMapper.writeValueAsString(snapshot));
             mapper.insertBaseline(baseline);
         } catch (Exception e) {
@@ -188,6 +201,13 @@ public class ProjectPlanChangeServiceImpl
             result.put("toVersion", to.getVersionNo());
             Map<String, Object> modules = new LinkedHashMap<>();
             modules.put("PROJECT_INFO", compareSingle(left.get("project"), right.get("project")));
+            modules.put(
+                    "PROJECT_BUDGET",
+                    compareCollection(
+                            left.get("projectBudget"),
+                            right.get("projectBudget"),
+                            "costCategoryId",
+                            "categoryPath"));
             modules.put(
                     "WBS",
                     compareCollection(left.get("wbs"), right.get("wbs"), "wbsId", "wbsName"));
@@ -446,6 +466,7 @@ public class ProjectPlanChangeServiceImpl
         List<ProjectPlanChangeItem> items = mapper.selectItems(id);
         if (items.isEmpty()) throw new ServiceException("请至少添加一条变更项");
         validateItems(c.getProjectId(), items);
+        validateFinalBudget(c.getProjectId(), items);
         validateAttachments(mapper.selectAttachments(id));
         try {
             Map<String, Object> snapshot = new LinkedHashMap<>();
@@ -525,6 +546,7 @@ public class ProjectPlanChangeServiceImpl
             }
             List<ProjectPlanChangeItem> items = mapper.selectItems(id);
             validateItems(c.getProjectId(), items);
+            validateFinalBudget(c.getProjectId(), items);
             for (ProjectPlanChangeItem item : orderedApplyItems(items)) applyItem(c, item, op);
             refreshAggregates(c.getProjectId());
             createNextBaseline(c.getProjectId(), id, op, current.getVersionNo() + 1);
@@ -693,12 +715,15 @@ public class ProjectPlanChangeServiceImpl
             if (item == null || item.getModuleType() == null || item.getOperationType() == null)
                 throw new ServiceException("变更项缺少模块或操作类型");
             String module = item.getModuleType(), operation = item.getOperationType();
-            if (!List.of("PROJECT_INFO", "WBS", "TASK", "DELIVERABLE", "TEAM").contains(module))
-                throw new ServiceException("变更模块不受支持");
+            if (!List.of("PROJECT_INFO", "PROJECT_BUDGET", "WBS", "TASK", "DELIVERABLE", "TEAM")
+                    .contains(module)) throw new ServiceException("变更模块不受支持");
             if (!List.of("ADD", "UPDATE", "DELETE").contains(operation))
                 throw new ServiceException("变更项操作类型无效");
             if ("PROJECT_INFO".equals(module) && !"UPDATE".equals(operation))
                 throw new ServiceException("项目基础信息仅支持修改");
+            if ("PROJECT_BUDGET".equals(module)
+                    && "PROJECT_BUDGET_HEADER".equals(item.getTargetType())
+                    && !"UPDATE".equals(operation)) throw new ServiceException("项目预算头仅支持修改");
             if (item.getTargetType() == null || item.getTargetType().isBlank())
                 throw new ServiceException("变更项缺少目标类型");
             if (!"ADD".equals(operation)
@@ -718,6 +743,7 @@ public class ProjectPlanChangeServiceImpl
                     Map<String, Object> after =
                             objectMapper.readValue(item.getAfterJson(), Map.class);
                     if ("PROJECT_INFO".equals(module)) validateProjectInfoAfter(after);
+                    if ("PROJECT_BUDGET".equals(module)) validateBudgetItem(projectId, item, after);
                     if ("WBS".equals(module)) validateWbsItem(projectId, item, after);
                     if ("TASK".equals(module)) validateTaskItem(projectId, item, after);
                     if ("DELIVERABLE".equals(module))
@@ -736,7 +762,157 @@ public class ProjectPlanChangeServiceImpl
                 validateDeliverableItem(projectId, item, Map.of());
             if ("TEAM".equals(module) && "DELETE".equals(operation))
                 validateTeamItem(projectId, item, Map.of());
+            if ("PROJECT_BUDGET".equals(module) && "DELETE".equals(operation))
+                validateBudgetItem(projectId, item, Map.of());
         }
+    }
+
+    private void validateBudgetItem(
+            Long projectId, ProjectPlanChangeItem item, Map<String, Object> after) {
+        String operation = item.getOperationType();
+        if ("PROJECT_BUDGET_HEADER".equals(item.getTargetType())) {
+            if (!"UPDATE".equals(operation) || after.size() != 1)
+                throw new ServiceException("项目预算头一次只能修改一个字段");
+            String field = after.keySet().iterator().next();
+            if (!Set.of("budgetRequired", "budgetAmount", "budgetDescription").contains(field))
+                throw new ServiceException("项目预算头包含未开放字段");
+            if ("budgetRequired".equals(field)
+                    && !Set.of("0", "1").contains(String.valueOf(after.get(field))))
+                throw new ServiceException("是否需要预算仅支持是或否");
+            if ("budgetAmount".equals(field)) budgetAmount(after.get(field), "预算总额");
+            return;
+        }
+        if (!"PROJECT_BUDGET_LINE".equals(item.getTargetType()))
+            throw new ServiceException("项目预算变更对象类型无效");
+        if ("DELETE".equals(operation)) {
+            if (item.getAfterJson() != null && !item.getAfterJson().isBlank())
+                throw new ServiceException("删除分类预算不能填写变更后内容");
+            requireBudgetLine(projectId, item.getTargetId());
+            return;
+        }
+        Set<String> allowed =
+                "ADD".equals(operation)
+                        ? Set.of("costCategoryId", "budgetAmount", "estimationBasis")
+                        : Set.of("budgetAmount", "estimationBasis");
+        if (after.isEmpty() || !allowed.containsAll(after.keySet()))
+            throw new ServiceException("分类预算变更包含未开放字段");
+        if ("ADD".equals(operation)) {
+            Long categoryId = numberValue(after.get("costCategoryId"), "成本类别");
+            requireActiveBudgetCategory(categoryId);
+            if (budgetMapper.countByProjectAndCategory(projectId, categoryId, null) > 0)
+                throw new ServiceException("同一成本类别只能存在一条项目预算");
+        } else {
+            requireBudgetLine(projectId, item.getTargetId());
+        }
+        if (after.containsKey("budgetAmount")) budgetAmount(after.get("budgetAmount"), "分类预算金额");
+        if (after.containsKey("estimationBasis")
+                && (after.get("estimationBasis") == null
+                        || String.valueOf(after.get("estimationBasis")).trim().isEmpty()))
+            throw new ServiceException("测算依据不能为空");
+    }
+
+    private BigDecimal budgetAmount(Object value, String label) {
+        try {
+            BigDecimal amount = new BigDecimal(String.valueOf(value));
+            if (amount.signum() <= 0 || amount.scale() > 2) throw new NumberFormatException();
+            return amount.setScale(2, RoundingMode.UNNECESSARY);
+        } catch (Exception e) {
+            throw new ServiceException(label + "必须大于0且最多保留两位小数");
+        }
+    }
+
+    /** Returns the option only when it is an effective leaf, including its ancestors' status. */
+    private CostCategory requireActiveBudgetCategory(Long categoryId) {
+        return costCategoryService.options().stream()
+                .filter(category -> categoryId.equals(category.getCostCategoryId()))
+                .findFirst()
+                .orElseThrow(() -> new ServiceException("新增分类预算只能选择有效末级成本类别"));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateFinalBudget(Long projectId, List<ProjectPlanChangeItem> items) {
+        ProjectInfo header = requireProject(projectId);
+        Map<Long, ProjectBudgetLine> byLineId = new LinkedHashMap<>();
+        Map<Long, ProjectBudgetLine> byCategoryId = new LinkedHashMap<>();
+        for (ProjectBudgetLine line : budgetMapper.selectByProjectId(projectId)) {
+            byLineId.put(line.getBudgetLineId(), line);
+            byCategoryId.put(line.getCostCategoryId(), line);
+        }
+        for (ProjectPlanChangeItem item : items) {
+            if (!"PROJECT_BUDGET".equals(item.getModuleType())) continue;
+            try {
+                Map<String, Object> after =
+                        item.getAfterJson() == null
+                                ? Map.of()
+                                : objectMapper.readValue(item.getAfterJson(), Map.class);
+                if ("PROJECT_BUDGET_HEADER".equals(item.getTargetType())) {
+                    String field = after.keySet().iterator().next();
+                    Object value = after.get(field);
+                    if ("budgetRequired".equals(field)) {
+                        header.setBudgetRequired(String.valueOf(value));
+                        if ("0".equals(header.getBudgetRequired())) {
+                            header.setBudgetAmount(null);
+                            header.setBudgetDescription(null);
+                        }
+                    }
+                    if ("budgetAmount".equals(field))
+                        header.setBudgetAmount(budgetAmount(value, "预算总额"));
+                    if ("budgetDescription".equals(field))
+                        header.setBudgetDescription(value == null ? null : String.valueOf(value));
+                    continue;
+                }
+                if ("ADD".equals(item.getOperationType())) {
+                    Long categoryId = numberValue(after.get("costCategoryId"), "成本类别");
+                    if (byCategoryId.containsKey(categoryId))
+                        throw new ServiceException("分类预算成本类别重复");
+                    ProjectBudgetLine line = new ProjectBudgetLine();
+                    line.setCostCategoryId(categoryId);
+                    line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "分类预算金额"));
+                    line.setEstimationBasis(String.valueOf(after.get("estimationBasis")).trim());
+                    byCategoryId.put(categoryId, line);
+                } else {
+                    ProjectBudgetLine persisted = requireBudgetLine(projectId, item.getTargetId());
+                    ProjectBudgetLine line = byLineId.get(persisted.getBudgetLineId());
+                    if (line == null) throw new ServiceException("分类预算不存在或不属于当前项目");
+                    if ("DELETE".equals(item.getOperationType())) {
+                        byCategoryId.remove(line.getCostCategoryId());
+                    } else {
+                        BigDecimal oldAmount = line.getBudgetAmount();
+                        if (after.containsKey("budgetAmount"))
+                            line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "分类预算金额"));
+                        if (after.containsKey("estimationBasis"))
+                            line.setEstimationBasis(
+                                    String.valueOf(after.get("estimationBasis")).trim());
+                        if ("1".equals(line.getCategoryStatus())
+                                && line.getBudgetAmount().compareTo(oldAmount) > 0)
+                            throw new ServiceException("停用成本类别仅允许调减或删除");
+                    }
+                }
+            } catch (Exception e) {
+                if (e instanceof ServiceException) throw (ServiceException) e;
+                throw new ServiceException("项目预算变更内容格式无效");
+            }
+        }
+        if (!"1".equals(header.getBudgetRequired())) {
+            if (!byCategoryId.isEmpty()) throw new ServiceException("取消预算时必须同时删除全部分类预算");
+            return;
+        }
+        if (header.getBudgetAmount() == null || header.getBudgetAmount().signum() <= 0)
+            throw new ServiceException("启用预算时预算总额必须大于0");
+        if (byCategoryId.isEmpty()) throw new ServiceException("启用预算时至少需要一条分类预算");
+        BigDecimal allocated =
+                byCategoryId.values().stream()
+                        .map(ProjectBudgetLine::getBudgetAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (allocated.compareTo(header.getBudgetAmount()) != 0)
+            throw new ServiceException("分类预算合计必须严格等于预算总额");
+    }
+
+    private ProjectBudgetLine requireBudgetLine(Long projectId, Long lineId) {
+        ProjectBudgetLine line = lineId == null ? null : budgetMapper.selectById(lineId);
+        if (line == null || !projectId.equals(line.getProjectId()))
+            throw new ServiceException("分类预算不存在或不属于当前项目");
+        return line;
     }
 
     private void validateTeamItem(
@@ -1005,6 +1181,10 @@ public class ProjectPlanChangeServiceImpl
             applyProjectInfo(change, item, operator);
             return;
         }
+        if ("PROJECT_BUDGET".equals(item.getModuleType())) {
+            applyBudget(change, item, operator);
+            return;
+        }
         if ("WBS".equals(item.getModuleType())) {
             applyWbs(change, item, operator);
             return;
@@ -1055,6 +1235,7 @@ public class ProjectPlanChangeServiceImpl
         String operation = item.getOperationType();
         if ("TEAM".equals(module) && !"DELETE".equals(operation)) return 5;
         if ("PROJECT_INFO".equals(module)) return 10;
+        if ("PROJECT_BUDGET".equals(module)) return 15;
         if ("WBS".equals(module) && !"DELETE".equals(operation)) return 20;
         if ("TASK".equals(module) && !"DELETE".equals(operation)) return 30;
         if ("DELIVERABLE".equals(module) && !"DELETE".equals(operation)) return 40;
@@ -1128,9 +1309,6 @@ public class ProjectPlanChangeServiceImpl
                 case "outOfScope" -> old.setOutOfScope(String.valueOf(value));
                 case "expectedOutcome" -> old.setExpectedOutcome(String.valueOf(value));
                 case "resourceRequirement" -> old.setResourceRequirement(String.valueOf(value));
-                case "budgetRequired" -> old.setBudgetRequired(String.valueOf(value));
-                case "budgetAmount" ->
-                        old.setBudgetAmount(new java.math.BigDecimal(String.valueOf(value)));
                 case "majorRisk" -> old.setMajorRisk(String.valueOf(value));
                 case "technicalFeasibility" -> old.setTechnicalFeasibility(String.valueOf(value));
                 case "resourceFeasibility" -> old.setResourceFeasibility(String.valueOf(value));
@@ -1168,8 +1346,6 @@ public class ProjectPlanChangeServiceImpl
                                 "outOfScope",
                                 "expectedOutcome",
                                 "resourceRequirement",
-                                "budgetRequired",
-                                "budgetAmount",
                                 "majorRisk",
                                 "technicalFeasibility",
                                 "resourceFeasibility",
@@ -1178,9 +1354,70 @@ public class ProjectPlanChangeServiceImpl
                 || after.get(field) == null
                 || String.valueOf(after.get(field)).trim().isEmpty())
             throw new ServiceException("项目基础信息变更字段或新值无效");
-        if ("budgetRequired".equals(field)
-                && !Set.of("0", "1").contains(String.valueOf(after.get(field))))
-            throw new ServiceException("是否需要预算仅支持是或否");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void applyBudget(
+            ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
+        try {
+            Map<String, Object> after =
+                    item.getAfterJson() == null
+                            ? Map.of()
+                            : objectMapper.readValue(item.getAfterJson(), Map.class);
+            validateBudgetItem(change.getProjectId(), item, after);
+            if ("PROJECT_BUDGET_HEADER".equals(item.getTargetType())) {
+                ProjectInfo project = requireProject(change.getProjectId());
+                String field = after.keySet().iterator().next();
+                Object value = after.get(field);
+                if ("budgetRequired".equals(field)) {
+                    project.setBudgetRequired(String.valueOf(value));
+                    if ("0".equals(project.getBudgetRequired())) {
+                        project.setBudgetAmount(null);
+                        project.setBudgetDescription(null);
+                    }
+                }
+                if ("budgetAmount".equals(field))
+                    project.setBudgetAmount(budgetAmount(value, "预算总额"));
+                if ("budgetDescription".equals(field))
+                    project.setBudgetDescription(value == null ? null : String.valueOf(value));
+                project.setUpdateBy(operator);
+                projectMapper.updateBudgetHeader(project);
+                return;
+            }
+            if ("ADD".equals(item.getOperationType())) {
+                Long categoryId = numberValue(after.get("costCategoryId"), "成本类别");
+                CostCategory category = requireActiveBudgetCategory(categoryId);
+                ProjectBudgetLine line = new ProjectBudgetLine();
+                line.setProjectId(change.getProjectId());
+                line.setCostCategoryId(categoryId);
+                line.setCategoryCode(category.getCategoryCode());
+                line.setCategoryName(category.getCategoryName());
+                line.setCategoryPath(
+                        category.getFullPath() == null
+                                ? category.getCategoryName()
+                                : category.getFullPath());
+                line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "分类预算金额"));
+                line.setEstimationBasis(String.valueOf(after.get("estimationBasis")).trim());
+                line.setSortOrder(item.getSortOrder());
+                line.setCreateBy(operator);
+                budgetMapper.insert(line);
+                return;
+            }
+            ProjectBudgetLine line = requireBudgetLine(change.getProjectId(), item.getTargetId());
+            if ("DELETE".equals(item.getOperationType())) {
+                budgetMapper.deleteById(line.getBudgetLineId());
+                return;
+            }
+            if (after.containsKey("budgetAmount"))
+                line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "分类预算金额"));
+            if (after.containsKey("estimationBasis"))
+                line.setEstimationBasis(String.valueOf(after.get("estimationBasis")).trim());
+            line.setUpdateBy(operator);
+            budgetMapper.update(line);
+        } catch (Exception e) {
+            if (e instanceof ServiceException) throw (ServiceException) e;
+            throw new ServiceException("项目预算变更数据无效");
+        }
     }
 
     private Long numberValue(Object value, String label) {
@@ -1765,6 +2002,7 @@ public class ProjectPlanChangeServiceImpl
             m.setProjectId(projectId);
             m.setStatus("ACTIVE");
             s.put("team", teamService.members(m));
+            s.put("projectBudget", budgetMapper.selectByProjectId(projectId));
             b.setSnapshotJson(objectMapper.writeValueAsString(s));
             mapper.insertBaseline(b);
         } catch (Exception e) {

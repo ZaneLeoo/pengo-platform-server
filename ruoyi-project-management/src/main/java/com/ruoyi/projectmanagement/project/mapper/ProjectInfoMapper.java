@@ -26,6 +26,8 @@ public interface ProjectInfoMapper {
     /** 修改项目基本信息。 */
     int updateProjectInfo(ProjectInfo project);
 
+    int updateBudgetHeader(ProjectInfo project);
+
     /** 批量删除项目。 */
     int deleteProjectInfoByIds(Long[] projectIds);
 

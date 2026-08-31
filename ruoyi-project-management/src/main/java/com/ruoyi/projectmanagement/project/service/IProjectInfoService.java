@@ -1,5 +1,6 @@
 package com.ruoyi.projectmanagement.project.service;
 
+import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetSummary;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
@@ -17,6 +18,8 @@ public interface IProjectInfoService {
 
     /** 根据项目ID查询项目。 */
     ProjectInfo selectProjectInfoById(Long projectId);
+
+    ProjectBudgetSummary projectBudget(Long projectId);
 
     /** 校验项目编码是否唯一。 */
     boolean checkProjectCodeUnique(ProjectInfo project);

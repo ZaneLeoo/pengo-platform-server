@@ -82,10 +82,12 @@
     <insert id="insertProjectInfo" useGeneratedKeys="true" keyProperty="projectId">
         insert into pm_project(project_code, project_name, category_id, manager_user_id, applicant,
                                applicant_dept_id, start_date, end_date, status, progress,
-                               project_goal, remark, create_by, create_time)
+                               project_goal, budget_required, budget_amount, budget_description,
+                               remark, create_by, create_time)
         values(#{projectCode}, #{projectName}, #{categoryId}, #{managerId}, #{applicant},
                #{applicantDeptId}, #{startDate}, #{endDate}, #{status}, #{progress},
-               #{projectGoal}, #{remark}, #{createBy}, sysdate())
+               #{projectGoal}, #{budgetRequired}, #{budgetAmount}, #{budgetDescription},
+               #{remark}, #{createBy}, sysdate())
     </insert>
 
     <update id="updateProjectInfo">
@@ -103,6 +105,12 @@
             feasibility_conclusion = #{feasibilityConclusion}, remark = #{remark},
             update_by = #{updateBy}, update_time = sysdate()
         where project_id = #{projectId}
+    </update>
+
+    <update id="updateBudgetHeader">
+        update pm_project set budget_required=#{budgetRequired}, budget_amount=#{budgetAmount},
+          budget_description=#{budgetDescription}, update_by=#{updateBy}, update_time=sysdate()
+        where project_id=#{projectId}
     </update>
 
     <update id="updateLifecycle">

@@ -115,5 +115,8 @@ WBS 与任务分离的设计原因见 [ADR-0001](../adr/0001-separate-wbs-and-ta
 - [成本类别 PRD](budget-cost/V2_BC_01_COST_CATEGORY_PRD.md)：V2 预算与成本阶段 1 的产品规则。
 - [成本类别技术设计](budget-cost/V2_BC_01_COST_CATEGORY_TECH.md)：阶段 1 的数据、接口与实现约束。
 - [成本类别验收](budget-cost/V2_BC_01_COST_CATEGORY_ACCEPTANCE.md)：阶段 1 的唯一验收清单。
+- [项目分类预算 PRD](budget-cost/V2_BC_02_PROJECT_BUDGET_PRD.md)：V2 预算与成本阶段 2 的产品规则。
+- [项目分类预算技术设计](budget-cost/V2_BC_02_PROJECT_BUDGET_TECH.md)：阶段 2 的数据、接口与实现约束。
+- [项目分类预算验收](budget-cost/V2_BC_02_PROJECT_BUDGET_ACCEPTANCE.md)：阶段 2 的唯一验收清单。
 - [SQL README](../../ruoyi-project-management/sql/README.md)：数据库安装、迁移和危险脚本说明。
 - `docs/adr`：只记录长期影响模型和架构的重要决定。

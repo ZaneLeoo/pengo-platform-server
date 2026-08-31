@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.costcategory.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.projectmanagement.budget.mapper.ProjectBudgetMapper;
 import com.ruoyi.projectmanagement.costcategory.domain.CostCategory;
 import com.ruoyi.projectmanagement.costcategory.domain.CostCategoryUsage;
 import com.ruoyi.projectmanagement.costcategory.mapper.CostCategoryMapper;
@@ -22,9 +23,11 @@ public class CostCategoryServiceImpl implements ICostCategoryService {
 
     private static final int MAX_LEVEL = 3;
     private final CostCategoryMapper mapper;
+    private final ProjectBudgetMapper budgetMapper;
 
-    public CostCategoryServiceImpl(CostCategoryMapper mapper) {
+    public CostCategoryServiceImpl(CostCategoryMapper mapper, ProjectBudgetMapper budgetMapper) {
         this.mapper = mapper;
+        this.budgetMapper = budgetMapper;
     }
 
     @Override
@@ -310,8 +313,7 @@ public class CostCategoryServiceImpl implements ICostCategoryService {
     }
 
     private long referenceCount(Long id) {
-        // Stage 1 has no business reference table. Later budget/cost stages extend this method.
-        return 0L;
+        return budgetMapper.countByCategoryId(id);
     }
 
     private boolean noFilter(CostCategory filter) {

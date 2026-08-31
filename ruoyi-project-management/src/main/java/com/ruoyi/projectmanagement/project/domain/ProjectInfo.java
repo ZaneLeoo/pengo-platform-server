@@ -3,6 +3,7 @@ package com.ruoyi.projectmanagement.project.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -94,6 +96,7 @@ public class ProjectInfo extends BaseEntity {
     private String budgetRequired;
     private BigDecimal budgetAmount;
     private String budgetDescription;
+    private List<ProjectBudgetLine> budgetLines;
     private String majorRisk;
     private String technicalFeasibility;
     private String resourceFeasibility;

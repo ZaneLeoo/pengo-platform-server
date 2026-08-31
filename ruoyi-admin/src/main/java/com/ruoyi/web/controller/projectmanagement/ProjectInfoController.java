@@ -49,6 +49,12 @@ public class ProjectInfoController extends BaseController {
         return success(service.selectProjectInfoById(id));
     }
 
+    /** 查询项目分类预算。 */
+    @GetMapping("/{id}/budget")
+    public AjaxResult budget(@PathVariable Long id) {
+        return success(service.projectBudget(id));
+    }
+
     /** 新增项目申请。 */
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:add')")
     @Log(title = "项目申请", businessType = BusinessType.INSERT)

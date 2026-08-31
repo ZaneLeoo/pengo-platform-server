@@ -2,6 +2,8 @@ package com.ruoyi.projectmanagement.project.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetSummary;
+import com.ruoyi.projectmanagement.budget.service.IProjectBudgetService;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
 import com.ruoyi.projectmanagement.change.service.IProjectPlanChangeService;
 import com.ruoyi.projectmanagement.common.enums.InitiationApprovalStatus;
@@ -60,6 +62,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     private final ObjectMapper objectMapper;
     private final IWorkflowService workflowService;
     private final IProjectPlanChangeService planChangeService;
+    private final IProjectBudgetService budgetService;
 
     public ProjectInfoServiceImpl(
             ProjectInfoMapper projectMapper,
@@ -73,7 +76,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
             ProjectInitiationAttachmentMapper attachmentMapper,
             ObjectMapper objectMapper,
             @Lazy IWorkflowService workflowService,
-            IProjectPlanChangeService planChangeService) {
+            IProjectPlanChangeService planChangeService,
+            IProjectBudgetService budgetService) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -86,6 +90,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         this.objectMapper = objectMapper;
         this.workflowService = workflowService;
         this.planChangeService = planChangeService;
+        this.budgetService = budgetService;
     }
 
     /** 查询项目列表。 */
@@ -97,7 +102,15 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     /** 查询项目详细。 */
     @Override
     public ProjectInfo selectProjectInfoById(Long id) {
-        return projectMapper.selectProjectInfoById(id);
+        ProjectInfo project = projectMapper.selectProjectInfoById(id);
+        if (project != null) project.setBudgetLines(budgetService.lines(id));
+        return project;
+    }
+
+    @Override
+    public ProjectBudgetSummary projectBudget(Long projectId) {
+        requiredProject(projectId);
+        return budgetService.summary(projectId);
     }
 
     /** 校验项目编码是否唯一。 */
@@ -121,6 +134,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         validate(project);
         int rows = projectMapper.insertProjectInfo(project);
         if (rows > 0) {
+            budgetService.replaceDraft(project, project.getBudgetLines(), project.getCreateBy());
             teamService.ensureManager(
                     project.getProjectId(), project.getManagerId(), null, project.getCreateBy());
         }
@@ -149,6 +163,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         project.setPauseReason(old.getPauseReason());
         validate(project);
         int rows = projectMapper.updateProjectInfo(project);
+        if (rows > 0 && project.getBudgetLines() != null) {
+            budgetService.replaceDraft(project, project.getBudgetLines(), project.getUpdateBy());
+        }
         if (rows > 0 && !old.getManagerId().equals(project.getManagerId())) {
             teamService.ensureManager(
                     project.getProjectId(),
@@ -441,9 +458,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         if (!missing.isEmpty()) {
             throw new ServiceException("请先完善立项材料：" + String.join("、", missing));
         }
-        if ("1".equals(project.getBudgetRequired()) && project.getBudgetAmount() == null) {
-            throw new ServiceException("项目需要预算，请填写预算总额");
-        }
+        List<com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine> budgetLines =
+                budgetService.lines(id);
+        budgetService.validateForSubmission(project, budgetLines);
         int version =
                 (project.getInitiationVersion() == null ? 0 : project.getInitiationVersion()) + 1;
         ProjectInitiationApproval approval = new ProjectInitiationApproval();
@@ -464,6 +481,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
                                     "project", project,
                                     "team", team,
                                     "wbsOutlines", plans,
+                                    "budgetLines", budgetLines,
                                     "attachments", attachments)));
         } catch (Exception e) {
             throw new ServiceException("生成立项申请快照失败");

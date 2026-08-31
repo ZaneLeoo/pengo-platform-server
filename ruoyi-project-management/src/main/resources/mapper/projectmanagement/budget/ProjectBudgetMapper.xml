@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.budget.mapper.ProjectBudgetMapper">
+  <resultMap id="BudgetLine" type="ProjectBudgetLine">
+    <id property="budgetLineId" column="budget_line_id"/><result property="projectId" column="project_id"/>
+    <result property="costCategoryId" column="cost_category_id"/><result property="categoryCode" column="category_code"/>
+    <result property="categoryName" column="category_name"/><result property="categoryPath" column="category_path"/>
+    <result property="budgetAmount" column="budget_amount"/><result property="estimationBasis" column="estimation_basis"/>
+    <result property="sortOrder" column="sort_order"/><result property="categoryStatus" column="category_status"/>
+  </resultMap>
+  <select id="selectByProjectId" resultMap="BudgetLine">select b.*,c.status category_status from pm_project_budget_line b left join pm_cost_category c on c.cost_category_id=b.cost_category_id where b.project_id=#{projectId} order by b.sort_order,b.budget_line_id</select>
+  <select id="selectById" resultMap="BudgetLine">select b.*,c.status category_status from pm_project_budget_line b left join pm_cost_category c on c.cost_category_id=b.cost_category_id where b.budget_line_id=#{budgetLineId}</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="budgetLineId">insert into pm_project_budget_line(project_id,cost_category_id,category_code,category_name,category_path,budget_amount,estimation_basis,sort_order,create_by,create_time) values(#{projectId},#{costCategoryId},#{categoryCode},#{categoryName},#{categoryPath},#{budgetAmount},#{estimationBasis},#{sortOrder},#{createBy},sysdate())</insert>
+  <update id="update">update pm_project_budget_line set budget_amount=#{budgetAmount},estimation_basis=#{estimationBasis},sort_order=#{sortOrder},update_by=#{updateBy},update_time=sysdate() where budget_line_id=#{budgetLineId}</update>
+  <delete id="deleteById">delete from pm_project_budget_line where budget_line_id=#{budgetLineId}</delete>
+  <delete id="deleteByProjectId">delete from pm_project_budget_line where project_id=#{projectId}</delete>
+  <select id="countByCategoryId" resultType="long">select count(*) from pm_project_budget_line where cost_category_id=#{costCategoryId}</select>
+  <select id="countByProjectAndCategory" resultType="int">select count(*) from pm_project_budget_line where project_id=#{projectId} and cost_category_id=#{costCategoryId}<if test="excludeId != null"> and budget_line_id != #{excludeId}</if></select>
+</mapper>
