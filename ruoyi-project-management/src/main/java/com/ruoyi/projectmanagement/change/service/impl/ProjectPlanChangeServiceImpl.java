@@ -565,7 +565,9 @@ public class ProjectPlanChangeServiceImpl
             List<ProjectPlanChangeItem> items = mapper.selectItems(id);
             validateItems(c.getProjectId(), items);
             validateFinalBudget(c.getProjectId(), items);
-            for (ProjectPlanChangeItem item : orderedApplyItems(items)) applyItem(c, item, op);
+            Map<Long, Long> appliedWorkPackages = new LinkedHashMap<>();
+            for (ProjectPlanChangeItem item : orderedApplyItems(items))
+                applyItem(c, item, op, appliedWorkPackages);
             refreshAggregates(c.getProjectId());
             createNextBaseline(c.getProjectId(), id, op, current.getVersionNo() + 1);
             c.setStatus("APPLIED");
@@ -729,6 +731,25 @@ public class ProjectPlanChangeServiceImpl
 
     private void validateItems(Long projectId, List<ProjectPlanChangeItem> items) {
         if (items == null || items.isEmpty()) throw new ServiceException("请至少添加一条变更项");
+        Map<Long, ProjectWbsNode> pendingWorkPackages = new LinkedHashMap<>();
+        for (ProjectPlanChangeItem item : items) {
+            if (item == null
+                    || !"WBS".equals(item.getModuleType())
+                    || !"ADD".equals(item.getOperationType())
+                    || item.getAfterJson() == null) continue;
+            try {
+                Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
+                if (!"WORK_PACKAGE".equals(after.get("nodeType"))) continue;
+                if (item.getTargetId() == null)
+                    throw new ServiceException("新增工作包必须设置临时目标标识，供同一变更单新增任务关联");
+                ProjectWbsNode pending = objectMapper.convertValue(after, ProjectWbsNode.class);
+                pendingWorkPackages.put(item.getTargetId(), pending);
+            } catch (ServiceException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new ServiceException("新增工作包变更内容格式无效");
+            }
+        }
         for (ProjectPlanChangeItem item : items) {
             if (item == null || item.getModuleType() == null || item.getOperationType() == null)
                 throw new ServiceException("变更项缺少模块或操作类型");
@@ -772,7 +793,8 @@ public class ProjectPlanChangeServiceImpl
                     if ("WORK_PACKAGE_BUDGET".equals(module))
                         validateWorkPackageBudgetItem(projectId, item, after);
                     if ("WBS".equals(module)) validateWbsItem(projectId, item, after);
-                    if ("TASK".equals(module)) validateTaskItem(projectId, item, after);
+                    if ("TASK".equals(module))
+                        validateTaskItem(projectId, item, after, pendingWorkPackages);
                     if ("DELIVERABLE".equals(module))
                         validateDeliverableItem(projectId, item, after);
                     if ("TEAM".equals(module)) validateTeamItem(projectId, item, after);
@@ -784,7 +806,7 @@ public class ProjectPlanChangeServiceImpl
             if ("WBS".equals(module) && "DELETE".equals(operation))
                 validateWbsItem(projectId, item, Map.of());
             if ("TASK".equals(module) && "DELETE".equals(operation))
-                validateTaskItem(projectId, item, Map.of());
+                validateTaskItem(projectId, item, Map.of(), pendingWorkPackages);
             if ("DELIVERABLE".equals(module) && "DELETE".equals(operation))
                 validateDeliverableItem(projectId, item, Map.of());
             if ("TEAM".equals(module) && "DELETE".equals(operation))
@@ -793,6 +815,29 @@ public class ProjectPlanChangeServiceImpl
                 validateBudgetItem(projectId, item, Map.of());
             if ("WORK_PACKAGE_BUDGET".equals(module) && "DELETE".equals(operation))
                 validateWorkPackageBudgetItem(projectId, item, Map.of());
+        }
+        Map<Long, Boolean> executionLinked = new LinkedHashMap<>();
+        for (ProjectPlanChangeItem item : items) {
+            if (item == null
+                    || !"TASK".equals(item.getModuleType())
+                    || !"ADD".equals(item.getOperationType())
+                    || item.getAfterJson() == null) continue;
+            try {
+                Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
+                Object workPackageId = after.get("workPackageId");
+                if (workPackageId instanceof Number number
+                        && number.longValue() < 0
+                        && "EXECUTION".equals(after.get("taskType"))) {
+                    executionLinked.put(number.longValue(), Boolean.TRUE);
+                }
+            } catch (Exception e) {
+                throw new ServiceException("新增任务变更内容格式无效");
+            }
+        }
+        for (Map.Entry<Long, ProjectWbsNode> entry : pendingWorkPackages.entrySet()) {
+            if (!Boolean.TRUE.equals(executionLinked.get(entry.getKey())))
+                throw new ServiceException(
+                        "新增工作包【" + entry.getValue().getWbsName() + "】必须同时新增至少一条执行任务");
         }
     }
 
@@ -1233,7 +1278,10 @@ public class ProjectPlanChangeServiceImpl
     }
 
     private void validateTaskItem(
-            Long projectId, ProjectPlanChangeItem item, Map<String, Object> after) {
+            Long projectId,
+            ProjectPlanChangeItem item,
+            Map<String, Object> after,
+            Map<Long, ProjectWbsNode> pendingWorkPackages) {
         String operation = item.getOperationType();
         Set<String> addFields =
                 Set.of(
@@ -1275,8 +1323,13 @@ public class ProjectPlanChangeServiceImpl
             ProjectTask requested = objectMapper.convertValue(after, ProjectTask.class);
             requested.setProjectId(projectId);
             if ("ADD".equals(operation)) {
-                ProjectWbsNode workPackage =
-                        requireWorkPackage(projectId, requested.getWorkPackageId());
+                ProjectWbsNode workPackage;
+                if (requested.getWorkPackageId() != null && requested.getWorkPackageId() < 0) {
+                    workPackage = pendingWorkPackages.get(requested.getWorkPackageId());
+                    if (workPackage == null) throw new ServiceException("任务引用的工作包必须在同一变更单中新增");
+                } else {
+                    workPackage = requireWorkPackage(projectId, requested.getWorkPackageId());
+                }
                 validateTaskParent(projectId, requested);
                 validateTaskFields(requested, workPackage);
                 return;
@@ -1376,7 +1429,11 @@ public class ProjectPlanChangeServiceImpl
         }
     }
 
-    private void applyItem(ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
+    private void applyItem(
+            ProjectPlanChange change,
+            ProjectPlanChangeItem item,
+            String operator,
+            Map<Long, Long> appliedWorkPackages) {
         if (item.getModuleType() == null || item.getOperationType() == null)
             throw new ServiceException("变更项缺少模块或操作类型");
         if (!"ADD".equals(item.getOperationType())
@@ -1397,11 +1454,11 @@ public class ProjectPlanChangeServiceImpl
             return;
         }
         if ("WBS".equals(item.getModuleType())) {
-            applyWbs(change, item, operator);
+            applyWbs(change, item, operator, appliedWorkPackages);
             return;
         }
         if ("TASK".equals(item.getModuleType())) {
-            applyTask(change, item, operator);
+            applyTask(change, item, operator, appliedWorkPackages);
             return;
         }
         if ("DELIVERABLE".equals(item.getModuleType())) {
@@ -1716,7 +1773,11 @@ public class ProjectPlanChangeServiceImpl
         }
     }
 
-    private void applyWbs(ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
+    private void applyWbs(
+            ProjectPlanChange change,
+            ProjectPlanChangeItem item,
+            String operator,
+            Map<Long, Long> appliedWorkPackages) {
         try {
             if ("DELETE".equals(item.getOperationType())) {
                 ProjectWbsNode old = requireWbs(change.getProjectId(), item.getTargetId());
@@ -1752,6 +1813,8 @@ public class ProjectPlanChangeServiceImpl
                     requested.setDeliverableRequired("0");
                 if (requested.getSortOrder() == null) requested.setSortOrder(siblings.size());
                 wbsMapper.insert(requested);
+                if (item.getTargetId() != null && item.getTargetId() < 0)
+                    appliedWorkPackages.put(item.getTargetId(), requested.getWbsId());
                 return;
             }
             ProjectWbsNode old = requireWbs(change.getProjectId(), item.getTargetId());
@@ -1894,7 +1957,11 @@ public class ProjectPlanChangeServiceImpl
         requested.setSortOrder(old.getSortOrder());
     }
 
-    private void applyTask(ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
+    private void applyTask(
+            ProjectPlanChange change,
+            ProjectPlanChangeItem item,
+            String operator,
+            Map<Long, Long> appliedWorkPackages) {
         try {
             if ("DELETE".equals(item.getOperationType())) {
                 ProjectTask old = requireTask(change.getProjectId(), item.getTargetId());
@@ -1908,6 +1975,11 @@ public class ProjectPlanChangeServiceImpl
             if ("ADD".equals(item.getOperationType())) {
                 Long parent =
                         requested.getParentTaskId() == null ? 0L : requested.getParentTaskId();
+                if (requested.getWorkPackageId() != null && requested.getWorkPackageId() < 0) {
+                    Long resolved = appliedWorkPackages.get(requested.getWorkPackageId());
+                    if (resolved == null) throw new ServiceException("任务引用的新增工作包尚未应用");
+                    requested.setWorkPackageId(resolved);
+                }
                 ProjectWbsNode wp =
                         requireWorkPackage(change.getProjectId(), requested.getWorkPackageId());
                 if (requested.getTaskName() == null
