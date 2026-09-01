@@ -10,6 +10,10 @@
     <result property="categoryPath" column="category_path"/><result property="categoryStatus" column="category_status"/>
     <result property="actualAmount" column="actual_amount"/><result property="occurDate" column="occur_date"/>
     <result property="description" column="description"/><result property="correctionNo" column="correction_no"/>
+    <result property="sourceType" column="source_type"/><result property="sourceLineId" column="source_line_id"/>
+    <result property="sourceDocumentNo" column="source_document_no"/><result property="sourceLineNo" column="source_line_no"/>
+    <result property="costStatus" column="cost_status"/><result property="reverseReason" column="reverse_reason"/>
+    <result property="reversedBy" column="reversed_by"/><result property="reversedTime" column="reversed_time"/>
     <result property="createBy" column="create_by"/><result property="createTime" column="create_time"/>
     <result property="updateBy" column="update_by"/><result property="updateTime" column="update_time"/>
   </resultMap>
@@ -34,9 +38,9 @@
   </select>
   <insert id="insert" useGeneratedKeys="true" keyProperty="actualCostId">
     insert into pm_project_actual_cost(project_id,work_package_id,cost_category_id,category_code,category_name,
-      category_path,actual_amount,occur_date,description,correction_no,create_by,create_time)
+      category_path,actual_amount,occur_date,description,correction_no,source_type,source_line_id,source_document_no,source_line_no,cost_status,create_by,create_time)
     values(#{projectId},#{workPackageId},#{costCategoryId},#{categoryCode},#{categoryName},#{categoryPath},
-      #{actualAmount},#{occurDate},#{description},0,#{createBy},sysdate())
+      #{actualAmount},#{occurDate},#{description},0,coalesce(#{sourceType},'MANUAL'),#{sourceLineId},#{sourceDocumentNo},#{sourceLineNo},coalesce(#{costStatus},'EFFECTIVE'),#{createBy},sysdate())
   </insert>
   <update id="update">
     update pm_project_actual_cost set work_package_id=#{workPackageId}, actual_amount=#{actualAmount},
@@ -45,29 +49,36 @@
     where actual_cost_id=#{actualCostId}
   </update>
   <delete id="deleteById">delete from pm_project_actual_cost where actual_cost_id=#{actualCostId}</delete>
+  <select id="selectBySourceLineId" resultMap="ActualCost">
+    <include refid="actualCostColumns"/> where a.source_type=#{sourceType} and a.source_line_id=#{sourceLineId}
+  </select>
+  <update id="reverseBySourceLineId">
+    update pm_project_actual_cost set cost_status='REVERSED', reverse_reason=#{reason}, reversed_by=#{operator}, reversed_time=sysdate(), update_by=#{operator}, update_time=sysdate()
+    where source_type=#{sourceType} and source_line_id=#{sourceLineId} and cost_status='EFFECTIVE'
+  </update>
   <select id="countByCategoryId" resultType="long">
     select count(*) from pm_project_actual_cost where cost_category_id=#{costCategoryId}
   </select>
   <select id="totalByProjectId" resultType="java.math.BigDecimal">
-    select coalesce(sum(actual_amount),0) from pm_project_actual_cost where project_id=#{projectId}
+    select coalesce(sum(actual_amount),0) from pm_project_actual_cost where project_id=#{projectId} and cost_status='EFFECTIVE'
   </select>
   <select id="categoryTotal" resultType="java.math.BigDecimal">
     select coalesce(sum(actual_amount),0) from pm_project_actual_cost
-    where project_id=#{projectId} and cost_category_id=#{costCategoryId}
+    where project_id=#{projectId} and cost_category_id=#{costCategoryId} and cost_status='EFFECTIVE'
   </select>
   <select id="workPackageCategoryTotal" resultType="java.math.BigDecimal">
     select coalesce(sum(actual_amount),0) from pm_project_actual_cost
-    where project_id=#{projectId} and work_package_id=#{workPackageId} and cost_category_id=#{costCategoryId}
+    where project_id=#{projectId} and work_package_id=#{workPackageId} and cost_category_id=#{costCategoryId} and cost_status='EFFECTIVE'
   </select>
   <select id="categoryTotals" resultMap="ActualCostAggregate">
     select cost_category_id, null work_package_id, sum(actual_amount) actual_amount
-    from pm_project_actual_cost where project_id=#{projectId}
+    from pm_project_actual_cost where project_id=#{projectId} and cost_status='EFFECTIVE'
     group by cost_category_id
   </select>
   <select id="workPackageTotals" resultMap="ActualCostAggregate">
     select work_package_id, cost_category_id, sum(actual_amount) actual_amount
     from pm_project_actual_cost
-    where project_id=#{projectId} and work_package_id is not null
+    where project_id=#{projectId} and work_package_id is not null and cost_status='EFFECTIVE'
     group by work_package_id,cost_category_id
   </select>
 </mapper>

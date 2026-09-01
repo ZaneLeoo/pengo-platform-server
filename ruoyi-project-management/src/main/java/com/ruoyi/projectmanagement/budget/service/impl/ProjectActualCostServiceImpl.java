@@ -72,8 +72,9 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
                     boolean owned =
                             isManager(project, userId)
                                     || Objects.equals(username, cost.getCreateBy());
-                    cost.setCanCorrect(editable && owned);
-                    cost.setCanDelete(editable && owned);
+                    boolean manual = "MANUAL".equals(cost.getSourceType());
+                    cost.setCanCorrect(editable && owned && manual);
+                    cost.setCanDelete(editable && owned && manual);
                 });
         return costs;
     }
@@ -113,6 +114,8 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
     public ProjectActualCost correct(
             Long projectId, Long costId, ProjectActualCost patch, String operator, Long userId) {
         ProjectActualCost old = require(projectId, costId);
+        if (!"MANUAL".equals(old.getSourceType()))
+            throw new ServiceException("采购入库来源的实际成本请通过采购入库弃审冲销");
         assertEditable(projectId, userId);
         assertOwned(old, operator, userId);
         if (patch.getCostCategoryId() != null
@@ -179,6 +182,8 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
     @Transactional
     public void delete(Long projectId, Long costId, String operator, Long userId) {
         ProjectActualCost old = require(projectId, costId);
+        if (!"MANUAL".equals(old.getSourceType()))
+            throw new ServiceException("采购入库来源的实际成本请通过采购入库弃审冲销");
         assertEditable(projectId, userId);
         assertOwned(old, operator, userId);
         mapper.deleteById(costId);

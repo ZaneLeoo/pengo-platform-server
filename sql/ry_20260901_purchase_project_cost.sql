@@ -1,0 +1,14 @@
+-- V2 BC05：采购订单 → 到货 → 入库 → 项目实际成本。可重复执行。
+SET @db := DATABASE();
+
+SET @sql := IF((SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=@db AND table_name='purchase_order' AND column_name='project_id')=0,
+ 'ALTER TABLE purchase_order ADD COLUMN project_id bigint NULL COMMENT ''项目ID'', ADD COLUMN project_code varchar(64) NULL COMMENT ''项目编码快照'', ADD COLUMN project_name varchar(200) NULL COMMENT ''项目名称快照'', ADD COLUMN cost_category_id bigint NULL COMMENT ''成本类别ID'', ADD COLUMN category_code varchar(64) NULL COMMENT ''成本类别编码快照'', ADD COLUMN category_name varchar(100) NULL COMMENT ''成本类别名称快照'', ADD COLUMN category_path varchar(500) NULL COMMENT ''成本类别路径快照''', 'SELECT 1'); PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @sql := IF((SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=@db AND table_name='purchase_receipt_line' AND column_name='project_id')=0,
+ 'ALTER TABLE purchase_receipt_line ADD COLUMN project_id bigint NULL, ADD COLUMN project_code varchar(64) NULL, ADD COLUMN project_name varchar(200) NULL, ADD COLUMN cost_category_id bigint NULL, ADD COLUMN category_code varchar(64) NULL, ADD COLUMN category_name varchar(100) NULL, ADD COLUMN category_path varchar(500) NULL, ADD COLUMN source_unit_price decimal(18,2) NULL, ADD COLUMN receipt_amount decimal(18,2) NULL', 'SELECT 1'); PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @sql := IF((SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=@db AND table_name='purchase_inbound_line' AND column_name='project_id')=0,
+ 'ALTER TABLE purchase_inbound_line ADD COLUMN project_id bigint NULL, ADD COLUMN project_code varchar(64) NULL, ADD COLUMN project_name varchar(200) NULL, ADD COLUMN cost_category_id bigint NULL, ADD COLUMN category_code varchar(64) NULL, ADD COLUMN category_name varchar(100) NULL, ADD COLUMN category_path varchar(500) NULL, ADD COLUMN source_unit_price decimal(18,2) NULL, ADD COLUMN inbound_amount decimal(18,2) NULL', 'SELECT 1'); PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+SET @sql := IF((SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=@db AND table_name='pm_project_actual_cost' AND column_name='source_type')=0,
+ 'ALTER TABLE pm_project_actual_cost ADD COLUMN source_type varchar(32) NOT NULL DEFAULT ''MANUAL'', ADD COLUMN source_line_id bigint NULL, ADD COLUMN source_document_no varchar(64) NULL, ADD COLUMN source_line_no varchar(32) NULL, ADD COLUMN cost_status varchar(16) NOT NULL DEFAULT ''EFFECTIVE'', ADD COLUMN reverse_reason varchar(500) NULL, ADD COLUMN reversed_by varchar(64) NULL, ADD COLUMN reversed_time datetime NULL, ADD UNIQUE KEY uk_pm_actual_cost_source(source_type,source_line_id)', 'SELECT 1'); PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;

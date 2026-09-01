@@ -29,4 +29,12 @@ public class InboundReferenceLine {
     private BigDecimal qualifiedQuantity;
     private BigDecimal inboundQuantity;
     private BigDecimal remainingQuantity;
+    private Long projectId;
+    private String projectCode;
+    private String projectName;
+    private Long costCategoryId;
+    private String categoryCode;
+    private String categoryName;
+    private String categoryPath;
+    private BigDecimal sourceUnitPrice;
 }

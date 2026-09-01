@@ -60,6 +60,18 @@ public class PurchaseInboundLine extends BaseEntity {
     @DecimalMin(value = "0.000001", message = "入库数量必须大于0")
     private BigDecimal inboundQuantity;
 
+    /** 从到货/采购订单继承的项目归集和含税金额快照，只读。 */
+    private Long projectId;
+
+    private String projectCode;
+    private String projectName;
+    private Long costCategoryId;
+    private String categoryCode;
+    private String categoryName;
+    private String categoryPath;
+    private BigDecimal sourceUnitPrice;
+    private BigDecimal inboundAmount;
+
     private String lotNo;
     private String productionDate;
     private String expiryDate;

@@ -14,6 +14,10 @@
         <result property="totalAmount" column="total_amount"/>
         <result property="currency" column="currency"/>
         <result property="billType" column="bill_type"/>
+        <result property="projectId" column="project_id"/><result property="projectCode" column="project_code"/>
+        <result property="projectName" column="project_name"/><result property="costCategoryId" column="cost_category_id"/>
+        <result property="categoryCode" column="category_code"/><result property="categoryName" column="category_name"/>
+        <result property="categoryPath" column="category_path"/>
         <result property="remark" column="remark"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
@@ -61,7 +65,7 @@
     <sql id="orderColumns">
         select id, order_code, supplier_code, supplier_name, order_date,
                expected_date, status, total_quantity, total_amount,
-               currency, bill_type, remark, create_by, create_time, update_by, update_time
+               currency, bill_type, project_id, project_code, project_name, cost_category_id, category_code, category_name, category_path, remark, create_by, create_time, update_by, update_time
         from purchase_order
     </sql>
 
@@ -92,11 +96,11 @@
     <insert id="insertPurchaseOrder" useGeneratedKeys="true" keyProperty="id">
         insert into purchase_order(order_code, supplier_code, supplier_name,
                                    order_date, expected_date, status,
-                                   total_quantity, total_amount, currency, bill_type,
+                                   total_quantity, total_amount, currency, bill_type, project_id, project_code, project_name, cost_category_id, category_code, category_name, category_path,
                                    remark, create_by, create_time)
         values (#{orderCode}, #{supplierCode}, #{supplierName},
                 #{orderDate}, #{expectedDate}, #{status},
-                #{totalQuantity}, #{totalAmount}, #{currency}, #{billType},
+                #{totalQuantity}, #{totalAmount}, #{currency}, #{billType}, #{projectId}, #{projectCode}, #{projectName}, #{costCategoryId}, #{categoryCode}, #{categoryName}, #{categoryPath},
                 #{remark}, #{createBy}, now())
     </insert>
 
@@ -112,6 +116,8 @@
             total_amount  = #{totalAmount},
             currency      = #{currency},
             bill_type     = #{billType},
+            project_id = #{projectId}, project_code = #{projectCode}, project_name = #{projectName},
+            cost_category_id = #{costCategoryId}, category_code = #{categoryCode}, category_name = #{categoryName}, category_path = #{categoryPath},
             remark        = #{remark},
             update_by     = #{updateBy},
             update_time   = now()

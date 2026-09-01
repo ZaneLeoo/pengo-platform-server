@@ -48,6 +48,18 @@ public class PurchaseReceiptLine extends BaseEntity {
     @DecimalMin(value = "0.000001", message = "到货数量必须大于0")
     private BigDecimal receivedQuantity;
 
+    /** 从采购订单继承的项目归集和含税金额快照，只读。 */
+    private Long projectId;
+
+    private String projectCode;
+    private String projectName;
+    private Long costCategoryId;
+    private String categoryCode;
+    private String categoryName;
+    private String categoryPath;
+    private BigDecimal sourceUnitPrice;
+    private BigDecimal receiptAmount;
+
     @NotNull(message = "合格数量不能为空")
     @DecimalMin(value = "0.0", message = "合格数量不能小于0")
     private BigDecimal qualifiedQuantity;

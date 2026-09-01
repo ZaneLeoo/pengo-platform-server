@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,18 +39,21 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
     private final PurchaseInboundMapper inboundMapper;
     private final PurchaseFlowMapper flowMapper;
     private final ShelfLifeService shelfLifeService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public PurchaseFlowServiceImpl(
             PurchaseOrderMapper orderMapper,
             PurchaseReceiptMapper receiptMapper,
             PurchaseInboundMapper inboundMapper,
             PurchaseFlowMapper flowMapper,
-            ShelfLifeService shelfLifeService) {
+            ShelfLifeService shelfLifeService,
+            ApplicationEventPublisher eventPublisher) {
         this.orderMapper = orderMapper;
         this.receiptMapper = receiptMapper;
         this.inboundMapper = inboundMapper;
         this.flowMapper = flowMapper;
         this.shelfLifeService = shelfLifeService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -207,6 +211,9 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
             flowMapper.upsertInventoryBalance(transaction);
             flowMapper.insertInventoryTransaction(transaction);
         }
+        eventPublisher.publishEvent(
+                new com.ruoyi.mes.purchase.event.PurchaseInboundCostEvent(
+                        inbound, lines, operator, false));
     }
 
     @Override
@@ -236,6 +243,9 @@ public class PurchaseFlowServiceImpl implements IPurchaseFlowService {
             transaction.setQuantity(transaction.getQuantity().negate());
             flowMapper.insertInventoryTransaction(transaction);
         }
+        eventPublisher.publishEvent(
+                new com.ruoyi.mes.purchase.event.PurchaseInboundCostEvent(
+                        inbound, inboundMapper.selectLines(id), operator, true));
         if (flowMapper.updateInboundStatus(id, APPROVED, DRAFT, operator) != 1)
             throw new ServiceException("入库单状态已变化，请刷新后重试");
     }

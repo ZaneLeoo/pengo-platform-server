@@ -235,6 +235,9 @@
                pol.order_quantity                              as orderQuantity,
                pol.received_quantity                           as receivedQuantity,
                pol.order_quantity - pol.received_quantity      as remainingQuantity
+               ,po.project_id as projectId, po.project_code as projectCode, po.project_name as projectName,
+               po.cost_category_id as costCategoryId, po.category_code as categoryCode, po.category_name as categoryName, po.category_path as categoryPath,
+               pol.unit_price as sourceUnitPrice
         from purchase_order po
                  inner join purchase_order_line pol on pol.order_id = po.id
                  inner join material m on m.material_id = pol.material_id
@@ -277,6 +280,9 @@
                rl.qualified_quantity                       as qualifiedQuantity,
                rl.inbound_quantity                         as inboundQuantity,
                rl.qualified_quantity - rl.inbound_quantity as remainingQuantity
+               ,rl.project_id as projectId, rl.project_code as projectCode, rl.project_name as projectName,
+               rl.cost_category_id as costCategoryId, rl.category_code as categoryCode, rl.category_name as categoryName, rl.category_path as categoryPath,
+               rl.source_unit_price as sourceUnitPrice
         from purchase_receipt r
                  inner join purchase_receipt_line rl on rl.receipt_id = r.id
         where r.status = 'APPROVED'

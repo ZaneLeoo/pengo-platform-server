@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +24,15 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
 
     private final PurchaseOrderMapper orderMapper;
     private final UnitConversionService conversionService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public PurchaseOrderServiceImpl(
-            PurchaseOrderMapper orderMapper, UnitConversionService conversionService) {
+            PurchaseOrderMapper orderMapper,
+            UnitConversionService conversionService,
+            ApplicationEventPublisher eventPublisher) {
         this.orderMapper = orderMapper;
         this.conversionService = conversionService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -52,6 +57,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     @Transactional
     public int insertPurchaseOrder(PurchaseOrder order) {
         prepareOrder(order);
+        eventPublisher.publishEvent(
+                new com.ruoyi.mes.purchase.event.PurchaseOrderProjectValidationEvent(order));
         orderMapper.insertPurchaseOrder(order);
         insertLines(order);
         return 1;
@@ -61,6 +68,8 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     @Transactional
     public int updatePurchaseOrder(PurchaseOrder order) {
         prepareOrder(order);
+        eventPublisher.publishEvent(
+                new com.ruoyi.mes.purchase.event.PurchaseOrderProjectValidationEvent(order));
         orderMapper.updatePurchaseOrder(order);
         Long[] ids = {order.getId()};
         orderMapper.deletePurchaseOrderLineByOrderIds(ids);

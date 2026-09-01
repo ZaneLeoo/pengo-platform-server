@@ -5,6 +5,7 @@ import com.ruoyi.mes.purchase.domain.PurchaseInbound;
 import com.ruoyi.mes.purchase.domain.PurchaseReceipt;
 import com.ruoyi.mes.purchase.mapper.PurchaseInboundMapper;
 import com.ruoyi.mes.purchase.mapper.PurchaseReceiptMapper;
+import java.math.RoundingMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,10 @@ public class PurchaseDocumentDraftService {
                 .forEach(
                         line -> {
                             shelfLifeService.prepareReceiptLine(line);
+                            line.setReceiptAmount(
+                                    line.getReceivedQuantity()
+                                            .multiply(line.getSourceUnitPrice())
+                                            .setScale(2, RoundingMode.HALF_UP));
                             line.setReceiptId(receipt.getId());
                             line.setCreateBy(operator);
                             receiptMapper.insertLine(line);
@@ -51,6 +56,10 @@ public class PurchaseDocumentDraftService {
                 .forEach(
                         line -> {
                             shelfLifeService.validateInboundLine(line);
+                            line.setInboundAmount(
+                                    line.getInboundQuantity()
+                                            .multiply(line.getSourceUnitPrice())
+                                            .setScale(2, RoundingMode.HALF_UP));
                             line.setInboundId(inbound.getId());
                             line.setCreateBy(operator);
                             inboundMapper.insertLine(line);

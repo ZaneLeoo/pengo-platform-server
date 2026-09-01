@@ -37,6 +37,17 @@ public class ProjectActualCost extends BaseEntity {
     /** 更正次数，仅供展示。 */
     private Integer correctionNo;
 
+    /** 成本来源：MANUAL / PURCHASE_INBOUND。 */
+    private String sourceType;
+
+    private Long sourceLineId;
+    private String sourceDocumentNo;
+    private String sourceLineNo;
+    private String costStatus;
+    private String reverseReason;
+    private String reversedBy;
+    private java.time.LocalDateTime reversedTime;
+
     /** 由当前用户和项目角色计算，仅控制前端操作入口。 */
     private Boolean canCorrect;
 

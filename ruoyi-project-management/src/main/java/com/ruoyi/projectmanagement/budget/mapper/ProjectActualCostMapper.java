@@ -20,6 +20,15 @@ public interface ProjectActualCostMapper {
 
     int deleteById(Long actualCostId);
 
+    ProjectActualCost selectBySourceLineId(
+            @Param("sourceType") String sourceType, @Param("sourceLineId") Long sourceLineId);
+
+    int reverseBySourceLineId(
+            @Param("sourceType") String sourceType,
+            @Param("sourceLineId") Long sourceLineId,
+            @Param("operator") String operator,
+            @Param("reason") String reason);
+
     long countByCategoryId(Long costCategoryId);
 
     BigDecimal totalByProjectId(Long projectId);

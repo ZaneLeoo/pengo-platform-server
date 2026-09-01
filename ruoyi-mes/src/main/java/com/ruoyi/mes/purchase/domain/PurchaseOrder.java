@@ -51,6 +51,16 @@ public class PurchaseOrder extends BaseEntity {
     /** 单据类型：NORMAL */
     private String billType;
 
+    /** 可选项目归集维度；为空表示普通采购。 */
+    private Long projectId;
+
+    private String projectCode;
+    private String projectName;
+    private Long costCategoryId;
+    private String categoryCode;
+    private String categoryName;
+    private String categoryPath;
+
     @Valid
     @NotEmpty(message = "采购订单至少需要一条明细")
     private List<PurchaseOrderLine> lines;
