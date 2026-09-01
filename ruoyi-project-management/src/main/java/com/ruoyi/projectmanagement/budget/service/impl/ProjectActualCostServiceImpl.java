@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.budget.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.projectmanagement.budget.domain.ProjectActualCost;
 import com.ruoyi.projectmanagement.budget.domain.ProjectActualCostAggregate;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetExecutionRow;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +63,19 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
     @Override
     public List<ProjectActualCost> list(Long projectId, Long userId) {
         assertViewable(projectId, userId);
-        return mapper.selectByProjectId(projectId);
+        ProjectInfo project = requireProject(projectId);
+        boolean editable = isEditableStatus(project);
+        String username = SecurityUtils.getUsername();
+        List<ProjectActualCost> costs = mapper.selectByProjectId(projectId);
+        costs.forEach(
+                cost -> {
+                    boolean owned =
+                            isManager(project, userId)
+                                    || Objects.equals(username, cost.getCreateBy());
+                    cost.setCanCorrect(editable && owned);
+                    cost.setCanDelete(editable && owned);
+                });
+        return costs;
     }
 
     @Override
@@ -108,10 +122,13 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
         BigDecimal amount = amount(patch.getActualAmount(), "实际成本金额");
         LocalDate date = requireDate(patch.getOccurDate());
         String description = requireText(patch.getDescription());
-        Long workPackageId =
-                patch.getWorkPackageId() == null
-                        ? old.getWorkPackageId()
-                        : patch.getWorkPackageId();
+        Long workPackageId = patch.getWorkPackageId();
+        // 更新请求传 0 明确表示“移回项目级”；null 仍表示未修改，兼容旧客户端。
+        if (workPackageId == null) {
+            workPackageId = old.getWorkPackageId();
+        } else if (workPackageId == 0L) {
+            workPackageId = null;
+        }
         validateWorkPackageChange(projectId, workPackageId);
         boolean categoryActive =
                 costCategoryService.options().stream()
@@ -300,9 +317,12 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
 
     private void assertEditableStatus(Long projectId) {
         ProjectInfo project = requireProject(projectId);
-        if (!ProjectStatus.ACTIVE.matches(project.getStatus())
-                && !ProjectStatus.PAUSED.matches(project.getStatus()))
-            throw new ServiceException("仅执行中或暂停中项目可登记实际成本");
+        if (!isEditableStatus(project)) throw new ServiceException("仅执行中或暂停中项目可登记实际成本");
+    }
+
+    private boolean isEditableStatus(ProjectInfo project) {
+        return ProjectStatus.ACTIVE.matches(project.getStatus())
+                || ProjectStatus.PAUSED.matches(project.getStatus());
     }
 
     private void assertOwned(ProjectActualCost cost, String operator, Long userId) {

@@ -36,4 +36,10 @@ public class ProjectActualCost extends BaseEntity {
 
     /** 更正次数，仅供展示。 */
     private Integer correctionNo;
+
+    /** 由当前用户和项目角色计算，仅控制前端操作入口。 */
+    private Boolean canCorrect;
+
+    /** 删除能力，服务端写入时仍会独立校验。 */
+    private Boolean canDelete;
 }
