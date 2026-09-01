@@ -5,6 +5,9 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.projectmanagement.budget.domain.ProjectActualCost;
+import com.ruoyi.projectmanagement.budget.service.IProjectActualCostService;
 import com.ruoyi.projectmanagement.budget.service.IProjectWorkPackageBudgetService;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
@@ -30,12 +33,15 @@ public class ProjectInfoController extends BaseController {
 
     private final IProjectInfoService service;
     private final IProjectWorkPackageBudgetService workPackageBudgetService;
+    private final IProjectActualCostService actualCostService;
 
     public ProjectInfoController(
             IProjectInfoService service,
-            IProjectWorkPackageBudgetService workPackageBudgetService) {
+            IProjectWorkPackageBudgetService workPackageBudgetService,
+            IProjectActualCostService actualCostService) {
         this.service = service;
         this.workPackageBudgetService = workPackageBudgetService;
+        this.actualCostService = actualCostService;
     }
 
     /** 查询项目列表。 */
@@ -71,6 +77,46 @@ public class ProjectInfoController extends BaseController {
     public AjaxResult workPackageBudget(
             @PathVariable Long projectId, @PathVariable Long workPackageId) {
         return success(workPackageBudgetService.workPackageSummary(projectId, workPackageId));
+    }
+
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:actualCost:query')")
+    @GetMapping("/{id}/actual-costs")
+    public AjaxResult actualCosts(@PathVariable Long id) {
+        return success(actualCostService.list(id, SecurityUtils.getUserId()));
+    }
+
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:actualCost:query')")
+    @GetMapping("/{id}/budget-execution")
+    public AjaxResult budgetExecution(@PathVariable Long id) {
+        return success(actualCostService.execution(id, SecurityUtils.getUserId()));
+    }
+
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:actualCost:add')")
+    @Log(title = "项目实际成本", businessType = BusinessType.INSERT)
+    @PostMapping("/{id}/actual-costs")
+    public AjaxResult addActualCost(@PathVariable Long id, @RequestBody ProjectActualCost cost) {
+        return success(
+                actualCostService.register(id, cost, getUsername(), SecurityUtils.getUserId()));
+    }
+
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:actualCost:edit')")
+    @Log(title = "项目实际成本", businessType = BusinessType.UPDATE)
+    @PutMapping("/{projectId}/actual-costs/{costId}")
+    public AjaxResult editActualCost(
+            @PathVariable Long projectId,
+            @PathVariable Long costId,
+            @RequestBody ProjectActualCost cost) {
+        return success(
+                actualCostService.correct(
+                        projectId, costId, cost, getUsername(), SecurityUtils.getUserId()));
+    }
+
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:actualCost:remove')")
+    @Log(title = "项目实际成本", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{projectId}/actual-costs/{costId}")
+    public AjaxResult removeActualCost(@PathVariable Long projectId, @PathVariable Long costId) {
+        actualCostService.delete(projectId, costId, getUsername(), SecurityUtils.getUserId());
+        return success();
     }
 
     /** 新增项目申请。 */

@@ -3,8 +3,10 @@ package com.ruoyi.projectmanagement.change.service.impl;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.projectmanagement.budget.domain.ProjectActualCostAggregate;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine;
 import com.ruoyi.projectmanagement.budget.domain.ProjectWorkPackageBudgetLine;
+import com.ruoyi.projectmanagement.budget.mapper.ProjectActualCostMapper;
 import com.ruoyi.projectmanagement.budget.mapper.ProjectBudgetMapper;
 import com.ruoyi.projectmanagement.budget.mapper.ProjectWorkPackageBudgetMapper;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
@@ -75,6 +77,7 @@ public class ProjectPlanChangeServiceImpl
     private final ProfessionalRoleMapper professionalRoleMapper;
     private final ProjectBudgetMapper budgetMapper;
     private final ProjectWorkPackageBudgetMapper workPackageBudgetMapper;
+    private final ProjectActualCostMapper actualCostMapper;
     private final ICostCategoryService costCategoryService;
 
     /** Fields maintained by the runtime rather than by a plan baseline change. */
@@ -116,6 +119,7 @@ public class ProjectPlanChangeServiceImpl
             ProfessionalRoleMapper professionalRoleMapper,
             ProjectBudgetMapper budgetMapper,
             ProjectWorkPackageBudgetMapper workPackageBudgetMapper,
+            ProjectActualCostMapper actualCostMapper,
             ICostCategoryService costCategoryService) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
@@ -136,6 +140,7 @@ public class ProjectPlanChangeServiceImpl
         this.professionalRoleMapper = professionalRoleMapper;
         this.budgetMapper = budgetMapper;
         this.workPackageBudgetMapper = workPackageBudgetMapper;
+        this.actualCostMapper = actualCostMapper;
         this.costCategoryService = costCategoryService;
     }
 
@@ -971,9 +976,21 @@ public class ProjectPlanChangeServiceImpl
                 throw new ServiceException("项目预算变更内容格式无效");
             }
         }
-        if (!"1".equals(header.getBudgetRequired())) {
+        Map<Long, BigDecimal> actualByCategory = new LinkedHashMap<>();
+        for (ProjectActualCostAggregate item : actualCostMapper.categoryTotals(projectId)) {
+            actualByCategory.put(item.getCostCategoryId(), item.getActualAmount());
+        }
+        if ("0".equals(header.getBudgetRequired())) {
+            if (!actualByCategory.isEmpty()) throw new ServiceException("项目已发生实际成本，不能取消预算");
             if (!byCategoryId.isEmpty()) throw new ServiceException("取消预算时必须同时删除全部分类预算");
             return;
+        }
+        for (Map.Entry<Long, BigDecimal> entry : actualByCategory.entrySet()) {
+            if (entry.getValue() == null || entry.getValue().signum() <= 0) continue;
+            ProjectBudgetLine finalLine = byCategoryId.get(entry.getKey());
+            if (finalLine == null) throw new ServiceException("成本类别已发生实际成本，不能删除项目分类预算");
+            if (finalLine.getBudgetAmount().compareTo(entry.getValue()) < 0)
+                throw new ServiceException("项目分类预算不能低于该类别已发生实际成本");
         }
         if (header.getBudgetAmount() == null || header.getBudgetAmount().signum() <= 0)
             throw new ServiceException("启用预算时预算总额必须大于0");
@@ -1050,6 +1067,14 @@ public class ProjectPlanChangeServiceImpl
                 if (e instanceof ServiceException) throw (ServiceException) e;
                 throw new ServiceException("工作包预算变更内容格式无效");
             }
+        }
+        for (ProjectActualCostAggregate item : actualCostMapper.workPackageTotals(projectId)) {
+            if (item.getActualAmount() == null || item.getActualAmount().signum() <= 0) continue;
+            String key = workPackageBudgetKey(item.getWorkPackageId(), item.getCostCategoryId());
+            ProjectWorkPackageBudgetLine finalLine = byBusinessKey.get(key);
+            if (finalLine == null) throw new ServiceException("删除工作包预算前必须删除该工作包该类别实际成本");
+            if (finalLine.getBudgetAmount().compareTo(item.getActualAmount()) < 0)
+                throw new ServiceException("工作包预算不能低于该工作包已发生实际成本");
         }
         Map<Long, BigDecimal> allocatedByCategory = new LinkedHashMap<>();
         for (ProjectWorkPackageBudgetLine line : byBusinessKey.values()) {

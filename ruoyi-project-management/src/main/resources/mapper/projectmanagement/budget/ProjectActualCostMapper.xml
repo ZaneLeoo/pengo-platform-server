@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.budget.mapper.ProjectActualCostMapper">
+  <resultMap id="ActualCost" type="ProjectActualCost">
+    <id property="actualCostId" column="actual_cost_id"/>
+    <result property="projectId" column="project_id"/><result property="workPackageId" column="work_package_id"/>
+    <result property="workPackageCode" column="work_package_code"/><result property="workPackageName" column="work_package_name"/>
+    <result property="workPackageStatus" column="work_package_status"/><result property="costCategoryId" column="cost_category_id"/>
+    <result property="categoryCode" column="category_code"/><result property="categoryName" column="category_name"/>
+    <result property="categoryPath" column="category_path"/><result property="categoryStatus" column="category_status"/>
+    <result property="actualAmount" column="actual_amount"/><result property="occurDate" column="occur_date"/>
+    <result property="description" column="description"/><result property="correctionNo" column="correction_no"/>
+    <result property="createBy" column="create_by"/><result property="createTime" column="create_time"/>
+    <result property="updateBy" column="update_by"/><result property="updateTime" column="update_time"/>
+  </resultMap>
+  <resultMap id="ActualCostAggregate" type="ProjectActualCostAggregate">
+    <result property="costCategoryId" column="cost_category_id"/>
+    <result property="workPackageId" column="work_package_id"/>
+    <result property="actualAmount" column="actual_amount"/>
+  </resultMap>
+  <sql id="actualCostColumns">
+    select a.*, c.status category_status, w.wbs_code work_package_code, w.wbs_name work_package_name,
+      w.status work_package_status
+    from pm_project_actual_cost a
+    left join pm_cost_category c on c.cost_category_id=a.cost_category_id
+    left join pm_project_wbs_node w on w.wbs_id=a.work_package_id
+  </sql>
+  <select id="selectByProjectId" resultMap="ActualCost">
+    <include refid="actualCostColumns"/> where a.project_id=#{projectId}
+    order by a.occur_date desc,a.actual_cost_id desc
+  </select>
+  <select id="selectById" resultMap="ActualCost">
+    <include refid="actualCostColumns"/> where a.actual_cost_id=#{actualCostId}
+  </select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="actualCostId">
+    insert into pm_project_actual_cost(project_id,work_package_id,cost_category_id,category_code,category_name,
+      category_path,actual_amount,occur_date,description,correction_no,create_by,create_time)
+    values(#{projectId},#{workPackageId},#{costCategoryId},#{categoryCode},#{categoryName},#{categoryPath},
+      #{actualAmount},#{occurDate},#{description},0,#{createBy},sysdate())
+  </insert>
+  <update id="update">
+    update pm_project_actual_cost set work_package_id=#{workPackageId}, actual_amount=#{actualAmount},
+      occur_date=#{occurDate}, description=#{description}, correction_no=correction_no+1,
+      update_by=#{updateBy}, update_time=sysdate()
+    where actual_cost_id=#{actualCostId}
+  </update>
+  <delete id="deleteById">delete from pm_project_actual_cost where actual_cost_id=#{actualCostId}</delete>
+  <select id="countByCategoryId" resultType="long">
+    select count(*) from pm_project_actual_cost where cost_category_id=#{costCategoryId}
+  </select>
+  <select id="totalByProjectId" resultType="java.math.BigDecimal">
+    select coalesce(sum(actual_amount),0) from pm_project_actual_cost where project_id=#{projectId}
+  </select>
+  <select id="categoryTotal" resultType="java.math.BigDecimal">
+    select coalesce(sum(actual_amount),0) from pm_project_actual_cost
+    where project_id=#{projectId} and cost_category_id=#{costCategoryId}
+  </select>
+  <select id="workPackageCategoryTotal" resultType="java.math.BigDecimal">
+    select coalesce(sum(actual_amount),0) from pm_project_actual_cost
+    where project_id=#{projectId} and work_package_id=#{workPackageId} and cost_category_id=#{costCategoryId}
+  </select>
+  <select id="categoryTotals" resultMap="ActualCostAggregate">
+    select cost_category_id, null work_package_id, sum(actual_amount) actual_amount
+    from pm_project_actual_cost where project_id=#{projectId}
+    group by cost_category_id
+  </select>
+  <select id="workPackageTotals" resultMap="ActualCostAggregate">
+    select work_package_id, cost_category_id, sum(actual_amount) actual_amount
+    from pm_project_actual_cost
+    where project_id=#{projectId} and work_package_id is not null
+    group by work_package_id,cost_category_id
+  </select>
+</mapper>

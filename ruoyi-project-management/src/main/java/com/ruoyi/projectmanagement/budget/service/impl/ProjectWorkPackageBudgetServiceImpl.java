@@ -50,6 +50,13 @@ public class ProjectWorkPackageBudgetServiceImpl implements IProjectWorkPackageB
                         .map(ProjectWorkPackageBudgetLine::getBudgetAmount)
                         .filter(x -> x != null)
                         .reduce(BigDecimal.ZERO, BigDecimal::add));
+        BigDecimal actual =
+                lines.stream()
+                        .map(ProjectWorkPackageBudgetLine::getWorkPackageActualAmount)
+                        .filter(x -> x != null)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        result.setActualCostAmount(actual);
+        result.setRemainingBudgetAmount(result.getAllocatedAmount().subtract(actual));
         return result;
     }
 }

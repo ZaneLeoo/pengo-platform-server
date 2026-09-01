@@ -29,4 +29,9 @@ public class ProjectWorkPackageBudgetLine extends BaseEntity {
 
     private BigDecimal categoryAllocatedAmount;
     private BigDecimal categoryRemainingAmount;
+
+    /** 该工作包该类别已发生实际成本，只读展示。 */
+    private BigDecimal workPackageActualAmount;
+
+    private BigDecimal workPackageRemainingAmount;
 }

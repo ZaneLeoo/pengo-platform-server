@@ -3,6 +3,7 @@ package com.ruoyi.projectmanagement.budget.service.impl;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetSummary;
+import com.ruoyi.projectmanagement.budget.mapper.ProjectActualCostMapper;
 import com.ruoyi.projectmanagement.budget.mapper.ProjectBudgetMapper;
 import com.ruoyi.projectmanagement.budget.service.IProjectBudgetService;
 import com.ruoyi.projectmanagement.change.domain.ProjectPlanBaseline;
@@ -30,18 +31,21 @@ public class ProjectBudgetServiceImpl implements IProjectBudgetService {
     private final ICostCategoryService categoryService;
     private final ProjectPlanChangeMapper changeMapper;
     private final ObjectMapper objectMapper;
+    private final ProjectActualCostMapper actualCostMapper;
 
     public ProjectBudgetServiceImpl(
             ProjectBudgetMapper mapper,
             ProjectInfoMapper projectMapper,
             ICostCategoryService categoryService,
             ProjectPlanChangeMapper changeMapper,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            ProjectActualCostMapper actualCostMapper) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
         this.categoryService = categoryService;
         this.changeMapper = changeMapper;
         this.objectMapper = objectMapper;
+        this.actualCostMapper = actualCostMapper;
     }
 
     @Override
@@ -68,6 +72,15 @@ public class ProjectBudgetServiceImpl implements IProjectBudgetService {
         result.setCumulativeChangeAmount(total.subtract(initial));
         result.setCategoryCount(lines.size());
         result.setLines(lines);
+        BigDecimal actual = actualCostMapper.totalByProjectId(projectId);
+        result.setActualCostAmount(actual == null ? BigDecimal.ZERO : actual);
+        result.setRemainingBudgetAmount(total.subtract(result.getActualCostAmount()));
+        result.setExecutionRate(
+                total.signum() > 0
+                        ? result.getActualCostAmount()
+                                .multiply(BigDecimal.valueOf(100))
+                                .divide(total, 2, RoundingMode.HALF_UP)
+                        : BigDecimal.ZERO);
         return result;
     }
 

@@ -17,4 +17,13 @@ public class ProjectBudgetSummary {
     private BigDecimal cumulativeChangeAmount;
     private Integer categoryCount;
     private List<ProjectBudgetLine> lines;
+
+    /** 项目实际成本合计。 */
+    private BigDecimal actualCostAmount;
+
+    /** 预算总额减去实际成本。 */
+    private BigDecimal remainingBudgetAmount;
+
+    /** 实际成本占预算总额的百分比。 */
+    private BigDecimal executionRate;
 }

@@ -12,4 +12,8 @@ public class ProjectWorkPackageBudgetSummary {
     private BigDecimal allocatedAmount;
     private Integer categoryCount;
     private List<ProjectWorkPackageBudgetLine> lines;
+
+    private BigDecimal actualCostAmount;
+
+    private BigDecimal remainingBudgetAmount;
 }

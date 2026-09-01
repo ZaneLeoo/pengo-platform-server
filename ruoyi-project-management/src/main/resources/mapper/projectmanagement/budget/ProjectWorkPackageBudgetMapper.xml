@@ -16,7 +16,9 @@
     select b.*, w.wbs_code work_package_code, w.wbs_name work_package_name, w.status work_package_status,
       c.status category_status, pb.budget_amount project_category_budget,
       (select coalesce(sum(x.budget_amount),0) from pm_work_package_budget_line x where x.project_id=b.project_id and x.cost_category_id=b.cost_category_id) category_allocated_amount,
-      coalesce(pb.budget_amount,0) - (select coalesce(sum(x.budget_amount),0) from pm_work_package_budget_line x where x.project_id=b.project_id and x.cost_category_id=b.cost_category_id) category_remaining_amount
+      coalesce(pb.budget_amount,0) - (select coalesce(sum(x.budget_amount),0) from pm_work_package_budget_line x where x.project_id=b.project_id and x.cost_category_id=b.cost_category_id) category_remaining_amount,
+      (select coalesce(sum(a.actual_amount),0) from pm_project_actual_cost a where a.work_package_id=b.work_package_id and a.cost_category_id=b.cost_category_id) work_package_actual_amount,
+      coalesce(b.budget_amount,0) - (select coalesce(sum(a.actual_amount),0) from pm_project_actual_cost a where a.work_package_id=b.work_package_id and a.cost_category_id=b.cost_category_id) work_package_remaining_amount
     from pm_work_package_budget_line b
     join pm_project_wbs_node w on w.wbs_id=b.work_package_id
     left join pm_cost_category c on c.cost_category_id=b.cost_category_id
