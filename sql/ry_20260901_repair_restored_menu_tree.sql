@@ -1,4 +1,5 @@
 -- 数据库恢复后的菜单树整理（可重复执行，不删除菜单或既有角色授权）。
+-- 请以 UTF-8 客户端执行；Windows 下不要用 Get-Content 管道转发到 mysql，以免中文菜单名称被控制台编码损坏。
 -- 覆盖制造运营的基础数据、采购管理、库存管理，避免历史脚本硬编码 menu_id 导致的错挂。
 
 SET @mes_id := (SELECT menu_id FROM sys_menu WHERE parent_id = 0 AND path = 'mes' AND menu_type = 'M' LIMIT 1);
