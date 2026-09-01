@@ -1,9 +1,5 @@
 package com.ruoyi.mes.purchase.service.impl;
 
-import com.ruoyi.mes.base.domain.UnitGroupDetail;
-import com.ruoyi.mes.base.dto.ConversionRequest;
-import com.ruoyi.mes.base.dto.ConversionResult;
-import com.ruoyi.mes.base.service.UnitConversionService;
 import com.ruoyi.mes.purchase.domain.PurchaseOrder;
 import com.ruoyi.mes.purchase.domain.PurchaseOrderLine;
 import com.ruoyi.mes.purchase.mapper.PurchaseOrderMapper;
@@ -11,7 +7,6 @@ import com.ruoyi.mes.purchase.service.IPurchaseOrderService;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 /** 采购订单业务处理。 */
 @Service
 public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
-    private static final int MIN_UNIT_COUNT = 2;
-    private static final int MAX_UNIT_COUNT = 3;
-
     private final PurchaseOrderMapper orderMapper;
-    private final UnitConversionService conversionService;
     private final ApplicationEventPublisher eventPublisher;
 
     public PurchaseOrderServiceImpl(
-            PurchaseOrderMapper orderMapper,
-            UnitConversionService conversionService,
-            ApplicationEventPublisher eventPublisher) {
+            PurchaseOrderMapper orderMapper, ApplicationEventPublisher eventPublisher) {
         this.orderMapper = orderMapper;
-        this.conversionService = conversionService;
         this.eventPublisher = eventPublisher;
     }
 
@@ -104,7 +92,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
     /**
      * 重新计算订单行并汇总订单金额。
      *
-     * <p>采购行按录入单位计价，unit/orderQuantity 仅作为旧表结构兼容字段。
+     * <p>采购行按物料的唯一计量单位计价。
      */
     private void prepareOrder(PurchaseOrder order) {
         if (order.getLines() == null || order.getLines().isEmpty()) {
@@ -113,7 +101,7 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
         BigDecimal totalQuantity = BigDecimal.ZERO;
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (PurchaseOrderLine line : order.getLines()) {
-            normalizeLineUnits(line);
+            normalizeLine(line);
             BigDecimal unitPrice =
                     line.getUnitPrice() == null ? BigDecimal.ZERO : line.getUnitPrice();
             if (unitPrice.compareTo(BigDecimal.ZERO) < 0) {
@@ -121,115 +109,24 @@ public class PurchaseOrderServiceImpl implements IPurchaseOrderService {
             }
             line.setUnitPrice(unitPrice);
             BigDecimal amount =
-                    line.getInputQty().multiply(unitPrice).setScale(2, RoundingMode.HALF_UP);
+                    line.getOrderQuantity().multiply(unitPrice).setScale(2, RoundingMode.HALF_UP);
             line.setAmount(amount);
-            totalQuantity = totalQuantity.add(line.getInputQty());
+            totalQuantity = totalQuantity.add(line.getOrderQuantity());
             totalAmount = totalAmount.add(amount);
         }
         order.setTotalQuantity(scale(totalQuantity, 6));
         order.setTotalAmount(scale(totalAmount, 2));
     }
 
-    /** 以录入单位为入口计算单位组内两个或三个单位的数量。 前端结果只用于即时展示，最终保存统一由服务端重新计算。 */
-    private void normalizeLineUnits(PurchaseOrderLine line) {
-        List<UnitGroupDetail> details = conversionService.getUnitDetails(line.getMaterialId());
-        if (details.size() < MIN_UNIT_COUNT || details.size() > MAX_UNIT_COUNT) {
-            throw new IllegalArgumentException(
-                    "采购多计量换算要求物料单位组配置"
-                            + MIN_UNIT_COUNT
-                            + "到"
-                            + MAX_UNIT_COUNT
-                            + "个单位: "
-                            + line.getMaterialCode());
+    private void normalizeLine(PurchaseOrderLine line) {
+        if (com.ruoyi.common.utils.StringUtils.isBlank(line.getUnit())) {
+            throw new IllegalArgumentException("采购明细计量单位不能为空: " + line.getMaterialCode());
         }
-
-        String inputUnitCode = resolveUnitCode(details, line.getInputUnitCode());
-        if (inputUnitCode == null) {
-            inputUnitCode = resolveUnitCode(details, line.getUnit());
+        if (line.getOrderQuantity() == null
+                || line.getOrderQuantity().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("采购明细数量必须大于0: " + line.getMaterialCode());
         }
-        if (inputUnitCode == null) {
-            throw new IllegalArgumentException("采购明细录入单位不能为空: " + line.getMaterialCode());
-        }
-
-        BigDecimal inputQuantity = line.getInputQty();
-        if (inputQuantity == null) {
-            inputQuantity = line.getOrderQuantity();
-        }
-        if (inputQuantity == null || inputQuantity.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("采购明细输入数量必须大于0: " + line.getMaterialCode());
-        }
-
-        ConversionRequest request = new ConversionRequest();
-        request.setMaterialId(line.getMaterialId());
-        request.setInputUnitCode(inputUnitCode);
-        request.setInputQuantity(inputQuantity);
-        Map<String, ConversionResult> results = conversionService.calculateAllUnits(request);
-
-        line.setInputUnitCode(inputUnitCode);
-        line.setInputUnitName(findDetailName(details, inputUnitCode));
-        line.setInputQty(scale(inputQuantity, 6));
-        line.setUnit(inputUnitCode);
-        line.setOrderQuantity(line.getInputQty());
-
-        line.setUnit3Code(null);
-        line.setUnit3Name(null);
-        line.setUnit3Qty(null);
-        for (int index = 0; index < details.size(); index++) {
-            applyUnitSnapshot(line, details.get(index), results, index + 1);
-        }
-    }
-
-    private void applyUnitSnapshot(
-            PurchaseOrderLine line,
-            UnitGroupDetail detail,
-            Map<String, ConversionResult> results,
-            int index) {
-        ConversionResult result = requiredResult(results, detail, line);
-        if (index == 1) {
-            line.setUnit1Code(detail.getUnitCode());
-            line.setUnit1Name(detail.getUnitName());
-            line.setUnit1Qty(scale(result.getQuantity(), 6));
-        } else if (index == 2) {
-            line.setUnit2Code(detail.getUnitCode());
-            line.setUnit2Name(detail.getUnitName());
-            line.setUnit2Qty(scale(result.getQuantity(), 6));
-        } else {
-            line.setUnit3Code(detail.getUnitCode());
-            line.setUnit3Name(detail.getUnitName());
-            line.setUnit3Qty(scale(result.getQuantity(), 6));
-        }
-    }
-
-    private ConversionResult requiredResult(
-            Map<String, ConversionResult> results, UnitGroupDetail detail, PurchaseOrderLine line) {
-        ConversionResult result = results.get(detail.getUnitCode());
-        if (result == null
-                || result.getQuantity() == null
-                || result.getQuantity().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException(
-                    "物料 " + line.getMaterialCode() + " 缺少有效的 " + detail.getUnitName() + " 换算公式");
-        }
-        return result;
-    }
-
-    private String resolveUnitCode(List<UnitGroupDetail> details, String value) {
-        if (com.ruoyi.common.utils.StringUtils.isBlank(value)) return null;
-        return details.stream()
-                .filter(
-                        detail ->
-                                value.equals(detail.getUnitCode())
-                                        || value.equals(detail.getUnitName()))
-                .map(UnitGroupDetail::getUnitCode)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("输入单位不在物料计量单位组中: " + value));
-    }
-
-    private String findDetailName(List<UnitGroupDetail> details, String unitCode) {
-        return details.stream()
-                .filter(detail -> unitCode.equals(detail.getUnitCode()))
-                .map(UnitGroupDetail::getUnitName)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("单位不存在: " + unitCode));
+        line.setOrderQuantity(scale(line.getOrderQuantity(), 6));
     }
 
     private BigDecimal scale(BigDecimal value, int scale) {

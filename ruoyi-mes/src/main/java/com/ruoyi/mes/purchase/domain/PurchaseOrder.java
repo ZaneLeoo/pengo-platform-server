@@ -37,11 +37,11 @@ public class PurchaseOrder extends BaseEntity {
     private String approvedBy;
     private Date approvedTime;
 
-    /** 服务端按采购行的 inputQty 汇总；多单位订单不把它作为换算基准。 */
+    /** 服务端按采购行的采购数量汇总。 */
     @DecimalMin(value = "0.0", message = "订单总数量不能小于0")
     private BigDecimal totalQuantity;
 
-    /** 服务端按采购行的 inputQty * unitPrice 汇总。 */
+    /** 服务端按采购行的采购数量乘单价汇总。 */
     @DecimalMin(value = "0.0", message = "订单总金额不能小于0")
     private BigDecimal totalAmount;
 

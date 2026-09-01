@@ -52,37 +52,9 @@ public class Material extends BaseEntity {
     @Excel(name = "型号")
     private String model;
 
-    /** 库存基准单位 */
-    @Excel(name = "库存基准单位")
+    /** 计量单位 */
+    @Excel(name = "计量单位")
     private String unit;
-
-    /** 计量单位组编码 */
-    @Excel(name = "计量单位组编码")
-    private String unitGroupCode;
-
-    /** 长(m) */
-    @Excel(name = "长(m)")
-    private BigDecimal length;
-
-    /** 宽(m) */
-    @Excel(name = "宽(m)")
-    private BigDecimal width;
-
-    /** 高(m) */
-    @Excel(name = "高(m)")
-    private BigDecimal height;
-
-    /** 重量(kg) */
-    @Excel(name = "重量(kg)")
-    private BigDecimal weight;
-
-    /** 码数 */
-    @Excel(name = "码数")
-    private BigDecimal yards;
-
-    /** 每平方标准重量(kg/m2) */
-    @Excel(name = "每平方标准重量")
-    private BigDecimal standardWeightPerSqm;
 
     /** 图号 */
     @Excel(name = "图号")
@@ -203,7 +175,7 @@ public class Material extends BaseEntity {
         this.model = model;
     }
 
-    @NotBlank(message = "库存基准单位不能为空")
+    @NotBlank(message = "计量单位不能为空")
     public String getUnit() {
         return unit;
     }
