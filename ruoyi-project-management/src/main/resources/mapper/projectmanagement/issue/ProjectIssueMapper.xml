@@ -37,6 +37,9 @@
     <select id="countByProject" resultType="int">
         select count(*) from pm_project_issue where project_id = #{projectId}
     </select>
+    <select id="countUnclosedByProject" resultType="int">
+        select count(*) from pm_project_issue where project_id = #{projectId} and status &lt;&gt; 'CLOSED'
+    </select>
 
     <select id="countByWorkPackage" resultType="int">
         select count(*) from pm_project_issue where project_id = #{projectId} and work_package_id = #{workPackageId}

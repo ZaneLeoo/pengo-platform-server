@@ -16,6 +16,7 @@ import com.ruoyi.projectmanagement.common.enums.WbsStatus;
 import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
+import com.ruoyi.projectmanagement.issue.mapper.ProjectIssueMapper;
 import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
@@ -63,6 +64,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     private final IWorkflowService workflowService;
     private final IProjectPlanChangeService planChangeService;
     private final IProjectBudgetService budgetService;
+    private final ProjectIssueMapper issueMapper;
 
     public ProjectInfoServiceImpl(
             ProjectInfoMapper projectMapper,
@@ -77,7 +79,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
             ObjectMapper objectMapper,
             @Lazy IWorkflowService workflowService,
             IProjectPlanChangeService planChangeService,
-            IProjectBudgetService budgetService) {
+            IProjectBudgetService budgetService,
+            ProjectIssueMapper issueMapper) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -91,6 +94,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         this.workflowService = workflowService;
         this.planChangeService = planChangeService;
         this.budgetService = budgetService;
+        this.issueMapper = issueMapper;
     }
 
     /** 查询项目列表。 */
@@ -229,6 +233,10 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
                 }
                 if (!wbsService.allWorkPackagesCompleted(projectId)) {
                     throw new ServiceException("请先完成项目的全部工作包");
+                }
+                int unclosed = issueMapper.countUnclosedByProject(projectId);
+                if (unclosed > 0) {
+                    throw new ServiceException("存在未关闭问题，不能完成项目：还有 " + unclosed + " 个问题未关闭");
                 }
                 to = ProjectStatus.COMPLETED.getCode();
                 project.setActualEndDate(LocalDate.now());

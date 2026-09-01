@@ -22,6 +22,8 @@ public interface ProjectIssueMapper {
 
     int countByProject(Long projectId);
 
+    int countUnclosedByProject(Long projectId);
+
     int countByWorkPackage(
             @Param("projectId") Long projectId, @Param("workPackageId") Long workPackageId);
 
