@@ -4,7 +4,9 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine;
+import com.ruoyi.projectmanagement.budget.domain.ProjectWorkPackageBudgetLine;
 import com.ruoyi.projectmanagement.budget.mapper.ProjectBudgetMapper;
+import com.ruoyi.projectmanagement.budget.mapper.ProjectWorkPackageBudgetMapper;
 import com.ruoyi.projectmanagement.category.mapper.ProjectCategoryMapper;
 import com.ruoyi.projectmanagement.change.domain.*;
 import com.ruoyi.projectmanagement.change.mapper.ProjectPlanChangeMapper;
@@ -72,6 +74,7 @@ public class ProjectPlanChangeServiceImpl
     private final ProjectPersonMapper personMapper;
     private final ProfessionalRoleMapper professionalRoleMapper;
     private final ProjectBudgetMapper budgetMapper;
+    private final ProjectWorkPackageBudgetMapper workPackageBudgetMapper;
     private final ICostCategoryService costCategoryService;
 
     /** Fields maintained by the runtime rather than by a plan baseline change. */
@@ -112,6 +115,7 @@ public class ProjectPlanChangeServiceImpl
             ProjectPersonMapper personMapper,
             ProfessionalRoleMapper professionalRoleMapper,
             ProjectBudgetMapper budgetMapper,
+            ProjectWorkPackageBudgetMapper workPackageBudgetMapper,
             ICostCategoryService costCategoryService) {
         this.mapper = mapper;
         this.projectMapper = projectMapper;
@@ -131,6 +135,7 @@ public class ProjectPlanChangeServiceImpl
         this.personMapper = personMapper;
         this.professionalRoleMapper = professionalRoleMapper;
         this.budgetMapper = budgetMapper;
+        this.workPackageBudgetMapper = workPackageBudgetMapper;
         this.costCategoryService = costCategoryService;
     }
 
@@ -165,6 +170,7 @@ public class ProjectPlanChangeServiceImpl
             teamFilter.setStatus("ACTIVE");
             snapshot.put("team", teamService.members(teamFilter));
             snapshot.put("projectBudget", budgetMapper.selectByProjectId(projectId));
+            snapshot.put("workPackageBudget", workPackageBudgetMapper.selectByProjectId(projectId));
             baseline.setSnapshotJson(objectMapper.writeValueAsString(snapshot));
             mapper.insertBaseline(baseline);
         } catch (Exception e) {
@@ -208,6 +214,13 @@ public class ProjectPlanChangeServiceImpl
                             right.get("projectBudget"),
                             "costCategoryId",
                             "categoryPath"));
+            modules.put(
+                    "WORK_PACKAGE_BUDGET",
+                    compareCollection(
+                            left.get("workPackageBudget"),
+                            right.get("workPackageBudget"),
+                            "workPackageBudgetLineId",
+                            "workPackageName"));
             modules.put(
                     "WBS",
                     compareCollection(left.get("wbs"), right.get("wbs"), "wbsId", "wbsName"));
@@ -715,7 +728,14 @@ public class ProjectPlanChangeServiceImpl
             if (item == null || item.getModuleType() == null || item.getOperationType() == null)
                 throw new ServiceException("变更项缺少模块或操作类型");
             String module = item.getModuleType(), operation = item.getOperationType();
-            if (!List.of("PROJECT_INFO", "PROJECT_BUDGET", "WBS", "TASK", "DELIVERABLE", "TEAM")
+            if (!List.of(
+                            "PROJECT_INFO",
+                            "PROJECT_BUDGET",
+                            "WORK_PACKAGE_BUDGET",
+                            "WBS",
+                            "TASK",
+                            "DELIVERABLE",
+                            "TEAM")
                     .contains(module)) throw new ServiceException("变更模块不受支持");
             if (!List.of("ADD", "UPDATE", "DELETE").contains(operation))
                 throw new ServiceException("变更项操作类型无效");
@@ -744,6 +764,8 @@ public class ProjectPlanChangeServiceImpl
                             objectMapper.readValue(item.getAfterJson(), Map.class);
                     if ("PROJECT_INFO".equals(module)) validateProjectInfoAfter(after);
                     if ("PROJECT_BUDGET".equals(module)) validateBudgetItem(projectId, item, after);
+                    if ("WORK_PACKAGE_BUDGET".equals(module))
+                        validateWorkPackageBudgetItem(projectId, item, after);
                     if ("WBS".equals(module)) validateWbsItem(projectId, item, after);
                     if ("TASK".equals(module)) validateTaskItem(projectId, item, after);
                     if ("DELIVERABLE".equals(module))
@@ -764,6 +786,8 @@ public class ProjectPlanChangeServiceImpl
                 validateTeamItem(projectId, item, Map.of());
             if ("PROJECT_BUDGET".equals(module) && "DELETE".equals(operation))
                 validateBudgetItem(projectId, item, Map.of());
+            if ("WORK_PACKAGE_BUDGET".equals(module) && "DELETE".equals(operation))
+                validateWorkPackageBudgetItem(projectId, item, Map.of());
         }
     }
 
@@ -827,6 +851,60 @@ public class ProjectPlanChangeServiceImpl
                 .filter(category -> categoryId.equals(category.getCostCategoryId()))
                 .findFirst()
                 .orElseThrow(() -> new ServiceException("新增分类预算只能选择有效末级成本类别"));
+    }
+
+    private void validateWorkPackageBudgetItem(
+            Long projectId, ProjectPlanChangeItem item, Map<String, Object> after) {
+        if (!"WORK_PACKAGE_BUDGET_LINE".equals(item.getTargetType())) {
+            throw new ServiceException("工作包预算变更对象类型无效");
+        }
+        String operation = item.getOperationType();
+        if ("DELETE".equals(operation)) {
+            if (item.getAfterJson() != null && !item.getAfterJson().isBlank()) {
+                throw new ServiceException("删除工作包预算不能填写变更后内容");
+            }
+            requireWorkPackageBudgetLine(projectId, item.getTargetId());
+            return;
+        }
+        Set<String> allowed =
+                "ADD".equals(operation)
+                        ? Set.of(
+                                "workPackageId",
+                                "workPackageName",
+                                "costCategoryId",
+                                "categoryPath",
+                                "budgetAmount",
+                                "estimationBasis")
+                        : Set.of("budgetAmount", "estimationBasis");
+        if (after.isEmpty() || !allowed.containsAll(after.keySet())) {
+            throw new ServiceException("工作包预算变更包含未开放字段");
+        }
+        if ("ADD".equals(operation)) {
+            Long workPackageId = numberValue(after.get("workPackageId"), "工作包");
+            Long categoryId = numberValue(after.get("costCategoryId"), "成本类别");
+            ProjectWbsNode workPackage = requireWorkPackage(projectId, workPackageId);
+            if ("COMPLETED".equals(workPackage.getStatus())) {
+                throw new ServiceException("已完成工作包不允许新增预算");
+            }
+            requireActiveBudgetCategory(categoryId);
+            if (workPackageBudgetMapper.countByWorkPackageAndCategory(
+                            workPackageId, categoryId, null)
+                    > 0) {
+                throw new ServiceException("同一工作包不能重复分配相同成本类别预算");
+            }
+        } else {
+            ProjectWorkPackageBudgetLine line =
+                    requireWorkPackageBudgetLine(projectId, item.getTargetId());
+            if ("COMPLETED".equals(line.getWorkPackageStatus())) {
+                throw new ServiceException("已完成工作包预算只读");
+            }
+        }
+        if (after.containsKey("budgetAmount")) budgetAmount(after.get("budgetAmount"), "工作包预算金额");
+        if (after.containsKey("estimationBasis")
+                && (after.get("estimationBasis") == null
+                        || String.valueOf(after.get("estimationBasis")).trim().isEmpty())) {
+            throw new ServiceException("测算依据不能为空");
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -906,12 +984,116 @@ public class ProjectPlanChangeServiceImpl
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
         if (allocated.compareTo(header.getBudgetAmount()) != 0)
             throw new ServiceException("分类预算合计必须严格等于预算总额");
+        validateFinalWorkPackageBudget(projectId, items, byCategoryId);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void validateFinalWorkPackageBudget(
+            Long projectId,
+            List<ProjectPlanChangeItem> items,
+            Map<Long, ProjectBudgetLine> projectBudgetByCategory) {
+        Map<Long, ProjectWorkPackageBudgetLine> byLineId = new LinkedHashMap<>();
+        Map<String, ProjectWorkPackageBudgetLine> byBusinessKey = new LinkedHashMap<>();
+        for (ProjectWorkPackageBudgetLine line :
+                workPackageBudgetMapper.selectByProjectId(projectId)) {
+            byLineId.put(line.getWorkPackageBudgetLineId(), line);
+            byBusinessKey.put(
+                    workPackageBudgetKey(line.getWorkPackageId(), line.getCostCategoryId()), line);
+        }
+        for (ProjectPlanChangeItem item : items) {
+            if (!"WORK_PACKAGE_BUDGET".equals(item.getModuleType())) continue;
+            try {
+                Map<String, Object> after =
+                        item.getAfterJson() == null
+                                ? Map.of()
+                                : objectMapper.readValue(item.getAfterJson(), Map.class);
+                if ("ADD".equals(item.getOperationType())) {
+                    Long workPackageId = numberValue(after.get("workPackageId"), "工作包");
+                    Long categoryId = numberValue(after.get("costCategoryId"), "成本类别");
+                    String key = workPackageBudgetKey(workPackageId, categoryId);
+                    if (byBusinessKey.containsKey(key)) {
+                        throw new ServiceException("同一工作包不能重复分配相同成本类别预算");
+                    }
+                    ProjectWorkPackageBudgetLine line = new ProjectWorkPackageBudgetLine();
+                    line.setProjectId(projectId);
+                    line.setWorkPackageId(workPackageId);
+                    line.setCostCategoryId(categoryId);
+                    line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "工作包预算金额"));
+                    line.setEstimationBasis(String.valueOf(after.get("estimationBasis")).trim());
+                    byBusinessKey.put(key, line);
+                    continue;
+                }
+                ProjectWorkPackageBudgetLine persisted =
+                        requireWorkPackageBudgetLine(projectId, item.getTargetId());
+                ProjectWorkPackageBudgetLine line =
+                        byLineId.get(persisted.getWorkPackageBudgetLineId());
+                if (line == null) throw new ServiceException("工作包预算不存在或不属于当前项目");
+                if ("DELETE".equals(item.getOperationType())) {
+                    byBusinessKey.remove(
+                            workPackageBudgetKey(
+                                    line.getWorkPackageId(), line.getCostCategoryId()));
+                } else {
+                    BigDecimal oldAmount = line.getBudgetAmount();
+                    if (after.containsKey("budgetAmount")) {
+                        line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "工作包预算金额"));
+                    }
+                    if (after.containsKey("estimationBasis")) {
+                        line.setEstimationBasis(
+                                String.valueOf(after.get("estimationBasis")).trim());
+                    }
+                    if ("1".equals(line.getCategoryStatus())
+                            && line.getBudgetAmount().compareTo(oldAmount) > 0) {
+                        throw new ServiceException("停用成本类别仅允许调减或删除工作包预算");
+                    }
+                }
+            } catch (Exception e) {
+                if (e instanceof ServiceException) throw (ServiceException) e;
+                throw new ServiceException("工作包预算变更内容格式无效");
+            }
+        }
+        Map<Long, BigDecimal> allocatedByCategory = new LinkedHashMap<>();
+        for (ProjectWorkPackageBudgetLine line : byBusinessKey.values()) {
+            if (!projectBudgetByCategory.containsKey(line.getCostCategoryId())) {
+                throw new ServiceException("工作包预算的成本类别未配置项目分类预算");
+            }
+            allocatedByCategory.merge(
+                    line.getCostCategoryId(), line.getBudgetAmount(), BigDecimal::add);
+        }
+        for (Map.Entry<Long, BigDecimal> entry : allocatedByCategory.entrySet()) {
+            if (entry.getValue()
+                            .compareTo(
+                                    projectBudgetByCategory.get(entry.getKey()).getBudgetAmount())
+                    > 0) {
+                throw new ServiceException("工作包预算分配合计不能超过项目分类预算");
+            }
+        }
+        for (ProjectPlanChangeItem item : items) {
+            if (!"WBS".equals(item.getModuleType()) || !"DELETE".equals(item.getOperationType()))
+                continue;
+            boolean hasBudget =
+                    byBusinessKey.values().stream()
+                            .anyMatch(line -> item.getTargetId().equals(line.getWorkPackageId()));
+            if (hasBudget) throw new ServiceException("删除工作包前必须先删除其全部工作包预算");
+        }
+    }
+
+    private String workPackageBudgetKey(Long workPackageId, Long categoryId) {
+        return workPackageId + ":" + categoryId;
     }
 
     private ProjectBudgetLine requireBudgetLine(Long projectId, Long lineId) {
         ProjectBudgetLine line = lineId == null ? null : budgetMapper.selectById(lineId);
         if (line == null || !projectId.equals(line.getProjectId()))
             throw new ServiceException("分类预算不存在或不属于当前项目");
+        return line;
+    }
+
+    private ProjectWorkPackageBudgetLine requireWorkPackageBudgetLine(Long projectId, Long lineId) {
+        ProjectWorkPackageBudgetLine line =
+                lineId == null ? null : workPackageBudgetMapper.selectById(lineId);
+        if (line == null || !projectId.equals(line.getProjectId())) {
+            throw new ServiceException("工作包预算不存在或不属于当前项目");
+        }
         return line;
     }
 
@@ -1185,6 +1367,10 @@ public class ProjectPlanChangeServiceImpl
             applyBudget(change, item, operator);
             return;
         }
+        if ("WORK_PACKAGE_BUDGET".equals(item.getModuleType())) {
+            applyWorkPackageBudget(change, item, operator);
+            return;
+        }
         if ("WBS".equals(item.getModuleType())) {
             applyWbs(change, item, operator);
             return;
@@ -1237,11 +1423,13 @@ public class ProjectPlanChangeServiceImpl
         if ("PROJECT_INFO".equals(module)) return 10;
         if ("PROJECT_BUDGET".equals(module)) return 15;
         if ("WBS".equals(module) && !"DELETE".equals(operation)) return 20;
+        if ("WORK_PACKAGE_BUDGET".equals(module) && !"DELETE".equals(operation)) return 25;
         if ("TASK".equals(module) && !"DELETE".equals(operation)) return 30;
         if ("DELIVERABLE".equals(module) && !"DELETE".equals(operation)) return 40;
         if ("DELIVERABLE".equals(module)) return 60;
         if ("TASK".equals(module)) return 70;
         if ("TEAM".equals(module)) return 80;
+        if ("WORK_PACKAGE_BUDGET".equals(module)) return 85;
         if ("WBS".equals(module)) return 90;
         return 100;
     }
@@ -1420,6 +1608,56 @@ public class ProjectPlanChangeServiceImpl
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private void applyWorkPackageBudget(
+            ProjectPlanChange change, ProjectPlanChangeItem item, String operator) {
+        try {
+            Map<String, Object> after =
+                    item.getAfterJson() == null
+                            ? Map.of()
+                            : objectMapper.readValue(item.getAfterJson(), Map.class);
+            validateWorkPackageBudgetItem(change.getProjectId(), item, after);
+            if ("ADD".equals(item.getOperationType())) {
+                Long workPackageId = numberValue(after.get("workPackageId"), "工作包");
+                Long categoryId = numberValue(after.get("costCategoryId"), "成本类别");
+                CostCategory category = requireActiveBudgetCategory(categoryId);
+                ProjectWorkPackageBudgetLine line = new ProjectWorkPackageBudgetLine();
+                line.setProjectId(change.getProjectId());
+                line.setWorkPackageId(workPackageId);
+                line.setCostCategoryId(categoryId);
+                line.setCategoryCode(category.getCategoryCode());
+                line.setCategoryName(category.getCategoryName());
+                line.setCategoryPath(
+                        category.getFullPath() == null
+                                ? category.getCategoryName()
+                                : category.getFullPath());
+                line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "工作包预算金额"));
+                line.setEstimationBasis(String.valueOf(after.get("estimationBasis")).trim());
+                line.setSortOrder(item.getSortOrder());
+                line.setCreateBy(operator);
+                workPackageBudgetMapper.insert(line);
+                return;
+            }
+            ProjectWorkPackageBudgetLine line =
+                    requireWorkPackageBudgetLine(change.getProjectId(), item.getTargetId());
+            if ("DELETE".equals(item.getOperationType())) {
+                workPackageBudgetMapper.deleteById(line.getWorkPackageBudgetLineId());
+                return;
+            }
+            if (after.containsKey("budgetAmount")) {
+                line.setBudgetAmount(budgetAmount(after.get("budgetAmount"), "工作包预算金额"));
+            }
+            if (after.containsKey("estimationBasis")) {
+                line.setEstimationBasis(String.valueOf(after.get("estimationBasis")).trim());
+            }
+            line.setUpdateBy(operator);
+            workPackageBudgetMapper.update(line);
+        } catch (Exception e) {
+            if (e instanceof ServiceException) throw (ServiceException) e;
+            throw new ServiceException("工作包预算变更数据无效");
+        }
+    }
+
     private Long numberValue(Object value, String label) {
         try {
             return Long.valueOf(String.valueOf(value));
@@ -1458,6 +1696,9 @@ public class ProjectPlanChangeServiceImpl
             if ("DELETE".equals(item.getOperationType())) {
                 ProjectWbsNode old = requireWbs(change.getProjectId(), item.getTargetId());
                 validateWbsDelete(change.getProjectId(), old);
+                if (workPackageBudgetMapper.countByWorkPackageId(old.getWbsId()) > 0) {
+                    throw new ServiceException("删除工作包前必须先删除其全部工作包预算");
+                }
                 wbsMapper.deleteById(old.getWbsId());
                 return;
             }
@@ -2003,6 +2244,7 @@ public class ProjectPlanChangeServiceImpl
             m.setStatus("ACTIVE");
             s.put("team", teamService.members(m));
             s.put("projectBudget", budgetMapper.selectByProjectId(projectId));
+            s.put("workPackageBudget", workPackageBudgetMapper.selectByProjectId(projectId));
             b.setSnapshotJson(objectMapper.writeValueAsString(s));
             mapper.insertBaseline(b);
         } catch (Exception e) {

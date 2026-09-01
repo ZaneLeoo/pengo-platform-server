@@ -5,6 +5,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.projectmanagement.budget.service.IProjectWorkPackageBudgetService;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
 import com.ruoyi.projectmanagement.project.domain.ProjectInfo;
@@ -28,9 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProjectInfoController extends BaseController {
 
     private final IProjectInfoService service;
+    private final IProjectWorkPackageBudgetService workPackageBudgetService;
 
-    public ProjectInfoController(IProjectInfoService service) {
+    public ProjectInfoController(
+            IProjectInfoService service,
+            IProjectWorkPackageBudgetService workPackageBudgetService) {
         this.service = service;
+        this.workPackageBudgetService = workPackageBudgetService;
     }
 
     /** 查询项目列表。 */
@@ -53,6 +58,19 @@ public class ProjectInfoController extends BaseController {
     @GetMapping("/{id}/budget")
     public AjaxResult budget(@PathVariable Long id) {
         return success(service.projectBudget(id));
+    }
+
+    /** 查询项目工作包预算分配。 */
+    @GetMapping("/{id}/work-package-budgets")
+    public AjaxResult workPackageBudgets(@PathVariable Long id) {
+        return success(workPackageBudgetService.projectSummary(id));
+    }
+
+    /** 查询工作包详情抽屉的预算分配。 */
+    @GetMapping("/{projectId}/work-package/{workPackageId}/budget")
+    public AjaxResult workPackageBudget(
+            @PathVariable Long projectId, @PathVariable Long workPackageId) {
+        return success(workPackageBudgetService.workPackageSummary(projectId, workPackageId));
     }
 
     /** 新增项目申请。 */

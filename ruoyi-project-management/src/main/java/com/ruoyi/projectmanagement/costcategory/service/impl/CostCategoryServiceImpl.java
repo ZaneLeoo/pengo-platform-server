@@ -2,6 +2,7 @@ package com.ruoyi.projectmanagement.costcategory.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.projectmanagement.budget.mapper.ProjectBudgetMapper;
+import com.ruoyi.projectmanagement.budget.mapper.ProjectWorkPackageBudgetMapper;
 import com.ruoyi.projectmanagement.costcategory.domain.CostCategory;
 import com.ruoyi.projectmanagement.costcategory.domain.CostCategoryUsage;
 import com.ruoyi.projectmanagement.costcategory.mapper.CostCategoryMapper;
@@ -24,10 +25,15 @@ public class CostCategoryServiceImpl implements ICostCategoryService {
     private static final int MAX_LEVEL = 3;
     private final CostCategoryMapper mapper;
     private final ProjectBudgetMapper budgetMapper;
+    private final ProjectWorkPackageBudgetMapper workPackageBudgetMapper;
 
-    public CostCategoryServiceImpl(CostCategoryMapper mapper, ProjectBudgetMapper budgetMapper) {
+    public CostCategoryServiceImpl(
+            CostCategoryMapper mapper,
+            ProjectBudgetMapper budgetMapper,
+            ProjectWorkPackageBudgetMapper workPackageBudgetMapper) {
         this.mapper = mapper;
         this.budgetMapper = budgetMapper;
+        this.workPackageBudgetMapper = workPackageBudgetMapper;
     }
 
     @Override
@@ -313,7 +319,7 @@ public class CostCategoryServiceImpl implements ICostCategoryService {
     }
 
     private long referenceCount(Long id) {
-        return budgetMapper.countByCategoryId(id);
+        return budgetMapper.countByCategoryId(id) + workPackageBudgetMapper.countByCategoryId(id);
     }
 
     private boolean noFilter(CostCategory filter) {

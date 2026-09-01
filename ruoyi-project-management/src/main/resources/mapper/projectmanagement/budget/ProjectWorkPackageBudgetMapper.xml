@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.budget.mapper.ProjectWorkPackageBudgetMapper">
+  <resultMap id="WorkPackageBudgetLine" type="ProjectWorkPackageBudgetLine">
+    <id property="workPackageBudgetLineId" column="work_package_budget_line_id"/>
+    <result property="projectId" column="project_id"/><result property="workPackageId" column="work_package_id"/>
+    <result property="workPackageCode" column="work_package_code"/><result property="workPackageName" column="work_package_name"/>
+    <result property="workPackageStatus" column="work_package_status"/><result property="costCategoryId" column="cost_category_id"/>
+    <result property="categoryCode" column="category_code"/><result property="categoryName" column="category_name"/>
+    <result property="categoryPath" column="category_path"/><result property="categoryStatus" column="category_status"/>
+    <result property="budgetAmount" column="budget_amount"/><result property="estimationBasis" column="estimation_basis"/>
+    <result property="sortOrder" column="sort_order"/><result property="projectCategoryBudget" column="project_category_budget"/>
+    <result property="categoryAllocatedAmount" column="category_allocated_amount"/><result property="categoryRemainingAmount" column="category_remaining_amount"/>
+  </resultMap>
+  <sql id="lineColumns">
+    select b.*, w.wbs_code work_package_code, w.wbs_name work_package_name, w.status work_package_status,
+      c.status category_status, pb.budget_amount project_category_budget,
+      (select coalesce(sum(x.budget_amount),0) from pm_work_package_budget_line x where x.project_id=b.project_id and x.cost_category_id=b.cost_category_id) category_allocated_amount,
+      coalesce(pb.budget_amount,0) - (select coalesce(sum(x.budget_amount),0) from pm_work_package_budget_line x where x.project_id=b.project_id and x.cost_category_id=b.cost_category_id) category_remaining_amount
+    from pm_work_package_budget_line b
+    join pm_project_wbs_node w on w.wbs_id=b.work_package_id
+    left join pm_cost_category c on c.cost_category_id=b.cost_category_id
+    left join pm_project_budget_line pb on pb.project_id=b.project_id and pb.cost_category_id=b.cost_category_id
+  </sql>
+  <select id="selectByProjectId" resultMap="WorkPackageBudgetLine"><include refid="lineColumns"/> where b.project_id=#{projectId} order by b.cost_category_id,b.work_package_id,b.sort_order,b.work_package_budget_line_id</select>
+  <select id="selectByWorkPackageId" resultMap="WorkPackageBudgetLine"><include refid="lineColumns"/> where b.work_package_id=#{workPackageId} order by b.sort_order,b.work_package_budget_line_id</select>
+  <select id="selectById" resultMap="WorkPackageBudgetLine"><include refid="lineColumns"/> where b.work_package_budget_line_id=#{lineId}</select>
+  <insert id="insert" useGeneratedKeys="true" keyProperty="workPackageBudgetLineId">insert into pm_work_package_budget_line(project_id,work_package_id,cost_category_id,category_code,category_name,category_path,budget_amount,estimation_basis,sort_order,create_by,create_time) values(#{projectId},#{workPackageId},#{costCategoryId},#{categoryCode},#{categoryName},#{categoryPath},#{budgetAmount},#{estimationBasis},#{sortOrder},#{createBy},sysdate())</insert>
+  <update id="update">update pm_work_package_budget_line set budget_amount=#{budgetAmount},estimation_basis=#{estimationBasis},sort_order=#{sortOrder},update_by=#{updateBy},update_time=sysdate() where work_package_budget_line_id=#{workPackageBudgetLineId}</update>
+  <delete id="deleteById">delete from pm_work_package_budget_line where work_package_budget_line_id=#{lineId}</delete>
+  <select id="countByWorkPackageId" resultType="int">select count(*) from pm_work_package_budget_line where work_package_id=#{workPackageId}</select>
+  <select id="countByCategoryId" resultType="long">select count(*) from pm_work_package_budget_line where cost_category_id=#{costCategoryId}</select>
+  <select id="countByWorkPackageAndCategory" resultType="int">select count(*) from pm_work_package_budget_line where work_package_id=#{workPackageId} and cost_category_id=#{costCategoryId}<if test="excludeId != null"> and work_package_budget_line_id != #{excludeId}</if></select>
+</mapper>
