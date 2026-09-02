@@ -281,6 +281,11 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
         prepared.setOccurDate(requireDate(cost.getOccurDate()));
         prepared.setDescription(requireText(cost.getDescription()));
         prepared.setWorkPackageId(cost.getWorkPackageId());
+        prepared.setSourceType(cost.getSourceType());
+        prepared.setSourceLineId(cost.getSourceLineId());
+        prepared.setSourceDocumentNo(cost.getSourceDocumentNo());
+        prepared.setSourceLineNo(cost.getSourceLineNo());
+        prepared.setCostStatus(cost.getCostStatus());
         prepared.setCreateBy(operator);
         return prepared;
     }
