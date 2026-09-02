@@ -334,13 +334,28 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
     /** 递归重排某分支下全部节点的编码。 */
     private void recodeChildren(Long projectId, Long parentId) {
         List<ProjectWbsNode> children = mapper.selectChildren(projectId, parentId);
+        // wbs_code 在项目内唯一。若直接把“2”改成“1”，同级尚未改名的原“1”会
+        // 立即触发唯一键冲突。先将整个受影响子树换成节点 ID 唯一的临时编码，再生成
+        // 正式树编码，避免删除或移动节点时重排失败。
+        children.forEach(this::markTemporaryCode);
+        recodeChildren(projectId, parentId, children);
+    }
+
+    private void markTemporaryCode(ProjectWbsNode node) {
+        mapper.updateCode(node.getWbsId(), "TMP-" + node.getWbsId());
+        mapper.selectChildren(node.getProjectId(), node.getWbsId()).forEach(this::markTemporaryCode);
+    }
+
+    private void recodeChildren(
+            Long projectId, Long parentId, List<ProjectWbsNode> children) {
         String prefix = parentId == 0 ? "" : required(parentId).getWbsCode() + ".";
         for (int i = 0; i < children.size(); i++) {
             ProjectWbsNode child = children.get(i);
             String code = prefix + (i + 1);
             mapper.updateCode(child.getWbsId(), code);
             child.setWbsCode(code);
-            recodeChildren(projectId, child.getWbsId());
+            List<ProjectWbsNode> descendants = mapper.selectChildren(projectId, child.getWbsId());
+            recodeChildren(projectId, child.getWbsId(), descendants);
         }
     }
 
