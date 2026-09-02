@@ -82,12 +82,16 @@
     <insert id="insertProjectInfo" useGeneratedKeys="true" keyProperty="projectId">
         insert into pm_project(project_code, project_name, category_id, manager_user_id, applicant,
                                applicant_dept_id, start_date, end_date, status, progress,
-                               project_goal, budget_required, budget_amount, budget_description,
-                               remark, create_by, create_time)
+                               project_goal, project_background, project_scope, out_of_scope,
+                               expected_outcome, resource_requirement, budget_required, budget_amount,
+                               budget_description, major_risk, technical_feasibility,
+                               resource_feasibility, feasibility_conclusion, remark, create_by, create_time)
         values(#{projectCode}, #{projectName}, #{categoryId}, #{managerId}, #{applicant},
                #{applicantDeptId}, #{startDate}, #{endDate}, #{status}, #{progress},
-               #{projectGoal}, #{budgetRequired}, #{budgetAmount}, #{budgetDescription},
-               #{remark}, #{createBy}, sysdate())
+               #{projectGoal}, #{projectBackground}, #{projectScope}, #{outOfScope},
+               #{expectedOutcome}, #{resourceRequirement}, #{budgetRequired}, #{budgetAmount},
+               #{budgetDescription}, #{majorRisk}, #{technicalFeasibility},
+               #{resourceFeasibility}, #{feasibilityConclusion}, #{remark}, #{createBy}, sysdate())
     </insert>
 
     <update id="updateProjectInfo">
