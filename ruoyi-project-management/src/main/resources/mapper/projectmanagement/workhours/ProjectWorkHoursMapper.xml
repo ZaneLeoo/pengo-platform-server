@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.workhours.mapper.ProjectWorkHoursMapper">
+  <resultMap id="Sheet" type="ProjectWorkHoursSheet">
+    <id property="sheetId" column="sheet_id"/><result property="userId" column="user_id"/><result property="userName" column="user_name"/><result property="nickName" column="nick_name"/>
+    <result property="weekStartDate" column="week_start_date"/><result property="weekEndDate" column="week_end_date"/><result property="projectId" column="project_id"/><result property="sheetType" column="sheet_type"/>
+    <result property="status" column="status"/><result property="lateReportReason" column="late_report_reason"/><result property="workflowInstanceId" column="workflow_instance_id"/>
+    <result property="submitTime" column="submit_time"/><result property="archiveTime" column="archive_time"/><result property="createBy" column="create_by"/><result property="createTime" column="create_time"/>
+  </resultMap>
+  <resultMap id="Entry" type="ProjectWorkHoursEntry">
+    <id property="entryId" column="entry_id"/><result property="sheetId" column="sheet_id"/><result property="projectId" column="project_id"/><result property="workPackageId" column="work_package_id"/><result property="taskId" column="task_id"/>
+    <result property="reportUserId" column="report_user_id"/><result property="projectName" column="project_name"/><result property="workPackageName" column="work_package_name"/><result property="taskName" column="task_name"/><result property="reportUserName" column="report_user_name"/><result property="reportNickName" column="report_nick_name"/>
+    <result property="workDate" column="work_date"/><result property="hours" column="hours"/><result property="overtimeFlag" column="overtime_flag"/><result property="workDescription" column="work_description"/><result property="achievementDescription" column="achievement_description"/>
+    <result property="sourceEntryId" column="source_entry_id"/><result property="correctionReason" column="correction_reason"/><result property="entryStatus" column="entry_status"/><result property="costStatus" column="cost_status"/><result property="rateIdSnapshot" column="rate_id_snapshot"/><result property="rateAmountSnapshot" column="rate_amount_snapshot"/><result property="actualCostId" column="actual_cost_id"/>
+    <result property="createBy" column="create_by"/><result property="createTime" column="create_time"/>
+  </resultMap>
+  <resultMap id="Rate" type="ProjectLaborRate"><id property="rateId" column="rate_id"/><result property="userId" column="user_id"/><result property="userName" column="user_name"/><result property="nickName" column="nick_name"/><result property="effectiveStartDate" column="effective_start_date"/><result property="effectiveEndDate" column="effective_end_date"/><result property="hourlyRate" column="hourly_rate"/><result property="status" column="status"/><result property="createBy" column="create_by"/><result property="createTime" column="create_time"/></resultMap>
+  <select id="selectSheet" resultMap="Sheet">select * from pm_project_work_hours_sheet where sheet_id=#{sheetId}</select>
+  <select id="selectSheetByUserWeek" resultMap="Sheet">select * from pm_project_work_hours_sheet where user_id=#{userId} and week_start_date=#{weekStartDate} and sheet_type='NORMAL'</select>
+  <select id="selectCorrectionSheetByUserWeek" resultMap="Sheet">select * from pm_project_work_hours_sheet where user_id=#{userId} and week_start_date=#{weekStartDate} and sheet_type='CORRECTION'</select>
+  <select id="selectMySheets" resultMap="Sheet">select * from pm_project_work_hours_sheet where user_id=#{userId} order by week_start_date desc</select>
+  <select id="selectEntries" resultMap="Entry">select * from pm_project_work_hours_entry where sheet_id=#{sheetId} order by work_date,entry_id</select>
+  <select id="selectEntry" resultMap="Entry">select * from pm_project_work_hours_entry where entry_id=#{entryId}</select>
+  <select id="selectManage" resultMap="Entry">
+    select e.* from pm_project_work_hours_entry e where 1=1
+    <if test="projectId != null">and e.project_id=#{projectId}</if><if test="taskId != null">and e.task_id=#{taskId}</if><if test="reportUserId != null">and e.report_user_id=#{reportUserId}</if><if test="entryStatus != null and entryStatus != ''">and e.entry_status=#{entryStatus}</if>
+    order by e.work_date desc,e.entry_id desc
+  </select>
+  <insert id="insertSheet" useGeneratedKeys="true" keyProperty="sheetId">insert into pm_project_work_hours_sheet(user_id,user_name,nick_name,week_start_date,week_end_date,project_id,sheet_type,status,late_report_reason,create_by,create_time) values(#{userId},#{userName},#{nickName},#{weekStartDate},#{weekEndDate},#{projectId},coalesce(#{sheetType},'NORMAL'),#{status},#{lateReportReason},#{createBy},sysdate())</insert>
+  <update id="updateSheet">update pm_project_work_hours_sheet set project_id=#{projectId},late_report_reason=#{lateReportReason},update_by=#{updateBy},update_time=sysdate() where sheet_id=#{sheetId}</update>
+  <update id="updateSheetStatus">update pm_project_work_hours_sheet set status=#{status},workflow_instance_id=#{workflowInstanceId},submit_time=#{submitTime},archive_time=#{archiveTime},update_by=#{updateBy},update_time=sysdate() where sheet_id=#{sheetId}</update>
+  <delete id="deleteEntries">delete from pm_project_work_hours_entry where sheet_id=#{sheetId}</delete>
+  <insert id="insertEntry" useGeneratedKeys="true" keyProperty="entryId">insert into pm_project_work_hours_entry(sheet_id,project_id,work_package_id,task_id,report_user_id,project_name,work_package_name,task_name,report_user_name,report_nick_name,work_date,hours,overtime_flag,work_description,achievement_description,source_entry_id,correction_reason,entry_status,create_by,create_time) values(#{sheetId},#{projectId},#{workPackageId},#{taskId},#{reportUserId},#{projectName},#{workPackageName},#{taskName},#{reportUserName},#{reportNickName},#{workDate},#{hours},#{overtimeFlag},#{workDescription},#{achievementDescription},#{sourceEntryId},#{correctionReason},#{entryStatus},#{createBy},sysdate())</insert>
+  <update id="updateEntryArchive">update pm_project_work_hours_entry set entry_status=#{entryStatus},cost_status=#{costStatus},rate_id_snapshot=#{rateIdSnapshot},rate_amount_snapshot=#{rateAmountSnapshot},actual_cost_id=#{actualCostId},update_by=#{updateBy},update_time=sysdate() where entry_id=#{entryId}</update>
+  <update id="reverseEntry">update pm_project_work_hours_entry set entry_status='REVERSED',cost_status='REVERSED',update_by=#{operator},update_time=sysdate() where entry_id=#{entryId} and entry_status='ARCHIVED'</update>
+  <update id="updateTaskActualHours">update pm_project_task set actual_hours=(select coalesce(sum(hours),0) from pm_project_work_hours_entry where task_id=#{taskId} and entry_status='ARCHIVED'),update_time=sysdate() where task_id=#{taskId}</update>
+  <select id="selectRates" resultMap="Rate">select * from pm_project_labor_rate where 1=1 <if test="userId != null">and user_id=#{userId}</if><if test="status != null and status != ''">and status=#{status}</if> order by user_id,effective_start_date desc</select>
+  <select id="selectRate" resultMap="Rate">select * from pm_project_labor_rate where user_id=#{userId} and status='0' and effective_start_date &lt;= #{workDate} and (effective_end_date is null or effective_end_date &gt;= #{workDate}) order by effective_start_date desc limit 1</select>
+  <select id="selectRateById" resultMap="Rate">select * from pm_project_labor_rate where rate_id=#{rateId}</select>
+  <insert id="insertRate" useGeneratedKeys="true" keyProperty="rateId">insert into pm_project_labor_rate(user_id,user_name,nick_name,effective_start_date,effective_end_date,hourly_rate,status,create_by,create_time) values(#{userId},#{userName},#{nickName},#{effectiveStartDate},#{effectiveEndDate},#{hourlyRate},#{status},#{createBy},sysdate())</insert>
+  <update id="updateRate">update pm_project_labor_rate set effective_start_date=#{effectiveStartDate},effective_end_date=#{effectiveEndDate},hourly_rate=#{hourlyRate},status=#{status},update_by=#{updateBy},update_time=sysdate() where rate_id=#{rateId}</update>
+  <select id="countRateOverlap" resultType="int">select count(*) from pm_project_labor_rate where user_id=#{userId} and rate_id != coalesce(#{rateId},0) and status='0' and effective_start_date &lt;= coalesce(#{effectiveEndDate},'9999-12-31') and coalesce(effective_end_date,'9999-12-31') &gt;= #{effectiveStartDate}</select>
+</mapper>
