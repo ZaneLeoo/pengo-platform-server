@@ -97,7 +97,13 @@ public class ProjectPlanChangeServiceImpl
                     "deliverableCount",
                     "completedTaskCount",
                     "overdueTaskCount",
-                    "allowedExtensions");
+                    "allowedExtensions",
+                    // 交付物提交、审批属于执行留痕，不应在计划基线比较中被误判为计划变更。
+                    "submitBy",
+                    "latestFileUrl",
+                    "latestExternalUrl",
+                    "reviewerName",
+                    "projectStatus");
 
     public ProjectPlanChangeServiceImpl(
             ProjectPlanChangeMapper mapper,
