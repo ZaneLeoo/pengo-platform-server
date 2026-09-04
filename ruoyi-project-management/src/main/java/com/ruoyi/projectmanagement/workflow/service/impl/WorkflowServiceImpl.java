@@ -27,6 +27,9 @@ import tools.jackson.databind.ObjectMapper;
 /** 只支持严格串行节点的轻量审批流实现。 */
 @Service
 public class WorkflowServiceImpl implements IWorkflowService {
+    private static final String WORKFLOW_CONFIG_PATH =
+            "【项目管理 > 基础配置 > 审批流程配置】";
+
     private final WorkflowMapper mapper;
     private final ObjectMapper objectMapper;
     private final Map<String, WorkflowBusinessCallback> callbacks;
@@ -113,7 +116,10 @@ public class WorkflowServiceImpl implements IWorkflowService {
             Long initiatorUserId) {
         WorkflowDefinition definition = mapper.selectActiveDefinition(businessType);
         if (definition == null) {
-            throw new ServiceException("该业务尚未配置并发布审批流程");
+            throw new ServiceException(
+                    "当前业务暂未配置可用的审批流程，请联系管理员前往"
+                            + WORKFLOW_CONFIG_PATH
+                            + "完成配置并发布后再提交");
         }
         deserializeNodes(definition);
         List<List<Long>> candidates =
@@ -306,7 +312,14 @@ public class WorkflowServiceImpl implements IWorkflowService {
             List<Long> filtered =
                     users.stream().filter(id -> !id.equals(initiatorUserId)).distinct().toList();
             if (filtered.isEmpty()) {
-                throw new ServiceException("节点“" + node.getName() + "”排除发起人后没有可用审批人");
+                if (!users.isEmpty()) {
+                    throw new ServiceException(
+                            "发起人不能审批自己提交的申请，请为审批节点“"
+                                    + node.getName()
+                                    + "”配置其他审批人后重试");
+                }
+                throw new ServiceException(
+                        "审批节点“" + node.getName() + "”未配置可用审批人，请联系管理员配置后重试");
             }
             resolved.add(filtered);
         }
