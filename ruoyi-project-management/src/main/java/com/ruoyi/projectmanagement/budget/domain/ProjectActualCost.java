@@ -37,7 +37,7 @@ public class ProjectActualCost extends BaseEntity {
     /** 更正次数，仅供展示。 */
     private Integer correctionNo;
 
-    /** 成本来源：MANUAL / PURCHASE_INBOUND。 */
+    /** 成本来源：MANUAL 手工、WORK_HOURS 工时、PURCHASE_INBOUND 采购入库。 */
     private String sourceType;
 
     private Long sourceLineId;

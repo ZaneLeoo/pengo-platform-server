@@ -23,7 +23,15 @@
   <select id="selectEntry" resultMap="Entry">select * from pm_project_work_hours_entry where entry_id=#{entryId}</select>
   <select id="selectManage" resultMap="Entry">
     select e.* from pm_project_work_hours_entry e where 1=1
-    <if test="projectId != null">and e.project_id=#{projectId}</if><if test="taskId != null">and e.task_id=#{taskId}</if><if test="reportUserId != null">and e.report_user_id=#{reportUserId}</if><if test="entryStatus != null and entryStatus != ''">and e.entry_status=#{entryStatus}</if>
+    <if test="projectId != null">and e.project_id=#{projectId}</if>
+    <if test="workPackageId != null">and e.work_package_id=#{workPackageId}</if>
+    <if test="taskId != null">and e.task_id=#{taskId}</if>
+    <if test="reportUserId != null">and e.report_user_id=#{reportUserId}</if>
+    <if test="projectName != null and projectName != ''">and e.project_name like concat('%',#{projectName},'%')</if>
+    <if test="workPackageName != null and workPackageName != ''">and e.work_package_name like concat('%',#{workPackageName},'%')</if>
+    <if test="taskName != null and taskName != ''">and e.task_name like concat('%',#{taskName},'%')</if>
+    <if test="reportNickName != null and reportNickName != ''">and e.report_nick_name like concat('%',#{reportNickName},'%')</if>
+    <if test="entryStatus != null and entryStatus != ''">and e.entry_status=#{entryStatus}</if>
     order by e.work_date desc,e.entry_id desc
   </select>
   <insert id="insertSheet" useGeneratedKeys="true" keyProperty="sheetId">insert into pm_project_work_hours_sheet(user_id,user_name,nick_name,week_start_date,week_end_date,project_id,sheet_type,status,late_report_reason,create_by,create_time) values(#{userId},#{userName},#{nickName},#{weekStartDate},#{weekEndDate},#{projectId},coalesce(#{sheetType},'NORMAL'),#{status},#{lateReportReason},#{createBy},sysdate())</insert>

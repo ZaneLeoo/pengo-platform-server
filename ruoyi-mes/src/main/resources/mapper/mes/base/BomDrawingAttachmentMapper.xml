@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mes.base.mapper.BomDrawingAttachmentMapper">
+    <resultMap id="BomDrawingAttachmentResult" type="BomDrawingAttachment">
+        <id property="attachmentId" column="attachment_id"/>
+        <result property="bomMasterId" column="bom_master_id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileUrl" column="file_url"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="fileExt" column="file_ext"/>
+        <result property="mimeType" column="mime_type"/>
+        <result property="description" column="description"/>
+        <result property="uploadBy" column="upload_by"/>
+        <result property="uploadTime" column="upload_time"/>
+    </resultMap>
+
+    <sql id="attachmentColumns">
+        attachment_id, bom_master_id, file_name, file_url, file_size, file_ext, mime_type,
+        description, upload_by, upload_time
+    </sql>
+
+    <select id="selectByBomMasterId" resultMap="BomDrawingAttachmentResult">
+        select <include refid="attachmentColumns"/>
+        from bom_drawing_attachment
+        where bom_master_id = #{bomMasterId}
+        order by upload_time desc, attachment_id desc
+    </select>
+
+    <select id="selectById" resultMap="BomDrawingAttachmentResult">
+        select <include refid="attachmentColumns"/>
+        from bom_drawing_attachment
+        where attachment_id = #{attachmentId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="attachmentId">
+        insert into bom_drawing_attachment(
+            bom_master_id, file_name, file_url, file_size, file_ext, mime_type,
+            description, upload_by, upload_time
+        ) values (
+            #{bomMasterId}, #{fileName}, #{fileUrl}, #{fileSize}, #{fileExt}, #{mimeType},
+            #{description}, #{uploadBy}, sysdate()
+        )
+    </insert>
+
+    <delete id="delete">
+        delete from bom_drawing_attachment
+        where bom_master_id = #{bomMasterId} and attachment_id = #{attachmentId}
+    </delete>
+</mapper>
