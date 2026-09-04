@@ -30,14 +30,25 @@
         <result property="submitBy" column="submit_by"/>
         <result property="latestFileUrl" column="latest_file_url"/>
         <result property="latestExternalUrl" column="latest_external_url"/>
+        <result property="businessType" column="business_type"/>
+        <result property="businessId" column="business_id"/>
+        <result property="businessCode" column="business_code"/>
+        <result property="businessName" column="business_name"/>
+        <result property="businessVersion" column="business_version"/>
     </resultMap>
 
     <resultMap id="submission" type="ProjectDeliverableSubmission">
         <id property="submissionId" column="submission_id"/>
+        <result property="workflowInstanceId" column="workflow_instance_id"/>
         <result property="deliverableId" column="deliverable_id"/>
         <result property="versionNo" column="version_no"/>
         <result property="fileUrl" column="file_url"/>
         <result property="externalUrl" column="external_url"/>
+        <result property="businessType" column="business_type"/>
+        <result property="businessId" column="business_id"/>
+        <result property="businessCode" column="business_code"/>
+        <result property="businessName" column="business_name"/>
+        <result property="businessVersion" column="business_version"/>
         <result property="submitBy" column="submit_by"/>
         <result property="submitTime" column="submit_time"/>
         <result property="reviewResult" column="review_result"/>
@@ -49,18 +60,43 @@
     <sql id="vo">
         select d.*, p.project_name, p.status project_status, w.wbs_name work_package_name, t.type_name deliverable_type_name,
                w.owner_id work_package_owner_id, w.owner_user_id work_package_owner_user_id, u.nick_name work_package_owner_name, u.user_name work_package_owner_code,
-               u.user_name work_package_owner_user_name
+               u.user_name work_package_owner_user_name,
+               bm.bom_code business_code, bm.parent_item_name business_name, bv.version_code business_version
         from pm_project_deliverable d
         join pm_project p on p.project_id = d.project_id
         join pm_project_wbs_node w on w.wbs_id = d.work_package_id
         left join pm_project_deliverable_type t on t.type_id = d.deliverable_type_id
         left join sys_user u on u.user_id = w.owner_user_id and u.del_flag = '0'
+        left join bom_version bv on d.business_type = 'BOM_VERSION' and d.business_id = cast(bv.id as char)
+        left join bom_master bm on bm.id = bv.bom_master_id
     </sql>
 
     <select id="selectList" parameterType="ProjectDeliverable" resultMap="deliverable">
         <include refid="vo"/>
         <where>
-            <if test="projectId != null">and d.project_id = #{projectId}</if>
+            <choose>
+                <when test="projectId != null">and d.project_id = #{projectId}</when>
+                <when test="viewerUserId != null">
+                    and (
+                        p.manager_user_id = #{viewerUserId}
+                        or exists (
+                            select 1 from pm_project_member vm
+                            where vm.project_id = p.project_id
+                              and vm.user_id = #{viewerUserId}
+                              and vm.status = 'ACTIVE'
+                        )
+                        or exists (
+                            select 1
+                            from pm_workflow_instance vi
+                            join pm_workflow_task vt on vt.instance_id = vi.instance_id
+                            join pm_workflow_task_candidate vc on vc.task_id = vt.task_id
+                            where vi.project_id = p.project_id
+                              and vc.user_id = #{viewerUserId}
+                        )
+                    )
+                </when>
+                <otherwise>and 1 = 0</otherwise>
+            </choose>
             <if test="workPackageId != null">and d.work_package_id = #{workPackageId}</if>
             <if test="workPackageOwnerId != null">and w.owner_id = #{workPackageOwnerId}</if>
             <if test="workPackageOwnerUserId != null">and w.owner_user_id = #{workPackageOwnerUserId}</if>
@@ -106,7 +142,8 @@
     <update id="updateStatus">
         update pm_project_deliverable
         set status = #{status}, submit_by = #{submitBy}, latest_file_url = #{latestFileUrl},
-            latest_external_url = #{latestExternalUrl}, update_time = sysdate()
+            latest_external_url = #{latestExternalUrl}, business_type = #{businessType},
+            business_id = #{businessId}, update_time = sysdate()
         where deliverable_id = #{deliverableId}
     </update>
 
@@ -144,8 +181,12 @@
 
     <insert id="insertSubmission" useGeneratedKeys="true" keyProperty="submissionId">
         insert into pm_project_deliverable_submission(deliverable_id, version_no, file_url, external_url,
+                                                      business_type, business_id, business_code,
+                                                      business_name, business_version,
                                                       submit_by, submit_time, review_result)
-        values(#{deliverableId}, #{versionNo}, #{fileUrl}, #{externalUrl}, #{submitBy}, sysdate(), #{reviewResult})
+        values(#{deliverableId}, #{versionNo}, #{fileUrl}, #{externalUrl},
+               #{businessType}, #{businessId}, #{businessCode}, #{businessName}, #{businessVersion},
+               #{submitBy}, sysdate(), #{reviewResult})
     </insert>
 
     <update id="updateSubmissionReview">
@@ -154,7 +195,7 @@
             review_by = #{reviewBy}, review_time = sysdate()
         where submission_id = #{submissionId}
     </update>
-    <select id="selectSubmissionById" resultType="ProjectDeliverableSubmission">
+    <select id="selectSubmissionById" resultMap="submission">
         select * from pm_project_deliverable_submission where submission_id=#{submissionId}
     </select>
     <update id="bindSubmissionWorkflow">

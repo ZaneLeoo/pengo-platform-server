@@ -737,25 +737,6 @@ public class ProjectPlanChangeServiceImpl
 
     private void validateItems(Long projectId, List<ProjectPlanChangeItem> items) {
         if (items == null || items.isEmpty()) throw new ServiceException("请至少添加一条变更项");
-        Map<Long, ProjectWbsNode> pendingWorkPackages = new LinkedHashMap<>();
-        for (ProjectPlanChangeItem item : items) {
-            if (item == null
-                    || !"WBS".equals(item.getModuleType())
-                    || !"ADD".equals(item.getOperationType())
-                    || item.getAfterJson() == null) continue;
-            try {
-                Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
-                if (!"WORK_PACKAGE".equals(after.get("nodeType"))) continue;
-                if (item.getTargetId() == null)
-                    throw new ServiceException("新增工作包必须设置临时目标标识，供同一变更单新增任务关联");
-                ProjectWbsNode pending = objectMapper.convertValue(after, ProjectWbsNode.class);
-                pendingWorkPackages.put(item.getTargetId(), pending);
-            } catch (ServiceException e) {
-                throw e;
-            } catch (Exception e) {
-                throw new ServiceException("新增工作包变更内容格式无效");
-            }
-        }
         for (ProjectPlanChangeItem item : items) {
             if (item == null || item.getModuleType() == null || item.getOperationType() == null)
                 throw new ServiceException("变更项缺少模块或操作类型");
@@ -799,8 +780,7 @@ public class ProjectPlanChangeServiceImpl
                     if ("WORK_PACKAGE_BUDGET".equals(module))
                         validateWorkPackageBudgetItem(projectId, item, after);
                     if ("WBS".equals(module)) validateWbsItem(projectId, item, after);
-                    if ("TASK".equals(module))
-                        validateTaskItem(projectId, item, after, pendingWorkPackages);
+                    if ("TASK".equals(module)) validateTaskItem(projectId, item, after, Map.of());
                     if ("DELIVERABLE".equals(module))
                         validateDeliverableItem(projectId, item, after);
                     if ("TEAM".equals(module)) validateTeamItem(projectId, item, after);
@@ -812,7 +792,7 @@ public class ProjectPlanChangeServiceImpl
             if ("WBS".equals(module) && "DELETE".equals(operation))
                 validateWbsItem(projectId, item, Map.of());
             if ("TASK".equals(module) && "DELETE".equals(operation))
-                validateTaskItem(projectId, item, Map.of(), pendingWorkPackages);
+                validateTaskItem(projectId, item, Map.of(), Map.of());
             if ("DELIVERABLE".equals(module) && "DELETE".equals(operation))
                 validateDeliverableItem(projectId, item, Map.of());
             if ("TEAM".equals(module) && "DELETE".equals(operation))
@@ -821,29 +801,6 @@ public class ProjectPlanChangeServiceImpl
                 validateBudgetItem(projectId, item, Map.of());
             if ("WORK_PACKAGE_BUDGET".equals(module) && "DELETE".equals(operation))
                 validateWorkPackageBudgetItem(projectId, item, Map.of());
-        }
-        Map<Long, Boolean> executionLinked = new LinkedHashMap<>();
-        for (ProjectPlanChangeItem item : items) {
-            if (item == null
-                    || !"TASK".equals(item.getModuleType())
-                    || !"ADD".equals(item.getOperationType())
-                    || item.getAfterJson() == null) continue;
-            try {
-                Map<String, Object> after = objectMapper.readValue(item.getAfterJson(), Map.class);
-                Object workPackageId = after.get("workPackageId");
-                if (workPackageId instanceof Number number
-                        && number.longValue() < 0
-                        && "EXECUTION".equals(after.get("taskType"))) {
-                    executionLinked.put(number.longValue(), Boolean.TRUE);
-                }
-            } catch (Exception e) {
-                throw new ServiceException("新增任务变更内容格式无效");
-            }
-        }
-        for (Map.Entry<Long, ProjectWbsNode> entry : pendingWorkPackages.entrySet()) {
-            if (!Boolean.TRUE.equals(executionLinked.get(entry.getKey())))
-                throw new ServiceException(
-                        "新增工作包【" + entry.getValue().getWbsName() + "】必须同时新增至少一条执行任务");
         }
     }
 

@@ -65,6 +65,22 @@
                   and concat(',', c.ancestors, ',') like concat('%,', #{categoryId}, ',%')))</if>
             <if test="managerId != null">and p.manager_user_id = #{managerId}</if>
             <if test="status != null and status != ''">and p.status = #{status}</if>
+            <if test="viewerUserId != null">
+                and (
+                    p.manager_user_id = #{viewerUserId}
+                    or exists (select 1 from pm_project_member vm
+                               where vm.project_id = p.project_id
+                                 and vm.user_id = #{viewerUserId}
+                                 and vm.status = 'ACTIVE')
+                    or exists (select 1 from pm_workflow_instance vi
+                               where vi.project_id = p.project_id
+                                 and (vi.initiator_user_id = #{viewerUserId}
+                                      or exists (select 1 from pm_workflow_task vt
+                                                 join pm_workflow_task_candidate vc on vc.task_id = vt.task_id
+                                                 where vt.instance_id = vi.instance_id
+                                                   and vc.user_id = #{viewerUserId})))
+                )
+            </if>
         </where>
         order by p.project_id desc
     </select>
@@ -77,6 +93,26 @@
     <select id="selectProjectInfoByCode" resultMap="ProjectInfoResult">
         <include refid="selectProjectVo"/>
         where p.project_code = #{projectCode} limit 1
+    </select>
+
+    <select id="countViewableProject" resultType="int">
+        select count(1)
+        from pm_project p
+        where p.project_id = #{projectId}
+          and (
+              p.manager_user_id = #{userId}
+              or exists (select 1 from pm_project_member m
+                         where m.project_id = p.project_id
+                           and m.user_id = #{userId}
+                           and m.status = 'ACTIVE')
+              or exists (select 1 from pm_workflow_instance i
+                         where i.project_id = p.project_id
+                           and (i.initiator_user_id = #{userId}
+                                or exists (select 1 from pm_workflow_task t
+                                           join pm_workflow_task_candidate c on c.task_id = t.task_id
+                                           where t.instance_id = i.instance_id
+                                             and c.user_id = #{userId})))
+          )
     </select>
 
     <insert id="insertProjectInfo" useGeneratedKeys="true" keyProperty="projectId">
@@ -135,6 +171,56 @@
     <delete id="deleteProjectInfoByIds">
         delete from pm_project where project_id in
         <foreach collection="array" item="id" open="(" separator="," close=")">#{id}</foreach>
+    </delete>
+
+    <delete id="deleteProjectMembers">
+        delete from pm_project_member where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectRoles">
+        delete from pm_project_role where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectPreliminaryPlans">
+        delete from pm_project_preliminary_plan where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectBudgetLines">
+        delete from pm_project_budget_line where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectInitiationAttachments">
+        delete from pm_project_initiation_attachment where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectInitiationApprovals">
+        delete from pm_project_initiation_approval where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectLifecycleLogs">
+        delete from pm_project_lifecycle_log where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteProjectWorkflowCandidates">
+        delete from pm_workflow_task_candidate
+        where task_id in (
+            select task_id from pm_workflow_task
+            where instance_id in (select instance_id from pm_workflow_instance where project_id = #{projectId})
+        )
+    </delete>
+
+    <delete id="deleteProjectWorkflowTasks">
+        delete from pm_workflow_task
+        where instance_id in (select instance_id from pm_workflow_instance where project_id = #{projectId})
+    </delete>
+
+    <delete id="deleteProjectWorkflowEvents">
+        delete from pm_workflow_event_log
+        where instance_id in (select instance_id from pm_workflow_instance where project_id = #{projectId})
+    </delete>
+
+    <delete id="deleteProjectWorkflowInstances">
+        delete from pm_workflow_instance where project_id = #{projectId}
     </delete>
 
     <select id="selectPreliminaryPlans" resultType="ProjectPreliminaryPlan">

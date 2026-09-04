@@ -6,7 +6,9 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.projectmanagement.budget.domain.ProjectActualCost;
+import com.ruoyi.projectmanagement.budget.domain.ProjectWorkPackageBudgetLine;
 import com.ruoyi.projectmanagement.budget.service.IProjectActualCostService;
 import com.ruoyi.projectmanagement.budget.service.IProjectWorkPackageBudgetService;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
@@ -16,6 +18,7 @@ import com.ruoyi.projectmanagement.project.domain.ProjectInitiationAttachment;
 import com.ruoyi.projectmanagement.project.domain.ProjectPreliminaryPlan;
 import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import java.util.List;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,34 +51,57 @@ public class ProjectInfoController extends BaseController {
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:list')")
     @GetMapping("/list")
     public TableDataInfo list(ProjectInfo project) {
+        project.setViewerUserId(getUserId());
         startPage();
         List<ProjectInfo> list = service.selectProjectInfoList(project);
         return getDataTable(list);
+    }
+
+    /** 按当前筛选条件导出项目列表，沿用列表的数据范围过滤。 */
+    // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:export')")
+    @Log(title = "项目台账", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, ProjectInfo project) {
+        project.setViewerUserId(getUserId());
+        List<ProjectInfo> list = service.selectProjectInfoList(project);
+        new ExcelUtil<>(ProjectInfo.class).exportExcel(response, list, "项目台账");
     }
 
     /** 查询项目详细。 */
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
     @GetMapping("/{id}")
     public AjaxResult get(@PathVariable Long id) {
+        service.assertViewable(id, getUserId());
         return success(service.selectProjectInfoById(id));
     }
 
     /** 查询项目分类预算。 */
     @GetMapping("/{id}/budget")
     public AjaxResult budget(@PathVariable Long id) {
+        service.assertViewable(id, getUserId());
         return success(service.projectBudget(id));
     }
 
     /** 查询项目工作包预算分配。 */
     @GetMapping("/{id}/work-package-budgets")
     public AjaxResult workPackageBudgets(@PathVariable Long id) {
+        service.assertViewable(id, getUserId());
         return success(workPackageBudgetService.projectSummary(id));
+    }
+
+    /** 待启动项目配置初始工作包预算。启动后预算调整必须通过项目变更。 */
+    @PutMapping("/{id}/work-package-budgets/initial")
+    public AjaxResult replaceInitialWorkPackageBudgets(
+            @PathVariable Long id, @RequestBody List<ProjectWorkPackageBudgetLine> lines) {
+        workPackageBudgetService.replaceInitial(id, lines, getUsername());
+        return success();
     }
 
     /** 查询工作包详情抽屉的预算分配。 */
     @GetMapping("/{projectId}/work-package/{workPackageId}/budget")
     public AjaxResult workPackageBudget(
             @PathVariable Long projectId, @PathVariable Long workPackageId) {
+        service.assertViewable(projectId, getUserId());
         return success(workPackageBudgetService.workPackageSummary(projectId, workPackageId));
     }
 
@@ -151,12 +177,13 @@ public class ProjectInfoController extends BaseController {
     @PostMapping("/{id}/lifecycle")
     public AjaxResult lifecycle(
             @PathVariable Long id, @Validated @RequestBody LifecycleActionRequest request) {
-        return toAjax(service.applyLifecycleAction(id, request, getUsername()));
+        return toAjax(service.applyLifecycleAction(id, request, getUsername(), getUserId()));
     }
 
     /** 查询项目初步计划列表。 */
     @GetMapping("/{id}/preliminary-plans")
     public AjaxResult plans(@PathVariable Long id) {
+        service.assertViewable(id, getUserId());
         return success(service.preliminaryPlans(id));
     }
 
@@ -196,18 +223,21 @@ public class ProjectInfoController extends BaseController {
     /** 查询立项审批历史。 */
     @GetMapping("/{id}/initiation/approvals")
     public AjaxResult approvals(@PathVariable Long id) {
+        service.assertViewable(id, getUserId());
         return success(service.approvalHistory(id));
     }
 
     /** 查询立项审批快照。 */
     @GetMapping("/{id}/initiation/approvals/{approvalId}")
     public AjaxResult snapshot(@PathVariable Long id, @PathVariable Long approvalId) {
+        service.assertViewable(id, getUserId());
         return success(service.approvalSnapshot(id, approvalId));
     }
 
     /** 查询当前立项申请支撑材料。 */
     @GetMapping("/{id}/initiation/attachments")
     public AjaxResult initiationAttachments(@PathVariable Long id, String sectionCode) {
+        service.assertViewable(id, getUserId());
         return success(service.initiationAttachments(id, sectionCode));
     }
 
@@ -215,6 +245,7 @@ public class ProjectInfoController extends BaseController {
     @GetMapping("/{id}/initiation/approvals/{approvalId}/attachments")
     public AjaxResult initiationApprovalAttachments(
             @PathVariable Long id, @PathVariable Long approvalId, String sectionCode) {
+        service.assertViewable(id, getUserId());
         return success(service.initiationApprovalAttachments(id, approvalId, sectionCode));
     }
 
@@ -238,6 +269,6 @@ public class ProjectInfoController extends BaseController {
     @Log(title = "项目台账", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
-        return toAjax(service.deleteProjectInfoByIds(ids));
+        return toAjax(service.deleteProjectInfoByIds(ids, getUsername(), getUserId()));
     }
 }

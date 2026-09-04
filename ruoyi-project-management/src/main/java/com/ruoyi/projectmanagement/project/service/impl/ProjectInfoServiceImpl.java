@@ -17,6 +17,7 @@ import com.ruoyi.projectmanagement.deliverable.mapper.ProjectDeliverableMapper;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
 import com.ruoyi.projectmanagement.execution.domain.StartReadinessResult;
 import com.ruoyi.projectmanagement.issue.mapper.ProjectIssueMapper;
+import com.ruoyi.projectmanagement.notification.service.IProjectNotificationService;
 import com.ruoyi.projectmanagement.person.domain.ProjectPerson;
 import com.ruoyi.projectmanagement.person.mapper.ProjectPersonMapper;
 import com.ruoyi.projectmanagement.project.domain.InitiationReviewRequest;
@@ -65,6 +66,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     private final IProjectPlanChangeService planChangeService;
     private final IProjectBudgetService budgetService;
     private final ProjectIssueMapper issueMapper;
+    private final IProjectNotificationService notificationService;
 
     public ProjectInfoServiceImpl(
             ProjectInfoMapper projectMapper,
@@ -80,7 +82,8 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
             @Lazy IWorkflowService workflowService,
             IProjectPlanChangeService planChangeService,
             IProjectBudgetService budgetService,
-            ProjectIssueMapper issueMapper) {
+            ProjectIssueMapper issueMapper,
+            IProjectNotificationService notificationService) {
         this.projectMapper = projectMapper;
         this.categoryMapper = categoryMapper;
         this.personMapper = personMapper;
@@ -95,12 +98,27 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         this.planChangeService = planChangeService;
         this.budgetService = budgetService;
         this.issueMapper = issueMapper;
+        this.notificationService = notificationService;
     }
 
     /** 查询项目列表。 */
     @Override
     public List<ProjectInfo> selectProjectInfoList(ProjectInfo project) {
         return projectMapper.selectProjectInfoList(project);
+    }
+
+    @Override
+    public boolean canView(Long projectId, Long userId) {
+        return projectId != null
+                && userId != null
+                && projectMapper.countViewableProject(projectId, userId) > 0;
+    }
+
+    @Override
+    public void assertViewable(Long projectId, Long userId) {
+        if (!canView(projectId, userId)) {
+            throw new ServiceException("您无权查看该项目");
+        }
     }
 
     /** 查询项目详细。 */
@@ -180,9 +198,40 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         return rows;
     }
 
-    /** 批量删除项目。 */
+    /** 仅允许申请人或负责人删除草稿项目，并先清理草稿从属数据。 */
     @Override
-    public int deleteProjectInfoByIds(Long[] ids) {
+    @Transactional
+    public int deleteProjectInfoByIds(Long[] ids, String operator, Long operatorUserId) {
+        if (ids == null || ids.length == 0) {
+            throw new ServiceException("请选择要删除的项目");
+        }
+        for (Long projectId : ids) {
+            ProjectInfo project = requiredProject(projectId);
+            if (!ProjectStatus.DRAFT.matches(project.getStatus())) {
+                throw new ServiceException("仅申请草稿可以删除，当前项目已进入审批或执行流程");
+            }
+            boolean applicant = operator != null && operator.equals(project.getApplicant());
+            boolean manager =
+                    operatorUserId != null && operatorUserId.equals(project.getManagerId());
+            if (!applicant && !manager) {
+                throw new ServiceException("仅项目申请人或负责人可以删除项目草稿");
+            }
+        }
+        for (Long projectId : ids) {
+            // 申请草稿允许有负责人团队、初步计划、预算草稿、附件或历史审批记录，
+            // 逐项清理后再删除主档，避免留下无主数据和可见的孤立流程任务。
+            projectMapper.deleteProjectWorkflowCandidates(projectId);
+            projectMapper.deleteProjectWorkflowTasks(projectId);
+            projectMapper.deleteProjectWorkflowEvents(projectId);
+            projectMapper.deleteProjectWorkflowInstances(projectId);
+            projectMapper.deleteProjectInitiationAttachments(projectId);
+            projectMapper.deleteProjectInitiationApprovals(projectId);
+            projectMapper.deleteProjectPreliminaryPlans(projectId);
+            projectMapper.deleteProjectBudgetLines(projectId);
+            projectMapper.deleteProjectMembers(projectId);
+            projectMapper.deleteProjectRoles(projectId);
+            projectMapper.deleteProjectLifecycleLogs(projectId);
+        }
         return projectMapper.deleteProjectInfoByIds(ids);
     }
 
@@ -190,8 +239,11 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     @Override
     @Transactional
     public int applyLifecycleAction(
-            Long projectId, LifecycleActionRequest request, String operator) {
+            Long projectId, LifecycleActionRequest request, String operator, Long userId) {
         ProjectInfo project = requiredProject(projectId);
+        if (project.getManagerId() == null || !project.getManagerId().equals(userId)) {
+            throw new ServiceException("仅项目负责人可以执行项目生命周期操作");
+        }
         LifecycleAction action = LifecycleAction.fromCode(request.getAction());
         if (action == null) {
             throw new ServiceException("不支持的项目生命周期动作");
@@ -250,6 +302,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         if (rows > 0) {
             if (action == LifecycleAction.START) {
                 planChangeService.createInitialBaseline(projectId, operator);
+                notificationService.notifyProjectStarted(projectId, project.getProjectName());
             }
             projectMapper.insertLifecycleLog(
                     projectId, action.getCode(), from, to, request.getReason(), operator);
@@ -262,6 +315,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     public StartReadinessResult startReadiness(Long projectId) {
         ProjectInfo project = requiredProject(projectId);
         List<String> issues = new ArrayList<>();
+        if (teamService.activeCount(projectId) == 0) {
+            issues.add("正式团队至少需要一名在组成员");
+        }
         ProjectWbsNode filter = new ProjectWbsNode();
         filter.setProjectId(projectId);
         List<ProjectWbsNode> nodes = wbsMapper.selectList(filter);
@@ -442,6 +498,27 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         }
         List<ProjectPreliminaryPlan> plans = projectMapper.selectPreliminaryPlans(id);
         List<String> missing = new ArrayList<>();
+        if (StringUtils.isBlank(project.getProjectCode())) {
+            missing.add("项目编码");
+        }
+        if (StringUtils.isBlank(project.getProjectName())) {
+            missing.add("项目名称");
+        }
+        if (project.getCategoryId() == null) {
+            missing.add("项目分类");
+        }
+        if (project.getManagerId() == null) {
+            missing.add("项目负责人");
+        }
+        if (project.getStartDate() == null) {
+            missing.add("计划开始日期");
+        }
+        if (project.getEndDate() == null) {
+            missing.add("计划结束日期");
+        }
+        if (StringUtils.isBlank(project.getProjectGoal())) {
+            missing.add("项目目标");
+        }
         if (StringUtils.isBlank(project.getProjectBackground())) {
             missing.add("项目背景");
         }

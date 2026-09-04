@@ -19,6 +19,8 @@ public interface ProjectWorkPackageBudgetMapper {
 
     int deleteById(Long lineId);
 
+    int deleteByProjectId(Long projectId);
+
     int countByWorkPackageId(Long workPackageId);
 
     long countByCategoryId(Long costCategoryId);

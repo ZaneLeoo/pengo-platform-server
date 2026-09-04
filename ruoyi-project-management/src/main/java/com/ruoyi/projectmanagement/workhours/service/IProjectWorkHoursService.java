@@ -9,13 +9,22 @@ import java.util.List;
 
 public interface IProjectWorkHoursService {
     List<ProjectWorkHoursSheet> mySheets(Long userId);
+
     ProjectWorkHoursSheet mySheet(Long userId, LocalDate weekStartDate);
+
     ProjectWorkHoursSheet save(Long userId, String userName, ProjectWorkHoursSheet sheet);
+
     void submit(Long userId, String userName, Long sheetId);
+
     void withdraw(Long userId, String userName, Long sheetId);
+
     ProjectWorkHoursSheet correction(Long userId, String userName, Long entryId);
+
     List<ProjectTask> eligibleTasks(Long userId);
+
     List<ProjectWorkHoursEntry> manage(ProjectWorkHoursEntry filter, Long userId);
+
     List<ProjectLaborRate> rates(ProjectLaborRate filter);
+
     ProjectLaborRate saveRate(ProjectLaborRate rate, String operator);
 }

@@ -21,6 +21,7 @@ public class ProjectStartReadinessController extends BaseController {
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:query')")
     @GetMapping("/{id}/start-readiness")
     public AjaxResult check(@PathVariable Long id) {
+        service.assertViewable(id, getUserId());
         return success(service.startReadiness(id));
     }
 }

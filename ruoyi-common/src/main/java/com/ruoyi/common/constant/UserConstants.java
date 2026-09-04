@@ -9,6 +9,21 @@ public class UserConstants {
     /** 平台内系统用户的唯一标志 */
     public static final String SYS_USER = "SYS_USER";
 
+    /** 超级管理员用户名 */
+    public static final String ADMIN_USER_NAME = "admin";
+
+    /** 女性性别标识 */
+    public static final String FEMALE_SEX = "1";
+
+    /** 管理员默认头像 */
+    public static final String DEFAULT_ADMIN_AVATAR = "/profile/avatar/default-admin.png";
+
+    /** 普通男性默认头像 */
+    public static final String DEFAULT_MALE_AVATAR = "/profile/avatar/default-male.png";
+
+    /** 普通女性默认头像 */
+    public static final String DEFAULT_FEMALE_AVATAR = "/profile/avatar/default-female.png";
+
     /** 正常状态 */
     public static final String NORMAL = "0";
 

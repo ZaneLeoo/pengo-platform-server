@@ -30,11 +30,17 @@ public interface IProjectInfoService {
     /** 修改项目基本信息。 */
     int updateProjectInfo(ProjectInfo project);
 
-    /** 批量删除项目。 */
-    int deleteProjectInfoByIds(Long[] projectIds);
+    /** 批量删除项目草稿及其草稿从属数据。 */
+    int deleteProjectInfoByIds(Long[] projectIds, String operator, Long operatorUserId);
 
     /** 执行项目生命周期动作（启动/暂停/恢复/完成）。 */
-    int applyLifecycleAction(Long projectId, LifecycleActionRequest request, String operator);
+    int applyLifecycleAction(
+            Long projectId, LifecycleActionRequest request, String operator, Long userId);
+
+    /** 判断并校验当前用户是否可查看项目业务数据。 */
+    boolean canView(Long projectId, Long userId);
+
+    void assertViewable(Long projectId, Long userId);
 
     /** 查询项目初步计划列表。 */
     List<ProjectPreliminaryPlan> preliminaryPlans(Long projectId);

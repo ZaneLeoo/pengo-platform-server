@@ -56,6 +56,10 @@
     update pm_project_actual_cost set cost_status='REVERSED', reverse_reason=#{reason}, reversed_by=#{operator}, reversed_time=sysdate(), update_by=#{operator}, update_time=sysdate()
     where source_type=#{sourceType} and source_line_id=#{sourceLineId} and cost_status='EFFECTIVE'
   </update>
+  <update id="restoreBySourceLineId">
+    update pm_project_actual_cost set cost_status='EFFECTIVE', reverse_reason=null, reversed_by=null, reversed_time=null, update_by=#{operator}, update_time=sysdate()
+    where source_type=#{sourceType} and source_line_id=#{sourceLineId} and cost_status='REVERSED'
+  </update>
   <select id="countByCategoryId" resultType="long">
     select count(*) from pm_project_actual_cost where cost_category_id=#{costCategoryId}
   </select>

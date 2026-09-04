@@ -69,7 +69,8 @@ public class PurchaseInboundCostListener {
     }
 
     private void post(PurchaseInboundCostEvent event, PurchaseInboundLine line) {
-        if (actualCostMapper.selectBySourceLineId(SOURCE, line.getId()) != null)
+        ProjectActualCost existing = actualCostMapper.selectBySourceLineId(SOURCE, line.getId());
+        if (existing != null && !"REVERSED".equals(existing.getCostStatus()))
             throw new ServiceException("采购入库明细已归集项目成本");
         ProjectInfo project = projectMapper.selectProjectInfoById(line.getProjectId());
         if (project == null
@@ -82,10 +83,15 @@ public class PurchaseInboundCostListener {
                         .orElseThrow(() -> new ServiceException("采购入库成本类别不是项目有效分类预算"));
         BigDecimal amount = line.getInboundAmount();
         if (amount == null || amount.signum() <= 0) throw new ServiceException("采购入库金额必须大于0");
-        BigDecimal existing =
+        BigDecimal categoryActual =
                 actualCostMapper.categoryTotal(line.getProjectId(), line.getCostCategoryId());
-        if (existing.add(amount).compareTo(budget.getBudgetAmount()) > 0)
+        if (categoryActual.add(amount).compareTo(budget.getBudgetAmount()) > 0)
             throw new ServiceException("采购入库归集后将超过项目分类预算");
+        if (existing != null) {
+            if (actualCostMapper.restoreBySourceLineId(SOURCE, line.getId(), event.operator()) != 1)
+                throw new ServiceException("采购入库历史成本恢复失败");
+            return;
+        }
         ProjectActualCost cost = new ProjectActualCost();
         cost.setProjectId(line.getProjectId());
         cost.setCostCategoryId(line.getCostCategoryId());

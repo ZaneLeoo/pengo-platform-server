@@ -1,10 +1,18 @@
 package com.ruoyi.projectmanagement.deliverable.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.mes.base.domain.BomMaster;
+import com.ruoyi.mes.base.domain.BomVersion;
+import com.ruoyi.mes.base.service.IBomMasterService;
+import com.ruoyi.mes.base.service.IBomVersionService;
+import com.ruoyi.mes.common.enums.BomApproveStatus;
+import com.ruoyi.mes.common.enums.BomMasterStatus;
+import com.ruoyi.mes.common.enums.BomVersionStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableStatus;
 import com.ruoyi.projectmanagement.common.enums.DeliverableSubmissionStatus;
 import com.ruoyi.projectmanagement.common.enums.ProjectStatus;
 import com.ruoyi.projectmanagement.common.enums.WbsNodeType;
+import com.ruoyi.projectmanagement.deliverable.domain.BomDeliverableOption;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableType;
@@ -34,11 +42,19 @@ import tools.jackson.databind.ObjectMapper;
 public class ProjectDeliverableServiceImpl
         implements IProjectDeliverableService, WorkflowBusinessCallback {
 
+    private static final String FILE_MODE = "FILE";
+    private static final String LINK_MODE = "LINK";
+    private static final String BUSINESS_OBJECT_MODE = "BUSINESS_OBJECT";
+    private static final String BOM_TYPE = "BOM";
+    private static final String BOM_VERSION_BUSINESS_TYPE = "BOM_VERSION";
+
     private final ProjectDeliverableMapper mapper;
     private final ProjectInfoMapper projectMapper;
     private final ProjectWbsMapper wbsMapper;
     private final IProjectTaskService taskService;
     private final ProjectDeliverableTypeMapper typeMapper;
+    private final IBomMasterService bomMasterService;
+    private final IBomVersionService bomVersionService;
     private final IWorkflowService workflowService;
     private final ObjectMapper objectMapper;
 
@@ -48,6 +64,8 @@ public class ProjectDeliverableServiceImpl
             ProjectWbsMapper wbsMapper,
             IProjectTaskService taskService,
             ProjectDeliverableTypeMapper typeMapper,
+            IBomMasterService bomMasterService,
+            IBomVersionService bomVersionService,
             @Lazy IWorkflowService workflowService,
             ObjectMapper objectMapper) {
         this.mapper = mapper;
@@ -55,6 +73,8 @@ public class ProjectDeliverableServiceImpl
         this.wbsMapper = wbsMapper;
         this.taskService = taskService;
         this.typeMapper = typeMapper;
+        this.bomMasterService = bomMasterService;
+        this.bomVersionService = bomVersionService;
         this.workflowService = workflowService;
         this.objectMapper = objectMapper;
     }
@@ -69,6 +89,9 @@ public class ProjectDeliverableServiceImpl
         if (entity == null) {
             entity = new ProjectDeliverable();
         }
+        // 我的待交付同时需要走项目可见范围校验；仅设置负责人筛选会命中
+        // mapper 的无范围保护分支，导致负责人页面永远返回空列表。
+        entity.setViewerUserId(userId);
         entity.setWorkPackageOwnerUserId(userId);
         return mapper.selectList(entity);
     }
@@ -76,6 +99,15 @@ public class ProjectDeliverableServiceImpl
     @Override
     public ProjectDeliverable selectById(Long id) {
         return mapper.selectById(id);
+    }
+
+    @Override
+    public List<BomDeliverableOption> selectBomOptions() {
+        BomMaster masterFilter = new BomMaster();
+        masterFilter.setStatus(BomMasterStatus.ENABLED.getCode());
+        return bomMasterService.selectBomMasterList(masterFilter).stream()
+                .flatMap(master -> selectableVersions(master).stream())
+                .toList();
     }
 
     @Override
@@ -121,6 +153,18 @@ public class ProjectDeliverableServiceImpl
                 || !wp.getProjectId().equals(entity.getProjectId())) {
             throw new ServiceException("所属工作包不存在或不属于当前项目");
         }
+        if (entity.getPlannedDate() != null
+                && ((wp.getPlanStartDate() != null
+                                && entity.getPlannedDate().isBefore(wp.getPlanStartDate()))
+                        || (wp.getPlanEndDate() != null
+                                && entity.getPlannedDate().isAfter(wp.getPlanEndDate())))) {
+            throw new ServiceException(
+                    "计划交付日期必须在工作包周期内（"
+                            + wp.getPlanStartDate()
+                            + " ~ "
+                            + wp.getPlanEndDate()
+                            + "）");
+        }
         ProjectDeliverableType type =
                 entity.getDeliverableTypeId() == null
                         ? typeMapper.selectByCode(entity.getDeliverableType())
@@ -131,19 +175,23 @@ public class ProjectDeliverableServiceImpl
         entity.setDeliverableTypeId(type.getTypeId());
         entity.setDeliverableType(type.getTypeCode());
         entity.setSubmissionMode(type.getSubmissionMode());
-        List<String> configuredExtensions =
-                type.getAllowedExtensions() == null ? List.of() : type.getAllowedExtensions();
-        Set<String> typeExtensions =
-                configuredExtensions.stream()
-                        .map(x -> x.toLowerCase(Locale.ROOT))
-                        .collect(Collectors.toSet());
-        Set<String> selectedExtensions = extensions(entity.getAllowedExtensions());
-        if (!selectedExtensions.isEmpty() && !typeExtensions.containsAll(selectedExtensions)) {
-            throw new ServiceException("允许格式必须属于交付物类型配置的格式范围");
+        if (FILE_MODE.equals(type.getSubmissionMode())) {
+            List<String> configuredExtensions =
+                    type.getAllowedExtensions() == null ? List.of() : type.getAllowedExtensions();
+            Set<String> typeExtensions =
+                    configuredExtensions.stream()
+                            .map(x -> x.toLowerCase(Locale.ROOT))
+                            .collect(Collectors.toSet());
+            Set<String> selectedExtensions = extensions(entity.getAllowedExtensions());
+            if (!selectedExtensions.isEmpty() && !typeExtensions.containsAll(selectedExtensions)) {
+                throw new ServiceException("允许格式必须属于交付物类型配置的格式范围");
+            }
+            entity.setAllowedExtensions(
+                    String.join(
+                            ",", selectedExtensions.isEmpty() ? typeExtensions : selectedExtensions));
+        } else {
+            entity.setAllowedExtensions(null);
         }
-        entity.setAllowedExtensions(
-                String.join(
-                        ",", selectedExtensions.isEmpty() ? typeExtensions : selectedExtensions));
         if (entity.getRequiredFlag() == null) {
             entity.setRequiredFlag("1");
         }
@@ -167,16 +215,33 @@ public class ProjectDeliverableServiceImpl
                 && !DeliverableStatus.RETURNED.matches(d.getStatus())) {
             throw new ServiceException("当前交付物不允许提交");
         }
-        if ("FILE".equals(d.getSubmissionMode())) {
+        if (FILE_MODE.equals(d.getSubmissionMode())) {
             if (submission.getFileUrl() == null || submission.getFileUrl().isBlank())
                 throw new ServiceException("请上传文件");
             String extension = extensionOf(submission.getFileUrl());
-            if (!extensions(d.getAllowedExtensions()).isEmpty()
-                    && !extensions(d.getAllowedExtensions()).contains(extension)) {
-                throw new ServiceException("文件格式不符合交付要求，仅允许：" + d.getAllowedExtensions());
+            Set<String> allowed = extensions(d.getAllowedExtensions());
+            if (allowed.isEmpty()) {
+                ProjectDeliverableType type =
+                        d.getDeliverableTypeId() == null
+                                ? typeMapper.selectByCode(d.getDeliverableType())
+                                : typeMapper.selectById(d.getDeliverableTypeId());
+                if (type != null && type.getAllowedExtensions() != null) {
+                    allowed =
+                            type.getAllowedExtensions().stream()
+                                    .map(x -> x.toLowerCase(Locale.ROOT))
+                                    .collect(Collectors.toSet());
+                }
+            }
+            if (!allowed.isEmpty() && !allowed.contains(extension)) {
+                String allowedText =
+                        d.getAllowedExtensions() == null || d.getAllowedExtensions().isBlank()
+                                ? allowed.stream().sorted().collect(Collectors.joining(","))
+                                : d.getAllowedExtensions();
+                throw new ServiceException("文件格式不符合交付要求，仅允许：" + allowedText);
             }
             submission.setExternalUrl(null);
-        } else if ("LINK".equals(d.getSubmissionMode())) {
+            clearBusinessObject(submission);
+        } else if (LINK_MODE.equals(d.getSubmissionMode())) {
             if (submission.getExternalUrl() == null || submission.getExternalUrl().isBlank())
                 throw new ServiceException("请填写外部链接");
             String externalUrl = submission.getExternalUrl().trim();
@@ -185,6 +250,9 @@ public class ProjectDeliverableServiceImpl
             }
             submission.setExternalUrl(externalUrl);
             submission.setFileUrl(null);
+            clearBusinessObject(submission);
+        } else if (BUSINESS_OBJECT_MODE.equals(d.getSubmissionMode())) {
+            prepareBomSubmission(d, submission);
         } else {
             throw new ServiceException("当前交付物提交方式暂不支持");
         }
@@ -229,6 +297,8 @@ public class ProjectDeliverableServiceImpl
         d.setSubmitBy(username);
         d.setLatestFileUrl(submission.getFileUrl());
         d.setLatestExternalUrl(submission.getExternalUrl());
+        d.setBusinessType(submission.getBusinessType());
+        d.setBusinessId(submission.getBusinessId());
         mapper.updateStatus(d);
         taskService.refreshPackage(d.getWorkPackageId());
     }
@@ -250,6 +320,79 @@ public class ProjectDeliverableServiceImpl
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    /** 查询某个 BOM 主数据下可交付的已审核版本。 */
+    private List<BomDeliverableOption> selectableVersions(BomMaster master) {
+        BomVersion versionFilter = new BomVersion();
+        versionFilter.setBomMasterId(master.getId());
+        return bomVersionService.selectBomVersionList(versionFilter).stream()
+                .filter(this::isDeliverableBomVersion)
+                .map(version -> toOption(master, version))
+                .toList();
+    }
+
+    /** 业务对象交付当前仅支持关联一个已审核的 BOM 版本。 */
+    private void prepareBomSubmission(
+            ProjectDeliverable deliverable, ProjectDeliverableSubmission submission) {
+        if (!BOM_TYPE.equals(deliverable.getDeliverableType())) {
+            throw new ServiceException("当前仅BOM交付物支持业务对象提交");
+        }
+        Long versionId = parseBomVersionId(submission.getBusinessId());
+        BomVersion version = bomVersionService.selectBomVersionById(versionId);
+        if (version == null || !isDeliverableBomVersion(version)) {
+            throw new ServiceException("请选择已审核且生效或冻结的BOM版本");
+        }
+        BomMaster master = bomMasterService.selectBomMasterById(version.getBomMasterId());
+        if (master == null || !BomMasterStatus.ENABLED.getCode().equals(master.getStatus())) {
+            throw new ServiceException("所选BOM主数据不存在或已停用");
+        }
+        submission.setBusinessType(BOM_VERSION_BUSINESS_TYPE);
+        submission.setBusinessId(String.valueOf(version.getId()));
+        submission.setBusinessCode(master.getBomCode());
+        submission.setBusinessName(master.getParentItemName());
+        submission.setBusinessVersion(version.getVersionCode());
+        submission.setFileUrl(null);
+        submission.setExternalUrl(null);
+    }
+
+    private Long parseBomVersionId(String businessId) {
+        if (businessId == null || businessId.isBlank()) {
+            throw new ServiceException("请选择要交付的BOM版本");
+        }
+        try {
+            return Long.valueOf(businessId);
+        } catch (NumberFormatException exception) {
+            throw new ServiceException("BOM版本标识无效");
+        }
+    }
+
+    private boolean isDeliverableBomVersion(BomVersion version) {
+        return BomApproveStatus.APPROVED.getCode().equals(version.getApproveStatus())
+                && (BomVersionStatus.EFFECTIVE.getCode().equals(version.getStatus())
+                        || BomVersionStatus.FROZEN.getCode().equals(version.getStatus()));
+    }
+
+    private BomDeliverableOption toOption(BomMaster master, BomVersion version) {
+        BomDeliverableOption option = new BomDeliverableOption();
+        option.setBomMasterId(master.getId());
+        option.setBomCode(master.getBomCode());
+        option.setParentItemCode(master.getParentItemCode());
+        option.setParentItemName(master.getParentItemName());
+        option.setBomVersionId(version.getId());
+        option.setVersionCode(version.getVersionCode());
+        option.setVersionName(version.getVersionName());
+        option.setStatus(version.getStatus());
+        option.setApproveStatus(version.getApproveStatus());
+        return option;
+    }
+
+    private void clearBusinessObject(ProjectDeliverableSubmission submission) {
+        submission.setBusinessType(null);
+        submission.setBusinessId(null);
+        submission.setBusinessCode(null);
+        submission.setBusinessName(null);
+        submission.setBusinessVersion(null);
     }
 
     /** 审核交付物提交：按提交结果（APPROVED/RETURNED）更新交付物与最新提交记录。 */
@@ -343,6 +486,9 @@ public class ProjectDeliverableServiceImpl
         if (ProjectStatus.DRAFT.matches(project.getStatus())
                 || ProjectStatus.PENDING_APPROVAL.matches(project.getStatus())) {
             throw new ServiceException("项目处于申请草稿阶段，正式立项后才能维护交付物");
+        }
+        if (ProjectStatus.COMPLETED.matches(project.getStatus())) {
+            throw new ServiceException("项目已完成，正式交付物只读");
         }
     }
 

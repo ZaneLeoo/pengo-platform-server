@@ -18,6 +18,10 @@
     <select id="selectList" resultMap="Result">
         select * from supplier
         <where>
+            <if test="keyword != null and keyword != ''">
+                and (supplier_code like concat('%', #{keyword}, '%')
+                     or supplier_name like concat('%', #{keyword}, '%'))
+            </if>
             <if test="supplierCode != null and supplierCode != ''">
                 and supplier_code like concat('%', #{supplierCode}, '%')
             </if>

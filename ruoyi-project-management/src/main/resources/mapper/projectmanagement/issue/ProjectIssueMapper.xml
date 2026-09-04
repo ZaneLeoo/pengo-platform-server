@@ -20,6 +20,7 @@
             <if test="workPackageId != null">and i.work_package_id = #{workPackageId}</if>
             <if test="taskId != null">and i.task_id = #{taskId}</if>
             <if test="status != null and status != ''">and i.status = #{status}</if>
+            <if test="severity != null and severity != ''">and i.severity = #{severity}</if>
             <if test="issueName != null and issueName != ''">and i.issue_name like concat('%', #{issueName}, '%')</if>
             and (i.reporter_user_id=#{viewerUserId} or i.owner_user_id=#{viewerUserId}
               or exists(select 1 from pm_project p where p.project_id=i.project_id and p.manager_id=#{viewerUserId})

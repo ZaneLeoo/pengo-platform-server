@@ -27,6 +27,9 @@
         from pm_workflow_definition d join pm_workflow_definition_version v on v.version_id=d.active_version_id
         where d.business_type=#{businessType} and d.status='ENABLED'
     </select>
+    <select id="selectDefinitionByBusinessType" resultMap="definition">
+        <include refid="definitionVo"/> where d.business_type=#{businessType} limit 1
+    </select>
     <select id="selectDefinitionVersion" resultMap="definition">
         select d.*, v.version_id, v.version_no, v.version_status, v.graph_json
         from pm_workflow_definition d join pm_workflow_definition_version v on v.definition_id=d.definition_id

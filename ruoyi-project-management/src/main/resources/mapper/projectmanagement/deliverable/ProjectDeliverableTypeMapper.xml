@@ -22,6 +22,9 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="typeId">insert into pm_project_deliverable_type(type_code,type_name,submission_mode,default_approval_required,status,sort_order,create_by,create_time) values(#{typeCode},#{typeName},#{submissionMode},#{defaultApprovalRequired},#{status},#{sortOrder},#{createBy},sysdate())</insert>
     <update id="update">update pm_project_deliverable_type set type_code=#{typeCode},type_name=#{typeName},submission_mode=#{submissionMode},default_approval_required=#{defaultApprovalRequired},status=#{status},sort_order=#{sortOrder},update_by=#{updateBy},update_time=sysdate() where type_id=#{typeId}</update>
     <delete id="deleteById">delete from pm_project_deliverable_type where type_id=#{id}</delete>
+    <select id="countDeliverableReferences" resultType="int">
+        select count(1) from pm_project_deliverable where deliverable_type_id = #{id}
+    </select>
     <delete id="deleteFormats">delete from pm_project_deliverable_type_format where type_id=#{typeId}</delete>
     <insert id="insertFormat">insert into pm_project_deliverable_type_format(type_id,file_extension) values(#{typeId},#{extension})</insert>
 </mapper>

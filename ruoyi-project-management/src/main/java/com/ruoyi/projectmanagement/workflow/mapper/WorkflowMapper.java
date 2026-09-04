@@ -16,6 +16,9 @@ public interface WorkflowMapper {
 
     WorkflowDefinition selectActiveDefinition(String businessType);
 
+    /** 按业务类型查询已有流程定义（包含停用定义），用于避免重复配置。 */
+    WorkflowDefinition selectDefinitionByBusinessType(String businessType);
+
     WorkflowDefinition selectDefinitionVersion(Long versionId);
 
     String selectRoleName(String roleCode);

@@ -11,22 +11,23 @@ public interface IProjectTeamService {
     List<ProjectMember> members(ProjectMember filter);
 
     /** 批量添加项目成员。 */
-    void addMembers(Long projectId, List<ProjectMember> members, String operator);
+    void addMembers(
+            Long projectId, List<ProjectMember> members, String operator, Long operatorUserId);
 
     /** 更新项目成员（角色、职责等）。 */
-    int updateMember(ProjectMember member, String operator);
+    int updateMember(ProjectMember member, String operator, Long operatorUserId);
 
     /** 成员退出项目团队。 */
-    int exitMember(Long memberId, String operator);
+    int exitMember(Long memberId, String operator, Long operatorUserId);
 
     /** 查询项目角色列表。 */
     List<ProjectRole> roles(Long projectId);
 
     /** 新增自定义项目角色。 */
-    int addRole(ProjectRole role, String operator);
+    int addRole(ProjectRole role, String operator, Long operatorUserId);
 
     /** 更新自定义项目角色。 */
-    int updateRole(ProjectRole role, String operator);
+    int updateRole(ProjectRole role, String operator, Long operatorUserId);
 
     /** 判断人员是否为项目活跃成员。 */
     boolean isActiveMember(Long projectId, Long personId);

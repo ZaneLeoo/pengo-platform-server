@@ -15,10 +15,13 @@ public class ProjectLaborRate extends BaseEntity {
     private Long userId;
     private String userName;
     private String nickName;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate effectiveStartDate;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate effectiveEndDate;
+
     private BigDecimal hourlyRate;
     private String status;
 }

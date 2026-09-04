@@ -1,5 +1,6 @@
 package com.ruoyi.projectmanagement.deliverable.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.core.domain.BaseEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -65,7 +66,7 @@ public class ProjectDeliverable extends BaseEntity {
     /** 类型名称快照。 */
     private String deliverableTypeName;
 
-    /** 提交方式快照：FILE、LINK；BUSINESS_OBJECT预留。 */
+    /** 提交方式快照：FILE、LINK、BUSINESS_OBJECT。 */
     private String submissionMode;
 
     /** 允许文件扩展名快照，逗号分隔；LINK类型为空。 */
@@ -103,4 +104,22 @@ public class ProjectDeliverable extends BaseEntity {
 
     /** 最近提交的外部链接。 */
     private String latestExternalUrl;
+
+    /** 最近交付的业务对象类型；BOM 交付固定为 BOM_VERSION。 */
+    private String businessType;
+
+    /** 最近交付的业务对象ID；BOM 交付关联 bom_version.id。 */
+    private String businessId;
+
+    /** 最近交付的业务对象编码。 */
+    private String businessCode;
+
+    /** 最近交付的业务对象名称。 */
+    private String businessName;
+
+    /** 最近交付的业务对象版本。 */
+    private String businessVersion;
+
+    /** 全局交付物列表的数据范围过滤用户，不对前端返回。 */
+    @JsonIgnore private Long viewerUserId;
 }

@@ -1,5 +1,5 @@
 -- V2：轻量串行审批流。定义版本发布后不可修改。
-create table pm_workflow_definition (
+create table if not exists pm_workflow_definition (
   definition_id bigint not null auto_increment,
   definition_name varchar(100) not null,
   business_type varchar(40) not null comment 'PROJECT_INITIATION、DELIVERABLE_APPROVAL、PLAN_CHANGE',
@@ -10,7 +10,7 @@ create table pm_workflow_definition (
   primary key (definition_id), unique key uk_pm_workflow_business (business_type)
 ) engine=innodb comment='审批流程定义';
 
-create table pm_workflow_definition_version (
+create table if not exists pm_workflow_definition_version (
   version_id bigint not null auto_increment,
   definition_id bigint not null,
   version_no int not null,
@@ -21,7 +21,7 @@ create table pm_workflow_definition_version (
   primary key (version_id), unique key uk_pm_workflow_version (definition_id, version_no)
 ) engine=innodb comment='审批流程不可变版本';
 
-create table pm_workflow_instance (
+create table if not exists pm_workflow_instance (
   instance_id bigint not null auto_increment,
   business_type varchar(40) not null,
   business_id bigint not null,
@@ -39,7 +39,7 @@ create table pm_workflow_instance (
   key idx_pm_workflow_initiator (initiator_user_id, status)
 ) engine=innodb comment='审批流程实例';
 
-create table pm_workflow_task (
+create table if not exists pm_workflow_task (
   task_id bigint not null auto_increment,
   instance_id bigint not null,
   node_key varchar(64) not null,
@@ -54,14 +54,14 @@ create table pm_workflow_task (
   key idx_pm_workflow_task_status (status)
 ) engine=innodb comment='审批任务';
 
-create table pm_workflow_task_candidate (
+create table if not exists pm_workflow_task_candidate (
   task_id bigint not null,
   user_id bigint not null,
   read_time datetime null,
   primary key (task_id, user_id), key idx_pm_workflow_candidate_user (user_id, read_time)
 ) engine=innodb comment='审批任务候选人';
 
-create table pm_workflow_event_log (
+create table if not exists pm_workflow_event_log (
   event_id bigint not null auto_increment,
   instance_id bigint not null,
   task_id bigint null,
@@ -72,8 +72,36 @@ create table pm_workflow_event_log (
   primary key (event_id), key idx_pm_workflow_event (instance_id, create_time)
 ) engine=innodb comment='审批流事件';
 
-alter table pm_project_initiation_approval add column workflow_instance_id bigint null after approval_id;
-alter table pm_project_deliverable_submission add column workflow_instance_id bigint null after submission_id;
+-- MySQL 没有通用的 ALTER TABLE ADD COLUMN IF NOT EXISTS；使用元数据判断，确保脚本可重复执行。
+set @ddl = (
+    select if(
+        count(*) = 0,
+        'alter table pm_project_initiation_approval add column workflow_instance_id bigint null after approval_id',
+        'select 1'
+    )
+    from information_schema.columns
+    where table_schema = database()
+      and table_name = 'pm_project_initiation_approval'
+      and column_name = 'workflow_instance_id'
+);
+prepare stmt from @ddl;
+execute stmt;
+deallocate prepare stmt;
+
+set @ddl = (
+    select if(
+        count(*) = 0,
+        'alter table pm_project_deliverable_submission add column workflow_instance_id bigint null after submission_id',
+        'select 1'
+    )
+    from information_schema.columns
+    where table_schema = database()
+      and table_name = 'pm_project_deliverable_submission'
+      and column_name = 'workflow_instance_id'
+);
+prepare stmt from @ddl;
+execute stmt;
+deallocate prepare stmt;
 
 -- 配置菜单；业务审批入口由“我的审批”和页头铃铛提供。
 insert into sys_menu(menu_name,parent_id,order_num,path,component,query,route_name,is_frame,is_cache,menu_type,

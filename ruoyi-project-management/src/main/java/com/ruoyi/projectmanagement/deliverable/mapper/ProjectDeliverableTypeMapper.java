@@ -19,6 +19,9 @@ public interface ProjectDeliverableTypeMapper {
 
     int deleteById(Long id);
 
+    /** 统计已引用该类型的正式交付物数量。 */
+    int countDeliverableReferences(Long id);
+
     int deleteFormats(Long typeId);
 
     int insertFormat(@Param("typeId") Long typeId, @Param("extension") String extension);

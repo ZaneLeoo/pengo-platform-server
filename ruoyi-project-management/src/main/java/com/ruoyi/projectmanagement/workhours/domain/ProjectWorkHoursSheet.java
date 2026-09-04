@@ -16,10 +16,13 @@ public class ProjectWorkHoursSheet extends BaseEntity {
     private Long userId;
     private String userName;
     private String nickName;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate weekStartDate;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate weekEndDate;
+
     private Long projectId;
     private String sheetType;
     private String status;

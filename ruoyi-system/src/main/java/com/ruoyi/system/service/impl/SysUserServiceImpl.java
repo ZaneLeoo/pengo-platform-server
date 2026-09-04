@@ -231,6 +231,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     @Transactional
     public int insertUser(SysUser user) {
+        assignDefaultAvatar(user);
         // 新增用户信息
         int rows = userMapper.insertUser(user);
         // 新增用户岗位关联
@@ -248,6 +249,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public boolean registerUser(SysUser user) {
+        assignDefaultAvatar(user);
         return userMapper.insertUser(user) > 0;
     }
 
@@ -466,6 +468,7 @@ public class SysUserServiceImpl implements ISysUserService {
                     String password = configService.selectConfigByKey("sys.user.initPassword");
                     user.setPassword(SecurityUtils.encryptPassword(password));
                     user.setCreateBy(operName);
+                    assignDefaultAvatar(user);
                     userMapper.insertUser(user);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、账号 " + user.getUserName() + " 导入成功");
@@ -498,5 +501,23 @@ public class SysUserServiceImpl implements ISysUserService {
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
+    }
+
+    /**
+     * 在未指定头像时为新用户分配系统默认头像，保留用户手动上传或导入的头像。
+     *
+     * @param user 用户信息
+     */
+    private void assignDefaultAvatar(SysUser user) {
+        if (StringUtils.isNull(user) || StringUtils.isNotEmpty(user.getAvatar())) {
+            return;
+        }
+        if (UserConstants.ADMIN_USER_NAME.equalsIgnoreCase(user.getUserName())) {
+            user.setAvatar(UserConstants.DEFAULT_ADMIN_AVATAR);
+        } else if (UserConstants.FEMALE_SEX.equals(user.getSex())) {
+            user.setAvatar(UserConstants.DEFAULT_FEMALE_AVATAR);
+        } else {
+            user.setAvatar(UserConstants.DEFAULT_MALE_AVATAR);
+        }
     }
 }

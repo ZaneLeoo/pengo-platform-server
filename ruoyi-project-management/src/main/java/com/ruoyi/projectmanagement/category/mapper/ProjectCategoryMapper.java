@@ -20,6 +20,9 @@ public interface ProjectCategoryMapper {
     /** 统计分类子节点数量。 */
     int countChildren(Long categoryId);
 
+    /** 统计仍被项目主数据引用的分类数量。 */
+    int countProjectReferences(Long categoryId);
+
     /** 新增项目分类。 */
     int insertProjectCategory(ProjectCategory category);
 

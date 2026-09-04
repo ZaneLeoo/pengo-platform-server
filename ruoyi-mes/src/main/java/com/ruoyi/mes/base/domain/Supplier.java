@@ -19,6 +19,9 @@ public class Supplier extends BaseEntity {
     @NotBlank(message = "供应商名称不能为空")
     private String supplierName;
 
+    /** 供应商编码或名称查询关键字，仅用于列表查询，不对应数据表字段。 */
+    private String keyword;
+
     private String contactPerson;
 
     private String contactPhone;

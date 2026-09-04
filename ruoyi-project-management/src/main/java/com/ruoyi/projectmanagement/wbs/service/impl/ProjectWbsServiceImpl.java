@@ -343,11 +343,11 @@ public class ProjectWbsServiceImpl implements IProjectWbsService {
 
     private void markTemporaryCode(ProjectWbsNode node) {
         mapper.updateCode(node.getWbsId(), "TMP-" + node.getWbsId());
-        mapper.selectChildren(node.getProjectId(), node.getWbsId()).forEach(this::markTemporaryCode);
+        mapper.selectChildren(node.getProjectId(), node.getWbsId())
+                .forEach(this::markTemporaryCode);
     }
 
-    private void recodeChildren(
-            Long projectId, Long parentId, List<ProjectWbsNode> children) {
+    private void recodeChildren(Long projectId, Long parentId, List<ProjectWbsNode> children) {
         String prefix = parentId == 0 ? "" : required(parentId).getWbsCode() + ".";
         for (int i = 0; i < children.size(); i++) {
             ProjectWbsNode child = children.get(i);

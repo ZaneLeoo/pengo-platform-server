@@ -20,6 +20,21 @@ public class ProjectDeliverableSubmission {
 
     private String externalUrl;
 
+    /** 业务对象类型；BOM 交付固定为 BOM_VERSION。 */
+    private String businessType;
+
+    /** 业务对象ID；BOM 交付关联 bom_version.id。 */
+    private String businessId;
+
+    /** 提交时的业务对象编码快照。 */
+    private String businessCode;
+
+    /** 提交时的业务对象名称快照。 */
+    private String businessName;
+
+    /** 提交时的业务对象版本快照。 */
+    private String businessVersion;
+
     private String submitBy;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")

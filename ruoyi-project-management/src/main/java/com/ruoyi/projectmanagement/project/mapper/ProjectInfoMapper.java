@@ -20,6 +20,9 @@ public interface ProjectInfoMapper {
     /** 根据项目编码查询项目。 */
     ProjectInfo selectProjectInfoByCode(String projectCode);
 
+    /** 判断用户是否属于项目业务可见范围。 */
+    int countViewableProject(@Param("projectId") Long projectId, @Param("userId") Long userId);
+
     /** 新增项目。 */
     int insertProjectInfo(ProjectInfo project);
 
@@ -30,6 +33,29 @@ public interface ProjectInfoMapper {
 
     /** 批量删除项目。 */
     int deleteProjectInfoByIds(Long[] projectIds);
+
+    /** 删除草稿项目及其项目级从属数据，避免留下无主的团队、附件和审批记录。 */
+    int deleteProjectMembers(Long projectId);
+
+    int deleteProjectRoles(Long projectId);
+
+    int deleteProjectPreliminaryPlans(Long projectId);
+
+    int deleteProjectBudgetLines(Long projectId);
+
+    int deleteProjectInitiationAttachments(Long projectId);
+
+    int deleteProjectInitiationApprovals(Long projectId);
+
+    int deleteProjectLifecycleLogs(Long projectId);
+
+    int deleteProjectWorkflowCandidates(Long projectId);
+
+    int deleteProjectWorkflowTasks(Long projectId);
+
+    int deleteProjectWorkflowEvents(Long projectId);
+
+    int deleteProjectWorkflowInstances(Long projectId);
 
     /** 更新项目生命周期状态。 */
     int updateLifecycle(ProjectInfo project);

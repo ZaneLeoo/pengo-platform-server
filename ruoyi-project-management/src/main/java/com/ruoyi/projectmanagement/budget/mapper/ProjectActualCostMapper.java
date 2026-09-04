@@ -29,6 +29,11 @@ public interface ProjectActualCostMapper {
             @Param("operator") String operator,
             @Param("reason") String reason);
 
+    int restoreBySourceLineId(
+            @Param("sourceType") String sourceType,
+            @Param("sourceLineId") Long sourceLineId,
+            @Param("operator") String operator);
+
     long countByCategoryId(Long costCategoryId);
 
     BigDecimal totalByProjectId(Long projectId);

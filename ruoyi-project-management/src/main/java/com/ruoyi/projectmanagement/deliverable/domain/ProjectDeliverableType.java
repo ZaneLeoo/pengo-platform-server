@@ -20,7 +20,7 @@ public class ProjectDeliverableType extends BaseEntity {
     @NotBlank(message = "类型名称不能为空")
     private String typeName;
 
-    /** FILE文件、LINK外链；BUSINESS_OBJECT预留至业务对象集成。 */
+    /** FILE文件、LINK外链、BUSINESS_OBJECT业务对象。 */
     @NotBlank(message = "提交方式不能为空")
     private String submissionMode;
 

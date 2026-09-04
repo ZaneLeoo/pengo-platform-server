@@ -77,6 +77,7 @@
 - `31_ivs_project_team_accounts.sql`
 - `33_ivs_project_plan_demo_layers.sql`
 - `38_seed_product_rnd_initiation_demo.sql`
+- `50_full_project_test_reset_and_seed.sql`：清空项目、采购、库存、物料与 BOM 测试数据，并初始化工业边缘数据采集终端全流程基础数据；仅限开发/测试环境，执行前必须备份。
 
 ### 一次性身份迁移
 
@@ -96,6 +97,8 @@ V2 新增脚本按顺序执行：
 - `46_project_actual_cost.sql`：V2 预算与成本阶段 4 的项目实际成本登记表；可重复执行。
 - `47_project_table_comments.sql`：为全部项目管理表逐字段补充中文注释；仅刷新元数据，可重复执行（执行时必须使用 `--default-character-set=utf8mb4`，避免中文注释乱码）。
 - `48_project_work_hours.sql`：项目自然周工时单、日明细、人员有效期小时单价，以及“我的工时 / 工时管理 / 人工单价”菜单和管理员角色授权；可重复执行。
+- `52_project_menu_reorganization.sql`：将项目管理菜单重组为“项目执行 / 工时与成本 / 基础配置”，保留项目采购闭环所需的采购订单、采购到货和采购入库，并隐藏当前范围外的制造菜单；可重复执行。
+- `55_project_todo_notification_center.sql`：新增个人站内通知表、待办通知权限，并为项目启动后的任务分配通知提供数据结构；可重复执行。
 
 这些脚本面向新的 V2 结构，不承担旧问题或旧审批数据迁移；执行前必须备份。`41` 不可重复执行，`42` 可重复执行。
 

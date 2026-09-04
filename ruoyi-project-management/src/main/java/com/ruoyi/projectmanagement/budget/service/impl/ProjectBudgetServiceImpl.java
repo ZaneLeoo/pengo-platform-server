@@ -169,11 +169,12 @@ public class ProjectBudgetServiceImpl implements IProjectBudgetService {
 
     private BigDecimal initialApprovedAmount(Long projectId, BigDecimal fallback) {
         List<ProjectPlanBaseline> baselines = changeMapper.selectBaselines(projectId);
-        if (baselines.isEmpty() || baselines.get(0).getSnapshotJson() == null) return fallback;
+        if (baselines.isEmpty() || baselines.get(baselines.size() - 1).getSnapshotJson() == null)
+            return fallback;
         try {
             Map<String, Object> snapshot =
                     objectMapper.readValue(
-                            baselines.get(0).getSnapshotJson(),
+                            baselines.get(baselines.size() - 1).getSnapshotJson(),
                             new TypeReference<Map<String, Object>>() {});
             Object rawProject = snapshot.get("project");
             if (rawProject instanceof Map<?, ?> project) {

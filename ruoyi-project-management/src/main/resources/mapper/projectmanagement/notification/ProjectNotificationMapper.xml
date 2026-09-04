@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.projectmanagement.notification.mapper.ProjectNotificationMapper">
+
+    <select id="selectList" resultType="ProjectNotification">
+        select notification_id, user_id, notification_type, business_type, business_id,
+               title, content, target_path, read_flag, dedupe_key, read_time, create_time
+        from pm_user_notification
+        where user_id = #{userId}
+        <if test="readFlag != null and readFlag != ''">and read_flag = #{readFlag}</if>
+        order by read_flag, create_time desc, notification_id desc
+        limit 200
+    </select>
+
+    <select id="countUnread" resultType="int">
+        select count(*) from pm_user_notification where user_id = #{userId} and read_flag = '0'
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="notificationId">
+        insert ignore into pm_user_notification(
+            user_id, notification_type, business_type, business_id, title, content,
+            target_path, read_flag, dedupe_key, create_time
+        ) values (
+            #{userId}, #{notificationType}, #{businessType}, #{businessId}, #{title}, #{content},
+            #{targetPath}, #{readFlag}, #{dedupeKey}, sysdate()
+        )
+    </insert>
+
+    <update id="markRead">
+        update pm_user_notification
+        set read_flag = '1', read_time = coalesce(read_time, sysdate())
+        where notification_id = #{notificationId} and user_id = #{userId}
+    </update>
+
+    <update id="markAllRead">
+        update pm_user_notification
+        set read_flag = '1', read_time = coalesce(read_time, sysdate())
+        where user_id = #{userId} and read_flag = '0'
+    </update>
+
+    <sql id="todoUnion">
+        select concat('APPROVAL:', t.task_id) item_key,
+               'APPROVAL' item_type,
+               i.title title,
+               concat(t.node_name, ' · 发起人：', coalesce(u.nick_name, u.user_name, '-')) description,
+               t.status status,
+               null due_date,
+               concat('/projectManagement/workflow/task/', t.task_id) target_path,
+               t.create_time create_time,
+               1 sort_group
+        from pm_workflow_task_candidate c
+        join pm_workflow_task t on t.task_id = c.task_id
+        join pm_workflow_instance i on i.instance_id = t.instance_id
+        left join sys_user u on u.user_id = i.initiator_user_id
+        where c.user_id = #{userId} and t.status = 'PENDING'
+
+        union all
+
+        select concat('TASK:', t.task_id),
+               'TASK',
+               t.task_name,
+               concat(p.project_name, ' · ', w.wbs_name),
+               t.status,
+               t.plan_end_date,
+               concat('/personal/my-task?projectId=', t.project_id),
+               t.create_time,
+               2
+        from pm_project_task t
+        join pm_project p on p.project_id = t.project_id
+        join pm_project_wbs_node w on w.wbs_id = t.work_package_id
+        where t.assignee_user_id = #{userId}
+          and t.task_type = 'EXECUTION'
+          and t.status &lt;&gt; 'COMPLETED'
+          and p.status = 'ACTIVE'
+
+        union all
+
+        select concat('DELIVERABLE:', d.deliverable_id),
+               'DELIVERABLE',
+               d.deliverable_name,
+               concat(p.project_name, ' · ', w.wbs_name),
+               d.status,
+               d.planned_date,
+               '/personal/my-deliverable',
+               d.create_time,
+               3
+        from pm_project_deliverable d
+        join pm_project p on p.project_id = d.project_id
+        join pm_project_wbs_node w on w.wbs_id = d.work_package_id
+        where w.owner_user_id = #{userId}
+          and d.status in ('PENDING', 'RETURNED')
+          and p.status = 'ACTIVE'
+
+        union all
+
+        select concat('ISSUE:', issue.issue_id),
+               'ISSUE',
+               issue.issue_name,
+               concat(p.project_name, ' · ', issue.issue_code),
+               issue.status,
+               issue.due_date,
+               concat('/projectManagement/execution/issue?projectId=', issue.project_id),
+               issue.create_time,
+               4
+        from pm_project_issue issue
+        join pm_project p on p.project_id = issue.project_id
+        where issue.owner_user_id = #{userId}
+          and issue.status in ('OPEN', 'PROCESSING')
+          and p.status in ('APPROVED', 'ACTIVE', 'PAUSED')
+    </sql>
+
+    <select id="selectTodos" resultType="ProjectTodoItem">
+        select item_key, item_type, title, description, status, due_date, target_path, create_time
+        from (<include refid="todoUnion"/>) todo
+        order by sort_group,
+                 case when due_date is null then 1 else 0 end,
+                 due_date,
+                 create_time desc
+        limit 300
+    </select>
+
+    <select id="countTodos" resultType="int">
+        select count(*) from (<include refid="todoUnion"/>) todo
+    </select>
+
+    <select id="selectTaskAssignmentSummaries" resultType="TaskAssignmentSummary">
+        select t.assignee_user_id user_id,
+               count(*) task_count,
+               min(t.plan_start_date) first_start_date,
+               max(t.plan_end_date) last_end_date
+        from pm_project_task t
+        where t.project_id = #{projectId}
+          and t.task_type = 'EXECUTION'
+          and t.assignee_user_id is not null
+        group by t.assignee_user_id
+    </select>
+</mapper>

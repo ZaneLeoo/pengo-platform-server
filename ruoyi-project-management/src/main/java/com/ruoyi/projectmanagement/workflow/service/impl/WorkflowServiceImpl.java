@@ -69,8 +69,18 @@ public class WorkflowServiceImpl implements IWorkflowService {
         definition.setCreateBy(operator);
         definition.setUpdateBy(operator);
         if (definition.getDefinitionId() == null) {
+            WorkflowDefinition existing =
+                    mapper.selectDefinitionByBusinessType(definition.getBusinessType());
+            if (existing != null) {
+                throw new ServiceException("该业务类型已存在审批流程，请直接编辑现有流程");
+            }
             mapper.insertDefinition(definition);
         } else {
+            WorkflowDefinition existing =
+                    mapper.selectDefinitionByBusinessType(definition.getBusinessType());
+            if (existing != null && !existing.getDefinitionId().equals(definition.getDefinitionId())) {
+                throw new ServiceException("该业务类型已存在其他审批流程，不能重复配置");
+            }
             mapper.updateDefinition(definition);
         }
         mapper.insertVersion(definition, serializeNodes(definition.getNodes()));

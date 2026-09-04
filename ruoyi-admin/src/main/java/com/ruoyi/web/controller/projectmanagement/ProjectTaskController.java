@@ -4,6 +4,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.projectmanagement.execution.domain.LifecycleActionRequest;
+import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import com.ruoyi.projectmanagement.task.domain.ProjectTask;
 import com.ruoyi.projectmanagement.task.service.IProjectTaskService;
 import org.springframework.validation.annotation.Validated;
@@ -22,14 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProjectTaskController extends BaseController {
 
     private final IProjectTaskService service;
+    private final IProjectInfoService projectService;
 
-    public ProjectTaskController(IProjectTaskService service) {
+    public ProjectTaskController(IProjectTaskService service, IProjectInfoService projectService) {
         this.service = service;
+        this.projectService = projectService;
     }
 
     /** 查询任务列表。 */
     @GetMapping("/list")
     public TableDataInfo list(ProjectTask filter) {
+        if (filter == null || filter.getProjectId() == null) {
+            throw new com.ruoyi.common.exception.ServiceException("请选择项目");
+        }
+        projectService.assertViewable(filter.getProjectId(), getUserId());
         startPage();
         return getDataTable(service.list(filter));
     }
@@ -44,12 +51,16 @@ public class ProjectTaskController extends BaseController {
     /** 查询任务详细。 */
     @GetMapping("/{id}")
     public AjaxResult get(@PathVariable Long id) {
-        return success(service.get(id));
+        ProjectTask task = service.get(id);
+        projectService.assertViewable(task.getProjectId(), getUserId());
+        return success(task);
     }
 
     /** 查询执行任务的开始、暂停、恢复、完成记录。 */
     @GetMapping("/{id}/operation-logs")
     public AjaxResult operationLogs(@PathVariable Long id) {
+        ProjectTask task = service.get(id);
+        projectService.assertViewable(task.getProjectId(), getUserId());
         return success(service.operationLogs(id));
     }
 

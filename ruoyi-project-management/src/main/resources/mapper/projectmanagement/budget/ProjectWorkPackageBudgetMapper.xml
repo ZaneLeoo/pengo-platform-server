@@ -30,6 +30,7 @@
   <insert id="insert" useGeneratedKeys="true" keyProperty="workPackageBudgetLineId">insert into pm_work_package_budget_line(project_id,work_package_id,cost_category_id,category_code,category_name,category_path,budget_amount,estimation_basis,sort_order,create_by,create_time) values(#{projectId},#{workPackageId},#{costCategoryId},#{categoryCode},#{categoryName},#{categoryPath},#{budgetAmount},#{estimationBasis},#{sortOrder},#{createBy},sysdate())</insert>
   <update id="update">update pm_work_package_budget_line set budget_amount=#{budgetAmount},estimation_basis=#{estimationBasis},sort_order=#{sortOrder},update_by=#{updateBy},update_time=sysdate() where work_package_budget_line_id=#{workPackageBudgetLineId}</update>
   <delete id="deleteById">delete from pm_work_package_budget_line where work_package_budget_line_id=#{lineId}</delete>
+  <delete id="deleteByProjectId">delete from pm_work_package_budget_line where project_id=#{projectId}</delete>
   <select id="countByWorkPackageId" resultType="int">select count(*) from pm_work_package_budget_line where work_package_id=#{workPackageId}</select>
   <select id="countByCategoryId" resultType="long">select count(*) from pm_work_package_budget_line where cost_category_id=#{costCategoryId}</select>
   <select id="countByWorkPackageAndCategory" resultType="int">select count(*) from pm_work_package_budget_line where work_package_id=#{workPackageId} and cost_category_id=#{costCategoryId}<if test="excludeId != null"> and work_package_budget_line_id != #{excludeId}</if></select>

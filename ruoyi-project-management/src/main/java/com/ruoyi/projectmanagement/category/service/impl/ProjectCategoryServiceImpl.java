@@ -79,6 +79,9 @@ public class ProjectCategoryServiceImpl implements IProjectCategoryService {
         if (categoryMapper.countChildren(categoryId) > 0) {
             throw new ServiceException("存在子分类，不能删除");
         }
+        if (categoryMapper.countProjectReferences(categoryId) > 0) {
+            throw new ServiceException("项目已引用该分类，不能删除");
+        }
         return categoryMapper.deleteProjectCategoryById(categoryId);
     }
 

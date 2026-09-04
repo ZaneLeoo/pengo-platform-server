@@ -49,6 +49,10 @@
         select count(1) from pm_project_category where parent_id = #{categoryId}
     </select>
 
+    <select id="countProjectReferences" resultType="int">
+        select count(1) from pm_project where category_id = #{categoryId}
+    </select>
+
     <insert id="insertProjectCategory" useGeneratedKeys="true" keyProperty="categoryId">
         insert into pm_project_category(parent_id, ancestors, category_code, category_name, order_num,
                                         status, remark, create_by, create_time)

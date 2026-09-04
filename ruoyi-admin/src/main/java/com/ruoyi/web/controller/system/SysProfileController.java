@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -112,7 +113,7 @@ public class SysProfileController extends BaseController {
                             RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION, true);
             if (userService.updateUserAvatar(loginUser.getUserId(), avatar)) {
                 String oldAvatar = loginUser.getUser().getAvatar();
-                if (StringUtils.isNotEmpty(oldAvatar)) {
+                if (StringUtils.isNotEmpty(oldAvatar) && !isDefaultAvatar(oldAvatar)) {
                     FileUtils.deleteFile(
                             RuoYiConfig.getProfile() + FileUtils.stripPrefix(oldAvatar));
                 }
@@ -125,5 +126,17 @@ public class SysProfileController extends BaseController {
             }
         }
         return error("上传图片异常，请联系管理员");
+    }
+
+    /**
+     * 系统默认头像为共享资源，用户更换头像时不得删除。
+     *
+     * @param avatar 旧头像地址
+     * @return 是否为系统默认头像
+     */
+    private boolean isDefaultAvatar(String avatar) {
+        return UserConstants.DEFAULT_ADMIN_AVATAR.equals(avatar)
+                || UserConstants.DEFAULT_MALE_AVATAR.equals(avatar)
+                || UserConstants.DEFAULT_FEMALE_AVATAR.equals(avatar);
     }
 }

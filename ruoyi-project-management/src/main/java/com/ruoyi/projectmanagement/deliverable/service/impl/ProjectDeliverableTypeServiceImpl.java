@@ -58,6 +58,10 @@ public class ProjectDeliverableTypeServiceImpl implements IProjectDeliverableTyp
     @Override
     @Transactional
     public int remove(Long id) {
+        get(id);
+        if (mapper.countDeliverableReferences(id) > 0) {
+            throw new ServiceException("交付物类型已被引用，不能删除");
+        }
         mapper.deleteFormats(id);
         return mapper.deleteById(id);
     }
@@ -66,13 +70,17 @@ public class ProjectDeliverableTypeServiceImpl implements IProjectDeliverableTyp
         entity.setTypeCode(entity.getTypeCode().trim().toUpperCase());
         entity.setTypeName(entity.getTypeName().trim());
         entity.setSubmissionMode(entity.getSubmissionMode().trim().toUpperCase());
-        if (!List.of("FILE", "LINK").contains(entity.getSubmissionMode())) {
-            throw new ServiceException("V1仅支持文件或外链提交方式");
+        if (!List.of("FILE", "LINK", "BUSINESS_OBJECT").contains(entity.getSubmissionMode())) {
+            throw new ServiceException("仅支持文件、外链或业务对象提交方式");
+        }
+        if ("BUSINESS_OBJECT".equals(entity.getSubmissionMode())
+                && !"BOM".equals(entity.getTypeCode())) {
+            throw new ServiceException("当前仅BOM类型支持业务对象提交方式");
         }
         if (entity.getDefaultApprovalRequired() == null) entity.setDefaultApprovalRequired("0");
         if (entity.getStatus() == null) entity.setStatus("0");
         if (entity.getSortOrder() == null) entity.setSortOrder(0);
-        if ("LINK".equals(entity.getSubmissionMode())) entity.setAllowedExtensions(List.of());
+        if (!"FILE".equals(entity.getSubmissionMode())) entity.setAllowedExtensions(List.of());
     }
 
     private void saveFormats(ProjectDeliverableType entity) {

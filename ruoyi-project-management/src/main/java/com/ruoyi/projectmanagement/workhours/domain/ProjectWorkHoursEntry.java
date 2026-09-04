@@ -22,8 +22,10 @@ public class ProjectWorkHoursEntry extends BaseEntity {
     private String taskName;
     private String reportUserName;
     private String reportNickName;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate workDate;
+
     private BigDecimal hours;
     private String overtimeFlag;
     private String workDescription;

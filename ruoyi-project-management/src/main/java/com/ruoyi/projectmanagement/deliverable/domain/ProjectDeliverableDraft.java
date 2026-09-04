@@ -16,7 +16,7 @@ public class ProjectDeliverableDraft {
     @NotBlank(message = "交付物类型不能为空")
     private String deliverableType;
 
-    /** 提交方式快照：FILE、LINK；BUSINESS_OBJECT预留。 */
+    /** 提交方式快照：FILE、LINK、BUSINESS_OBJECT。 */
     private String submissionMode;
 
     /** 允许文件扩展名快照，逗号分隔；LINK类型为空。 */

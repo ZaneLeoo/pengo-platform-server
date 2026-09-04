@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.project.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine;
@@ -102,6 +103,9 @@ public class ProjectInfo extends BaseEntity {
     private String resourceFeasibility;
     private String feasibilityConclusion;
     private Integer initiationVersion;
+
+    /** 查询项目列表时的访问人，仅供服务端数据范围过滤，不回传前端。 */
+    @JsonIgnore private Long viewerUserId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private LocalDateTime initiationTime;

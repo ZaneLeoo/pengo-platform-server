@@ -18,6 +18,7 @@ import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器
@@ -101,7 +102,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BindException.class)
     public AjaxResult handleBindException(BindException e) {
         log.error(e.getMessage(), e);
-        String message = e.getAllErrors().get(0).getDefaultMessage();
+        String message =
+                e.getAllErrors().stream()
+                        .map(error -> error.getDefaultMessage())
+                        .filter(StringUtils::isNotBlank)
+                        .distinct()
+                        .collect(Collectors.joining("；"));
         return AjaxResult.error(message);
     }
 
@@ -109,7 +115,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error(e.getMessage(), e);
-        String message = e.getBindingResult().getFieldError().getDefaultMessage();
+        String message =
+                e.getBindingResult().getAllErrors().stream()
+                        .map(error -> error.getDefaultMessage())
+                        .filter(StringUtils::isNotBlank)
+                        .distinct()
+                        .collect(Collectors.joining("；"));
         return AjaxResult.error(message);
     }
 

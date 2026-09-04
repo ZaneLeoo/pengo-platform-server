@@ -8,6 +8,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverable;
 import com.ruoyi.projectmanagement.deliverable.domain.ProjectDeliverableSubmission;
 import com.ruoyi.projectmanagement.deliverable.service.IProjectDeliverableService;
+import com.ruoyi.projectmanagement.project.service.IProjectInfoService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,15 +24,26 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProjectDeliverableController extends BaseController {
 
     private final IProjectDeliverableService service;
+    private final IProjectInfoService projectService;
 
-    public ProjectDeliverableController(IProjectDeliverableService service) {
+    public ProjectDeliverableController(
+            IProjectDeliverableService service, IProjectInfoService projectService) {
         this.service = service;
+        this.projectService = projectService;
     }
 
     /** 查询交付物列表。 */
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:workItem:list')")
     @GetMapping("/list")
     public TableDataInfo list(ProjectDeliverable entity) {
+        if (entity == null) {
+            entity = new ProjectDeliverable();
+        }
+        if (entity.getProjectId() == null) {
+            entity.setViewerUserId(getUserId());
+        } else {
+            projectService.assertViewable(entity.getProjectId(), getUserId());
+        }
         startPage();
         return getDataTable(service.selectList(entity));
     }
@@ -43,11 +55,22 @@ public class ProjectDeliverableController extends BaseController {
         return getDataTable(service.selectMine(getUserId(), entity));
     }
 
+    /** 查询可交付的 BOM 版本选项。 */
+    @GetMapping("/bom-options")
+    public AjaxResult bomOptions() {
+        return success(service.selectBomOptions());
+    }
+
     /** 查询交付物详细。 */
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:workItem:query')")
     @GetMapping("/{id}")
     public AjaxResult get(@PathVariable Long id) {
-        return success(service.selectById(id));
+        ProjectDeliverable deliverable = service.selectById(id);
+        if (deliverable == null) {
+            throw new com.ruoyi.common.exception.ServiceException("交付物不存在");
+        }
+        projectService.assertViewable(deliverable.getProjectId(), getUserId());
+        return success(deliverable);
     }
 
     /** 新增交付物。 */
@@ -99,6 +122,11 @@ public class ProjectDeliverableController extends BaseController {
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:workItem:query')")
     @GetMapping("/{id}/submissions")
     public AjaxResult submissions(@PathVariable Long id) {
+        ProjectDeliverable deliverable = service.selectById(id);
+        if (deliverable == null) {
+            throw new com.ruoyi.common.exception.ServiceException("交付物不存在");
+        }
+        projectService.assertViewable(deliverable.getProjectId(), getUserId());
         return success(service.selectSubmissions(id));
     }
 }

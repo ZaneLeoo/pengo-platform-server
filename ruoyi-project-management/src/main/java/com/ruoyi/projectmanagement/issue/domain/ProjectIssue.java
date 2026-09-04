@@ -41,6 +41,7 @@ public class ProjectIssue extends BaseEntity {
     private String issueName;
 
     /** 问题说明。 */
+    @NotBlank(message = "问题说明不能为空")
     private String description;
 
     /** 提出人用户ID，由当前登录用户写入。 */
@@ -50,6 +51,7 @@ public class ProjectIssue extends BaseEntity {
     private String reporterName;
 
     /** 负责人ID，必须是当前项目在组成员。 */
+    @NotNull(message = "问题负责人不能为空")
     private Long ownerId;
 
     /** 负责人姓名（冗余展示字段）。 */
