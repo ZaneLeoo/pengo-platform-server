@@ -2,6 +2,7 @@ package com.ruoyi.projectmanagement.change.service.impl;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.projectmanagement.budget.domain.ProjectActualCostAggregate;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetLine;
@@ -332,7 +333,9 @@ public class ProjectPlanChangeServiceImpl
     @Override
     public List<ProjectPlanChange> list(Long projectId, Long userId) {
         requireProject(projectId);
-        if (!teamService.isActiveMember(projectId, userId) && !isManager(projectId, userId))
+        if (!SecurityUtils.isAdmin(userId)
+                && !teamService.isActiveMember(projectId, userId)
+                && !isManager(projectId, userId))
             throw new ServiceException("您无权查看该项目变更");
         List<ProjectPlanChange> rows = mapper.selectChanges(projectId);
         rows.forEach(x -> enrich(x, userId));
@@ -354,7 +357,9 @@ public class ProjectPlanChangeServiceImpl
     public List<ProjectPlanChangeProjectNavigator> navigatorProjects(
             String keyword, boolean includeHistory, Long userId) {
         return mapper.selectNavigatorProjects(
-                userId, keyword == null ? null : keyword.trim(), includeHistory);
+                SecurityUtils.isAdmin(userId) ? null : userId,
+                keyword == null ? null : keyword.trim(),
+                includeHistory);
     }
 
     @Override
@@ -657,11 +662,14 @@ public class ProjectPlanChangeServiceImpl
     }
 
     private void assertProjectMemberOrManager(Long id, Long user) {
-        if (!teamService.isActiveMember(id, user) && !isManager(id, user))
+        if (!SecurityUtils.isAdmin(user)
+                && !teamService.isActiveMember(id, user)
+                && !isManager(id, user))
             throw new ServiceException("您无权查看该项目变更");
     }
 
     private void assertChangeViewable(ProjectPlanChange c, Long user) {
+        if (SecurityUtils.isAdmin(user)) return;
         if (teamService.isActiveMember(c.getProjectId(), user) || isManager(c.getProjectId(), user))
             return;
         if (c.getWorkflowInstanceId() != null) {

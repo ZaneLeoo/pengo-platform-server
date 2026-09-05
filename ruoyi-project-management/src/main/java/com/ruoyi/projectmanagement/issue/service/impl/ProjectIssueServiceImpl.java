@@ -1,6 +1,7 @@
 package com.ruoyi.projectmanagement.issue.service.impl;
 
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.common.enums.IssueSeverity;
 import com.ruoyi.projectmanagement.common.enums.IssueStatus;
@@ -49,7 +50,7 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
     /** 查询问题列表。 */
     @Override
     public List<ProjectIssue> list(ProjectIssue filter, Long userId) {
-        filter.setViewerUserId(userId);
+        filter.setViewerUserId(SecurityUtils.isAdmin(userId) ? null : userId);
         List<ProjectIssue> issues = mapper.selectList(filter);
         issues.forEach(issue -> enrichCapabilities(issue, userId));
         return issues;
@@ -327,7 +328,8 @@ public class ProjectIssueServiceImpl implements IProjectIssueService {
     }
 
     private void assertViewable(ProjectIssue issue, Long userId) {
-        if (!isManager(issue, userId)
+        if (!SecurityUtils.isAdmin(userId)
+                && !isManager(issue, userId)
                 && !teamService.isActiveMember(issue.getProjectId(), userId)
                 && !userId.equals(issue.getReporterUserId())
                 && !userId.equals(issue.getOwnerId())) {

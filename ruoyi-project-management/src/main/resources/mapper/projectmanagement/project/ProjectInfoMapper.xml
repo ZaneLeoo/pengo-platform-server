@@ -68,6 +68,10 @@
             <if test="viewerUserId != null">
                 and (
                     p.manager_user_id = #{viewerUserId}
+                    or exists (select 1 from sys_user applicant_user
+                               where applicant_user.user_id = #{viewerUserId}
+                                 and applicant_user.user_name = p.applicant
+                                 and applicant_user.del_flag = '0')
                     or exists (select 1 from pm_project_member vm
                                where vm.project_id = p.project_id
                                  and vm.user_id = #{viewerUserId}
@@ -101,6 +105,10 @@
         where p.project_id = #{projectId}
           and (
               p.manager_user_id = #{userId}
+              or exists (select 1 from sys_user applicant_user
+                         where applicant_user.user_id = #{userId}
+                           and applicant_user.user_name = p.applicant
+                           and applicant_user.del_flag = '0')
               or exists (select 1 from pm_project_member m
                          where m.project_id = p.project_id
                            and m.user_id = #{userId}

@@ -77,6 +77,7 @@ public class GlobalExceptionHandler {
         }
         log.error("请求参数类型不匹配'{}',发生系统异常.", requestURI, e);
         return AjaxResult.error(
+                HttpStatus.BAD_REQUEST,
                 String.format(
                         "请求参数类型不匹配，参数[%s]要求类型为：'%s'，但输入值为：'%s'",
                         e.getName(), e.getRequiredType().getName(), value));

@@ -321,7 +321,9 @@ public class ProjectActualCostServiceImpl implements IProjectActualCostService {
 
     private void assertViewable(Long projectId, Long userId) {
         ProjectInfo project = requireProject(projectId);
-        if (!teamService.isActiveMember(projectId, userId) && !isManager(project, userId))
+        if (!SecurityUtils.isAdmin(userId)
+                && !teamService.isActiveMember(projectId, userId)
+                && !isManager(project, userId))
             throw new ServiceException("您无权查看该项目实际成本");
     }
 

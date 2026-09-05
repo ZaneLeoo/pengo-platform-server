@@ -1,6 +1,8 @@
 package com.ruoyi.projectmanagement.project.service.impl;
 
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.projectmanagement.budget.domain.ProjectBudgetSummary;
 import com.ruoyi.projectmanagement.budget.service.IProjectBudgetService;
@@ -111,13 +113,14 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     public boolean canView(Long projectId, Long userId) {
         return projectId != null
                 && userId != null
-                && projectMapper.countViewableProject(projectId, userId) > 0;
+                && (SecurityUtils.isAdmin(userId)
+                        || projectMapper.countViewableProject(projectId, userId) > 0);
     }
 
     @Override
     public void assertViewable(Long projectId, Long userId) {
         if (!canView(projectId, userId)) {
-            throw new ServiceException("您无权查看该项目");
+            throw new ServiceException("您无权查看该项目", HttpStatus.FORBIDDEN);
         }
     }
 
@@ -785,7 +788,7 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
     private ProjectInfo requiredProject(Long id) {
         ProjectInfo project = projectMapper.selectProjectInfoById(id);
         if (project == null) {
-            throw new ServiceException("项目不存在");
+            throw new ServiceException("项目不存在", HttpStatus.NOT_FOUND);
         }
         return project;
     }
@@ -797,6 +800,9 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
         }
         if (categoryMapper.selectProjectCategoryById(project.getCategoryId()) == null) {
             throw new ServiceException("项目分类不存在");
+        }
+        if (categoryMapper.countChildren(project.getCategoryId()) > 0) {
+            throw new ServiceException("请选择项目分类的末级节点");
         }
         ProjectPerson manager = personMapper.selectProjectPersonById(project.getManagerId());
         if (manager == null || !"0".equals(manager.getStatus())) {

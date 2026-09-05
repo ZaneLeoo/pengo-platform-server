@@ -39,7 +39,7 @@
     from pm_project p
     left join sys_user u on u.user_id = p.manager_user_id and u.del_flag = '0'
     left join pm_project_member m on m.project_id = p.project_id and m.user_id = #{userId} and m.status = 'ACTIVE'
-    where (m.member_id is not null or p.manager_user_id = #{userId})
+    where (#{userId} is null or m.member_id is not null or p.manager_user_id = #{userId})
       <if test="!includeHistory">and p.status in ('ACTIVE', 'PAUSED')</if>
       <if test="keyword != null and keyword != ''">
         and (p.project_code like concat('%', #{keyword}, '%') or p.project_name like concat('%', #{keyword}, '%'))

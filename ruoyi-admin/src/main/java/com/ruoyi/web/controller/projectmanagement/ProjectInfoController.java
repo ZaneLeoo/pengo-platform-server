@@ -51,7 +51,9 @@ public class ProjectInfoController extends BaseController {
     // 临时关闭项目管理接口权限校验：@PreAuthorize("@ss.hasPermi('projectManagement:project:list')")
     @GetMapping("/list")
     public TableDataInfo list(ProjectInfo project) {
-        project.setViewerUserId(getUserId());
+        if (!SecurityUtils.isAdmin()) {
+            project.setViewerUserId(getUserId());
+        }
         startPage();
         List<ProjectInfo> list = service.selectProjectInfoList(project);
         return getDataTable(list);
@@ -62,7 +64,9 @@ public class ProjectInfoController extends BaseController {
     @Log(title = "项目台账", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, ProjectInfo project) {
-        project.setViewerUserId(getUserId());
+        if (!SecurityUtils.isAdmin()) {
+            project.setViewerUserId(getUserId());
+        }
         List<ProjectInfo> list = service.selectProjectInfoList(project);
         new ExcelUtil<>(ProjectInfo.class).exportExcel(response, list, "项目台账");
     }

@@ -43,7 +43,9 @@
         values(#{definitionName},#{businessType},'ENABLED',#{createBy},sysdate())
     </insert>
     <update id="updateDefinition">
-        update pm_workflow_definition set definition_name=#{definitionName},status=#{status},update_by=#{updateBy},update_time=sysdate()
+        update pm_workflow_definition
+        set definition_name=#{definitionName},status=coalesce(#{status},status,'ENABLED'),
+            update_by=#{updateBy},update_time=sysdate()
         where definition_id=#{definitionId}
     </update>
     <insert id="insertVersion" useGeneratedKeys="true" keyProperty="definition.versionId">
@@ -56,7 +58,9 @@
         where version_id=#{versionId} and version_status='DRAFT'
     </update>
     <update id="activateVersion">
-        update pm_workflow_definition set active_version_id=#{versionId},update_by=#{operator},update_time=sysdate()
+        update pm_workflow_definition
+        set active_version_id=#{versionId},status=coalesce(status,'ENABLED'),
+            update_by=#{operator},update_time=sysdate()
         where definition_id=#{definitionId}
     </update>
     <insert id="insertInstance" useGeneratedKeys="true" keyProperty="instanceId">

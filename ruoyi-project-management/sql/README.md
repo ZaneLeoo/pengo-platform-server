@@ -143,3 +143,5 @@ Backend/deploy/database/migrations/Vxxxx__description.sql
 ```
 
 `deploy.sh` 会使用 `pm_schema_history` 记录版本和 SHA-256，并拒绝执行被修改过的已发布脚本。完整流程见 `Backend/deploy/README.md`。
+
+当前最新增量为 `59_repair_workflow_definition_status.sql`，用于修复已发布流程定义状态为空、业务无法发起审批的问题。
