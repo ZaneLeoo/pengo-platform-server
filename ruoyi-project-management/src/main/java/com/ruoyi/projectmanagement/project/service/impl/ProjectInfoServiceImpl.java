@@ -349,19 +349,6 @@ public class ProjectInfoServiceImpl implements IProjectInfoService, WorkflowBusi
             }
             validateWorkPackageReadiness(project, node, label, issues);
         }
-        for (ProjectWbsNode root : roots) {
-            String label = "顶层WBS【" + root.getWbsCode() + " · " + root.getWbsName() + "】";
-            if (root.getPlanStartDate() != null
-                    && root.getTargetStartDate() != null
-                    && root.getPlanStartDate().isBefore(root.getTargetStartDate())) {
-                issues.add(label + "汇总开始日期早于立项批准目标窗口");
-            }
-            if (root.getPlanEndDate() != null
-                    && root.getTargetEndDate() != null
-                    && root.getPlanEndDate().isAfter(root.getTargetEndDate())) {
-                issues.add(label + "汇总结束日期晚于立项批准目标窗口");
-            }
-        }
         return new StartReadinessResult(issues.isEmpty(), issues);
     }
 
