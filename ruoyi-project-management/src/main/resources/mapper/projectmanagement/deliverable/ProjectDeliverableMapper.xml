@@ -32,6 +32,7 @@
         <result property="latestExternalUrl" column="latest_external_url"/>
         <result property="businessType" column="business_type"/>
         <result property="businessId" column="business_id"/>
+        <result property="businessMasterId" column="business_master_id"/>
         <result property="businessCode" column="business_code"/>
         <result property="businessName" column="business_name"/>
         <result property="businessVersion" column="business_version"/>
@@ -46,6 +47,7 @@
         <result property="externalUrl" column="external_url"/>
         <result property="businessType" column="business_type"/>
         <result property="businessId" column="business_id"/>
+        <result property="businessMasterId" column="business_master_id"/>
         <result property="businessCode" column="business_code"/>
         <result property="businessName" column="business_name"/>
         <result property="businessVersion" column="business_version"/>
@@ -61,7 +63,8 @@
         select d.*, p.project_name, p.status project_status, w.wbs_name work_package_name, t.type_name deliverable_type_name,
                w.owner_id work_package_owner_id, w.owner_user_id work_package_owner_user_id, u.nick_name work_package_owner_name, u.user_name work_package_owner_code,
                u.user_name work_package_owner_user_name,
-               bm.bom_code business_code, bm.parent_item_name business_name, bv.version_code business_version
+               bv.bom_master_id business_master_id, bm.bom_code business_code,
+               bm.parent_item_name business_name, bv.version_code business_version
         from pm_project_deliverable d
         join pm_project p on p.project_id = d.project_id
         join pm_project_wbs_node w on w.wbs_id = d.work_package_id
@@ -165,9 +168,12 @@
     </select>
 
     <select id="selectSubmissions" resultMap="submission">
-        select * from pm_project_deliverable_submission
-        where deliverable_id = #{deliverableId}
-        order by version_no desc, submission_id desc
+        select s.*, bv.bom_master_id business_master_id
+        from pm_project_deliverable_submission s
+        left join bom_version bv on s.business_type = 'BOM_VERSION'
+            and cast(s.business_id as unsigned) = bv.id
+        where s.deliverable_id = #{deliverableId}
+        order by s.version_no desc, s.submission_id desc
     </select>
 
     <select id="countSubmissions" resultType="int">

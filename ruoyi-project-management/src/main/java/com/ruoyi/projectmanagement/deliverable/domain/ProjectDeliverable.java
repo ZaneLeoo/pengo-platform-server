@@ -111,6 +111,9 @@ public class ProjectDeliverable extends BaseEntity {
     /** 最近交付的业务对象ID；BOM 交付关联 bom_version.id。 */
     private String businessId;
 
+    /** 最近交付 BOM 所属主数据ID，由版本关联查询得到，不落库。 */
+    private Long businessMasterId;
+
     /** 最近交付的业务对象编码。 */
     private String businessCode;
 

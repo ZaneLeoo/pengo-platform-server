@@ -26,6 +26,9 @@ public class ProjectDeliverableSubmission {
     /** 业务对象ID；BOM 交付关联 bom_version.id。 */
     private String businessId;
 
+    /** BOM 版本所属主数据ID，由版本关联查询得到，不落库。 */
+    private Long businessMasterId;
+
     /** 提交时的业务对象编码快照。 */
     private String businessCode;
 
