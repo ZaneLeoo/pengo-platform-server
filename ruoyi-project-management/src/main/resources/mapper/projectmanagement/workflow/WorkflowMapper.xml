@@ -17,8 +17,9 @@
         select d.*, v.version_id, v.version_no, v.version_status, v.graph_json
         from pm_workflow_definition d
         left join pm_workflow_definition_version v on v.version_id = coalesce(
-          (select max(dv.version_id) from pm_workflow_definition_version dv
-           where dv.definition_id = d.definition_id and dv.version_status = 'DRAFT'), d.active_version_id)
+          (select dv.version_id from pm_workflow_definition_version dv
+           where dv.definition_id = d.definition_id and dv.version_status = 'DRAFT'
+           order by dv.version_no desc, dv.version_id desc limit 1), d.active_version_id)
     </sql>
     <select id="selectDefinitions" resultMap="definition"><include refid="definitionVo"/> order by d.definition_id</select>
     <select id="selectDefinition" resultMap="definition"><include refid="definitionVo"/> where d.definition_id=#{definitionId}</select>
@@ -53,6 +54,13 @@
         select #{definition.definitionId},coalesce(max(version_no),0)+1,'DRAFT',#{graphJson},#{definition.createBy},sysdate()
         from pm_workflow_definition_version where definition_id=#{definition.definitionId}
     </insert>
+    <update id="supersedeDraftVersions">
+        update pm_workflow_definition_version
+        set version_status='SUPERSEDED'
+        where definition_id=#{definitionId}
+          and version_status='DRAFT'
+          <if test="keepVersionId != null">and version_id &lt;&gt; #{keepVersionId}</if>
+    </update>
     <update id="publishVersion">
         update pm_workflow_definition_version set version_status='PUBLISHED',publish_by=#{operator},publish_time=sysdate()
         where version_id=#{versionId} and version_status='DRAFT'

@@ -86,6 +86,8 @@ public class WorkflowServiceImpl implements IWorkflowService {
             }
             mapper.updateDefinition(definition);
         }
+        // 同一流程只保留一个可编辑草稿；旧草稿保留记录，但不再参与当前版本展示和发布。
+        mapper.supersedeDraftVersions(definition.getDefinitionId(), null);
         mapper.insertVersion(definition, serializeNodes(definition.getNodes()));
         return definition(definition.getDefinitionId());
     }
@@ -93,14 +95,17 @@ public class WorkflowServiceImpl implements IWorkflowService {
     @Override
     @Transactional
     public void publish(Long definitionId, Long versionId, String operator) {
-        WorkflowDefinition definition = definition(definitionId);
-        if (!versionId.equals(definition.getVersionId())
-                || !"DRAFT".equals(definition.getVersionStatus())) {
+        WorkflowDefinition version = mapper.selectDefinitionVersion(versionId);
+        if (version == null
+                || !definitionId.equals(version.getDefinitionId())
+                || !"DRAFT".equals(version.getVersionStatus())) {
             throw new ServiceException("只能发布当前草稿版本");
         }
         if (mapper.publishVersion(versionId, operator) != 1) {
             throw new ServiceException("流程版本已发布或不存在");
         }
+        // 兼容历史上已经产生的多个草稿，发布当前版本时一并清理旧草稿。
+        mapper.supersedeDraftVersions(definitionId, versionId);
         mapper.activateVersion(definitionId, versionId, operator);
     }
 

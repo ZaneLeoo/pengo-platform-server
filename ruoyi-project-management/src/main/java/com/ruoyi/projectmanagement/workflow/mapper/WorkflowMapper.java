@@ -31,6 +31,10 @@ public interface WorkflowMapper {
             @Param("definition") WorkflowDefinition definition,
             @Param("graphJson") String graphJson);
 
+    int supersedeDraftVersions(
+            @Param("definitionId") Long definitionId,
+            @Param("keepVersionId") Long keepVersionId);
+
     int publishVersion(@Param("versionId") Long versionId, @Param("operator") String operator);
 
     int activateVersion(

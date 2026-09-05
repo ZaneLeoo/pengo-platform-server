@@ -14,7 +14,7 @@ create table if not exists pm_workflow_definition_version (
   version_id bigint not null auto_increment,
   definition_id bigint not null,
   version_no int not null,
-  version_status varchar(20) not null comment 'DRAFT、PUBLISHED',
+  version_status varchar(20) not null comment 'DRAFT、PUBLISHED、SUPERSEDED',
   graph_json json not null,
   create_by varchar(64) default '', create_time datetime,
   publish_by varchar(64) null, publish_time datetime null,
