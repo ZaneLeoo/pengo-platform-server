@@ -1,0 +1,52 @@
+# 项目管理系统 Linux 生产/测试服务器配置模板
+# systemd 部署从 /etc/pm/pm.env 注入；Docker Compose 部署从项目目录的 .env 注入。
+# 不要把任何真实密码提交到代码仓库或打进发布包。
+
+ruoyi:
+  profile: ${PM_UPLOAD_PATH:/data/pm/uploads}
+  addressEnabled: false
+
+server:
+  address: ${PM_SERVER_ADDRESS:127.0.0.1}
+  port: ${PM_SERVER_PORT:8088}
+  forward-headers-strategy: native
+
+spring:
+  devtools:
+    restart:
+      enabled: false
+  datasource:
+    druid:
+      master:
+        url: jdbc:mysql://${PM_DB_HOST:127.0.0.1}:${PM_DB_PORT:3306}/${PM_DB_NAME:pm}?useUnicode=true&characterEncoding=utf8&connectionCollation=utf8mb4_unicode_ci&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia%2FShanghai&allowPublicKeyRetrieval=true
+        username: ${PM_DB_USERNAME}
+        password: ${PM_DB_PASSWORD}
+      webStatFilter:
+        enabled: false
+      statViewServlet:
+        enabled: false
+  data:
+    redis:
+      host: ${PM_REDIS_HOST:127.0.0.1}
+      port: ${PM_REDIS_PORT:6379}
+      database: ${PM_REDIS_DATABASE:0}
+      username: ${PM_REDIS_USERNAME:}
+      password: ${PM_REDIS_PASSWORD}
+      timeout: 10s
+
+token:
+  secret: ${PM_TOKEN_SECRET}
+  expireTime: ${PM_TOKEN_EXPIRE_MINUTES:30}
+
+logging:
+  level:
+    com.ruoyi: ${PM_APP_LOG_LEVEL:info}
+    org.springframework: warn
+  file:
+    name: ${PM_LOG_FILE:/var/log/pm/backend.log}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

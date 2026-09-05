@@ -1,0 +1,26 @@
+[Unit]
+Description=Project Management Backend
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=pm
+Group=pm
+WorkingDirectory=/opt/pm/current
+EnvironmentFile=/etc/pm/pm.env
+ExecStart=/usr/bin/java -Xms512m -Xmx1024m -jar /opt/pm/current/backend/ruoyi-admin.jar --spring.profiles.active=druid,prod --spring.config.additional-location=file:/etc/pm/
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+LimitNOFILE=65535
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/data/pm/uploads /var/log/pm
+
+[Install]
+WantedBy=multi-user.target
+

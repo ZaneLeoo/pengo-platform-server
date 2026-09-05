@@ -83,7 +83,7 @@ public class SecurityConfig {
                                     .getUrls()
                                     .forEach(url -> requests.requestMatchers(url).permitAll());
                             // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                            requests.requestMatchers("/login", "/register", "/captchaImage")
+                            requests.requestMatchers("/login", "/register", "/captchaImage", "/health")
                                     .permitAll()
                                     // Dify 工具回调使用服务密钥和运行令牌双重认证，不使用浏览器 JWT
                                     .requestMatchers("/internal/agent-tools/**", "/agent/tools/**")

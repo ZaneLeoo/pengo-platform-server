@@ -99,6 +99,8 @@ V2 新增脚本按顺序执行：
 - `48_project_work_hours.sql`：项目自然周工时单、日明细、人员有效期小时单价，以及“我的工时 / 工时管理 / 人工单价”菜单和管理员角色授权；可重复执行。
 - `52_project_menu_reorganization.sql`：将项目管理菜单重组为“项目执行 / 工时与成本 / 基础配置”，保留项目采购闭环所需的采购订单、采购到货和采购入库，并隐藏当前范围外的制造菜单；可重复执行。
 - `55_project_todo_notification_center.sql`：新增个人站内通知表、待办通知权限，并为项目启动后的任务分配通知提供数据结构；可重复执行。
+- `56_normalize_utf8mb4_collation.sql`：将基线中的 MySQL 8 `utf8mb4_0900_ai_ci` 历史表统一为 `utf8mb4_unicode_ci`。
+- `57_normalize_schema_history_collation.sql`：补充统一部署版本记录表 `pm_schema_history` 的排序规则；可重复执行。
 
 这些脚本面向新的 V2 结构，不承担旧问题或旧审批数据迁移；执行前必须备份。`41` 不可重复执行，`42` 可重复执行。
 
@@ -131,3 +133,13 @@ V2 新增脚本按顺序执行：
 -- 数据风险：无 / 更新 / 删除
 -- 回退方式：回退 SQL 或备份恢复
 ```
+
+## Linux 自动部署增量
+
+服务器自动部署不直接扫描本目录的历史脚本。基线 55 之后需要自动发布的 SQL 应放到：
+
+```text
+Backend/deploy/database/migrations/Vxxxx__description.sql
+```
+
+`deploy.sh` 会使用 `pm_schema_history` 记录版本和 SHA-256，并拒绝执行被修改过的已发布脚本。完整流程见 `Backend/deploy/README.md`。
