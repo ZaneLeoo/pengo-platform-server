@@ -119,13 +119,16 @@ deploy_release() {
   cp -f "$release_dir/deploy/docker/compose.yml" "$ROOT/compose.yml"
   cp -f "$release_dir/deploy/docker/nginx.conf" "$ROOT/nginx/default.conf"
 
-  # 基线管理员头像使用项目 Logo；仅补充固定默认文件，不覆盖用户后续上传的头像。
-  if [[ -f "$release_dir/deploy/assets/default-admin.png" ]]; then
-    install -d -m 0755 "$ROOT/data/uploads/avatar"
-    [[ -f "$ROOT/data/uploads/avatar/default-admin.png" ]] || \
-      install -m 0644 "$release_dir/deploy/assets/default-admin.png" \
-        "$ROOT/data/uploads/avatar/default-admin.png"
-  fi
+  # 补齐系统内置头像；仅安装缺失文件，不覆盖用户后续上传的头像。
+  install -d -m 0755 "$ROOT/data/uploads/avatar"
+  local avatar
+  for avatar in default-admin.png default-male.png default-female.png; do
+    if [[ -f "$release_dir/deploy/assets/$avatar" && \
+          ! -f "$ROOT/data/uploads/avatar/$avatar" ]]; then
+      install -m 0644 "$release_dir/deploy/assets/$avatar" \
+        "$ROOT/data/uploads/avatar/$avatar"
+    fi
+  done
 
   compose config --quiet
   compose up -d

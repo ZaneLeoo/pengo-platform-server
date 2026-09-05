@@ -306,15 +306,17 @@ deploy_package() {
     chmod 0755 "$release_dir" "$release_dir/backend"
     chmod 0644 "$release_dir/backend/ruoyi-admin.jar"
 
-    # 补齐基线管理员头像；用户上传目录独立于版本目录，升级和回滚均不会丢失。
-    if [[ -f "$release_dir/deploy/assets/default-admin.png" ]]; then
-        install -d -o "$APP_USER" -g "$APP_GROUP" -m 0750 "$UPLOAD_DIR/avatar"
-        if [[ ! -f "$UPLOAD_DIR/avatar/default-admin.png" ]]; then
+    # 补齐系统内置头像；用户上传目录独立于版本目录，升级和回滚均不会丢失。
+    install -d -o "$APP_USER" -g "$APP_GROUP" -m 0750 "$UPLOAD_DIR/avatar"
+    local avatar
+    for avatar in default-admin.png default-male.png default-female.png; do
+        if [[ -f "$release_dir/deploy/assets/$avatar" && \
+              ! -f "$UPLOAD_DIR/avatar/$avatar" ]]; then
             install -o "$APP_USER" -g "$APP_GROUP" -m 0644 \
-                "$release_dir/deploy/assets/default-admin.png" \
-                "$UPLOAD_DIR/avatar/default-admin.png"
+                "$release_dir/deploy/assets/$avatar" \
+                "$UPLOAD_DIR/avatar/$avatar"
         fi
-    fi
+    done
 
     backup_database "$release_id"
     initialize_schema_history "$release_dir"
