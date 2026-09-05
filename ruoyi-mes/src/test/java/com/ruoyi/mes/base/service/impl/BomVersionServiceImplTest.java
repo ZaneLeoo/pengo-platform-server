@@ -102,7 +102,7 @@ class BomVersionServiceImplTest {
         item.setComponentItemCode("COMPONENT-001");
         item.setComponentItemName("子件");
         item.setComponentQty(BigDecimal.ONE);
-        item.setSupplyType("PICK");
+        item.setSupplyType("PUSH");
         return item;
     }
 }

@@ -432,7 +432,7 @@ public class BomAiImportService {
             if (aiItem.getMatchedMaterialId() != null) {
                 bomItem.setComponentItemId(aiItem.getMatchedMaterialId());
             }
-            bomItem.setSupplyType("PICK");
+            bomItem.setSupplyType("PUSH");
             bomItem.setIsVirtual(0);
             bomItem.setMrpExpandFlag(1);
             bomItem.setSourceSystem("AI_IMPORT");

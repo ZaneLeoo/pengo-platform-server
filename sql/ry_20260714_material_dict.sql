@@ -1,6 +1,9 @@
 -- 物料基础资料字典：物料类型、来源类型
 -- 字典编码与 MaterialType、SourceType Java 枚举保持一致。
 
+-- 确保通过 mysql 客户端执行时，中文字典内容按 UTF-8 发送。
+SET NAMES utf8mb4;
+
 insert into sys_dict_type(dict_name, dict_type, status, create_by, create_time, remark)
 select '物料类型', 'mes_material_type', '0', 'admin', now(), 'MES物料类型'
 where not exists (select 1 from sys_dict_type where dict_type = 'mes_material_type');
@@ -94,6 +97,15 @@ insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, list_cla
 select 3, '已驳回', 'REJECTED', 'mes_bom_approve_status', 'danger', '0', 'admin', now(), 'BomApproveStatus.REJECTED'
 where not exists (select 1 from sys_dict_data where dict_type = 'mes_bom_approve_status' and dict_value = 'REJECTED');
 
+insert into sys_dict_type(dict_name, dict_type, status, create_by, create_time, remark)
+select 'BOM发料方式', 'mes_bom_supply_type', '0', 'admin', now(), '当前支持直接领料、倒冲领料'
+where not exists (select 1 from sys_dict_type where dict_type = 'mes_bom_supply_type');
+insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, list_class, status, create_by, create_time, remark)
+select 1, '直接领料', 'PUSH', 'mes_bom_supply_type', 'primary', '0', 'admin', now(), 'SupplyType.PUSH'
+where not exists (select 1 from sys_dict_data where dict_type = 'mes_bom_supply_type' and dict_value = 'PUSH');
+insert into sys_dict_data(dict_sort, dict_label, dict_value, dict_type, list_class, status, create_by, create_time, remark)
+select 2, '倒冲领料', 'STOCK_BACKFLUSH', 'mes_bom_supply_type', 'warning', '0', 'admin', now(), 'SupplyType.STOCK_BACKFLUSH'
+where not exists (select 1 from sys_dict_data where dict_type = 'mes_bom_supply_type' and dict_value = 'STOCK_BACKFLUSH');
 insert into sys_dict_type(dict_name, dict_type, status, create_by, create_time, remark)
 select '数据来源系统', 'mes_source_system', '0', 'admin', now(), 'MES数据来源系统'
 where not exists (select 1 from sys_dict_type where dict_type = 'mes_source_system');
