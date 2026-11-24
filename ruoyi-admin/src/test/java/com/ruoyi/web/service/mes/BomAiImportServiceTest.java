@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 import com.ruoyi.agent.application.DifyAppConfigService;
 import com.ruoyi.agent.infrastructure.dify.DifyClientSettings;
 import com.ruoyi.agent.infrastructure.dify.DifyWorkflowClient;
+import com.ruoyi.agent.infrastructure.dify.model.DifyFileUploadRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyFileUploadResult;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunRequest;
 import com.ruoyi.agent.infrastructure.dify.model.DifyWorkflowRunResult;
@@ -101,20 +103,29 @@ class BomAiImportServiceTest {
     }
 
     @Test
-    void sendsPdfFileToBomPdf() throws Exception {
+    void rendersPdfPagesAndSendsAsBomImages() throws Exception {
         DifyWorkflowRunRequest request = recognizeAndCapture(new MockMultipartFile("files", "drawing.pdf",
-                "application/pdf", pdfBytes(1)));
+                "application/pdf", pdfBytes(2)));
+
+        ArgumentCaptor<DifyFileUploadRequest> uploadCaptor = ArgumentCaptor.forClass(DifyFileUploadRequest.class);
+        verify(difyWorkflowClient, times(2)).uploadFile(any(), uploadCaptor.capture());
+        List<DifyFileUploadRequest> uploads = uploadCaptor.getAllValues();
+        assertEquals("drawing-page-1.png", uploads.get(0).getFilename());
+        assertEquals("image/png", uploads.get(0).getContentType());
+        assertEquals((byte) 0x89, uploads.get(0).getContent()[0]);
+        assertEquals("drawing-page-2.png", uploads.get(1).getFilename());
+        assertEquals("image/png", uploads.get(1).getContentType());
 
         Map<String, Object> inputs = request.getInputs();
-        assertFalse(inputs.containsKey("bom_images"));
-        assertTrue(inputs.containsKey("bom_pdf"));
+        assertTrue(inputs.containsKey("bom_images"));
+        assertFalse(inputs.containsKey("bom_pdf"));
         assertFalse(inputs.containsKey("bom_files"));
 
-        List<Map<String, Object>> pdfFiles = fileList(inputs.get("bom_pdf"));
-        assertEquals(1, pdfFiles.size());
-        Map<String, Object> pdf = pdfFiles.get(0);
-        assertEquals("document", pdf.get("type"));
-        assertEquals("uploaded-file-id", pdf.get("upload_file_id"));
+        List<Map<String, Object>> images = fileList(inputs.get("bom_images"));
+        assertEquals(2, images.size());
+        assertEquals("image", images.get(0).get("type"));
+        assertEquals("uploaded-file-id", images.get(0).get("upload_file_id"));
+        assertEquals("image", images.get(1).get("type"));
     }
 
     @Test

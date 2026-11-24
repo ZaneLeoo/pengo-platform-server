@@ -33,6 +33,8 @@ import com.ruoyi.web.domain.dto.BomAiPreviewResult;
 import com.ruoyi.web.domain.dto.BomAiProvisionedMaterial;
 import com.ruoyi.web.domain.enums.BomAiImportTraceStatus;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -49,6 +53,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.imageio.ImageIO;
 
 /**
  * BOM AI 图纸导入核心服务。
@@ -66,6 +71,7 @@ public class BomAiImportService {
     private static final int DEFAULT_MAX_PDF_PAGE_COUNT = 20;
     private static final int DEFAULT_MAX_FILE_SIZE_MB = 10;
     private static final int DEFAULT_MAX_REQUEST_SIZE_MB = 100;
+    private static final float PDF_RENDER_DPI = 150f;
 
     @Autowired
     private DifyWorkflowClient difyWorkflowClient;
@@ -129,36 +135,31 @@ public class BomAiImportService {
             // 1. 获取 Dify 配置
             DifyClientSettings settings = difyAppConfigService.requireSettings(DIFY_APP_CODE);
 
-            // 2. 逐个上传图纸，并按 BOM_OCR 工作流的输入变量分组。
+            // 2. 逐个上传图纸；PDF 在后端用 PDFBox 逐页渲染为 PNG，统一通过 bom_images 传入 Dify（无需 Dify pdf2image 插件）。
             List<Map<String, Object>> difyImages = new ArrayList<>();
-            Map<String, Object> difyPdf = null;
             List<String> difyFileIds = new ArrayList<>();
             for (MultipartFile file : files) {
                 if (file == null || file.isEmpty()) {
                     continue;
                 }
-                log.info("Uploading drawing {} to Dify", file.getOriginalFilename());
-                DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
-                        new DifyFileUploadRequest(
-                                file.getOriginalFilename(),
-                                file.getContentType(),
-                                file.getBytes(),
-                                DIFY_APP_CODE));
-                if (StringUtils.isBlank(upload.getId())) {
-                    throw new ServiceException("Dify 文件上传未返回文件 ID：" + file.getOriginalFilename());
-                }
-                difyFileIds.add(upload.getId());
-                Map<String, Object> difyFile = new LinkedHashMap<>();
-                difyFile.put("type", difyFileType(file));
-                difyFile.put("transfer_method", "local_file");
-                difyFile.put("upload_file_id", upload.getId());
                 if (isPdf(file)) {
-                    difyPdf = difyFile;
+                    uploadRenderedPdfPages(settings, file, difyImages, difyFileIds);
                 } else {
-                    difyImages.add(difyFile);
+                    log.info("Uploading drawing {} to Dify", file.getOriginalFilename());
+                    DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
+                            new DifyFileUploadRequest(
+                                    file.getOriginalFilename(),
+                                    file.getContentType(),
+                                    file.getBytes(),
+                                    DIFY_APP_CODE));
+                    if (StringUtils.isBlank(upload.getId())) {
+                        throw new ServiceException("Dify 文件上传未返回文件 ID：" + file.getOriginalFilename());
+                    }
+                    difyFileIds.add(upload.getId());
+                    difyImages.add(buildDifyImageInput(upload.getId()));
                 }
             }
-            if (difyImages.isEmpty() && difyPdf == null) {
+            if (difyImages.isEmpty()) {
                 result.setSuccess(false);
                 result.setError("请上传至少一张有效图纸");
                 return result;
@@ -166,13 +167,7 @@ public class BomAiImportService {
 
             // 3. 执行 BOM_OCR 工作流
             Map<String, Object> inputs = new HashMap<>();
-            if (!difyImages.isEmpty()) {
-                inputs.put("bom_images", difyImages);
-            }
-            if (difyPdf != null) {
-                // Dify 的文件变量即使只有一个 PDF，也要求以文件列表传入。
-                inputs.put("bom_pdf", List.of(difyPdf));
-            }
+            inputs.put("bom_images", difyImages);
             DifyWorkflowRunResult workflow = difyWorkflowClient.runBlocking(settings,
                     new DifyWorkflowRunRequest(inputs, DIFY_APP_CODE));
 
@@ -849,8 +844,56 @@ public class BomAiImportService {
         throw new RuntimeException("无法生成唯一 BOM 编码，请稍后重试");
     }
 
-    private String difyFileType(MultipartFile file) {
-        return isPdf(file) ? "document" : "image";
+    private Map<String, Object> buildDifyImageInput(String uploadFileId) {
+        Map<String, Object> difyFile = new LinkedHashMap<>();
+        difyFile.put("type", "image");
+        difyFile.put("transfer_method", "local_file");
+        difyFile.put("upload_file_id", uploadFileId);
+        return difyFile;
+    }
+
+    /** 将上传的 PDF 在后端逐页渲染为 PNG 图片并上传至 Dify，避免依赖 Dify 第三方 pdf2image 插件。 */
+    private void uploadRenderedPdfPages(DifyClientSettings settings, MultipartFile pdfFile,
+            List<Map<String, Object>> difyImages, List<String> difyFileIds) throws InterruptedException {
+        String originalName = StringUtils.isNotBlank(pdfFile.getOriginalFilename())
+                ? pdfFile.getOriginalFilename().trim()
+                : "drawing.pdf";
+        String baseName = originalName.toLowerCase().endsWith(".pdf")
+                ? originalName.substring(0, originalName.length() - 4)
+                : originalName;
+        try (PDDocument document = PDDocument.load(pdfFile.getBytes())) {
+            int pageCount = document.getNumberOfPages();
+            if (pageCount <= 0) {
+                throw new ServiceException("PDF 不包含任何可识别页面：" + originalName);
+            }
+            PDFRenderer renderer = new PDFRenderer(document);
+            for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                BufferedImage pageImage = renderer.renderImageWithDPI(pageIndex, PDF_RENDER_DPI, ImageType.RGB);
+                byte[] pngBytes;
+                try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                    if (!ImageIO.write(pageImage, "png", output)) {
+                        throw new ServiceException("PDF 第 " + (pageIndex + 1) + " 页渲染为 PNG 失败");
+                    }
+                    pngBytes = output.toByteArray();
+                } finally {
+                    pageImage.flush();
+                }
+                String pageFilename = baseName + "-page-" + (pageIndex + 1) + ".png";
+                log.info("Uploading rendered PDF page {}/{} ({}) to Dify ({} bytes)",
+                        pageIndex + 1, pageCount, pageFilename, pngBytes.length);
+                DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
+                        new DifyFileUploadRequest(pageFilename, "image/png", pngBytes, DIFY_APP_CODE));
+                if (StringUtils.isBlank(upload.getId())) {
+                    throw new ServiceException("Dify 文件上传未返回文件 ID：" + pageFilename);
+                }
+                difyFileIds.add(upload.getId());
+                difyImages.add(buildDifyImageInput(upload.getId()));
+            }
+        } catch (ServiceException exception) {
+            throw exception;
+        } catch (IOException exception) {
+            throw new ServiceException("PDF 渲染图片失败，请检查文件是否损坏或加密");
+        }
     }
 
     private boolean isPdf(MultipartFile file) {
