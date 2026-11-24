@@ -256,6 +256,34 @@ class BomAiImportServiceTest {
     }
 
     @Test
+    void parsesDirectIterationResultsArrayWithoutCodeNode() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("files", "drawing.png", "image/png", new byte[]{1});
+        when(difyAppConfigService.requireSettings("BOM_OCR"))
+                .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
+        when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
+        when(difyWorkflowClient.uploadFile(any(), any()))
+                .thenReturn(new DifyFileUploadResult("uploaded-file-id", file.getOriginalFilename(), 1, null, null));
+        when(materialService.selectMaterialList(any()))
+                .thenReturn(List.of(material("PARENT-001", 1L), material("COMP-001", 2L)));
+        String page1Json = "{\"validBom\":true,\"error\":\"\",\"document\":{\"parentItemCode\":\"PARENT-001\","
+                + "\"parentItemName\":\"测试母件\",\"baseQty\":1},\"items\":[{\"lineNo\":1,"
+                + "\"componentCode\":\"COMP-001\",\"itemName\":\"测试子件\",\"quantity\":2,\"unit\":\"个\"}]}";
+        when(difyWorkflowClient.runBlocking(any(), any()))
+                .thenReturn(new DifyWorkflowRunResult(null, null, "succeeded",
+                        Map.of("results", List.of(page1Json)), null, null));
+
+        BomAiPreviewResult result = service.recognize(new MockMultipartFile[]{file});
+
+        assertTrue(result.isSuccess());
+        assertEquals(1, result.getDocuments().size());
+        assertEquals(1, result.getDocuments().get(0).getPageNo());
+        assertEquals("PARENT-001", result.getDocuments().get(0).getHeader().getParentItemCode());
+        assertTrue(result.getDocuments().get(0).getHeader().isMatched());
+        assertEquals(1, result.getDocuments().get(0).getItems().size());
+        assertTrue(result.getDocuments().get(0).getItems().get(0).isMatched());
+    }
+
+    @Test
     void autoCreatesMissingMaterialsWhenFlagEnabled() {
         BomAiProvisionedMaterial parentCreated = new BomAiProvisionedMaterial();
         parentCreated.setMaterialId(11L);

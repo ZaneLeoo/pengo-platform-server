@@ -546,9 +546,16 @@ public class BomAiImportService {
         if (direct != null) {
             return direct;
         }
+        Object rawResults = parseJsonValue(outputs.get("results"));
+        if (rawResults instanceof List) {
+            return rawResults;
+        }
         for (String key : List.of("result", "output", "text", "answer")) {
             Object candidate = parseJsonValue(outputs.get(key));
             if (candidate instanceof Map && ((Map<String, Object>) candidate).get("documents") != null) {
+                return candidate;
+            }
+            if (candidate instanceof List) {
                 return candidate;
             }
         }
@@ -566,13 +573,47 @@ public class BomAiImportService {
             }
         }
         if (normalized instanceof List) {
-            for (Object raw : (List<Object>) normalized) {
-                if (raw instanceof Map) {
-                    documents.add(parseDocument((Map<String, Object>) raw));
+            List<Object> list = (List<Object>) normalized;
+            for (int index = 0; index < list.size(); index++) {
+                int pageNo = index + 1;
+                Object element = parseJsonValue(list.get(index));
+                if (!(element instanceof Map)) {
+                    BomAiDocument invalid = new BomAiDocument();
+                    invalid.setPageNo(pageNo);
+                    invalid.setError("AI返回结果不是有效JSON");
+                    documents.add(invalid);
+                    continue;
                 }
+                Map<String, Object> map = (Map<String, Object>) element;
+                if (map.containsKey("validBom") && !toBool(map.get("validBom"))) {
+                    BomAiDocument invalid = new BomAiDocument();
+                    invalid.setPageNo(intObj(map.get("pageNo")) != null ? intObj(map.get("pageNo")) : pageNo);
+                    invalid.setError(firstNonBlank(str(map.get("error")), "非制造业BOM数据"));
+                    documents.add(invalid);
+                    continue;
+                }
+                BomAiDocument parsed = parseDocument(map);
+                if (parsed.getPageNo() == null) {
+                    parsed.setPageNo(pageNo);
+                }
+                documents.add(parsed);
             }
         }
         return documents;
+    }
+
+    private boolean toBool(Object value) {
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue() != 0d;
+        }
+        if (value instanceof String) {
+            String text = ((String) value).trim().toLowerCase();
+            return "true".equals(text) || "1".equals(text) || "yes".equals(text) || "y".equals(text) || "是".equals(text);
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")
