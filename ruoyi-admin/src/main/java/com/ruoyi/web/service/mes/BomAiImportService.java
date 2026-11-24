@@ -43,16 +43,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 
 /**
@@ -72,6 +75,13 @@ public class BomAiImportService {
     private static final int DEFAULT_MAX_FILE_SIZE_MB = 10;
     private static final int DEFAULT_MAX_REQUEST_SIZE_MB = 100;
     private static final float PDF_RENDER_DPI = 150f;
+    private static final float PDF_LARGE_PAGE_RENDER_DPI = 220f;
+    private static final float PDF_LARGE_PAGE_THRESHOLD_PT = 1200f;
+    private static final float PDF_MAX_RENDER_EDGE_PX = 8000f;
+    private static final int MAX_DIFY_IMAGES_PER_BATCH = 10;
+    private static final Pattern STANDARD_CODE_PATTERN = Pattern.compile(
+            "^(?:GB|JB|YB|HG|SH|NB|DL|SL|TB|QC|QJ|HB|GJB|DIN|ISO|ANSI|ASME|ASTM|JIS)(?:/T)?[\\s\\-]?\\d+.*",
+            Pattern.CASE_INSENSITIVE);
 
     @Autowired
     private DifyWorkflowClient difyWorkflowClient;
@@ -93,6 +103,8 @@ public class BomAiImportService {
     private ISysConfigService sysConfigService;
     @Autowired
     private BomAiMaterialProvisionService bomAiMaterialProvisionService;
+    @Autowired(required = false)
+    private BomAiCadImagePreprocessor cadImagePreprocessor = new BomAiCadImagePreprocessor();
 
     /** 返回当前生效的导入限制，供前端展示和提前校验。 */
     public Map<String, Integer> getImportLimits() {
@@ -135,28 +147,40 @@ public class BomAiImportService {
             // 1. 获取 Dify 配置
             DifyClientSettings settings = difyAppConfigService.requireSettings(DIFY_APP_CODE);
 
-            // 2. 逐个上传图纸；PDF 在后端用 PDFBox 逐页渲染为 PNG，统一通过 bom_images 传入 Dify（无需 Dify pdf2image 插件）。
+            // 2. 逐个预处理并上传图纸：PDF 逐页渲染为 PNG，超大幅面 CAD 图纸自动扶正并高清切片，统一走 bom_images 传入 Dify。
             List<Map<String, Object>> difyImages = new ArrayList<>();
             List<String> difyFileIds = new ArrayList<>();
+            List<UploadSliceMeta> sliceMetas = new ArrayList<>();
+            int nextSourceIndex = 0;
             for (MultipartFile file : files) {
                 if (file == null || file.isEmpty()) {
                     continue;
                 }
                 if (isPdf(file)) {
-                    uploadRenderedPdfPages(settings, file, difyImages, difyFileIds);
+                    nextSourceIndex = uploadRenderedPdfPages(
+                            settings, file, difyImages, difyFileIds, sliceMetas, nextSourceIndex);
                 } else {
-                    log.info("Uploading drawing {} to Dify", file.getOriginalFilename());
-                    DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
-                            new DifyFileUploadRequest(
-                                    file.getOriginalFilename(),
-                                    file.getContentType(),
-                                    file.getBytes(),
-                                    DIFY_APP_CODE));
-                    if (StringUtils.isBlank(upload.getId())) {
-                        throw new ServiceException("Dify 文件上传未返回文件 ID：" + file.getOriginalFilename());
+                    int sourceIndex = nextSourceIndex++;
+                    BomAiCadImagePreprocessor preprocessor = cadImagePreprocessor != null
+                            ? cadImagePreprocessor : new BomAiCadImagePreprocessor();
+                    List<BomAiCadImagePreprocessor.PreparedImage> preparedList = preprocessor.prepareImageBytes(
+                            file.getOriginalFilename(), file.getContentType(), file.getBytes());
+                    for (BomAiCadImagePreprocessor.PreparedImage prepared : preparedList) {
+                        log.info("Uploading drawing {} to Dify ({} bytes, cadSlice={})",
+                                prepared.getFilename(), prepared.getContent().length, prepared.isCadSlice());
+                        DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
+                                new DifyFileUploadRequest(
+                                        prepared.getFilename(),
+                                        prepared.getContentType(),
+                                        prepared.getContent(),
+                                        DIFY_APP_CODE));
+                        if (StringUtils.isBlank(upload.getId())) {
+                            throw new ServiceException("Dify 文件上传未返回文件 ID：" + prepared.getFilename());
+                        }
+                        difyFileIds.add(upload.getId());
+                        difyImages.add(buildDifyImageInput(upload.getId()));
+                        sliceMetas.add(new UploadSliceMeta(sourceIndex, prepared.isCadSlice()));
                     }
-                    difyFileIds.add(upload.getId());
-                    difyImages.add(buildDifyImageInput(upload.getId()));
                 }
             }
             if (difyImages.isEmpty()) {
@@ -165,34 +189,48 @@ public class BomAiImportService {
                 return result;
             }
 
-            // 3. 执行 BOM_OCR 工作流
-            Map<String, Object> inputs = new HashMap<>();
-            inputs.put("bom_images", difyImages);
-            DifyWorkflowRunResult workflow = difyWorkflowClient.runBlocking(settings,
-                    new DifyWorkflowRunRequest(inputs, DIFY_APP_CODE));
+            // 3. 执行 BOM_OCR 工作流（按每批最多 10 张自动分批，兼容 Dify 1.15/1.18 文件数量上限）
+            List<BomAiDocument> rawSliceDocuments = new ArrayList<>();
+            Map<String, Object> combinedOutputs = new LinkedHashMap<>();
+            List<Map<String, Object>> batchOutputs = new ArrayList<>();
+            for (int start = 0; start < difyImages.size(); start += MAX_DIFY_IMAGES_PER_BATCH) {
+                int end = Math.min(difyImages.size(), start + MAX_DIFY_IMAGES_PER_BATCH);
+                List<Map<String, Object>> batch = difyImages.subList(start, end);
+                Map<String, Object> inputs = new HashMap<>();
+                inputs.put("bom_images", new ArrayList<>(batch));
+                DifyWorkflowRunResult workflow = difyWorkflowClient.runBlocking(settings,
+                        new DifyWorkflowRunRequest(inputs, DIFY_APP_CODE));
 
-            if (!"succeeded".equals(workflow.getStatus())) {
-                result.setSuccess(false);
-                result.setError("AI 识别失败：" + (workflow.getError() != null ? workflow.getError() : "工作流未成功返回"));
-                return result;
+                if (!"succeeded".equals(workflow.getStatus())) {
+                    result.setSuccess(false);
+                    result.setError("AI 识别失败：" + (workflow.getError() != null ? workflow.getError() : "工作流未成功返回"));
+                    return result;
+                }
+
+                Map<String, Object> outputs = workflow.getOutputs();
+                if (outputs == null || outputs.isEmpty()) {
+                    result.setSuccess(false);
+                    result.setError("AI 识别未返回有效数据");
+                    return result;
+                }
+                batchOutputs.add(outputs);
+                rawSliceDocuments.addAll(extractDocumentsFromOutputs(outputs));
+            }
+            if (batchOutputs.size() == 1) {
+                combinedOutputs.putAll(batchOutputs.get(0));
+            } else {
+                combinedOutputs.put("batches", batchOutputs);
             }
 
-            // 4. 解析工作流输出
-            Map<String, Object> outputs = workflow.getOutputs();
-            if (outputs == null || outputs.isEmpty()) {
-                result.setSuccess(false);
-                result.setError("AI 识别未返回有效数据");
-                return result;
-            }
-
-            parseAndMatch(result, outputs);
+            // 4. 合并同一图纸的多高清切片、补齐工程图自动编码并执行物料匹配
+            finalizeRecognizedDocuments(result, rawSliceDocuments, sliceMetas);
             BomAiImportTrace duplicate = bomAiImportTraceService.findImportedDuplicate(trace);
             if (duplicate != null) {
                 result.setDuplicateImportedTraceId(duplicate.getId());
                 result.setDuplicateImportedImportNo(duplicate.getImportNo());
             }
             result.setSuccess(true);
-            bomAiImportTraceService.markRecognized(trace, difyFileIds, outputs, result, operator,
+            bomAiImportTraceService.markRecognized(trace, difyFileIds, combinedOutputs, result, operator,
                     System.currentTimeMillis() - recognitionStartedAt);
 
         } catch (Exception e) {
@@ -493,8 +531,7 @@ public class BomAiImportService {
 
     // ── 私有方法 ──
 
-    @SuppressWarnings("unchecked")
-    private void parseAndMatch(BomAiPreviewResult result, Map<String, Object> outputs) {
+    private List<BomAiDocument> extractDocumentsFromOutputs(Map<String, Object> outputs) {
         Object payload = findDocumentPayload(outputs);
         List<BomAiDocument> documents = parseDocuments(payload);
 
@@ -506,12 +543,18 @@ public class BomAiImportService {
             legacy.put("items", outputs.get("items"));
             documents.add(parseDocument(legacy));
         }
+        return documents;
+    }
+
+    private void finalizeRecognizedDocuments(BomAiPreviewResult result, List<BomAiDocument> rawSliceDocuments,
+            List<UploadSliceMeta> sliceMetas) {
+        List<BomAiDocument> documents = mergeSlicedDocuments(rawSliceDocuments, sliceMetas);
         if (documents.isEmpty()) {
             throw new ServiceException("AI 识别结果中没有 documents 数据");
         }
         assertNoDocumentErrors(documents);
 
-        // 物料匹配只查询一次，逐个文档应用匹配结果。
+        // 物料匹配只查询一次，逐个文档补齐工程图自动编码并应用匹配结果。
         Material query = new Material();
         query.setStatus("0");
         List<Material> allMaterials = materialService.selectMaterialList(query);
@@ -522,12 +565,13 @@ public class BomAiImportService {
                 header = new BomAiImportHeader();
                 document.setHeader(header);
             }
-            normalizeHeader(header);
             List<BomAiImportItem> items = document.getItems();
             if (items == null) {
                 items = new ArrayList<>();
                 document.setItems(items);
             }
+            applyCadAutoCoding(document);
+            normalizeHeader(header);
             for (BomAiImportItem item : items) {
                 normalizeItem(item);
             }
@@ -538,6 +582,218 @@ public class BomAiImportService {
         }
 
         result.setDocuments(documents);
+    }
+
+    /**
+     * 将同一张超大工程图拆分出的多个高清切片结果合并回同一份 BOM 文档（合并标题栏、按 lineNo 去重并升序排列）。
+     */
+    private List<BomAiDocument> mergeSlicedDocuments(List<BomAiDocument> rawSliceDocuments,
+            List<UploadSliceMeta> sliceMetas) {
+        if (rawSliceDocuments == null || rawSliceDocuments.isEmpty()) {
+            return new ArrayList<>();
+        }
+        boolean hasCadSlices = false;
+        if (sliceMetas != null && sliceMetas.size() == rawSliceDocuments.size()) {
+            for (UploadSliceMeta meta : sliceMetas) {
+                if (meta != null && meta.cadSlice) {
+                    hasCadSlices = true;
+                    break;
+                }
+            }
+        }
+        if (!hasCadSlices) {
+            return rawSliceDocuments;
+        }
+
+        Map<Integer, List<BomAiDocument>> grouped = new LinkedHashMap<>();
+        Map<Integer, Boolean> isCadGroup = new LinkedHashMap<>();
+        for (int i = 0; i < rawSliceDocuments.size(); i++) {
+            UploadSliceMeta meta = sliceMetas.get(i);
+            int sourceIndex = meta != null ? meta.sourceIndex : i;
+            grouped.computeIfAbsent(sourceIndex, k -> new ArrayList<>()).add(rawSliceDocuments.get(i));
+            if (meta != null && meta.cadSlice) {
+                isCadGroup.put(sourceIndex, Boolean.TRUE);
+            }
+        }
+
+        List<BomAiDocument> mergedList = new ArrayList<>();
+        int pageSeq = 1;
+        for (Map.Entry<Integer, List<BomAiDocument>> entry : grouped.entrySet()) {
+            List<BomAiDocument> slices = entry.getValue();
+            if (!Boolean.TRUE.equals(isCadGroup.get(entry.getKey())) && slices.size() == 1) {
+                BomAiDocument single = slices.get(0);
+                single.setPageNo(pageSeq++);
+                mergedList.add(single);
+            } else {
+                mergedList.add(mergeCadDrawingSlices(slices, pageSeq++));
+            }
+        }
+        return mergedList;
+    }
+
+    private BomAiDocument mergeCadDrawingSlices(List<BomAiDocument> slices, int pageNo) {
+        BomAiDocument merged = new BomAiDocument();
+        merged.setPageNo(pageNo);
+        BomAiImportHeader mergedHeader = new BomAiImportHeader();
+        Map<Integer, BomAiImportItem> byLineNo = new LinkedHashMap<>();
+        List<BomAiImportItem> unnumbered = new ArrayList<>();
+        int validSliceCount = 0;
+        String firstError = null;
+
+        for (BomAiDocument slice : slices) {
+            if (slice == null) {
+                continue;
+            }
+            if (StringUtils.isNotBlank(slice.getError())) {
+                if (firstError == null) {
+                    firstError = slice.getError();
+                }
+                continue;
+            }
+            validSliceCount++;
+            BomAiImportHeader sh = slice.getHeader();
+            if (sh != null) {
+                if (StringUtils.isBlank(mergedHeader.getParentItemCode()) && StringUtils.isNotBlank(sh.getParentItemCode())) {
+                    mergedHeader.setParentItemCode(sh.getParentItemCode());
+                }
+                if (StringUtils.isBlank(mergedHeader.getParentItemName()) && StringUtils.isNotBlank(sh.getParentItemName())) {
+                    mergedHeader.setParentItemName(sh.getParentItemName());
+                }
+                if (StringUtils.isBlank(mergedHeader.getParentItemSpec()) && StringUtils.isNotBlank(sh.getParentItemSpec())) {
+                    mergedHeader.setParentItemSpec(sh.getParentItemSpec());
+                }
+                if (StringUtils.isBlank(mergedHeader.getDrawingNo()) && StringUtils.isNotBlank(sh.getDrawingNo())) {
+                    mergedHeader.setDrawingNo(sh.getDrawingNo());
+                }
+                if (StringUtils.isBlank(mergedHeader.getRevision()) && StringUtils.isNotBlank(sh.getRevision())) {
+                    mergedHeader.setRevision(sh.getRevision());
+                }
+                if (mergedHeader.getBaseQty() == null && sh.getBaseQty() != null) {
+                    mergedHeader.setBaseQty(sh.getBaseQty());
+                }
+            }
+            if (slice.getItems() != null) {
+                for (BomAiImportItem item : slice.getItems()) {
+                    if (item == null || isBlankItem(item)) {
+                        continue;
+                    }
+                    if (item.getLineNo() != null) {
+                        BomAiImportItem existing = byLineNo.get(item.getLineNo());
+                        if (existing == null || itemCompletenessScore(item) > itemCompletenessScore(existing)) {
+                            byLineNo.put(item.getLineNo(), item);
+                        }
+                    } else {
+                        unnumbered.add(item);
+                    }
+                }
+            }
+        }
+
+        if (validSliceCount == 0 && StringUtils.isNotBlank(firstError)) {
+            merged.setError(firstError);
+            return merged;
+        }
+
+        List<BomAiImportItem> finalItems = new ArrayList<>(byLineNo.values());
+        finalItems.sort(Comparator.comparingInt(item -> item.getLineNo() == null ? Integer.MAX_VALUE : item.getLineNo()));
+        finalItems.addAll(unnumbered);
+        merged.setHeader(mergedHeader);
+        merged.setItems(finalItems);
+        return merged;
+    }
+
+    private boolean isBlankItem(BomAiImportItem item) {
+        return StringUtils.isBlank(item.getItemName())
+                && StringUtils.isBlank(item.getComponentCode())
+                && StringUtils.isBlank(item.getSpec());
+    }
+
+    private int itemCompletenessScore(BomAiImportItem item) {
+        int score = 0;
+        if (StringUtils.isNotBlank(item.getItemName())) {
+            score += 3;
+        }
+        if (StringUtils.isNotBlank(item.getSpec())) {
+            score += 3;
+        }
+        if (item.getQuantity() != null) {
+            score += 3;
+        }
+        if (StringUtils.isNotBlank(item.getDrawingNo())) {
+            score += 2;
+        }
+        if (StringUtils.isNotBlank(item.getRemark())) {
+            score += 2;
+        }
+        if (StringUtils.isNotBlank(item.getComponentCode())) {
+            score += 1;
+        }
+        if (StringUtils.isNotBlank(item.getUnit())) {
+            score += 1;
+        }
+        return score;
+    }
+
+    /**
+     * 工程图自动补码：
+     * 1. 母件无物料编码时默认以图号作为 parentItemCode；
+     * 2. 若子件 componentCode 误填为国标/行业标准号（GB/T 等），转存至 drawingNo 避免不同零件撞码；
+     * 3. 子件无独立编码时，按“母件图号-两位序号”生成稳定且不重码的物料编码，方便后续一键建档与 BOM 导入。
+     */
+    private void applyCadAutoCoding(BomAiDocument document) {
+        BomAiImportHeader header = document.getHeader();
+        if (header != null && StringUtils.isBlank(header.getParentItemCode())
+                && StringUtils.isNotBlank(header.getDrawingNo())) {
+            header.setParentItemCode(header.getDrawingNo().trim());
+        }
+        String parentPrefix = header != null && StringUtils.isNotBlank(header.getParentItemCode())
+                ? header.getParentItemCode().trim()
+                : (header != null && StringUtils.isNotBlank(header.getDrawingNo())
+                        ? header.getDrawingNo().trim()
+                        : "BOM-ITEM");
+
+        List<BomAiImportItem> items = document.getItems();
+        if (items == null || items.isEmpty()) {
+            return;
+        }
+        Set<String> usedCodes = new HashSet<>();
+        for (BomAiImportItem item : items) {
+            if (item == null) {
+                continue;
+            }
+            if (isStandardCode(item.getComponentCode())) {
+                if (StringUtils.isBlank(item.getDrawingNo())) {
+                    item.setDrawingNo(item.getComponentCode().trim());
+                }
+                item.setComponentCode("");
+            }
+            if (StringUtils.isNotBlank(item.getComponentCode())) {
+                usedCodes.add(item.getComponentCode().trim());
+            }
+        }
+        for (int i = 0; i < items.size(); i++) {
+            BomAiImportItem item = items.get(i);
+            if (item == null || StringUtils.isNotBlank(item.getComponentCode())) {
+                continue;
+            }
+            int seq = (item.getLineNo() != null && item.getLineNo() > 0) ? item.getLineNo() : (i + 1);
+            String baseCode = parentPrefix + "-" + String.format("%02d", seq);
+            String candidate = baseCode;
+            int suffix = 2;
+            while (usedCodes.contains(candidate)) {
+                candidate = baseCode + "-" + suffix;
+                suffix++;
+            }
+            item.setComponentCode(candidate);
+            usedCodes.add(candidate);
+        }
+    }
+
+    private boolean isStandardCode(String value) {
+        if (StringUtils.isBlank(value)) {
+            return false;
+        }
+        return STANDARD_CODE_PATTERN.matcher(value.trim()).matches();
     }
 
     @SuppressWarnings("unchecked")
@@ -893,15 +1149,19 @@ public class BomAiImportService {
         return difyFile;
     }
 
-    /** 将上传的 PDF 在后端逐页渲染为 PNG 图片并上传至 Dify，避免依赖 Dify 第三方 pdf2image 插件。 */
-    private void uploadRenderedPdfPages(DifyClientSettings settings, MultipartFile pdfFile,
-            List<Map<String, Object>> difyImages, List<String> difyFileIds) throws InterruptedException {
+    /** 将上传的 PDF 在后端逐页渲染为 PNG（超大工程图页自适应提高 DPI 并走高清切片），统一通过 bom_images 传入 Dify。 */
+    private int uploadRenderedPdfPages(DifyClientSettings settings, MultipartFile pdfFile,
+            List<Map<String, Object>> difyImages, List<String> difyFileIds,
+            List<UploadSliceMeta> sliceMetas, int startSourceIndex) throws InterruptedException {
         String originalName = StringUtils.isNotBlank(pdfFile.getOriginalFilename())
                 ? pdfFile.getOriginalFilename().trim()
                 : "drawing.pdf";
         String baseName = originalName.toLowerCase().endsWith(".pdf")
                 ? originalName.substring(0, originalName.length() - 4)
                 : originalName;
+        int nextSourceIndex = startSourceIndex;
+        BomAiCadImagePreprocessor preprocessor = cadImagePreprocessor != null
+                ? cadImagePreprocessor : new BomAiCadImagePreprocessor();
         try (PDDocument document = PDDocument.load(pdfFile.getBytes())) {
             int pageCount = document.getNumberOfPages();
             if (pageCount <= 0) {
@@ -909,31 +1169,56 @@ public class BomAiImportService {
             }
             PDFRenderer renderer = new PDFRenderer(document);
             for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-                BufferedImage pageImage = renderer.renderImageWithDPI(pageIndex, PDF_RENDER_DPI, ImageType.RGB);
-                byte[] pngBytes;
-                try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                    if (!ImageIO.write(pageImage, "png", output)) {
-                        throw new ServiceException("PDF 第 " + (pageIndex + 1) + " 页渲染为 PNG 失败");
-                    }
-                    pngBytes = output.toByteArray();
+                int sourceIndex = nextSourceIndex++;
+                float pageMaxPt = Math.max(
+                        document.getPage(pageIndex).getMediaBox().getWidth(),
+                        document.getPage(pageIndex).getMediaBox().getHeight());
+                float dpi = PDF_RENDER_DPI;
+                if (pageMaxPt > PDF_LARGE_PAGE_THRESHOLD_PT) {
+                    float cappedDpi = (PDF_MAX_RENDER_EDGE_PX * 72f) / Math.max(1f, pageMaxPt);
+                    dpi = Math.min(PDF_LARGE_PAGE_RENDER_DPI, Math.max(PDF_RENDER_DPI, cappedDpi));
+                }
+                String pageFilename = baseName + "-page-" + (pageIndex + 1) + ".png";
+                BufferedImage pageImage = renderer.renderImageWithDPI(pageIndex, dpi, ImageType.RGB);
+                List<BomAiCadImagePreprocessor.PreparedImage> preparedList;
+                try {
+                    preparedList = preprocessor.prepareBufferedImage(pageFilename, pageImage);
                 } finally {
                     pageImage.flush();
                 }
-                String pageFilename = baseName + "-page-" + (pageIndex + 1) + ".png";
-                log.info("Uploading rendered PDF page {}/{} ({}) to Dify ({} bytes)",
-                        pageIndex + 1, pageCount, pageFilename, pngBytes.length);
-                DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
-                        new DifyFileUploadRequest(pageFilename, "image/png", pngBytes, DIFY_APP_CODE));
-                if (StringUtils.isBlank(upload.getId())) {
-                    throw new ServiceException("Dify 文件上传未返回文件 ID：" + pageFilename);
+                for (BomAiCadImagePreprocessor.PreparedImage prepared : preparedList) {
+                    log.info("Uploading rendered PDF page {}/{} ({}) to Dify ({} bytes, cadSlice={})",
+                            pageIndex + 1, pageCount, prepared.getFilename(),
+                            prepared.getContent().length, prepared.isCadSlice());
+                    DifyFileUploadResult upload = difyWorkflowClient.uploadFile(settings,
+                            new DifyFileUploadRequest(
+                                    prepared.getFilename(),
+                                    prepared.getContentType(),
+                                    prepared.getContent(),
+                                    DIFY_APP_CODE));
+                    if (StringUtils.isBlank(upload.getId())) {
+                        throw new ServiceException("Dify 文件上传未返回文件 ID：" + prepared.getFilename());
+                    }
+                    difyFileIds.add(upload.getId());
+                    difyImages.add(buildDifyImageInput(upload.getId()));
+                    sliceMetas.add(new UploadSliceMeta(sourceIndex, prepared.isCadSlice()));
                 }
-                difyFileIds.add(upload.getId());
-                difyImages.add(buildDifyImageInput(upload.getId()));
             }
+            return nextSourceIndex;
         } catch (ServiceException exception) {
             throw exception;
         } catch (IOException exception) {
             throw new ServiceException("PDF 渲染图片失败，请检查文件是否损坏或加密");
+        }
+    }
+
+    private static class UploadSliceMeta {
+        private final int sourceIndex;
+        private final boolean cadSlice;
+
+        private UploadSliceMeta(int sourceIndex, boolean cadSlice) {
+            this.sourceIndex = sourceIndex;
+            this.cadSlice = cadSlice;
         }
     }
 

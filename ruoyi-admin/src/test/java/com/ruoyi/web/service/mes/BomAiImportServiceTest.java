@@ -284,6 +284,41 @@ class BomAiImportServiceTest {
     }
 
     @Test
+    void autoFillsParentCodeFromDrawingNoAndGeneratesComponentCodes() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("files", "cad.jpg", "image/jpeg", new byte[]{1});
+        when(difyAppConfigService.requireSettings("BOM_OCR"))
+                .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
+        when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
+        when(difyWorkflowClient.uploadFile(any(), any()))
+                .thenReturn(new DifyFileUploadResult("uploaded-file-id", file.getOriginalFilename(), 1, null, null));
+        when(materialService.selectMaterialList(any())).thenReturn(Collections.emptyList());
+
+        String cadJson = "{\"validBom\":true,\"error\":\"\",\"document\":{\"parentItemCode\":\"\","
+                + "\"parentItemName\":\"排烟支座\",\"drawingNo\":\"SME001174-13\",\"baseQty\":null},"
+                + "\"items\":["
+                + "{\"lineNo\":1,\"componentCode\":\"\",\"drawingNo\":\"\",\"itemName\":\"钢板\","
+                + "\"quantity\":2,\"spec\":\"30x89.5x140 / Q355-B\",\"unit\":\"件\",\"remark\":\"单重:2.5kg 总重:5kg\"},"
+                + "{\"lineNo\":7,\"componentCode\":\"GB/T9787-1988\",\"drawingNo\":\"\",\"itemName\":\"角钢\","
+                + "\"quantity\":2,\"spec\":\"40x40x5 L=430 / Q355-B\",\"unit\":\"件\",\"remark\":\"单重:1.2kg 总重:2.4kg\"}"
+                + "]}";
+        when(difyWorkflowClient.runBlocking(any(), any()))
+                .thenReturn(new DifyWorkflowRunResult(null, null, "succeeded",
+                        Map.of("results", List.of(cadJson)), null, null));
+
+        BomAiPreviewResult result = service.recognize(new MockMultipartFile[]{file});
+
+        assertTrue(result.isSuccess());
+        assertEquals(1, result.getDocuments().size());
+        BomAiDocument doc = result.getDocuments().get(0);
+        assertEquals("SME001174-13", doc.getHeader().getParentItemCode());
+        assertEquals("SME001174-13", doc.getHeader().getFinalParentItemCode());
+        assertEquals(2, doc.getItems().size());
+        assertEquals("SME001174-13-01", doc.getItems().get(0).getComponentCode());
+        assertEquals("SME001174-13-07", doc.getItems().get(1).getComponentCode());
+        assertEquals("GB/T9787-1988", doc.getItems().get(1).getDrawingNo());
+    }
+
+    @Test
     void autoCreatesMissingMaterialsWhenFlagEnabled() {
         BomAiProvisionedMaterial parentCreated = new BomAiProvisionedMaterial();
         parentCreated.setMaterialId(11L);
