@@ -30,6 +30,7 @@ import com.ruoyi.web.domain.dto.BomAiImportHeader;
 import com.ruoyi.web.domain.dto.BomAiImportItem;
 import com.ruoyi.web.domain.dto.BomAiImportedBom;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
+import com.ruoyi.web.domain.dto.BomAiProvisionedMaterial;
 import com.ruoyi.web.domain.enums.BomAiImportTraceStatus;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.slf4j.Logger;
@@ -84,6 +85,8 @@ public class BomAiImportService {
     private BomAiImportTraceService bomAiImportTraceService;
     @Autowired
     private ISysConfigService sysConfigService;
+    @Autowired
+    private BomAiMaterialProvisionService bomAiMaterialProvisionService;
 
     /** 返回当前生效的导入限制，供前端展示和提前校验。 */
     public Map<String, Integer> getImportLimits() {
@@ -256,8 +259,20 @@ public class BomAiImportService {
                 result.setError(validationError);
                 return result;
             }
+        }
+
+        List<BomAiProvisionedMaterial> createdMaterials = List.of();
+        if (request.isAutoCreateMissingMaterials()) {
+            createdMaterials = bomAiMaterialProvisionService.ensureMaterialsForDocuments(
+                    documents, request.getMaterialDrafts(), operator);
+        }
+
+        for (int i = 0; i < documents.size(); i++) {
             String materialBindingError = bindMaterialsByCode(documents.get(i), i);
             if (materialBindingError != null) {
+                if (!createdMaterials.isEmpty()) {
+                    throw new ServiceException(materialBindingError);
+                }
                 result.setSuccess(false);
                 result.setError(materialBindingError);
                 return result;
@@ -289,6 +304,8 @@ public class BomAiImportService {
                     request.getReimportReason());
             result.setSuccess(true);
             result.setBoms(importedBoms);
+            result.setCreatedMaterials(createdMaterials);
+            result.setCreatedMaterialCount(createdMaterials.size());
             if (!importedBoms.isEmpty()) {
                 BomAiImportedBom first = importedBoms.get(0);
                 result.setBomMasterId(first.getBomMasterId());
@@ -675,6 +692,89 @@ public class BomAiImportService {
         } catch (Exception ignored) {
             return value;
         }
+    }
+
+    /**
+     * 按当前启用的物料档案重新匹配预览结果中的母件与子件（用于继续确认恢复或切页返回后同步最新建档状态）。
+     */
+    public BomAiPreviewResult rematchPreview(BomAiPreviewResult preview) {
+        if (preview == null || preview.getDocuments() == null || preview.getDocuments().isEmpty()) {
+            return preview;
+        }
+        Material query = new Material();
+        query.setStatus("0");
+        List<Material> allMaterials = materialService.selectMaterialList(query);
+        for (BomAiDocument document : preview.getDocuments()) {
+            if (document == null) {
+                continue;
+            }
+            rematchParent(document.getHeader(), allMaterials);
+            if (document.getItems() != null) {
+                for (BomAiImportItem item : document.getItems()) {
+                    rematchItem(item, allMaterials);
+                }
+            }
+        }
+        return preview;
+    }
+
+    private void rematchParent(BomAiImportHeader header, List<Material> materials) {
+        if (header == null) {
+            return;
+        }
+        if (header.isMatched() && header.getFinalParentMaterialId() != null) {
+            for (Material m : materials) {
+                if (header.getFinalParentMaterialId().equals(m.getMaterialId())) {
+                    applyParentMatch(header, m);
+                    return;
+                }
+            }
+        }
+        String code = firstNonBlank(header.getFinalParentItemCode(), header.getParentItemCode());
+        if (StringUtils.isNotBlank(code)) {
+            String trimmed = code.trim();
+            for (Material m : materials) {
+                if (trimmed.equals(m.getMaterialCode())) {
+                    applyParentMatch(header, m);
+                    return;
+                }
+            }
+        }
+        header.setMatched(false);
+        header.setMatchedMaterialId(null);
+        header.setMatchedMaterialCode(null);
+        header.setMatchedMaterialName(null);
+        header.setFinalParentMaterialId(null);
+    }
+
+    private void rematchItem(BomAiImportItem item, List<Material> materials) {
+        if (item == null) {
+            return;
+        }
+        if (item.isMatched() && item.getMatchedMaterialId() != null) {
+            for (Material m : materials) {
+                if (item.getMatchedMaterialId().equals(m.getMaterialId())) {
+                    applyItemMatch(item, m);
+                    return;
+                }
+            }
+        }
+        String code = firstNonBlank(item.getFinalItemCode(), item.getComponentCode());
+        if (StringUtils.isNotBlank(code)) {
+            String trimmed = code.trim();
+            for (Material m : materials) {
+                if (trimmed.equals(m.getMaterialCode())) {
+                    applyItemMatch(item, m);
+                    return;
+                }
+            }
+        }
+        item.setMatched(false);
+        item.setMatchedMaterialId(null);
+        item.setMatchedMaterialCode(null);
+        item.setMatchedMaterialName(null);
+        item.setMatchedMaterialSpec(null);
+        item.setMatchedMaterialUnit(null);
     }
 
     private void matchParent(BomAiImportHeader header, List<Material> materials) {

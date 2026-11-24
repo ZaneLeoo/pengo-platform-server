@@ -13,6 +13,10 @@ public class BomAiConfirmResult {
     private Long bomVersionId;
     private String bomCode;
     private List<BomAiImportedBom> boms;
+    /** 本次确认导入时自动建档的物料数量。 */
+    private int createdMaterialCount;
+    /** 本次确认导入时自动建档的物料明细。 */
+    private List<BomAiProvisionedMaterial> createdMaterials;
 
     public boolean isSuccess() { return success; }
     public void setSuccess(boolean success) { this.success = success; }
@@ -26,4 +30,10 @@ public class BomAiConfirmResult {
     public void setBomCode(String bomCode) { this.bomCode = bomCode; }
     public List<BomAiImportedBom> getBoms() { return boms; }
     public void setBoms(List<BomAiImportedBom> boms) { this.boms = boms; }
+    public int getCreatedMaterialCount() { return createdMaterialCount; }
+    public void setCreatedMaterialCount(int createdMaterialCount) { this.createdMaterialCount = createdMaterialCount; }
+    public List<BomAiProvisionedMaterial> getCreatedMaterials() { return createdMaterials; }
+    public void setCreatedMaterials(List<BomAiProvisionedMaterial> createdMaterials) {
+        this.createdMaterials = createdMaterials;
+    }
 }

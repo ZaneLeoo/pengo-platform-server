@@ -24,11 +24,13 @@ import com.ruoyi.mes.base.service.IBomVersionService;
 import com.ruoyi.mes.base.service.IMaterialService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.web.domain.BomAiImportTrace;
+import com.ruoyi.web.domain.dto.BomAiConfirmResult;
 import com.ruoyi.web.domain.dto.BomAiDocument;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
 import com.ruoyi.web.domain.dto.BomAiImportHeader;
 import com.ruoyi.web.domain.dto.BomAiImportItem;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
+import com.ruoyi.web.domain.dto.BomAiProvisionedMaterial;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -76,13 +78,16 @@ class BomAiImportServiceTest {
     @Mock
     private ISysConfigService sysConfigService;
 
+    @Mock
+    private BomAiMaterialProvisionService bomAiMaterialProvisionService;
+
     @InjectMocks
     private BomAiImportService service;
 
     @Test
     void sendsImageFilesToBomImages() throws Exception {
         DifyWorkflowRunRequest request = recognizeAndCapture(new MockMultipartFile("files", "drawing.png", "image/png",
-                new byte[] { 1 }));
+                new byte[]{1}));
 
         Map<String, Object> inputs = request.getInputs();
         assertTrue(inputs.containsKey("bom_images"));
@@ -114,9 +119,9 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsMultiplePdfFiles() throws Exception {
-        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
+        BomAiPreviewResult result = service.recognize(new MultipartFile[]{
                 new MockMultipartFile("files", "drawing-1.pdf", "application/pdf", pdfBytes(1)),
-                new MockMultipartFile("files", "drawing-2.pdf", "application/pdf", pdfBytes(1)) });
+                new MockMultipartFile("files", "drawing-2.pdf", "application/pdf", pdfBytes(1))});
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：一次仅支持上传 1 个 PDF", result.getError());
@@ -124,9 +129,9 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsMixedImageAndPdfInput() {
-        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
-                new MockMultipartFile("files", "drawing.png", "image/png", new byte[] { 1 }),
-                new MockMultipartFile("files", "drawing.pdf", "application/pdf", new byte[] { 2 }) });
+        BomAiPreviewResult result = service.recognize(new MultipartFile[]{
+                new MockMultipartFile("files", "drawing.png", "image/png", new byte[]{1}),
+                new MockMultipartFile("files", "drawing.pdf", "application/pdf", new byte[]{2})});
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：一次只能上传多张图片或 1 个 PDF，不能混合上传", result.getError());
@@ -134,8 +139,8 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsPdfOverTwentyPages() throws Exception {
-        BomAiPreviewResult result = service.recognize(new MultipartFile[] {
-                new MockMultipartFile("files", "drawing.pdf", "application/pdf", pdfBytes(21)) });
+        BomAiPreviewResult result = service.recognize(new MultipartFile[]{
+                new MockMultipartFile("files", "drawing.pdf", "application/pdf", pdfBytes(21))});
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：PDF 页数不能超过 20 页", result.getError());
@@ -224,7 +229,7 @@ class BomAiImportServiceTest {
 
     @Test
     void rejectsNonBomDocumentReturnedByWorkflow() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("files", "random.jpg", "image/jpeg", new byte[] { 1 });
+        MockMultipartFile file = new MockMultipartFile("files", "random.jpg", "image/jpeg", new byte[]{1});
         when(difyAppConfigService.requireSettings("BOM_OCR"))
                 .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
         when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
@@ -233,10 +238,54 @@ class BomAiImportServiceTest {
         when(difyWorkflowClient.runBlocking(any(), any())).thenReturn(new DifyWorkflowRunResult(null, null, "succeeded",
                 Map.of("text", "{\"documents\":[{\"pageNo\":1,\"error\":\"非制造业BOM数据\"}]}"), null, null));
 
-        BomAiPreviewResult result = service.recognize(new MockMultipartFile[] { file });
+        BomAiPreviewResult result = service.recognize(new MockMultipartFile[]{file});
 
         assertFalse(result.isSuccess());
         assertEquals("识别失败：第 1 页：非制造业BOM数据", result.getError());
+    }
+
+    @Test
+    void autoCreatesMissingMaterialsWhenFlagEnabled() {
+        BomAiProvisionedMaterial parentCreated = new BomAiProvisionedMaterial();
+        parentCreated.setMaterialId(11L);
+        parentCreated.setMaterialCode("PARENT-NEW");
+        parentCreated.setMaterialName("新建母件");
+        parentCreated.setCreated(true);
+
+        BomAiProvisionedMaterial componentCreated = new BomAiProvisionedMaterial();
+        componentCreated.setMaterialId(12L);
+        componentCreated.setMaterialCode("COMP-NEW");
+        componentCreated.setMaterialName("新建子件");
+        componentCreated.setCreated(true);
+
+        List<BomAiProvisionedMaterial> provisioned = List.of(parentCreated, componentCreated);
+        when(bomAiMaterialProvisionService.ensureMaterialsForDocuments(any(), any(), any()))
+                .thenReturn(provisioned);
+        when(materialService.selectMaterialByCode("PARENT-NEW")).thenReturn(material("PARENT-NEW", 11L));
+        when(materialService.selectMaterialByCode("COMP-NEW")).thenReturn(material("COMP-NEW", 12L));
+        when(bomMasterMapper.selectBomMasterByCode(any())).thenReturn(null);
+
+        BomAiImportHeader header = new BomAiImportHeader();
+        header.setParentItemCode("PARENT-NEW");
+        header.setParentItemName("新建母件");
+        BomAiImportItem item = new BomAiImportItem();
+        item.setComponentCode("COMP-NEW");
+        item.setItemName("新建子件");
+        item.setQuantity(BigDecimal.ONE);
+        BomAiDocument document = new BomAiDocument();
+        document.setHeader(header);
+        document.setItems(List.of(item));
+
+        BomAiImportConfirmRequest request = new BomAiImportConfirmRequest();
+        request.setAutoCreateMissingMaterials(true);
+        request.setDocuments(List.of(document));
+
+        BomAiConfirmResult result = service.confirm(request);
+
+        assertTrue(result.isSuccess());
+        verify(bomAiMaterialProvisionService).ensureMaterialsForDocuments(any(), any(), any());
+        assertEquals(2, result.getCreatedMaterialCount());
+        assertEquals(provisioned, result.getCreatedMaterials());
     }
 
     private DifyWorkflowRunRequest recognizeAndCapture(MockMultipartFile... files) throws Exception {
@@ -244,7 +293,8 @@ class BomAiImportServiceTest {
                 .thenReturn(new DifyClientSettings("http://dify.test/v1", "api-key"));
         when(bomAiImportTraceService.start(any(), any())).thenReturn(trace());
         when(difyWorkflowClient.uploadFile(any(), any()))
-                .thenReturn(new DifyFileUploadResult("uploaded-file-id", files[0].getOriginalFilename(), 1, null, null));
+                .thenReturn(
+                        new DifyFileUploadResult("uploaded-file-id", files[0].getOriginalFilename(), 1, null, null));
         when(difyWorkflowClient.runBlocking(any(), any()))
                 .thenReturn(new DifyWorkflowRunResult(null, null, "succeeded", Collections.emptyMap(), null, null));
 

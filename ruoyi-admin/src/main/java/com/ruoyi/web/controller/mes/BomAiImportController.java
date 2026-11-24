@@ -7,8 +7,11 @@ import com.ruoyi.web.domain.BomAiImportTrace;
 import com.ruoyi.web.domain.dto.BomAiConfirmResult;
 import com.ruoyi.web.domain.dto.BomAiImportConfirmRequest;
 import com.ruoyi.web.domain.dto.BomAiPreviewResult;
+import com.ruoyi.web.domain.dto.BomAiQuickCreateMaterialsRequest;
+import com.ruoyi.web.domain.dto.BomAiQuickCreateMaterialsResult;
 import com.ruoyi.web.service.mes.BomAiImportTraceService;
 import com.ruoyi.web.service.mes.BomAiImportService;
+import com.ruoyi.web.service.mes.BomAiMaterialProvisionService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -41,6 +44,8 @@ public class BomAiImportController extends BaseController {
     private BomAiImportService bomAiImportService;
     @Autowired
     private BomAiImportTraceService bomAiImportTraceService;
+    @Autowired
+    private BomAiMaterialProvisionService bomAiMaterialProvisionService;
 
     /** 获取当前生效的 AI 图纸导入限制。 */
     @GetMapping("/limits")
@@ -78,6 +83,19 @@ public class BomAiImportController extends BaseController {
     }
 
     /**
+     * 批量一键建档未匹配物料（幂等复用已存在且启用的物料）。
+     */
+    @PostMapping("/materials/quickCreate")
+    public AjaxResult quickCreateMaterials(@RequestBody BomAiQuickCreateMaterialsRequest request) {
+        if (request == null || request.getMaterials() == null || request.getMaterials().isEmpty()) {
+            return error("请至少提供一条待建档物料");
+        }
+        BomAiQuickCreateMaterialsResult result = bomAiMaterialProvisionService.quickCreateMaterials(
+                request.getMaterials(), getUsername());
+        return success(result);
+    }
+
+    /**
      * 确认导入 → 事务写入 BOM 表。
      */
     @PostMapping("/confirm")
@@ -89,10 +107,16 @@ public class BomAiImportController extends BaseController {
         return error(result.getError());
     }
 
-    /** 恢复一条仍处于待确认状态的识别预览。 */
+    /** 按当前最新物料档案重新匹配预览数据中的未匹配项。 */
+    @PostMapping("/rematch")
+    public AjaxResult rematch(@RequestBody BomAiPreviewResult preview) {
+        return success(bomAiImportService.rematchPreview(preview));
+    }
+
+    /** 恢复一条仍处于待确认状态的识别预览，并按当前最新物料档案实时重新匹配。 */
     @GetMapping("/trace/{traceId}/resume")
     public AjaxResult resume(@PathVariable Long traceId) {
-        return success(bomAiImportTraceService.resume(traceId));
+        return success(bomAiImportService.rematchPreview(bomAiImportTraceService.resume(traceId)));
     }
 
     /** 主动放弃一条待确认记录。 */

@@ -12,6 +12,10 @@ public class BomAiImportConfirmRequest {
     private boolean forceNewVersion;
     /** 强制重复导入原因。 */
     private String reimportReason;
+    /** 确认导入时是否自动建档尚未存在的母件/子件物料。 */
+    private boolean autoCreateMissingMaterials;
+    /** 可选：自动建档时的物料字段覆盖配置（按 materialCode 匹配）。 */
+    private List<BomAiMaterialDraft> materialDrafts;
 
     /** 母件信息（用户编辑后） */
     private BomAiImportHeader header;
@@ -26,6 +30,12 @@ public class BomAiImportConfirmRequest {
     public void setForceNewVersion(boolean forceNewVersion) { this.forceNewVersion = forceNewVersion; }
     public String getReimportReason() { return reimportReason; }
     public void setReimportReason(String reimportReason) { this.reimportReason = reimportReason; }
+    public boolean isAutoCreateMissingMaterials() { return autoCreateMissingMaterials; }
+    public void setAutoCreateMissingMaterials(boolean autoCreateMissingMaterials) {
+        this.autoCreateMissingMaterials = autoCreateMissingMaterials;
+    }
+    public List<BomAiMaterialDraft> getMaterialDrafts() { return materialDrafts; }
+    public void setMaterialDrafts(List<BomAiMaterialDraft> materialDrafts) { this.materialDrafts = materialDrafts; }
 
     public BomAiImportHeader getHeader() { return header; }
     public void setHeader(BomAiImportHeader header) { this.header = header; }
